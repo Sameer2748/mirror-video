@@ -1,0 +1,726 @@
+{
+ "0": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 0.9,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "1": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "7": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [],
+  "note": "Ava holds the phone up; the photo on the phone shows Aiden and Charlotte (faces in a photo, not people in the room); Ava's face is partly behind the phone from 23.6 s"
+ },
+ "8": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "R",
+    "view": "face"
+   },
+   {
+    "name": "Charlotte",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [],
+  "note": "flashback in the car; the woman seen from behind is Charlotte (long dark hair), not Ava"
+ },
+ "14": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Ava",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [
+   {
+    "t": 53.6,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "16": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 59.6,
+    "speaker": "Aiden",
+    "on_screen": true
+   },
+   {
+    "t": 61.9,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "20": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [
+   {
+    "t": 76.5,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 77.4,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "21": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "L",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "R",
+    "view": "back"
+   }
+  ],
+  "s": [
+   {
+    "t": 80.0,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "25": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "26": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "R",
+    "view": "back"
+   }
+  ],
+  "s": [
+   {
+    "t": 94.0,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 96.0,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ],
+  "note": "two camera angles inside: wide with Aiden's back, then close-up of Ava"
+ },
+ "27": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "32": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 116.9,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 118.9,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 121.2,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "34": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "37": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "R",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 130.1,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 132.6,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "43": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Ava",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [
+   {
+    "t": 149.1,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "44": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 149.1,
+    "speaker": "Aiden",
+    "on_screen": false
+   }
+  ],
+  "note": "the end of Aiden's line is heard while only his back is seen"
+ },
+ "45": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 152.6,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 154.9,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "52": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 172.0,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 177.6,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "56": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 193.6,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "57": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 197.4,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 199.8,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 203.5,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "62": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": []
+ },
+ "63": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "R",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 236.5,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 240.2,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 243.8,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "64": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 246.5,
+    "speaker": "Aiden",
+    "on_screen": true
+   },
+   {
+    "t": 248.8,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "66": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [],
+  "note": "Aiden turns away (profile / back) from 255 s"
+ },
+ "67": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "L",
+    "view": "back"
+   },
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [],
+  "note": "narration over Ava's moving mouth"
+ },
+ "68": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Ava",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [],
+  "note": "Aiden turns from the window to face Ava; Ava's back enters at the end"
+ },
+ "75": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 302.3,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 304.4,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 307.4,
+    "speaker": "Aiden",
+    "on_screen": false
+   }
+  ]
+ },
+ "82": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 326.2,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "89": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 359.9,
+    "speaker": "Ava",
+    "on_screen": true
+   },
+   {
+    "t": 362.0,
+    "speaker": "Ava",
+    "on_screen": true
+   }
+  ]
+ },
+ "90": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [],
+  "note": "Ava turns and walks out; empty room at the end"
+ },
+ "100": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "103": {
+  "p": [
+   {
+    "name": "Charlotte",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 426.0,
+    "speaker": "Charlotte",
+    "on_screen": true
+   },
+   {
+    "t": 427.0,
+    "speaker": "Charlotte",
+    "on_screen": true
+   }
+  ]
+ },
+ "109": {
+  "p": [
+   {
+    "name": "Charlotte",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 452.9,
+    "speaker": "Charlotte",
+    "on_screen": true
+   }
+  ]
+ },
+ "115": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [
+   {
+    "t": 481.9,
+    "speaker": "Aiden",
+    "on_screen": true
+   }
+  ]
+ },
+ "121": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "body"
+   }
+  ],
+  "s": [],
+  "note": "only Aiden's body, head out of frame"
+ },
+ "129": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "136": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": []
+ },
+ "142": {
+  "p": [
+   {
+    "name": "Aiden",
+    "pos": "R",
+    "view": "face"
+   },
+   {
+    "name": "Charlotte",
+    "pos": "L",
+    "view": "back"
+   }
+  ],
+  "s": [],
+  "note": "two shots inside (cut not found): Aiden at his desk, then the car flashback with Charlotte from behind"
+ },
+ "143": {
+  "p": [
+   {
+    "name": "Ava",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "R",
+    "view": "back"
+   }
+  ],
+  "s": [],
+  "note": "narrator's recap over Ava's moving mouth"
+ },
+ "145": {
+  "p": [
+   {
+    "name": "Derek",
+    "pos": "C",
+    "view": "face"
+   },
+   {
+    "name": "Aiden",
+    "pos": "C",
+    "view": "face"
+   }
+  ],
+  "s": [],
+  "note": "two shots inside: Derek (blond, white blazer, wine) then Aiden"
+ }
+}

@@ -1,0 +1,3766 @@
+{
+ "total_ms": 440307,
+ "segments": [
+  {
+   "kind": "clip",
+   "it_idx": 0,
+   "it_start_ms": 0.0,
+   "it_end_ms": 2677.203,
+   "us_start_ms": 1474.087,
+   "us_end_ms": 3174.087,
+   "it_text": "Erano a un passo dal campo di atletica.",
+   "us_text": "They were almost at the track field for practice when someone's loud comment caught their attention.",
+   "stretch_factor": 1.575,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 1,
+   "it_start_ms": 2677.203,
+   "it_end_ms": 4679.475,
+   "us_start_ms": 3174.087,
+   "us_end_ms": 4445.511,
+   "it_text": "L'allenamento stava per iniziare,",
+   "us_text": "They were almost at the track field for practice when someone's loud comment caught their attention.",
+   "stretch_factor": 1.575,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 2,
+   "it_start_ms": 4679.475,
+   "it_end_ms": 8400,
+   "us_start_ms": 4445.511,
+   "us_end_ms": 6808.011,
+   "it_text": "ma una voce stridula bloccò Viola e Alice sul posto.",
+   "us_text": "They were almost at the track field for practice when someone's loud comment caught their attention.",
+   "stretch_factor": 1.575,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 3,
+   "it_start_ms": 8400.0,
+   "it_end_ms": 10348.594,
+   "us_start_ms": 8160,
+   "us_end_ms": 10115.0,
+   "it_text": "Scommetto che l'allenamento sarà un massacro.",
+   "us_text": "But practice is going to be brutal.",
+   "stretch_factor": 0.997,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 4,
+   "it_start_ms": 10348.594,
+   "it_end_ms": 13510,
+   "us_start_ms": 10115.0,
+   "us_end_ms": 13286.8,
+   "it_text": "Non vedo l'ora di guardare questi umani crollare.",
+   "us_text": "Can't wait to see these humans totally wipe out.",
+   "stretch_factor": 0.997,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 5,
+   "it_start_ms": 13510.0,
+   "it_end_ms": 15249.3,
+   "us_start_ms": 13286.8,
+   "us_end_ms": 15026.1,
+   "it_text": "Sono così gracilini.",
+   "us_text": "Weaklings that they are.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 5,
+   "it_start_ms": 15249.3,
+   "it_end_ms": 17103.2,
+   "us_start_ms": 15026.1,
+   "us_end_ms": 16880,
+   "it_text": "Sono così gracilini.",
+   "us_text": "Weaklings that they are.",
+   "stretch_factor": 1.0,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 6,
+   "it_start_ms": 17103.2,
+   "it_end_ms": 19450,
+   "us_start_ms": 17510.166,
+   "us_end_ms": 19856.967,
+   "it_text": "Viola si girò di scatto verso lo stronzo che aveva parlato.",
+   "us_text": "Violet's head whipped around to face the jerk who'd just spoken.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 7,
+   "it_start_ms": 19450.0,
+   "it_end_ms": 21332.867,
+   "us_start_ms": 20487.133,
+   "us_end_ms": 22370.0,
+   "it_text": "Non le serviva Alice,",
+   "us_text": "Even without Alice,",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 8,
+   "it_start_ms": 21332.867,
+   "it_end_ms": 23353.9,
+   "us_start_ms": 22370.0,
+   "us_end_ms": 24391.033,
+   "it_text": "la sua enciclopedia vivente,",
+   "us_text": "her walking encyclopedia,",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 9,
+   "it_start_ms": 23353.9,
+   "it_end_ms": 25710,
+   "us_start_ms": 24814.583,
+   "us_end_ms": 27170.683,
+   "it_text": "per capire che si trattava di un licantropo.",
+   "us_text": "she could tell from his words that he was a werewolf.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 10,
+   "it_start_ms": 25710.0,
+   "it_end_ms": 30616.038,
+   "us_start_ms": 27594.233,
+   "us_end_ms": 31598.233,
+   "it_text": "Solo quegli arroganti si divertivano a umiliare gli umani.",
+   "us_text": "Only those arrogant werewolves got a kick out of human suffering.",
+   "stretch_factor": 1.225,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 11,
+   "it_start_ms": 30616.038,
+   "it_end_ms": 33130.036,
+   "us_start_ms": 31598.233,
+   "us_end_ms": 33650.0,
+   "it_text": "Forse era prevenuta lei.",
+   "us_text": "Maybe she was prejudiced,",
+   "stretch_factor": 1.225,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 12,
+   "it_start_ms": 33130.036,
+   "it_end_ms": 39355,
+   "us_start_ms": 33650.0,
+   "us_end_ms": 38730.425,
+   "it_text": "O forse l'idea che umani e licantropi potessero convivere pacificamente in quella scuola era solo una gigantesca utopia.",
+   "us_text": "because the violets still couldn't wrap her head around humans and werewolves peacefully coexisting at school. It was a ticking time bomb.",
+   "stretch_factor": 1.225,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 13,
+   "it_start_ms": 39355.0,
+   "it_end_ms": 44723.218,
+   "us_start_ms": 38730.425,
+   "us_end_ms": 42697.4,
+   "it_text": "Era solo questione di tempo e quella bomba a orologeria sarebbe scoppiata.",
+   "us_text": "because the violets still couldn't wrap her head around humans and werewolves peacefully coexisting at school. It was a ticking time bomb.",
+   "stretch_factor": 1.353,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 14,
+   "it_start_ms": 44723.218,
+   "it_end_ms": 49128.92,
+   "us_start_ms": 42697.4,
+   "us_end_ms": 45953.1,
+   "it_text": "Il licantropo dovette sentire la sua occhiataccia bruciargli addosso.",
+   "us_text": "The werewolf must have felt her glare because he turned,",
+   "stretch_factor": 1.353,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 15,
+   "it_start_ms": 49128.92,
+   "it_end_ms": 51980,
+   "us_start_ms": 45953.1,
+   "us_end_ms": 48059.975,
+   "it_text": "Si girò e la fissò.",
+   "us_text": "his eyes locking with hers.",
+   "stretch_factor": 1.353,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 16,
+   "it_start_ms": 51980.0,
+   "it_end_ms": 54047.074,
+   "us_start_ms": 48059.975,
+   "us_end_ms": 49940,
+   "it_text": "Un attimo di sorpresa,",
+   "us_text": "He looked momentarily surprised.",
+   "stretch_factor": 1.099,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 16,
+   "it_start_ms": 54047.074,
+   "it_end_ms": 55415.36,
+   "us_start_ms": 49940,
+   "us_end_ms": 51184.47,
+   "it_text": "Un attimo di sorpresa,",
+   "us_text": "He looked momentarily surprised.",
+   "stretch_factor": 1.099,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 17,
+   "it_start_ms": 55415.36,
+   "it_end_ms": 58379.075,
+   "us_start_ms": 51184.47,
+   "us_end_ms": 53880,
+   "it_text": "poi gli occhi si assottigliarono e dalla sua gola salì un ringhio.",
+   "us_text": "Then his eyes narrowed and he growled.",
+   "stretch_factor": 1.099,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 18,
+   "it_start_ms": 58379.075,
+   "it_end_ms": 60710,
+   "us_start_ms": 53880,
+   "us_end_ms": 56000,
+   "it_text": "Che hai da guardare, umana?",
+   "us_text": "What are you staring at, Prey?",
+   "stretch_factor": 1.099,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 19,
+   "it_start_ms": 60710.0,
+   "it_end_ms": 62840,
+   "us_start_ms": 60000.0,
+   "us_end_ms": 61280,
+   "it_text": "Viola sorrise beffarda.",
+   "us_text": "Oh, so that's how he wanted to play it?",
+   "stretch_factor": 1.664,
+   "note": " | hand-set: starts at 60.0s so Viola's smile plays on \"Viola sorrise beffarda\" (WBM QC 01:02)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 20,
+   "it_start_ms": 62840.0,
+   "it_end_ms": 65140,
+   "us_start_ms": 57154.37,
+   "us_end_ms": 58591.87,
+   "it_text": "Voleva giocare a fare il duro?",
+   "us_text": "Violet raised an eyebrow.",
+   "stretch_factor": 1.6,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 21,
+   "it_start_ms": 65140.0,
+   "it_end_ms": 67313.904,
+   "us_start_ms": 62440,
+   "us_end_ms": 64038.784,
+   "it_text": "Sfortuna per lui,",
+   "us_text": "Unfortunately for him,",
+   "stretch_factor": 1.36,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 22,
+   "it_start_ms": 67313.904,
+   "it_end_ms": 69287.284,
+   "us_start_ms": 64038.784,
+   "us_end_ms": 65490.093,
+   "it_text": "Viola aveva una lingua tagliente.",
+   "us_text": "she had a smart mouth that usually got her into trouble, not out of it.",
+   "stretch_factor": 1.36,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 23,
+   "it_start_ms": 69287.284,
+   "it_end_ms": 71080,
+   "us_start_ms": 65490.093,
+   "us_end_ms": 66808.534,
+   "it_text": "Un difetto che non la aiutava, anzi.",
+   "us_text": "she had a smart mouth that usually got her into trouble, not out of it.",
+   "stretch_factor": 1.36,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 24,
+   "it_start_ms": 71080.0,
+   "it_end_ms": 73620.578,
+   "us_start_ms": 66808.534,
+   "us_end_ms": 68673.967,
+   "it_text": "Finiva per cacciarla sempre nei guai.",
+   "us_text": "she had a smart mouth that usually got her into trouble, not out of it.",
+   "stretch_factor": 1.362,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 25,
+   "it_start_ms": 73620.578,
+   "it_end_ms": 75442.707,
+   "us_start_ms": 68673.967,
+   "us_end_ms": 70011.875,
+   "it_text": "Si inumidì le labbra.",
+   "us_text": "She licked her lips,",
+   "stretch_factor": 1.362,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 26,
+   "it_start_ms": 75442.707,
+   "it_end_ms": 77930,
+   "us_start_ms": 70011.875,
+   "us_end_ms": 71838.183,
+   "it_text": "Il sangue le pulsava nelle orecchie.",
+   "us_text": "ready for a coming showdown.",
+   "stretch_factor": 1.362,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 27,
+   "it_start_ms": 77930.0,
+   "it_end_ms": 80785.61,
+   "us_start_ms": 71838.183,
+   "us_end_ms": 74500.0,
+   "it_text": "Alice, che aveva capito cosa stava per fare,",
+   "us_text": "Alice seemed to sense her intentions.",
+   "stretch_factor": 1.073,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 28,
+   "it_start_ms": 80785.61,
+   "it_end_ms": 86840,
+   "us_start_ms": 74500.0,
+   "us_end_ms": 80143.516,
+   "it_text": "sgranò gli occhi e scosse la testa pregandola silenziosamente di lasciar perdere.",
+   "us_text": "Her eyes widened, and she shook her head, silently warning her to back off.",
+   "stretch_factor": 1.073,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 29,
+   "it_start_ms": 86840.0,
+   "it_end_ms": 87996.484,
+   "us_start_ms": 80143.516,
+   "us_end_ms": 81300.0,
+   "it_text": "Troppo tardi.",
+   "us_text": "Too late.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 30,
+   "it_start_ms": 87996.484,
+   "it_end_ms": 91484.907,
+   "us_start_ms": 81503.242,
+   "us_end_ms": 84991.665,
+   "it_text": "Lo so che muori dalla voglia di avere la mia attenzione,",
+   "us_text": "Oh, I'm sorry.\" Violet shot back. Are you, like, dying for my attention, dog?",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 31,
+   "it_start_ms": 91484.907,
+   "it_end_ms": 94910,
+   "us_start_ms": 85194.907,
+   "us_end_ms": 88620,
+   "it_text": "cagnolino... lo provocò Viola.",
+   "us_text": "Oh, I'm sorry.\" Violet shot back. Are you, like, dying for my attention, dog?",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 32,
+   "it_start_ms": 94910.0,
+   "it_end_ms": 96840,
+   "us_start_ms": 92150,
+   "us_end_ms": 93356.25,
+   "it_text": "Alice sussultò.",
+   "us_text": "Alice gasped.",
+   "stretch_factor": 1.6,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 33,
+   "it_start_ms": 96840.0,
+   "it_end_ms": 98434.324,
+   "us_start_ms": 100160.0,
+   "us_end_ms": 101140.175,
+   "it_text": "Nel raggio di dieci metri,",
+   "us_text": "Everyone with an earshot froze like Violet had just committed a major crime.",
+   "stretch_factor": 1.627,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 34,
+   "it_start_ms": 98434.324,
+   "it_end_ms": 100050,
+   "us_start_ms": 101140.175,
+   "us_end_ms": 102133.477,
+   "it_text": "tutti si congelarono.",
+   "us_text": "Everyone with an earshot froze like Violet had just committed a major crime.",
+   "stretch_factor": 1.627,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 35,
+   "it_start_ms": 100050.0,
+   "it_end_ms": 103344.215,
+   "us_start_ms": 102133.477,
+   "us_end_ms": 105104.96,
+   "it_text": "Sembrava che Viola avesse appena firmato la sua condanna a morte.",
+   "us_text": "Everyone with an earshot froze like Violet had just committed a major crime.",
+   "stretch_factor": 1.109,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 36,
+   "it_start_ms": 103344.215,
+   "it_end_ms": 107185.417,
+   "us_start_ms": 105104.96,
+   "us_end_ms": 108569.843,
+   "it_text": "Il silenzio si ruppe in un mormorio strisciante.",
+   "us_text": "Seconds later, whispers started. and Violet caught snippets like, she's so dead and Grant's gonna rip her apart.",
+   "stretch_factor": 1.109,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 37,
+   "it_start_ms": 107185.417,
+   "it_end_ms": 111330,
+   "us_start_ms": 108569.843,
+   "us_end_ms": 112308.383,
+   "it_text": "Viola captò solo dei frammenti: È finita.",
+   "us_text": "Seconds later, whispers started. and Violet caught snippets like, she's so dead and Grant's gonna rip her apart.",
+   "stretch_factor": 1.109,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 38,
+   "it_start_ms": 111330.0,
+   "it_end_ms": 112576.69,
+   "us_start_ms": 112308.383,
+   "us_end_ms": 113860,
+   "it_text": "Giulio la farà a pezzi.",
+   "us_text": "Seconds later, whispers started. and Violet caught snippets like, she's so dead and Grant's gonna rip her apart.",
+   "stretch_factor": 0.803,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 38,
+   "it_start_ms": 112576.69,
+   "it_end_ms": 113789.942,
+   "us_start_ms": 113860,
+   "us_end_ms": 115370,
+   "it_text": "Giulio la farà a pezzi.",
+   "us_text": "Seconds later, whispers started. and Violet caught snippets like, she's so dead and Grant's gonna rip her apart.",
+   "stretch_factor": 0.803,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 39,
+   "it_start_ms": 113789.942,
+   "it_end_ms": 115140,
+   "us_start_ms": 115370,
+   "us_end_ms": 117050.267,
+   "it_text": "Nonostante quelle minacce,",
+   "us_text": "Despite the ominous whispers,",
+   "stretch_factor": 0.803,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 40,
+   "it_start_ms": 115140.0,
+   "it_end_ms": 118094.125,
+   "us_start_ms": 117050.267,
+   "us_end_ms": 119197.133,
+   "it_text": "si sentì invasa da una strana calma.",
+   "us_text": "Violet felt strangely confident.",
+   "stretch_factor": 1.376,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 41,
+   "it_start_ms": 118094.125,
+   "it_end_ms": 121660,
+   "us_start_ms": 119197.133,
+   "us_end_ms": 121788.58,
+   "it_text": "Non avrebbe mai abbassato la testa davanti a un bullo.",
+   "us_text": "She refused to back down from bullies.",
+   "stretch_factor": 1.376,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 42,
+   "it_start_ms": 121660.0,
+   "it_end_ms": 123790.917,
+   "us_start_ms": 124130,
+   "us_end_ms": 126226.6,
+   "it_text": "Come mi hai chiamato? ringhiò Giulio.",
+   "us_text": "What? Did you just call me?",
+   "stretch_factor": 1.016,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 43,
+   "it_start_ms": 123790.917,
+   "it_end_ms": 126258.726,
+   "us_start_ms": 126226.6,
+   "us_end_ms": 128654.667,
+   "it_text": "Le sue narici si dilatarono.",
+   "us_text": "The werewolf grant growled, his nostrils flaring as his wolf started to emerge, triggered by her words.",
+   "stretch_factor": 1.016,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 44,
+   "it_start_ms": 126258.726,
+   "it_end_ms": 132132.96,
+   "us_start_ms": 128654.667,
+   "us_end_ms": 134434.3,
+   "it_text": "Il lupo dentro di lui spingeva per uscire e non prometteva nulla di buono.",
+   "us_text": "The werewolf grant growled, his nostrils flaring as his wolf started to emerge, triggered by her words.",
+   "stretch_factor": 1.016,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 45,
+   "it_start_ms": 132132.96,
+   "it_end_ms": 134700,
+   "us_start_ms": 134434.3,
+   "us_end_ms": 136960,
+   "it_text": "Hai capito bene rispose Viola,",
+   "us_text": "You mean the same way you called me prey?",
+   "stretch_factor": 1.016,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 46,
+   "it_start_ms": 134700.0,
+   "it_end_ms": 137130,
+   "us_start_ms": 140289.58,
+   "us_end_ms": 141808.33,
+   "it_text": "piantandogli gli occhi in faccia.",
+   "us_text": "She sassed back. back.",
+   "stretch_factor": 1.6,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 47,
+   "it_start_ms": 137130.0,
+   "it_end_ms": 140220,
+   "us_start_ms": 137700,
+   "us_end_ms": 139631.25,
+   "it_text": "O sei duro di comprendonio, cagnolino?",
+   "us_text": "Or can't you take a joke, dog?",
+   "stretch_factor": 1.6,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 48,
+   "it_start_ms": 140220.0,
+   "it_end_ms": 145478.604,
+   "us_start_ms": 142100,
+   "us_end_ms": 146940.0,
+   "it_text": "Viola, basta! gridò Alice tirandola per un braccio con tutta la forza che aveva.",
+   "us_text": "Violet! Alice cried, desperately trying to pull her away.",
+   "stretch_factor": 1.086,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 49,
+   "it_start_ms": 145478.604,
+   "it_end_ms": 147575.527,
+   "us_start_ms": 146940.0,
+   "us_end_ms": 148870.0,
+   "it_text": "Ma Viola piantò i piedi a terra.",
+   "us_text": "But Violet wouldn't budge.",
+   "stretch_factor": 1.086,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 50,
+   "it_start_ms": 147575.527,
+   "it_end_ms": 149220,
+   "us_start_ms": 148870.0,
+   "us_end_ms": 150383.567,
+   "it_text": "Era più alta,",
+   "us_text": "She was bigger than Alice,",
+   "stretch_factor": 1.086,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 51,
+   "it_start_ms": 149220.0,
+   "it_end_ms": 154023.055,
+   "us_start_ms": 150383.567,
+   "us_end_ms": 153361.875,
+   "it_text": "più solida, e la sua amica non riuscì a spostarla di un millimetro.",
+   "us_text": "and the smaller girl couldn't move her an itch.",
+   "stretch_factor": 1.613,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 52,
+   "it_start_ms": 154023.055,
+   "it_end_ms": 155990,
+   "us_start_ms": 153361.875,
+   "us_end_ms": 154581.55,
+   "it_text": "Poi accadde.",
+   "us_text": "Violet saw the moment Grant's eyes flashed amber, his wolf taking over. While she might be impulsive and hot -headed,",
+   "stretch_factor": 1.613,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 53,
+   "it_start_ms": 155990.0,
+   "it_end_ms": 162978.476,
+   "us_start_ms": 154581.55,
+   "us_end_ms": 161280.65,
+   "it_text": "Gli occhi di Giulio si accesero di un'ambra innaturale.La sua parte ferina aveva preso il controllo.",
+   "us_text": "Violet saw the moment Grant's eyes flashed amber, his wolf taking over. While she might be impulsive and hot -headed,",
+   "stretch_factor": 1.043,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 54,
+   "it_start_ms": 162978.476,
+   "it_end_ms": 164480,
+   "us_start_ms": 161280.65,
+   "us_end_ms": 162720.0,
+   "it_text": "Impulsiva, sì.",
+   "us_text": "Violet saw the moment Grant's eyes flashed amber, his wolf taking over. While she might be impulsive and hot -headed,",
+   "stretch_factor": 1.043,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 55,
+   "it_start_ms": 164480.0,
+   "it_end_ms": 166141.055,
+   "us_start_ms": 162720.0,
+   "us_end_ms": 164088.716,
+   "it_text": "Stupida, no.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 56,
+   "it_start_ms": 166141.055,
+   "it_end_ms": 169846.709,
+   "us_start_ms": 164088.716,
+   "us_end_ms": 167142.189,
+   "it_text": "Il cervello di Viola scattò in modalità sopravvivenza.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 57,
+   "it_start_ms": 169846.709,
+   "it_end_ms": 173261.204,
+   "us_start_ms": 167142.189,
+   "us_end_ms": 169955.747,
+   "it_text": "Calcolò i passi che la separavano dal bordo del campo.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 58,
+   "it_start_ms": 173261.204,
+   "it_end_ms": 174108.211,
+   "us_start_ms": 169955.747,
+   "us_end_ms": 170653.684,
+   "it_text": "Lì c'era gente,",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 59,
+   "it_start_ms": 174108.211,
+   "it_end_ms": 176186.024,
+   "us_start_ms": 170653.684,
+   "us_end_ms": 172365.811,
+   "it_text": "lì qualcuno l'avrebbe aiutata.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 60,
+   "it_start_ms": 176186.024,
+   "it_end_ms": 177416.83,
+   "us_start_ms": 172365.811,
+   "us_end_ms": 173380,
+   "it_text": "Doveva farcela.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 60,
+   "it_start_ms": 177416.83,
+   "it_end_ms": 178776.047,
+   "us_start_ms": 173380,
+   "us_end_ms": 174500.0,
+   "it_text": "Doveva farcela.",
+   "us_text": "Violet wasn't completely stupid. She started mentally calculating how many steps it would take to reach the exit where help would surely come. She was positive it would.",
+   "stretch_factor": 1.214,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 61,
+   "it_start_ms": 178776.047,
+   "it_end_ms": 180180,
+   "us_start_ms": 174500.0,
+   "us_end_ms": 175656.863,
+   "it_text": "Ti insegno io il rispetto.",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 1.214,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 62,
+   "it_start_ms": 180180.0,
+   "it_end_ms": 182315.591,
+   "us_start_ms": 175656.863,
+   "us_end_ms": 176971.059,
+   "it_text": "Non sei altro che una preda,",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 1.625,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 63,
+   "it_start_ms": 182315.591,
+   "it_end_ms": 184210.551,
+   "us_start_ms": 176971.059,
+   "us_end_ms": 178137.176,
+   "it_text": "le sputò addosso Giulio.",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 1.625,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 64,
+   "it_start_ms": 184210.551,
+   "it_end_ms": 185910,
+   "us_start_ms": 178137.176,
+   "us_end_ms": 179182.98,
+   "it_text": "E le si scagliò contro,",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 1.625,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 65,
+   "it_start_ms": 185910.0,
+   "it_end_ms": 187704.613,
+   "us_start_ms": 179381.49,
+   "us_end_ms": 181381.49,
+   "it_text": "con il corpo che ormai di umano aveva ben poco.",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 0.897,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 65,
+   "it_start_ms": 187704.613,
+   "it_end_ms": 189445.387,
+   "us_start_ms": 181580,
+   "us_end_ms": 183520,
+   "it_text": "con il corpo che ormai di umano aveva ben poco.",
+   "us_text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her.",
+   "stretch_factor": 0.897,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 66,
+   "it_start_ms": 189445.387,
+   "it_end_ms": 191240,
+   "us_start_ms": 183640.0,
+   "us_end_ms": 185640.0,
+   "it_text": "Viola scattò all'indietro.",
+   "us_text": "Violet braced herself to run when,",
+   "stretch_factor": 0.897,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 67,
+   "it_start_ms": 191240.0,
+   "it_end_ms": 193030.476,
+   "us_start_ms": 185760.0,
+   "us_end_ms": 187640.0,
+   "it_text": "Ma un'ombra la superò.",
+   "us_text": "suddenly, someone stepped in.",
+   "stretch_factor": 0.952,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 68,
+   "it_start_ms": 193030.476,
+   "it_end_ms": 195940,
+   "us_start_ms": 187640.0,
+   "us_end_ms": 190695.0,
+   "it_text": "Una mano enorme afferrò il braccio teso di Giulio.",
+   "us_text": "A strong hand grabbed Grant's arm and,",
+   "stretch_factor": 0.952,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 69,
+   "it_start_ms": 195940.0,
+   "it_end_ms": 199245.843,
+   "us_start_ms": 190695.0,
+   "us_end_ms": 193616.95,
+   "it_text": "E lo girò con violenza.",
+   "us_text": "in front of everyone's shocked eyes, polled.",
+   "stretch_factor": 1.131,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 70,
+   "it_start_ms": 199245.843,
+   "it_end_ms": 201496.671,
+   "us_start_ms": 193616.95,
+   "us_end_ms": 195606.4,
+   "it_text": "Il suono le rivoltò lo stomaco.",
+   "us_text": "The sound was sickening,",
+   "stretch_factor": 1.131,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 71,
+   "it_start_ms": 201496.671,
+   "it_end_ms": 202540,
+   "us_start_ms": 195606.4,
+   "us_end_ms": 196528.571,
+   "it_text": "Uno schiocco umido,",
+   "us_text": "a wet, cracking noise of shattering bones filled the hall.",
+   "stretch_factor": 1.131,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 72,
+   "it_start_ms": 202540.0,
+   "it_end_ms": 205574.041,
+   "us_start_ms": 196528.571,
+   "us_end_ms": 199132.088,
+   "it_text": "il rumore inconfondibile di ossa che si sbriciolavano.",
+   "us_text": "a wet, cracking noise of shattering bones filled the hall.",
+   "stretch_factor": 1.165,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 73,
+   "it_start_ms": 205574.041,
+   "it_end_ms": 209731.951,
+   "us_start_ms": 199132.088,
+   "us_end_ms": 202700.0,
+   "it_text": "Cazzo! sbottò qualcuno alle sue spalle,",
+   "us_text": "Oh god! Someone gasped behind her,",
+   "stretch_factor": 1.165,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 74,
+   "it_start_ms": 209731.951,
+   "it_end_ms": 212220,
+   "us_start_ms": 202700.0,
+   "us_end_ms": 204835.0,
+   "it_text": "strozzato da un conato di vomito.",
+   "us_text": "followed by the sound of vomiting.",
+   "stretch_factor": 1.165,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 75,
+   "it_start_ms": 212220.0,
+   "it_end_ms": 213887.38,
+   "us_start_ms": 210320.0,
+   "us_end_ms": 211941.453,
+   "it_text": "Viola si pietrificò.",
+   "us_text": "Violet froze, eyes wide with shock as Asher nightshade took over.",
+   "stretch_factor": 1.028,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 76,
+   "it_start_ms": 213887.38,
+   "it_end_ms": 216910,
+   "us_start_ms": 211941.453,
+   "us_end_ms": 214880.817,
+   "it_text": "Il respiro le si incastrò in gola.",
+   "us_text": "Violet froze, eyes wide with shock as Asher nightshade took over.",
+   "stretch_factor": 1.028,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 77,
+   "it_start_ms": 216910.0,
+   "it_end_ms": 219818.218,
+   "us_start_ms": 214880.817,
+   "us_end_ms": 216545.283,
+   "it_text": "Niente principe azzurro.",
+   "us_text": "He wasn't some fairytale prince swooping in to save the day. No knight in shining armor here, just a dark knight, rescuing her with an aura of pure menace.",
+   "stretch_factor": 1.747,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 78,
+   "it_start_ms": 219818.218,
+   "it_end_ms": 223070,
+   "us_start_ms": 216545.283,
+   "us_end_ms": 218406.383,
+   "it_text": "Niente cavaliere dall'armatura scintillante.",
+   "us_text": "He wasn't some fairytale prince swooping in to save the day. No knight in shining armor here, just a dark knight, rescuing her with an aura of pure menace.",
+   "stretch_factor": 1.747,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 79,
+   "it_start_ms": 223070.0,
+   "it_end_ms": 228050.083,
+   "us_start_ms": 218406.383,
+   "us_end_ms": 221365.7,
+   "it_text": "Era lui, Demetrio, maledetto, Vesper.",
+   "us_text": "He wasn't some fairytale prince swooping in to save the day. No knight in shining armor here, just a dark knight, rescuing her with an aura of pure menace.",
+   "stretch_factor": 1.683,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 80,
+   "it_start_ms": 228050.083,
+   "it_end_ms": 229870,
+   "us_start_ms": 221365.7,
+   "us_end_ms": 222447.15,
+   "it_text": "Era un predatore oscuro,",
+   "us_text": "He wasn't some fairytale prince swooping in to save the day. No knight in shining armor here, just a dark knight, rescuing her with an aura of pure menace.",
+   "stretch_factor": 1.683,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 81,
+   "it_start_ms": 229870.0,
+   "it_end_ms": 233737.362,
+   "us_start_ms": 222447.15,
+   "us_end_ms": 225491.933,
+   "it_text": "avvolto da un'aura così densa e minacciosa da togliere il fiato.",
+   "us_text": "He wasn't some fairytale prince swooping in to save the day. No knight in shining armor here, just a dark knight, rescuing her with an aura of pure menace.",
+   "stretch_factor": 1.27,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 82,
+   "it_start_ms": 233737.362,
+   "it_end_ms": 238500,
+   "us_start_ms": 225491.933,
+   "us_end_ms": 229241.57,
+   "it_text": "Ciao, Giulio, sussurrò Demetrio.",
+   "us_text": "Hello, Grant. Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy.",
+   "stretch_factor": 1.27,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 83,
+   "it_start_ms": 238500.0,
+   "it_end_ms": 243062.669,
+   "us_start_ms": 230424.084,
+   "us_end_ms": 234986.753,
+   "it_text": "La sua voce trasudava autorità mentre le sue dita stritolavano la carne del licantropo.",
+   "us_text": "Hello, Grant. Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 84,
+   "it_start_ms": 243062.669,
+   "it_end_ms": 249510,
+   "us_start_ms": 236169.267,
+   "us_end_ms": 242616.598,
+   "it_text": "Ti ho appena sentito chiamare la mia Viola... la tua preda?",
+   "us_text": "Did I just hear you call my violet your prey? Hasn't anyone told you that I, and only I, hunt her alone?",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 85,
+   "it_start_ms": 249510.0,
+   "it_end_ms": 253204.468,
+   "us_start_ms": 243341.065,
+   "us_end_ms": 247035.533,
+   "it_text": "Nessuno ti ha spiegato che solo io posso darle la caccia?",
+   "us_text": "Did I just hear you call my violet your prey? Hasn't anyone told you that I, and only I, hunt her alone?",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 85,
+   "it_start_ms": 253204.468,
+   "it_end_ms": 254526.638,
+   "us_start_ms": 247760,
+   "us_end_ms": 249082.17,
+   "it_text": "Nessuno ti ha spiegato che solo io posso darle la caccia?",
+   "us_text": "Did I just hear you call my violet your prey? Hasn't anyone told you that I, and only I, hunt her alone?",
+   "stretch_factor": 1.0,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 86,
+   "it_start_ms": 254526.638,
+   "it_end_ms": 255340,
+   "us_start_ms": 249082.17,
+   "us_end_ms": 249895.532,
+   "it_text": "In un giorno normale,",
+   "us_text": "Normally Violet would have rolled her eyes at his words and argued, but she was too horrified to speak.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 87,
+   "it_start_ms": 255340.0,
+   "it_end_ms": 260245.984,
+   "us_start_ms": 249895.532,
+   "us_end_ms": 253112.156,
+   "it_text": "Viola gli avrebbe riso in faccia e se la sarebbe cavata con una battuta velenosa.",
+   "us_text": "Normally Violet would have rolled her eyes at his words and argued, but she was too horrified to speak.",
+   "stretch_factor": 1.525,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 88,
+   "it_start_ms": 260245.984,
+   "it_end_ms": 263560,
+   "us_start_ms": 253112.156,
+   "us_end_ms": 255285.0,
+   "it_text": "Ma ora il terrore le aveva cucito la bocca.",
+   "us_text": "Normally Violet would have rolled her eyes at his words and argued, but she was too horrified to speak.",
+   "stretch_factor": 1.525,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 89,
+   "it_start_ms": 263560.0,
+   "it_end_ms": 265912.787,
+   "us_start_ms": 255285.0,
+   "us_end_ms": 257125.0,
+   "it_text": "Poteva solo fissarlo,",
+   "us_text": "She could only stand there,",
+   "stretch_factor": 1.279,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 90,
+   "it_start_ms": 265912.787,
+   "it_end_ms": 269410,
+   "us_start_ms": 257125.0,
+   "us_end_ms": 259860,
+   "it_text": "paralizzata dalla brutalità di quel dominio assoluto.",
+   "us_text": "dumbfounded by Asher's brutal display of dominance.",
+   "stretch_factor": 1.279,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 91,
+   "it_start_ms": 269410.0,
+   "it_end_ms": 273477.736,
+   "us_start_ms": 260038.632,
+   "us_end_ms": 264106.368,
+   "it_text": "M-mi dispiace, Demetrio! piagnucolò Giulio.",
+   "us_text": "I'm s -s -s -sorry, Elva.\"",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 92,
+   "it_start_ms": 273477.736,
+   "it_end_ms": 275160,
+   "us_start_ms": 264285.0,
+   "us_end_ms": 265967.264,
+   "it_text": "Il bullo arrogante era sparito,",
+   "us_text": "Grant moaned. His earlier bravado replaced by desperate pleas.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 93,
+   "it_start_ms": 275160.0,
+   "it_end_ms": 278187.46,
+   "us_start_ms": 265967.264,
+   "us_end_ms": 268760,
+   "it_text": "al suo posto un cucciolo patetico e tremante.",
+   "us_text": "Grant moaned. His earlier bravado replaced by desperate pleas.",
+   "stretch_factor": 1.084,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 93,
+   "it_start_ms": 278187.46,
+   "it_end_ms": 279423.275,
+   "us_start_ms": 268760,
+   "us_end_ms": 269900,
+   "it_text": "al suo posto un cucciolo patetico e tremante.",
+   "us_text": "Grant moaned. His earlier bravado replaced by desperate pleas.",
+   "stretch_factor": 1.084,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 94,
+   "it_start_ms": 279423.275,
+   "it_end_ms": 281380,
+   "us_start_ms": 269900,
+   "us_end_ms": 271705.017,
+   "it_text": "Demetrio non batté ciglio.",
+   "us_text": "Asher remained unmoved.",
+   "stretch_factor": 1.084,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 95,
+   "it_start_ms": 281380.0,
+   "it_end_ms": 282401.245,
+   "us_start_ms": 271705.017,
+   "us_end_ms": 272461.25,
+   "it_text": "Davvero?",
+   "us_text": "Really?",
+   "stretch_factor": 1.35,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 96,
+   "it_start_ms": 282401.245,
+   "it_end_ms": 284390,
+   "us_start_ms": 272461.25,
+   "us_end_ms": 273933.925,
+   "it_text": "Ti dispiace? sussurrò,",
+   "us_text": "Are you?",
+   "stretch_factor": 1.35,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 97,
+   "it_start_ms": 284390.0,
+   "it_end_ms": 287323.33,
+   "us_start_ms": 273933.925,
+   "us_end_ms": 276262.535,
+   "it_text": "con una voce che avrebbe potuto tagliare il ghiaccio.",
+   "us_text": "His voice was ice -cold as he twisted the arm further.",
+   "stretch_factor": 1.26,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 98,
+   "it_start_ms": 287323.33,
+   "it_end_ms": 290240,
+   "us_start_ms": 276262.535,
+   "us_end_ms": 278577.92,
+   "it_text": "Gli torse il braccio ancora più forte.",
+   "us_text": "His voice was ice -cold as he twisted the arm further.",
+   "stretch_factor": 1.26,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 99,
+   "it_start_ms": 290240.0,
+   "it_end_ms": 290871.28,
+   "us_start_ms": 278577.92,
+   "us_end_ms": 279291.25,
+   "it_text": "Sì!",
+   "us_text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure.",
+   "stretch_factor": 0.885,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 100,
+   "it_start_ms": 290871.28,
+   "it_end_ms": 291560,
+   "us_start_ms": 279291.25,
+   "us_end_ms": 280069.485,
+   "it_text": "Ti prego!",
+   "us_text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure.",
+   "stretch_factor": 0.885,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 101,
+   "it_start_ms": 291560.0,
+   "it_end_ms": 294136.514,
+   "us_start_ms": 280305.273,
+   "us_end_ms": 282881.786,
+   "it_text": "Fermati! urlò Giulio,",
+   "us_text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 102,
+   "it_start_ms": 294136.514,
+   "it_end_ms": 297480,
+   "us_start_ms": 283667.044,
+   "us_end_ms": 287010.53,
+   "it_text": "mentre la morsa di Demetrio si stringeva sempre di più..",
+   "us_text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure.",
+   "stretch_factor": 1.0,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 103,
+   "it_start_ms": 297480.0,
+   "it_end_ms": 298432.462,
+   "us_start_ms": 288620.0,
+   "us_end_ms": 289518.846,
+   "it_text": "E ora dimmi,",
+   "us_text": "Noddy, Grant, now, what do you do when you're sorry?\" Asher teased, glancing at Violet.",
+   "stretch_factor": 1.06,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 104,
+   "it_start_ms": 298432.462,
+   "it_end_ms": 303520,
+   "us_start_ms": 289518.846,
+   "us_end_ms": 294320.0,
+   "it_text": "Giulietto... cosa si fa in questi casi? lo schernì Demetrio,",
+   "us_text": "Noddy, Grant, now, what do you do when you're sorry?\" Asher teased, glancing at Violet.",
+   "stretch_factor": 1.06,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 105,
+   "it_start_ms": 303520.0,
+   "it_end_ms": 306987.273,
+   "us_start_ms": 294320.0,
+   "us_end_ms": 297163.533,
+   "it_text": "indicando Viola con un cenno del mento.",
+   "us_text": "Noddy, Grant, now, what do you do when you're sorry?\" Asher teased, glancing at Violet.",
+   "stretch_factor": 1.219,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 106,
+   "it_start_ms": 306987.273,
+   "it_end_ms": 308940,
+   "us_start_ms": 297163.533,
+   "us_end_ms": 298764.977,
+   "it_text": "Giulio seguì il suo sguardo.",
+   "us_text": "Grant followed his gaze and seemed to get the message.",
+   "stretch_factor": 1.219,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 107,
+   "it_start_ms": 308940.0,
+   "it_end_ms": 310728.164,
+   "us_start_ms": 298764.977,
+   "us_end_ms": 300233.244,
+   "it_text": "Capì immediatamente.",
+   "us_text": "Grant followed his gaze and seemed to get the message.",
+   "stretch_factor": 1.218,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 108,
+   "it_start_ms": 310728.164,
+   "it_end_ms": 315929.648,
+   "us_start_ms": 300233.244,
+   "us_end_ms": 304504.2,
+   "it_text": "Abbassò la testa e piegandosi come un cane bastonato balbettò:",
+   "us_text": "He instantly bowed his head, stiffly and stammered.",
+   "stretch_factor": 1.218,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 109,
+   "it_start_ms": 315929.648,
+   "it_end_ms": 318750,
+   "us_start_ms": 304504.2,
+   "us_end_ms": 306820,
+   "it_text": "Mi dispiace tanto, Signorina Viola.",
+   "us_text": "I'm so sorry, Miss Violet.",
+   "stretch_factor": 1.218,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 110,
+   "it_start_ms": 318750.0,
+   "it_end_ms": 320102.984,
+   "us_start_ms": 308080.0,
+   "us_end_ms": 309221.905,
+   "it_text": "Di cosa ti dispiace,",
+   "us_text": "What are you sorry for, dog?\"",
+   "stretch_factor": 1.185,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 111,
+   "it_start_ms": 320102.984,
+   "it_end_ms": 322660,
+   "us_start_ms": 309221.905,
+   "us_end_ms": 311380,
+   "it_text": "cane? lo incalzò Demetrio.",
+   "us_text": "What are you sorry for, dog?\"",
+   "stretch_factor": 1.185,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 112,
+   "it_start_ms": 322660.0,
+   "it_end_ms": 325290.93,
+   "us_start_ms": 311380.0,
+   "us_end_ms": 313008.757,
+   "it_text": "Una risata bassa gli vibrò nel petto.",
+   "us_text": "Asher taunted, chuckling like he was enjoying the whole thing.",
+   "stretch_factor": 1.615,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 113,
+   "it_start_ms": 325290.93,
+   "it_end_ms": 328360,
+   "us_start_ms": 313008.757,
+   "us_end_ms": 314908.757,
+   "it_text": "Si stava godendo ogni secondo.",
+   "us_text": "Asher taunted, chuckling like he was enjoying the whole thing.",
+   "stretch_factor": 1.615,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 114,
+   "it_start_ms": 328360.0,
+   "it_end_ms": 331492.157,
+   "us_start_ms": 317040,
+   "us_end_ms": 320000,
+   "it_text": "Di aver cercato di farle del male, Signorina Viola.",
+   "us_text": "For trying to hurt you, it will never happen again.",
+   "stretch_factor": 1.058,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 114,
+   "it_start_ms": 331492.157,
+   "it_end_ms": 332740.787,
+   "us_start_ms": 320000,
+   "us_end_ms": 321180,
+   "it_text": "Di aver cercato di farle del male, Signorina Viola.",
+   "us_text": "For trying to hurt you, it will never happen again.",
+   "stretch_factor": 1.058,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 115,
+   "it_start_ms": 332740.787,
+   "it_end_ms": 335788.291,
+   "us_start_ms": 321180,
+   "us_end_ms": 324060.0,
+   "it_text": "Non succederà mai più! implorò Giulio.",
+   "us_text": "Grant apologized, his tone sincere now,",
+   "stretch_factor": 1.058,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 116,
+   "it_start_ms": 335788.291,
+   "it_end_ms": 338640,
+   "us_start_ms": 324060.0,
+   "us_end_ms": 326754.967,
+   "it_text": "Il terrore gli aveva reso la voce stridula e acuta.",
+   "us_text": "realizing Asher wasn't in the mood for games. There you go. Asher finally let go,",
+   "stretch_factor": 1.058,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 117,
+   "it_start_ms": 338640.0,
+   "it_end_ms": 342721.785,
+   "us_start_ms": 326754.967,
+   "us_end_ms": 329340.397,
+   "it_text": "Sapeva che Demetrio lo avrebbe ucciso senza pensarci due volte.",
+   "us_text": "realizing Asher wasn't in the mood for games. There you go. Asher finally let go,",
+   "stretch_factor": 1.579,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 118,
+   "it_start_ms": 342721.785,
+   "it_end_ms": 345272.901,
+   "us_start_ms": 329340.397,
+   "us_end_ms": 330956.291,
+   "it_text": "Molto bene. disse Demetrio.",
+   "us_text": "realizing Asher wasn't in the mood for games. There you go. Asher finally let go,",
+   "stretch_factor": 1.579,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 119,
+   "it_start_ms": 345272.901,
+   "it_end_ms": 347270.986,
+   "us_start_ms": 330956.291,
+   "us_end_ms": 332221.892,
+   "it_text": "Poi aprì la mano.",
+   "us_text": "realizing Asher wasn't in the mood for games. There you go. Asher finally let go,",
+   "stretch_factor": 1.579,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 120,
+   "it_start_ms": 347270.986,
+   "it_end_ms": 349200,
+   "us_start_ms": 332221.892,
+   "us_end_ms": 333443.743,
+   "it_text": "Giulio crollò a terra,",
+   "us_text": "and Grant gasped like a drowning man surfacing for air.",
+   "stretch_factor": 1.579,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 121,
+   "it_start_ms": 349200.0,
+   "it_end_ms": 352396.707,
+   "us_start_ms": 333443.743,
+   "us_end_ms": 335875.0,
+   "it_text": "annaspando come un annegato in cerca d'aria.",
+   "us_text": "and Grant gasped like a drowning man surfacing for air.",
+   "stretch_factor": 1.315,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 122,
+   "it_start_ms": 352396.707,
+   "it_end_ms": 358964.553,
+   "us_start_ms": 335875.0,
+   "us_end_ms": 340870.179,
+   "it_text": "Era bastato un movimento e Demetrio gli aveva frantumato le ossa e strappato la spalla dalla sede.",
+   "us_text": "The move had looked simple, but Asher had not only broken bones,",
+   "stretch_factor": 1.315,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 123,
+   "it_start_ms": 358964.553,
+   "it_end_ms": 361820,
+   "us_start_ms": 340870.179,
+   "us_end_ms": 343041.89,
+   "it_text": "Il dolore doveva essere lancinante.",
+   "us_text": "but also dislocated Grant's shoulder. It had been pure hell.",
+   "stretch_factor": 1.315,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 124,
+   "it_start_ms": 361820.0,
+   "it_end_ms": 364179.296,
+   "us_start_ms": 343041.89,
+   "us_end_ms": 345325.924,
+   "it_text": "Ma a Demetrio non fregava assolutamente nulla.",
+   "us_text": "but also dislocated Grant's shoulder. It had been pure hell.",
+   "stretch_factor": 1.033,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 124,
+   "it_start_ms": 364179.296,
+   "it_end_ms": 365464.367,
+   "us_start_ms": 345325.924,
+   "us_end_ms": 346570,
+   "it_text": "Ma a Demetrio non fregava assolutamente nulla.",
+   "us_text": "but also dislocated Grant's shoulder. It had been pure hell.",
+   "stretch_factor": 1.033,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 125,
+   "it_start_ms": 365464.367,
+   "it_end_ms": 367499.282,
+   "us_start_ms": 346570,
+   "us_end_ms": 348540.0,
+   "it_text": "Ora sparisci, cagnolino.",
+   "us_text": "Now, move along, doggie.",
+   "stretch_factor": 1.033,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 126,
+   "it_start_ms": 367499.282,
+   "it_end_ms": 370970,
+   "us_start_ms": 348540.0,
+   "us_end_ms": 351900,
+   "it_text": "Vai a piangere dall'infermiera e falle curare quel braccio.",
+   "us_text": "Go find the school nurse and have her deal with that nasty injury.",
+   "stretch_factor": 1.033,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 127,
+   "it_start_ms": 370970.0,
+   "it_end_ms": 373322.734,
+   "us_start_ms": 353100,
+   "us_end_ms": 355054.7,
+   "it_text": "Lo liquidò con un gesto annoiato della mano.",
+   "us_text": "Asher dismissed him with a wave,",
+   "stretch_factor": 1.204,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 128,
+   "it_start_ms": 373322.734,
+   "it_end_ms": 375732.399,
+   "us_start_ms": 355054.7,
+   "us_end_ms": 357056.7,
+   "it_text": "Giulio si trascinò via,",
+   "us_text": "and Grant shuffled away,",
+   "stretch_factor": 1.204,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 129,
+   "it_start_ms": 375732.399,
+   "it_end_ms": 376940,
+   "us_start_ms": 357056.7,
+   "us_end_ms": 358060,
+   "it_text": "a testa bassa,",
+   "us_text": "head hung low.",
+   "stretch_factor": 1.204,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 130,
+   "it_start_ms": 376940.0,
+   "it_end_ms": 379702.551,
+   "us_start_ms": 359425.73,
+   "us_end_ms": 361477.085,
+   "it_text": "mentre la folla si apriva in fretta per non essere sfiorata.",
+   "us_text": "The crowd partying to let him leave.",
+   "stretch_factor": 1.347,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 131,
+   "it_start_ms": 379702.551,
+   "it_end_ms": 384702.719,
+   "us_start_ms": 361477.085,
+   "us_end_ms": 365190.0,
+   "it_text": "Sparito Giulio, l'attenzione di Demetrio si spostò su Viola.",
+   "us_text": "With Grant gone, Asher turned his attention to Violet.",
+   "stretch_factor": 1.347,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 132,
+   "it_start_ms": 384702.719,
+   "it_end_ms": 388460,
+   "us_start_ms": 365190.0,
+   "us_end_ms": 367980,
+   "it_text": "Il suo viso era una maschera indecifrabile.",
+   "us_text": "The look on his face told her he intended to.",
+   "stretch_factor": 1.347,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 133,
+   "it_start_ms": 388460.0,
+   "it_end_ms": 391011.484,
+   "us_start_ms": 375340,
+   "us_end_ms": 377630.0,
+   "it_text": "Affrontare Giulio era stato uno scherzo.",
+   "us_text": "Standing up to Grant hadn't scared her,",
+   "stretch_factor": 1.114,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 134,
+   "it_start_ms": 391011.484,
+   "it_end_ms": 397323.342,
+   "us_start_ms": 377630.0,
+   "us_end_ms": 383295.0,
+   "it_text": "Ma quel sorriso predatorio che si era aperto sulle labbra di Demetrio... la fece rabbrividire.",
+   "us_text": "but the dark, unsettling smile on Asher's face Scent shivers down her spine.",
+   "stretch_factor": 1.114,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 135,
+   "it_start_ms": 397323.342,
+   "it_end_ms": 402180,
+   "us_start_ms": 383295.0,
+   "us_end_ms": 387653.933,
+   "it_text": "Non mi lascerò neanche sfiorare Viola scattò per scappare.",
+   "us_text": "Nope, not doing this. Violet spun around to run,",
+   "stretch_factor": 1.114,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 136,
+   "it_start_ms": 402180.0,
+   "it_end_ms": 405259.846,
+   "us_start_ms": 387653.933,
+   "us_end_ms": 389844.292,
+   "it_text": "Ma Demetrio, veloce come un lampo,",
+   "us_text": "but Asher moved just as fast, grabbing her around the waist as if he'd predicted her move.",
+   "stretch_factor": 1.406,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 137,
+   "it_start_ms": 405259.846,
+   "it_end_ms": 406122.41,
+   "us_start_ms": 389844.292,
+   "us_end_ms": 390457.74,
+   "it_text": "le afferrò la vita,",
+   "us_text": "but Asher moved just as fast, grabbing her around the waist as if he'd predicted her move.",
+   "stretch_factor": 1.406,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 138,
+   "it_start_ms": 406122.41,
+   "it_end_ms": 407330,
+   "us_start_ms": 390457.74,
+   "us_end_ms": 391316.567,
+   "it_text": "inchiodandola a sé,",
+   "us_text": "but Asher moved just as fast, grabbing her around the waist as if he'd predicted her move.",
+   "stretch_factor": 1.406,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 139,
+   "it_start_ms": 407330.0,
+   "it_end_ms": 410750.531,
+   "us_start_ms": 391316.567,
+   "us_end_ms": 393972.817,
+   "it_text": "come se avesse letto in anticipo ogni sua intenzione.",
+   "us_text": "but Asher moved just as fast, grabbing her around the waist as if he'd predicted her move.",
+   "stretch_factor": 1.288,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 139,
+   "it_start_ms": 410750.531,
+   "it_end_ms": 412066.076,
+   "us_start_ms": 393972.817,
+   "us_end_ms": 394994.417,
+   "it_text": "come se avesse letto in anticipo ogni sua intenzione.",
+   "us_text": "but Asher moved just as fast, grabbing her around the waist as if he'd predicted her move.",
+   "stretch_factor": 1.288,
+   "note": "(footage between rows)"
+  },
+  {
+   "kind": "clip",
+   "it_idx": 140,
+   "it_start_ms": 412066.076,
+   "it_end_ms": 415190,
+   "us_start_ms": 394994.417,
+   "us_end_ms": 397420.333,
+   "it_text": "Mettimi giù, stronzo! urlò lei.",
+   "us_text": "Put me down, you jerk!",
+   "stretch_factor": 1.288,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 141,
+   "it_start_ms": 415190.0,
+   "it_end_ms": 417900.445,
+   "us_start_ms": 397420.333,
+   "us_end_ms": 399449.705,
+   "it_text": "Si dimenò con tutta la forza che aveva,",
+   "us_text": "She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.",
+   "stretch_factor": 1.336,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 142,
+   "it_start_ms": 417900.445,
+   "it_end_ms": 421539.75,
+   "us_start_ms": 399449.705,
+   "us_end_ms": 402174.534,
+   "it_text": "ma lui se la caricò in spalla senza il minimo sforzo.",
+   "us_text": "She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.",
+   "stretch_factor": 1.336,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 143,
+   "it_start_ms": 421539.75,
+   "it_end_ms": 424570,
+   "us_start_ms": 402174.534,
+   "us_end_ms": 404443.35,
+   "it_text": "Per lui, Viola pesava quanto una piuma.",
+   "us_text": "She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.",
+   "stretch_factor": 1.336,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 144,
+   "it_start_ms": 424570.0,
+   "it_end_ms": 426678.571,
+   "us_start_ms": 406920.0,
+   "us_end_ms": 408634.286,
+   "it_text": "È così che ringrazi il tuo eroe,",
+   "us_text": "That is how you thank your savior, my violet.",
+   "stretch_factor": 1.23,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 145,
+   "it_start_ms": 426678.571,
+   "it_end_ms": 429490,
+   "us_start_ms": 408634.286,
+   "us_end_ms": 410920,
+   "it_text": "mio fiore di Violetta? rise lui.",
+   "us_text": "That is how you thank your savior, my violet.",
+   "stretch_factor": 1.23,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 146,
+   "it_start_ms": 429490.0,
+   "it_end_ms": 430926.912,
+   "us_start_ms": 411970.0,
+   "us_end_ms": 413087.076,
+   "it_text": "E iniziò a camminare,",
+   "us_text": "He laughed, continuing to walk, unfazed by her punches to his back.",
+   "stretch_factor": 1.286,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 147,
+   "it_start_ms": 430926.912,
+   "it_end_ms": 435600,
+   "us_start_ms": 413087.076,
+   "us_end_ms": 416720,
+   "it_text": "ignorando del tutto i pugni disperati che lei gli dava sulla schiena.",
+   "us_text": "He laughed, continuing to walk, unfazed by her punches to his back.",
+   "stretch_factor": 1.286,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 148,
+   "it_start_ms": 435600.0,
+   "it_end_ms": 436822.897,
+   "us_start_ms": 424240.0,
+   "us_end_ms": 425081.765,
+   "it_text": "Dove la stava portando?",
+   "us_text": "This has to be a nightmare, she thought.",
+   "stretch_factor": 1.453,
+   "note": ""
+  },
+  {
+   "kind": "clip",
+   "it_idx": 149,
+   "it_start_ms": 436822.897,
+   "it_end_ms": 440307,
+   "us_start_ms": 425081.765,
+   "us_end_ms": 427480,
+   "it_text": "E, soprattutto, che cosa aveva intenzione di farle?",
+   "us_text": "This has to be a nightmare, she thought.",
+   "stretch_factor": 1.453,
+   "note": ""
+  }
+ ],
+ "bleed_report": [],
+ "groups": [
+  {
+   "rows": [
+    0,
+    1,
+    2
+   ],
+   "it0": 0,
+   "it1": 8400,
+   "us0": 1474.0866873065015,
+   "us1": 6808.010835913313,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.57x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 5333.924148606811,
+   "stretch": 1.574825544190393,
+   "removed_ms": 0.0,
+   "drift": {
+    "0": 19,
+    "1": 148,
+    "2": 420
+   },
+   "max_drift": 420,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 0,
+   "break_before": "start"
+  },
+  {
+   "rows": [
+    3,
+    4
+   ],
+   "it0": 8400,
+   "it1": 13510,
+   "us0": 8160,
+   "us1": 13286.8,
+   "trims": [],
+   "flags": [],
+   "note": "only 0.02s extra: absorbed by a 1.003x speed-up instead of a cut",
+   "removed": [],
+   "kept": 5126.799999999999,
+   "stretch": 0.9967231021299837,
+   "removed_ms": 0.0,
+   "drift": {
+    "3": -146,
+    "4": -131
+   },
+   "max_drift": 146,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 3,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    5,
+    6
+   ],
+   "it0": 13510,
+   "it1": 19450,
+   "us0": 13286.8,
+   "us1": 20487.133,
+   "trims": [
+    {
+     "row": 6,
+     "ms": 1260,
+     "cls": "narration / reaction",
+     "fast": true,
+     "text": "Violet's head whipped around to face the jerk who'd just spoken."
+    }
+   ],
+   "flags": [],
+   "note": "",
+   "removed": [
+    [
+     16880,
+     17510
+    ],
+    [
+     19857,
+     20487
+    ]
+   ],
+   "kept": 5940.000000000004,
+   "stretch": 0.9999999999999993,
+   "removed_ms": 1260.3329999999987,
+   "drift": {
+    "5": 205,
+    "6": 992
+   },
+   "max_drift": 992,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 5,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    7,
+    8,
+    9
+   ],
+   "it0": 19450,
+   "it1": 25710,
+   "us0": 20487.133,
+   "us1": 27594.233,
+   "trims": [
+    {
+     "row": 9,
+     "ms": 847,
+     "cls": "narration / reaction",
+     "fast": true,
+     "text": "she could tell from his words that he was a werewolf."
+    }
+   ],
+   "flags": [],
+   "note": "",
+   "removed": [
+    [
+     24391,
+     24815
+    ],
+    [
+     27171,
+     27594
+    ]
+   ],
+   "kept": 6260.0,
+   "stretch": 1.0,
+   "removed_ms": 847.0999999999985,
+   "drift": {
+    "7": 436,
+    "8": 713,
+    "9": 762
+   },
+   "max_drift": 762,
+   "why": "split: picture drifted 2.6s from the voice",
+   "first_seg": 7,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    10,
+    11,
+    12
+   ],
+   "it0": 25710,
+   "it1": 39355,
+   "us0": 27594.233,
+   "us1": 38730.424778761066,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 11136.191778761066,
+   "stretch": 1.225284214844767,
+   "removed_ms": 0.0,
+   "drift": {
+    "10": 958,
+    "11": 1768,
+    "12": 1348
+   },
+   "max_drift": 1768,
+   "why": "split: picture drifted 2.6s from the voice",
+   "first_seg": 10,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    13,
+    14,
+    15
+   ],
+   "it0": 39355,
+   "it1": 51980,
+   "us0": 38730.424778761066,
+   "us1": 48059.975,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.35x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 9329.550221238933,
+   "stretch": 1.3532270796140742,
+   "removed_ms": 0.0,
+   "drift": {
+    "13": -416,
+    "14": -239,
+    "15": 439
+   },
+   "max_drift": 439,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 13,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    16,
+    17,
+    18
+   ],
+   "it0": 51980,
+   "it1": 60710,
+   "us0": 48059.975,
+   "us1": 56000,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 7940.0250000000015,
+   "stretch": 1.0994927597835018,
+   "removed_ms": 0.0,
+   "drift": {
+    "16": 464,
+    "17": 1462,
+    "18": 585
+   },
+   "max_drift": 1462,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 16,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    19
+   ],
+   "it0": 60710,
+   "it1": 62840,
+   "us0": 60000.0,
+   "us1": 61280,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 2120,
+   "stretch": 1.0047169811320755,
+   "removed_ms": 0,
+   "drift": {
+    "19": 360
+   },
+   "max_drift": 360,
+   "why": "",
+   "first_seg": 19,
+   "break_before": "US footage skips 3.2s here"
+  },
+  {
+   "rows": [
+    20
+   ],
+   "it0": 62840,
+   "it1": 65140,
+   "us0": 57154.37,
+   "us1": 58591.87,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.60x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 1437.5,
+   "stretch": 1.6,
+   "removed_ms": 0.0,
+   "drift": {
+    "20": 480
+   },
+   "max_drift": 480,
+   "why": "",
+   "first_seg": 20,
+   "break_before": "the Italian goes back in the US order"
+  },
+  {
+   "rows": [
+    21,
+    22,
+    23
+   ],
+   "it0": 65140,
+   "it1": 71080,
+   "us0": 62440,
+   "us1": 66808.53432282004,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.36x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4368.534322820036,
+   "stretch": 1.359723779431251,
+   "removed_ms": 0.0,
+   "drift": {
+    "21": 647,
+    "22": 1051,
+    "23": 569
+   },
+   "max_drift": 1051,
+   "why": "split: picture drifted 1.1s from the voice",
+   "first_seg": 21,
+   "break_before": "US footage skips 3.8s here"
+  },
+  {
+   "rows": [
+    24,
+    25,
+    26
+   ],
+   "it0": 71080,
+   "it1": 77930,
+   "us0": 66808.53432282004,
+   "us1": 71838.183,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.36x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 5029.648677179968,
+   "stretch": 1.3619241501059811,
+   "removed_ms": 0.0,
+   "drift": {
+    "24": 330,
+    "25": 27,
+    "26": 246
+   },
+   "max_drift": 330,
+   "why": "split: picture drifted 1.1s from the voice",
+   "first_seg": 24,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    27,
+    28
+   ],
+   "it0": 77930,
+   "it1": 86840,
+   "us0": 71838.183,
+   "us1": 80143.5165,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8305.333499999993,
+   "stretch": 1.072804602006651,
+   "removed_ms": 0.0,
+   "drift": {
+    "27": 253,
+    "28": 683
+   },
+   "max_drift": 683,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 27,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    29,
+    30,
+    31
+   ],
+   "it0": 86840,
+   "it1": 94910,
+   "us0": 80143.5165,
+   "us1": 88620,
+   "trims": [
+    {
+     "row": 30,
+     "ms": 406,
+     "cls": "direct speech",
+     "fast": true,
+     "text": "Oh, I'm sorry.\" Violet shot back. Are you, like, dying for my attention, dog?"
+    }
+   ],
+   "flags": [
+    "IT#30 (direct speech) trimmed: no narration row could take it"
+   ],
+   "note": "",
+   "removed": [
+    [
+     81300,
+     81503
+    ],
+    [
+     84992,
+     85195
+    ]
+   ],
+   "kept": 8070.0,
+   "stretch": 1.0,
+   "removed_ms": 406.4835000000021,
+   "drift": {
+    "29": 208,
+    "30": -394,
+    "31": 567
+   },
+   "max_drift": 567,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 29,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    32
+   ],
+   "it0": 94910,
+   "it1": 96840,
+   "us0": 92150,
+   "us1": 93356.25,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.60x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 1206.25,
+   "stretch": 1.6,
+   "removed_ms": 0.0,
+   "drift": {
+    "32": 500
+   },
+   "max_drift": 500,
+   "why": "",
+   "first_seg": 32,
+   "break_before": "US footage skips 3.5s here"
+  },
+  {
+   "rows": [
+    33,
+    34
+   ],
+   "it0": 96840,
+   "it1": 100050,
+   "us0": 100160.0,
+   "us1": 102133.47693257444,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.63x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 1973.476932574442,
+   "stretch": 1.6265708238162622,
+   "removed_ms": 0.0,
+   "drift": {
+    "33": 137,
+    "34": 142
+   },
+   "max_drift": 142,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 33,
+   "break_before": "US footage skips 6.8s here"
+  },
+  {
+   "rows": [
+    35,
+    36,
+    37
+   ],
+   "it0": 100050,
+   "it1": 111330,
+   "us0": 102133.47693257444,
+   "us1": 112308.38340486409,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 10174.906472289644,
+   "stretch": 1.10860969884293,
+   "removed_ms": 0.0,
+   "drift": {
+    "35": 52,
+    "36": -365,
+    "37": 248
+   },
+   "max_drift": 365,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 35,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    38,
+    39
+   ],
+   "it0": 111330,
+   "it1": 115140,
+   "us0": 112308.38340486409,
+   "us1": 117050.267,
+   "trims": [],
+   "flags": [
+    "0.93s could not be trimmed (no row long enough): absorbed by speed-up"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4741.8835951359215,
+   "stretch": 0.8034781798330479,
+   "removed_ms": 0.0,
+   "drift": {
+    "38": -12,
+    "39": 325
+   },
+   "max_drift": 325,
+   "why": "split: picture drifted 1.5s from the voice",
+   "first_seg": 38,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    40,
+    41
+   ],
+   "it0": 115140,
+   "it1": 121660,
+   "us0": 117050.267,
+   "us1": 121788.58,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.38x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4738.312999999995,
+   "stretch": 1.3760171605379399,
+   "removed_ms": 0.0,
+   "drift": {
+    "40": 427,
+    "41": 662
+   },
+   "max_drift": 662,
+   "why": "split: picture drifted 1.5s from the voice",
+   "first_seg": 40,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    42,
+    43,
+    44,
+    45
+   ],
+   "it0": 121660,
+   "it1": 134700,
+   "us0": 124130,
+   "us1": 136960,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 12830,
+   "stretch": 1.0163678877630553,
+   "removed_ms": 0,
+   "drift": {
+    "42": -115,
+    "43": -495,
+    "44": 126,
+    "45": 36
+   },
+   "max_drift": 495,
+   "why": "",
+   "first_seg": 42,
+   "break_before": "US footage skips 2.3s here"
+  },
+  {
+   "rows": [
+    46
+   ],
+   "it0": 134700,
+   "it1": 137130,
+   "us0": 140289.58,
+   "us1": 141808.33,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.60x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 1518.75,
+   "stretch": 1.6,
+   "removed_ms": 0.0,
+   "drift": {
+    "46": 475
+   },
+   "max_drift": 475,
+   "why": "",
+   "first_seg": 46,
+   "break_before": "US footage skips 3.3s here"
+  },
+  {
+   "rows": [
+    47
+   ],
+   "it0": 137130,
+   "it1": 140220,
+   "us0": 137700,
+   "us1": 139631.25,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.60x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 1931.25,
+   "stretch": 1.6,
+   "removed_ms": 0.0,
+   "drift": {
+    "47": 590
+   },
+   "max_drift": 590,
+   "why": "",
+   "first_seg": 47,
+   "break_before": "the Italian goes back in the US order"
+  },
+  {
+   "rows": [
+    48,
+    49,
+    50
+   ],
+   "it0": 140220,
+   "it1": 149220,
+   "us0": 142100,
+   "us1": 150383.567,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8283.56700000001,
+   "stretch": 1.086488465657366,
+   "removed_ms": 0.0,
+   "drift": {
+    "48": 79,
+    "49": -443,
+    "50": -212
+   },
+   "max_drift": 443,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 48,
+   "break_before": "US footage skips 2.5s here"
+  },
+  {
+   "rows": [
+    51,
+    52
+   ],
+   "it0": 149220,
+   "it1": 155990,
+   "us0": 150383.567,
+   "us1": 154581.5500609756,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.61x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4197.983060975588,
+   "stretch": 1.6126792084832018,
+   "removed_ms": 0.0,
+   "drift": {
+    "51": 682,
+    "52": 172
+   },
+   "max_drift": 682,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 51,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    53,
+    54
+   ],
+   "it0": 155990,
+   "it1": 164480,
+   "us0": 154581.5500609756,
+   "us1": 162720.0,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8138.449939024402,
+   "stretch": 1.0431961938218595,
+   "removed_ms": 0.0,
+   "drift": {
+    "53": 639,
+    "54": 219
+   },
+   "max_drift": 639,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 53,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+   ],
+   "it0": 164480,
+   "it1": 180180,
+   "us0": 162720.0,
+   "us1": 175656.86274509804,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 12936.862745098042,
+   "stretch": 1.2135863469641393,
+   "removed_ms": 0.0,
+   "drift": {
+    "55": 341,
+    "56": 14,
+    "57": 404,
+    "58": 325,
+    "59": 92,
+    "60": 46,
+    "61": 493
+   },
+   "max_drift": 493,
+   "why": "",
+   "first_seg": 55,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    62,
+    63,
+    64
+   ],
+   "it0": 180180,
+   "it1": 185910,
+   "us0": 175656.86274509804,
+   "us1": 179182.98039215687,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.63x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 3526.1176470588252,
+   "stretch": 1.6250166822367536,
+   "removed_ms": 0.0,
+   "drift": {
+    "62": 358,
+    "63": 233,
+    "64": 125
+   },
+   "max_drift": 358,
+   "why": "split: picture drifted 2.1s from the voice",
+   "first_seg": 62,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    65,
+    66
+   ],
+   "it0": 185910,
+   "it1": 191240,
+   "us0": 179182.98039215687,
+   "us1": 185760.0,
+   "trims": [
+    {
+     "row": 66,
+     "ms": 240,
+     "cls": "narration / reaction",
+     "fast": true,
+     "text": "Violet braced herself to run when,"
+    },
+    {
+     "row": 65,
+     "ms": 397,
+     "cls": "narration / reaction",
+     "fast": false,
+     "text": "I'll teach you a lesson today. Grant growled, a mix of man and wolf, as he lunged toward her."
+    }
+   ],
+   "flags": [
+    "IT#65 trimmed although it is not a fast row -- check it",
+    "0.61s could not be trimmed (no row long enough): absorbed by speed-up"
+   ],
+   "note": "",
+   "removed": [
+    [
+     179183,
+     179381
+    ],
+    [
+     181381,
+     181580
+    ],
+    [
+     183520,
+     183640
+    ],
+    [
+     185640,
+     185760
+    ]
+   ],
+   "kept": 5940.0,
+   "stretch": 0.8973063973063973,
+   "removed_ms": 637.0196078431327,
+   "drift": {
+    "65": -398,
+    "66": 113
+   },
+   "max_drift": 398,
+   "why": "split: picture drifted 1.3s from the voice",
+   "first_seg": 65,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    67,
+    68
+   ],
+   "it0": 191240,
+   "it1": 195940,
+   "us0": 185760.0,
+   "us1": 190695.0,
+   "trims": [],
+   "flags": [],
+   "note": "only 0.23s extra: absorbed by a 1.050x speed-up instead of a cut",
+   "removed": [],
+   "kept": 4935.0,
+   "stretch": 0.9523809523809523,
+   "removed_ms": 0.0,
+   "drift": {
+    "67": 395,
+    "68": 345
+   },
+   "max_drift": 395,
+   "why": "split: picture drifted 1.3s from the voice",
+   "first_seg": 67,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    69,
+    70,
+    71
+   ],
+   "it0": 195940,
+   "it1": 202540,
+   "us0": 190695.0,
+   "us1": 196528.57142857142,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 5833.57142857142,
+   "stretch": 1.1313823925554076,
+   "removed_ms": 0.0,
+   "drift": {
+    "69": 1043,
+    "70": 1091,
+    "71": 638
+   },
+   "max_drift": 1091,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 69,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    72,
+    73,
+    74
+   ],
+   "it0": 202540,
+   "it1": 212220,
+   "us0": 196528.57142857142,
+   "us1": 204835.0,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8306.42857142858,
+   "stretch": 1.1653624559291416,
+   "removed_ms": 0.0,
+   "drift": {
+    "72": 17,
+    "73": -242,
+    "74": 896
+   },
+   "max_drift": 896,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 72,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    75,
+    76
+   ],
+   "it0": 212220,
+   "it1": 216910,
+   "us0": 210320.0,
+   "us1": 214880.81650000002,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 4560.816500000015,
+   "stretch": 1.0283246431861452,
+   "removed_ms": 0.0,
+   "drift": {
+    "75": 284,
+    "76": 554
+   },
+   "max_drift": 554,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 75,
+   "break_before": "US footage skips 5.5s here"
+  },
+  {
+   "rows": [
+    77,
+    78
+   ],
+   "it0": 216910,
+   "it1": 223070,
+   "us0": 214880.81650000002,
+   "us1": 218406.38333333333,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.75x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 3525.566833333316,
+   "stretch": 1.7472367682152001,
+   "removed_ms": 0.0,
+   "drift": {
+    "77": 759,
+    "78": 834
+   },
+   "max_drift": 834,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 77,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    79,
+    80
+   ],
+   "it0": 223070,
+   "it1": 229870,
+   "us0": 218406.38333333333,
+   "us1": 222447.15000000002,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.68x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4040.766666666692,
+   "stretch": 1.6828489643054432,
+   "removed_ms": 0.0,
+   "drift": {
+    "79": 725,
+    "80": 265
+   },
+   "max_drift": 725,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 79,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    81,
+    82
+   ],
+   "it0": 229870,
+   "it1": 238500,
+   "us0": 222447.15000000002,
+   "us1": 229241.56955941254,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.27x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 6794.419559412519,
+   "stretch": 1.2701600077146538,
+   "removed_ms": 0.0,
+   "drift": {
+    "81": 149,
+    "82": -81
+   },
+   "max_drift": 149,
+   "why": "split: picture drifted 0.7s from the voice",
+   "first_seg": 81,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    83,
+    84
+   ],
+   "it0": 238500,
+   "it1": 249510,
+   "us0": 229241.56955941254,
+   "us1": 242616.59842519686,
+   "trims": [
+    {
+     "row": 83,
+     "ms": 2365,
+     "cls": "narration / reaction",
+     "fast": true,
+     "text": "Hello, Grant. Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy."
+    }
+   ],
+   "flags": [],
+   "note": "",
+   "removed": [
+    [
+     229242,
+     230424
+    ],
+    [
+     234987,
+     236169
+    ]
+   ],
+   "kept": 11010.00000000003,
+   "stretch": 0.9999999999999973,
+   "removed_ms": 2365.0288657842902,
+   "drift": {
+    "83": -384,
+    "84": -434
+   },
+   "max_drift": 434,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 83,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    85,
+    86
+   ],
+   "it0": 249510,
+   "it1": 255340,
+   "us0": 242616.59842519686,
+   "us1": 249895.53246753247,
+   "trims": [
+    {
+     "row": 85,
+     "ms": 1449,
+     "cls": "direct speech",
+     "fast": true,
+     "text": "Did I just hear you call my violet your prey? Hasn't anyone told you that I, and only I, hunt her alone?"
+    }
+   ],
+   "flags": [
+    "IT#85 (direct speech) trimmed: no narration row could take it"
+   ],
+   "note": "",
+   "removed": [
+    [
+     242617,
+     243341
+    ],
+    [
+     247036,
+     247760
+    ]
+   ],
+   "kept": 5830.0,
+   "stretch": 1.0,
+   "removed_ms": 1448.9340423356043,
+   "drift": {
+    "85": 412,
+    "86": 698
+   },
+   "max_drift": 698,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 85,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    87,
+    88
+   ],
+   "it0": 255340,
+   "it1": 263560,
+   "us0": 249895.53246753247,
+   "us1": 255285.0,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.53x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 5389.467532467534,
+   "stretch": 1.5251970534158734,
+   "removed_ms": 0.0,
+   "drift": {
+    "87": 303,
+    "88": 298
+   },
+   "max_drift": 303,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 87,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    89,
+    90
+   ],
+   "it0": 263560,
+   "it1": 269410,
+   "us0": 255285.0,
+   "us1": 259860,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.28x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4575.0,
+   "stretch": 1.278688524590164,
+   "removed_ms": 0.0,
+   "drift": {
+    "89": 626,
+    "90": 1001
+   },
+   "max_drift": 1001,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 89,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    91,
+    92
+   ],
+   "it0": 269410,
+   "it1": 275160,
+   "us0": 259860,
+   "us1": 265967.263681592,
+   "trims": [
+    {
+     "row": 91,
+     "ms": 357,
+     "cls": "direct speech",
+     "fast": true,
+     "text": "I'm s -s -s -sorry, Elva.\""
+    }
+   ],
+   "flags": [
+    "IT#91 (direct speech) trimmed: no narration row could take it"
+   ],
+   "note": "",
+   "removed": [
+    [
+     259860,
+     260039
+    ],
+    [
+     264106,
+     264285
+    ]
+   ],
+   "kept": 5750.000000000029,
+   "stretch": 0.9999999999999949,
+   "removed_ms": 357.2636815919832,
+   "drift": {
+    "91": 349,
+    "92": 179
+   },
+   "max_drift": 349,
+   "why": "split: picture drifted 0.9s from the voice",
+   "first_seg": 91,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    93,
+    94
+   ],
+   "it0": 275160,
+   "it1": 281380,
+   "us0": 265967.263681592,
+   "us1": 271705.017,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 5737.75331840798,
+   "stretch": 1.0840479983767977,
+   "removed_ms": 0.0,
+   "drift": {
+    "93": 244,
+    "94": 817
+   },
+   "max_drift": 817,
+   "why": "split: picture drifted 0.9s from the voice",
+   "first_seg": 93,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    95,
+    96
+   ],
+   "it0": 281380,
+   "it1": 284390,
+   "us0": 271705.017,
+   "us1": 273933.92500000005,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.35x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 2228.908000000054,
+   "stretch": 1.350437075016074,
+   "removed_ms": 0.0,
+   "drift": {
+    "95": 311,
+    "96": 248
+   },
+   "max_drift": 311,
+   "why": "split: picture drifted 0.5s from the voice",
+   "first_seg": 95,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    97,
+    98
+   ],
+   "it0": 284390,
+   "it1": 290240,
+   "us0": 273933.92500000005,
+   "us1": 278577.92025316454,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.26x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4643.995253164496,
+   "stretch": 1.2596912100660982,
+   "removed_ms": 0.0,
+   "drift": {
+    "97": 302,
+    "98": 572
+   },
+   "max_drift": 572,
+   "why": "split: picture drifted 0.5s from the voice",
+   "first_seg": 97,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    99,
+    100
+   ],
+   "it0": 290240,
+   "it1": 291560,
+   "us0": 278577.92025316454,
+   "us1": 280069.48529411765,
+   "trims": [],
+   "flags": [],
+   "note": "only 0.17s extra: absorbed by a 1.130x speed-up instead of a cut",
+   "removed": [],
+   "kept": 1491.565040953108,
+   "stretch": 0.8849764936542907,
+   "removed_ms": 0.0,
+   "drift": {
+    "99": 146,
+    "100": 196
+   },
+   "max_drift": 196,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 99,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    101,
+    102
+   ],
+   "it0": 291560,
+   "it1": 297480,
+   "us0": 280069.48529411765,
+   "us1": 287560,
+   "trims": [
+    {
+     "row": 102,
+     "ms": 1099,
+     "cls": "direct speech",
+     "fast": true,
+     "text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure."
+    },
+    {
+     "row": 101,
+     "ms": 472,
+     "cls": "direct speech",
+     "fast": true,
+     "text": "Heck, I am! I seriously am, dad! Grant cried out like a child as Asher applied even more pressure."
+    }
+   ],
+   "flags": [
+    "IT#102 (direct speech) trimmed: no narration row could take it",
+    "IT#101 (direct speech) trimmed: no narration row could take it"
+   ],
+   "note": "",
+   "removed": [
+    [
+     280069,
+     280305
+    ],
+    [
+     282882,
+     283118
+    ],
+    [
+     283118,
+     283667
+    ],
+    [
+     287011,
+     287560
+    ]
+   ],
+   "kept": 5920.000000000058,
+   "stretch": 0.9999999999999901,
+   "removed_ms": 1570.5147058822913,
+   "drift": {
+    "101": 348,
+    "102": 698
+   },
+   "max_drift": 698,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 101,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    103,
+    104
+   ],
+   "it0": 297480,
+   "it1": 303520,
+   "us0": 288620.0,
+   "us1": 294320.0,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 5700.0,
+   "stretch": 1.0596491228070175,
+   "removed_ms": 0.0,
+   "drift": {
+    "103": 66,
+    "104": 86
+   },
+   "max_drift": 86,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 103,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    105,
+    106
+   ],
+   "it0": 303520,
+   "it1": 308940,
+   "us0": 294320.0,
+   "us1": 298764.9773755656,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 4444.977375565621,
+   "stretch": 1.2193537878942091,
+   "removed_ms": 0.0,
+   "drift": {
+    "105": 694,
+    "106": 449
+   },
+   "max_drift": 694,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 105,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    107,
+    108,
+    109
+   ],
+   "it0": 308940,
+   "it1": 318750,
+   "us0": 298764.9773755656,
+   "us1": 306820,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8055.022624434379,
+   "stretch": 1.217873674276471,
+   "removed_ms": 0.0,
+   "drift": {
+    "107": 474,
+    "108": 309,
+    "109": 590
+   },
+   "max_drift": 590,
+   "why": "split: picture drifted 1.9s from the voice",
+   "first_seg": 107,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    110,
+    111
+   ],
+   "it0": 318750,
+   "it1": 322660,
+   "us0": 308080.0,
+   "us1": 311380,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 3300.0,
+   "stretch": 1.1848484848484848,
+   "removed_ms": 0.0,
+   "drift": {
+    "110": 131,
+    "111": 511
+   },
+   "max_drift": 511,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 110,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    112,
+    113
+   ],
+   "it0": 322660,
+   "it1": 328360,
+   "us0": 311380.0,
+   "us1": 314908.75675675675,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.62x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 3528.7567567567457,
+   "stretch": 1.6152997763548962,
+   "removed_ms": 0.0,
+   "drift": {
+    "112": 385,
+    "113": 585
+   },
+   "max_drift": 585,
+   "why": "split: picture drifted 1.0s from the voice",
+   "first_seg": 112,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    114,
+    115,
+    116
+   ],
+   "it0": 328360,
+   "it1": 338640,
+   "us0": 317040,
+   "us1": 326754.9668874172,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 9714.966887417191,
+   "stretch": 1.0581610950537195,
+   "removed_ms": 0.0,
+   "drift": {
+    "114": 196,
+    "115": 1210,
+    "116": 699
+   },
+   "max_drift": 1210,
+   "why": "split: picture drifted 2.5s from the voice",
+   "first_seg": 114,
+   "break_before": "US footage skips 2.1s here"
+  },
+  {
+   "rows": [
+    117,
+    118,
+    119,
+    120
+   ],
+   "it0": 338640,
+   "it1": 349200,
+   "us0": 326754.9668874172,
+   "us1": 333443.7426900585,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.58x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 6688.775802641292,
+   "stretch": 1.5787642330349931,
+   "removed_ms": 0.0,
+   "drift": {
+    "117": 441,
+    "118": -3,
+    "119": 97,
+    "120": 145
+   },
+   "max_drift": 441,
+   "why": "split: picture drifted 2.5s from the voice",
+   "first_seg": 117,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    121,
+    122,
+    123
+   ],
+   "it0": 349200,
+   "it1": 361820,
+   "us0": 333443.7426900585,
+   "us1": 343041.8904928572,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.31x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 9598.147802798718,
+   "stretch": 1.3148370143164645,
+   "removed_ms": 0.0,
+   "drift": {
+    "121": 498,
+    "122": 951,
+    "123": 602
+   },
+   "max_drift": 951,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 121,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    124,
+    125,
+    126
+   ],
+   "it0": 361820,
+   "it1": 370970,
+   "us0": 343041.8904928572,
+   "us1": 351900,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 8858.109507142799,
+   "stretch": 1.032951781937425,
+   "removed_ms": 0.0,
+   "drift": {
+    "124": -70,
+    "125": 452,
+    "126": 625
+   },
+   "max_drift": 625,
+   "why": "split: picture drifted 1.2s from the voice",
+   "first_seg": 124,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    127,
+    128,
+    129
+   ],
+   "it0": 370970,
+   "it1": 376940,
+   "us0": 353100,
+   "us1": 358060,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 4960,
+   "stretch": 1.2036290322580645,
+   "removed_ms": 0,
+   "drift": {
+    "127": 101,
+    "128": -162,
+    "129": 286
+   },
+   "max_drift": 286,
+   "why": "split: picture drifted 1.3s from the voice",
+   "first_seg": 127,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    130,
+    131,
+    132
+   ],
+   "it0": 376940,
+   "it1": 388460,
+   "us0": 359425.73,
+   "us1": 367980,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.35x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 8554.270000000019,
+   "stretch": 1.3466958606637358,
+   "removed_ms": 0.0,
+   "drift": {
+    "130": -19,
+    "131": -502,
+    "132": 291
+   },
+   "max_drift": 502,
+   "why": "split: picture drifted 1.3s from the voice",
+   "first_seg": 130,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    133,
+    134,
+    135
+   ],
+   "it0": 388460,
+   "it1": 402180,
+   "us0": 375340,
+   "us1": 387653.9333,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 12313.933299999975,
+   "stretch": 1.1141850183645243,
+   "removed_ms": 0.0,
+   "drift": {
+    "133": 266,
+    "134": 427,
+    "135": 212
+   },
+   "max_drift": 427,
+   "why": "split: picture drifted 1.1s from the voice",
+   "first_seg": 133,
+   "break_before": "US footage skips 7.4s here"
+  },
+  {
+   "rows": [
+    136,
+    137,
+    138
+   ],
+   "it0": 402180,
+   "it1": 407330,
+   "us0": 387653.9333,
+   "us1": 391316.56652360514,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.41x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 3662.6332236051676,
+   "stretch": 1.4060921980418235,
+   "removed_ms": 0.0,
+   "drift": {
+    "136": 520,
+    "137": 671,
+    "138": 746
+   },
+   "max_drift": 746,
+   "why": "split: picture drifted 1.1s from the voice",
+   "first_seg": 136,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    139,
+    140
+   ],
+   "it0": 407330,
+   "it1": 415190,
+   "us0": 391316.56652360514,
+   "us1": 397420.33326180256,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.29x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 6103.766738197417,
+   "stretch": 1.2877294197388085,
+   "removed_ms": 0.0,
+   "drift": {
+    "139": 195,
+    "140": 688
+   },
+   "max_drift": 688,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 139,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    141,
+    142,
+    143
+   ],
+   "it0": 415190,
+   "it1": 424570,
+   "us0": 397420.33326180256,
+   "us1": 404443.35029957804,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.34x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 7023.017037775484,
+   "stretch": 1.33560832182903,
+   "removed_ms": 0.0,
+   "drift": {
+    "141": 330,
+    "142": 635,
+    "143": 670
+   },
+   "max_drift": 670,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 141,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    144,
+    145
+   ],
+   "it0": 424570,
+   "it1": 429490,
+   "us0": 406920.0,
+   "us1": 410920,
+   "trims": [],
+   "flags": [],
+   "note": "",
+   "removed": [],
+   "kept": 4000.0,
+   "stretch": 1.23,
+   "removed_ms": 0.0,
+   "drift": {
+    "144": 229,
+    "145": 424
+   },
+   "max_drift": 424,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 144,
+   "break_before": "US footage skips 2.5s here"
+  },
+  {
+   "rows": [
+    146,
+    147
+   ],
+   "it0": 429490,
+   "it1": 435600,
+   "us0": 411970.0,
+   "us1": 416720,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.29x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 4750.0,
+   "stretch": 1.2863157894736843,
+   "removed_ms": 0.0,
+   "drift": {
+    "146": 143,
+    "147": 313
+   },
+   "max_drift": 313,
+   "why": "split: picture drifted 0.8s from the voice",
+   "first_seg": 146,
+   "break_before": "block of 8 rows"
+  },
+  {
+   "rows": [
+    148,
+    149
+   ],
+   "it0": 435600,
+   "it1": 440307,
+   "us0": 424240.0,
+   "us1": 427480,
+   "trims": [],
+   "flags": [
+    "whole group plays 1.45x slower (limit 1.25)"
+   ],
+   "note": "",
+   "removed": [],
+   "kept": 3240.0,
+   "stretch": 1.4527777777777777,
+   "removed_ms": 0.0,
+   "drift": {
+    "148": 81,
+    "149": 395
+   },
+   "max_drift": 395,
+   "why": "",
+   "first_seg": 148,
+   "break_before": "US footage skips 7.5s here"
+  }
+ ]
+}

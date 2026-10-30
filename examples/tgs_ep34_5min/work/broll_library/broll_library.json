@@ -1,0 +1,3602 @@
+{
+ "cast": {
+  "cast": [
+   {
+    "name": "Ava",
+    "look": "Young woman with a short, wavy dark-brown bob and light eyes. She wears a green blazer (olive/sage green) over a white open-collared blouse, with matching green trousers. In the early shots she wears a small heart pendant necklace. She holds a white iPhone and is often shown with crossed arms or angry, tearful expressions."
+   },
+   {
+    "name": "Aiden",
+    "look": "Young man with tousled, medium-length dark-brown hair and light stubble. He wears a navy blue blazer over a black shirt. He sits at his desk in front of a SafeTech logo, talks on a corded desk phone, and points to the bruises on his forehead. Later he reads documents. Shown mostly from behind or in close-up."
+   },
+   {
+    "name": "Charlotte",
+    "look": "Woman in her 30s with straight shoulder-length brown hair. She wears a black blazer over a cream top. She sits at a wooden desk with a laptop and talks on the phone in a bright office with a plant and shelves. She then looks at her phone."
+   }
+  ],
+  "places": [
+   "Aiden's modern glass-walled corner office at SafeTech, with city skyline views, wooden bookshelves and a desk. Ava confronts him with the photo and they argue, then she storms out.",
+   "Aiden's office, where he sits at his desk and phones Charlotte.",
+   "Charlotte's office, with a wooden desk, laptop, plant and shelves, where she takes the call.",
+   "Aiden's office again, where he goes through the briefcase files at his desk."
+  ]
+ },
+ "first_shots": [],
+ "shots": [
+  {
+   "n": 0,
+   "start": 0.0,
+   "end": 3.84,
+   "length": 3.84,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava holds up her phone and asks how he explains the photo",
+   "broll": "no",
+   "why": "Her mouth is speaking the line and she is showing the phone, which is a story moment.",
+   "lips": 3.76,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:00.00",
+    "00:01.00",
+    "00:03.01",
+    "00:04.02"
+   ],
+   "in_first": false,
+   "text": "If it's not what it looks like, how do you explain this?"
+  },
+  {
+   "n": 1,
+   "start": 3.84,
+   "end": 5.84,
+   "length": 2.0,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden looks shocked and uneasy, hands clasped",
+   "broll": "yes",
+   "why": "It is a face reacting with no story action, so it could be cut in elsewhere in the scene.",
+   "lips": 0.28,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:04.02",
+    "00:05.42"
+   ],
+   "in_first": false,
+   "text": "As soon as Aiden saw the photo, Ava shoved in his face."
+  },
+  {
+   "n": 2,
+   "start": 5.84,
+   "end": 7.92,
+   "length": 2.08,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Ava thrusts the phone with the photo toward the camera",
+   "broll": "no",
+   "why": "Shoving the photo in his face is the story action and should be shown only here.",
+   "lips": 0.88,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:05.42",
+    "00:12.16"
+   ],
+   "in_first": false,
+   "text": "As soon as Aiden saw the photo, Ava shoved in his face."
+  },
+  {
+   "n": 3,
+   "start": 7.92,
+   "end": 12.96,
+   "length": 5.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden stares in shock with his mouth slightly open",
+   "broll": "yes",
+   "why": "This is a shocked face reaction that could be reused at another point in the scene.",
+   "lips": 0.64,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:13.10",
+    "00:16.55"
+   ],
+   "in_first": false,
+   "text": "He felt as though the ground was slipping from underneath his feet. A cold sweat broke out across his entire body."
+  },
+  {
+   "n": 4,
+   "start": 12.96,
+   "end": 14.0,
+   "length": 1.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Low-angle view of Aiden looking up, anxious, hands fidgeting",
+   "broll": "yes",
+   "why": "It shows a worried reaction with no specific story event, so it works as B-roll.",
+   "lips": 0.2,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:16.55"
+   ],
+   "in_first": false,
+   "text": "A cold sweat broke out across his entire body."
+  },
+  {
+   "n": 5,
+   "start": 14.0,
+   "end": 16.24,
+   "length": 2.24,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Ava stands holding her phone, looking at him coolly",
+   "broll": "yes",
+   "why": "She is just standing and watching with no special action, so it can be cut in elsewhere.",
+   "lips": 0.4,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:16.55",
+    "00:24.42",
+    "00:25.65"
+   ],
+   "in_first": false,
+   "text": "A cold sweat broke out across his entire body. He could hear his heartbeat pounding in his ears."
+  },
+  {
+   "n": 6,
+   "start": 16.24,
+   "end": 19.44,
+   "length": 3.2,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden stares in shock and worry, mouth slightly open",
+   "broll": "yes",
+   "why": "A face-only reaction of shock, with no story event, that fits elsewhere in the confrontation.",
+   "lips": 0.24,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:25.65",
+    "00:27.76",
+    "00:28.43"
+   ],
+   "in_first": false,
+   "text": "He could hear his heartbeat pounding in his ears. On Ava's phone screen was a photo of Aiden and Charlotte sitting close together in the gym parking lot."
+  },
+  {
+   "n": 7,
+   "start": 19.44,
+   "end": 29.04,
+   "length": 9.6,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Ava holds up her phone showing the photo of Aiden and Charlotte",
+   "broll": "no",
+   "why": "Showing the photo is a key story moment and the evidence object, so it must stay in its own place.",
+   "lips": 2.64,
+   "scene": "Ava confronts Aiden with the photo",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:29.23",
+    "00:31.14",
+    "00:34.36",
+    "00:36.98"
+   ],
+   "in_first": false,
+   "text": "On Ava's phone screen was a photo of Aiden and Charlotte sitting close together in the gym parking lot. Sure enough, from the angle of the photo, it looked like Charlotte was going to kiss Aiden."
+  },
+  {
+   "n": 8,
+   "start": 29.04,
+   "end": 35.12,
+   "length": 6.08,
+   "people": [
+    "Aiden",
+    "Ava"
+   ],
+   "place": "car (gym parking lot)",
+   "type": "action",
+   "action": "Flashback in a car: Aiden looks at a woman with her back to the camera, who is leaning in",
+   "broll": "no",
+   "why": "This is a flashback story event, the real moment behind the photo, in a different place, so it should not be reused.",
+   "lips": 0.8,
+   "scene": "Flashback in the gym parking lot car",
+   "location": "gym parking lot car",
+   "same_scene": false,
+   "used": [
+    "00:36.98",
+    "00:47.79"
+   ],
+   "in_first": false,
+   "text": "Sure enough, from the angle of the photo, it looked like Charlotte was going to kiss Aiden. In reality, she was only leaning in to inspect the bruises on his forehead."
+  },
+  {
+   "n": 9,
+   "start": 35.12,
+   "end": 37.68,
+   "length": 2.56,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava glares with a serious, angry look",
+   "broll": "yes",
+   "why": "A silent angry reaction close-up with no story action, usable at other moments in the scene.",
+   "lips": 0.16,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:50.12"
+   ],
+   "in_first": false,
+   "text": "Ava glared at him."
+  },
+  {
+   "n": 10,
+   "start": 37.68,
+   "end": 44.24,
+   "length": 6.56,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava confronts Aiden, accusing him of making out in public",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking and this is key dialogue.",
+   "lips": 6.56,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:43.04",
+    "00:45.74"
+   ],
+   "in_first": false,
+   "text": "What are you and Charlotte doing so close together like this? It looks like you two are making out in public."
+  },
+  {
+   "n": 11,
+   "start": 44.24,
+   "end": 47.84,
+   "length": 3.6,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks, starting to explain the day at the gym",
+   "broll": "no",
+   "why": "His mouth is clearly speaking and the shot carries his explanation.",
+   "lips": 0.08,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "00:57.95",
+    "01:00.18",
+    "01:01.56",
+    "01:03.48"
+   ],
+   "in_first": false,
+   "text": "Aiden's mind was racing. That was the day at the gym."
+  },
+  {
+   "n": 12,
+   "start": 47.84,
+   "end": 50.32,
+   "length": 2.48,
+   "people": [
+    "Ava"
+   ],
+   "place": "modern office hallway",
+   "type": "talking",
+   "action": "Ava speaks, narrating the gym day, with a serious look",
+   "broll": "no",
+   "why": "Her mouth is speaking the narration with captions.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:03.48",
+    "01:04.44"
+   ],
+   "in_first": false,
+   "text": "When Charlotte and I went to work out together, I knew someone was taking our picture."
+  },
+  {
+   "n": 13,
+   "start": 50.32,
+   "end": 53.76,
+   "length": 3.44,
+   "people": [
+    "Aiden"
+   ],
+   "place": "modern office hallway",
+   "type": "talking",
+   "action": "Aiden, filmed from a low angle, speaks and gestures",
+   "broll": "no",
+   "why": "His mouth is clearly speaking and the captions show his line.",
+   "lips": 0.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:04.44",
+    "01:11.45"
+   ],
+   "in_first": false,
+   "text": "When Charlotte and I went to work out together, I knew someone was taking our picture. Sure. Let me explain, Ava.\""
+  },
+  {
+   "n": 14,
+   "start": 53.76,
+   "end": 55.36,
+   "length": 1.6,
+   "people": [
+    "Aiden",
+    "Ava"
+   ],
+   "place": "modern office hallway",
+   "type": "talking",
+   "action": "Aiden says 'Let me explain, Ava' while Ava's shoulder is blurred in the foreground",
+   "broll": "no",
+   "why": "He is speaking a key line of dialogue.",
+   "lips": 1.6,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:11.45"
+   ],
+   "in_first": false,
+   "text": "Let me explain, Ava.\""
+  },
+  {
+   "n": 15,
+   "start": 55.36,
+   "end": 59.12,
+   "length": 3.76,
+   "people": [
+    "Aiden"
+   ],
+   "place": "modern office hallway",
+   "type": "reaction",
+   "action": "Aiden looks ahead with a calm, tense expression, mouth mostly closed",
+   "broll": "yes",
+   "why": "It is a neutral face reaction that could be cut in elsewhere in the scene without repeating a story event.",
+   "lips": 0.12,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:12.72"
+   ],
+   "in_first": false,
+   "text": "Aiden lowered his voice, trying to remain calm."
+  },
+  {
+   "n": 16,
+   "start": 59.12,
+   "end": 63.76,
+   "length": 4.64,
+   "people": [
+    "Aiden"
+   ],
+   "place": "modern office hallway",
+   "type": "talking",
+   "action": "Aiden pleads with Ava to trust him",
+   "broll": "no",
+   "why": "He is speaking dialogue, with captions.",
+   "lips": 4.64,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:12.72",
+    "01:20.26",
+    "01:22.60",
+    "01:23.08",
+    "01:24.18"
+   ],
+   "in_first": false,
+   "text": "It's really not what it looks like, okay? You're gonna have to trust me here."
+  },
+  {
+   "n": 17,
+   "start": 63.76,
+   "end": 68.32,
+   "length": 4.56,
+   "people": [
+    "Aiden"
+   ],
+   "place": "modern office hallway",
+   "type": "talking",
+   "action": "Aiden explains with open-hand gestures about the gym",
+   "broll": "no",
+   "why": "He is speaking and gesturing as he tells the story.",
+   "lips": 4.56,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "01:24.18",
+    "01:24.68",
+    "01:26.82"
+   ],
+   "in_first": false,
+   "text": "Charlotte and I just went to the gym to work out together, and while we were there, she noticed the bruises on my head."
+  },
+  {
+   "n": 18,
+   "start": 68.32,
+   "end": 73.28,
+   "length": 4.96,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden explains Charlotte noticed his bruises",
+   "broll": "no",
+   "why": "His mouth is clearly speaking the narrated line.",
+   "lips": 4.96,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:26.82",
+    "01:30.90"
+   ],
+   "in_first": false,
+   "text": "Charlotte and I just went to the gym to work out together, and while we were there, she noticed the bruises on my head. She was just going in to take a closer look. That's it.\""
+  },
+  {
+   "n": 19,
+   "start": 73.28,
+   "end": 76.24,
+   "length": 2.96,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava looks up and rolls her eyes in disbelief",
+   "broll": "yes",
+   "why": "It is a face-only reaction that could be cut in elsewhere in the scene.",
+   "lips": 0.04,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:30.90"
+   ],
+   "in_first": false,
+   "text": "That's it.\" Ava rolled her eyes."
+  },
+  {
+   "n": 20,
+   "start": 76.24,
+   "end": 79.92,
+   "length": 3.68,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava stands with hand in pocket and says she doesn't believe him",
+   "broll": "no",
+   "why": "Ava is speaking her line to Aiden, who is seen from behind.",
+   "lips": 2.68,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:30.90",
+    "01:34.24"
+   ],
+   "in_first": false,
+   "text": "Oh yeah? You really expect me to believe that?"
+  },
+  {
+   "n": 21,
+   "start": 79.92,
+   "end": 84.24,
+   "length": 4.32,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava calls Aiden a terrible liar",
+   "broll": "no",
+   "why": "Her mouth is speaking dialogue, so it is tied to this moment.",
+   "lips": 4.32,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:38.18",
+    "01:49.97",
+    "01:52.82"
+   ],
+   "in_first": false,
+   "text": "God, you are a terrible liar."
+  },
+  {
+   "n": 22,
+   "start": 84.24,
+   "end": 88.88,
+   "length": 4.64,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden looks stunned and unsure how to defend himself",
+   "broll": "yes",
+   "why": "It is a listening or worried reaction face that fits at other points in the confrontation.",
+   "lips": 1.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:52.82"
+   ],
+   "in_first": false,
+   "text": "You He had no idea how to defend himself."
+  },
+  {
+   "n": 23,
+   "start": 88.88,
+   "end": 91.04,
+   "length": 2.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden gestures and asks why she doesn't trust him",
+   "broll": "no",
+   "why": "He speaks the line while gesturing, so it is a dialogue moment.",
+   "lips": 2.16,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:52.82",
+    "01:59.16"
+   ],
+   "in_first": false,
+   "text": "Why don't you trust me?\" He finally asked."
+  },
+  {
+   "n": 24,
+   "start": 91.04,
+   "end": 92.0,
+   "length": 0.96,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden looks at Ava with a worried, hurt expression after asking his question",
+   "broll": "yes",
+   "why": "It is a face-only reaction shot with no story action, so it can be cut in elsewhere in the scene.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "01:59.16"
+   ],
+   "in_first": false,
+   "text": "He finally asked."
+  },
+  {
+   "n": 25,
+   "start": 92.0,
+   "end": 94.0,
+   "length": 2.0,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava scoffs, then closes her eyes with a skeptical look",
+   "broll": "yes",
+   "why": "It is a reaction face showing disdain and could be reused as a cutaway in the same argument.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:03.04",
+    "02:03.88"
+   ],
+   "in_first": false,
+   "text": "Ava scoffed."
+  },
+  {
+   "n": 26,
+   "start": 94.0,
+   "end": 98.96,
+   "length": 4.96,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava angrily asks why she should trust him, with Aiden's back in the foreground",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking the dialogue line.",
+   "lips": 4.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:03.88",
+    "02:09.30",
+    "02:09.97",
+    "02:13.56"
+   ],
+   "in_first": false,
+   "text": "Why should I trust you? What reason have you ever given me to trust you?"
+  },
+  {
+   "n": 27,
+   "start": 98.96,
+   "end": 100.88,
+   "length": 1.92,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Ava stands with a stern look while Aiden stands with his back to the camera",
+   "broll": "yes",
+   "why": "It is a neutral standoff with no speech or story action, so it works as a cutaway in this scene.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:13.56"
+   ],
+   "in_first": false,
+   "text": "Aiden paced slightly, running his fingers along the edge of his desk."
+  },
+  {
+   "n": 28,
+   "start": 100.88,
+   "end": 104.24,
+   "length": 3.36,
+   "people": [],
+   "place": "office",
+   "type": "object",
+   "action": "Aiden's fingers slide along the edge of his wooden desk",
+   "broll": "no",
+   "why": "It is a story detail (the narrated desk gesture) that should appear only at its own moment.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:13.56"
+   ],
+   "in_first": false,
+   "text": "Aiden paced slightly, running his fingers along the edge of his desk."
+  },
+  {
+   "n": 29,
+   "start": 104.24,
+   "end": 111.84,
+   "length": 7.6,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden asks who sent the photos and whether Ava is spying on him",
+   "broll": "no",
+   "why": "His mouth is clearly speaking the dialogue.",
+   "lips": 6.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:13.56",
+    "02:23.16",
+    "02:24.48",
+    "02:27.21",
+    "02:27.75",
+    "02:29.02"
+   ],
+   "in_first": false,
+   "text": "Hang on, there's something I don't understand. Who sent you these photos? Are you spying on me or something?"
+  },
+  {
+   "n": 30,
+   "start": 111.84,
+   "end": 114.32,
+   "length": 2.48,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava stands with arms crossed, looking annoyed",
+   "broll": "yes",
+   "why": "A face showing attitude with no story object, so it could be cut in elsewhere in the scene.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:29.02"
+   ],
+   "in_first": false,
+   "text": "Ava huffed, crossing her arms."
+  },
+  {
+   "n": 31,
+   "start": 114.32,
+   "end": 116.4,
+   "length": 2.08,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Aiden stands facing the camera with a serious look",
+   "broll": "yes",
+   "why": "He is just standing and listening, with no special action, so it works as a generic cutaway.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:29.02"
+   ],
+   "in_first": false,
+   "text": "Ava huffed, crossing her arms. That's not the point."
+  },
+  {
+   "n": 32,
+   "start": 116.4,
+   "end": 122.64,
+   "length": 6.24,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava demands the truth, pointing her fist",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking the dialogue.",
+   "lips": 5.92,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:29.02",
+    "02:35.38",
+    "02:37.76",
+    "02:38.54"
+   ],
+   "in_first": false,
+   "text": "Tell me right now. Is something going on between the two of you? Tell me the truth."
+  },
+  {
+   "n": 33,
+   "start": 122.64,
+   "end": 124.08,
+   "length": 1.44,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden protests, gesturing with open hands",
+   "broll": "no",
+   "why": "He is speaking his line with a gesture.",
+   "lips": 1.44,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:38.54"
+   ],
+   "in_first": false,
+   "text": "I am telling you the truth.\""
+  },
+  {
+   "n": 34,
+   "start": 124.08,
+   "end": 124.88,
+   "length": 0.8,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava listens, seen over Aiden's shoulder",
+   "broll": "yes",
+   "why": "A quiet listening reaction shot with no story event, usable elsewhere in the scene.",
+   "lips": 0.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:38.54"
+   ],
+   "in_first": false,
+   "text": "I am telling you the truth.\""
+  },
+  {
+   "n": 35,
+   "start": 124.88,
+   "end": 128.08,
+   "length": 3.2,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden says he needs to know who took these",
+   "broll": "no",
+   "why": "His mouth is clearly speaking the dialogue.",
+   "lips": 3.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:38.54",
+    "02:41.72",
+    "02:42.42",
+    "02:44.28"
+   ],
+   "in_first": false,
+   "text": "Aiden huffed. I need to know who took these."
+  },
+  {
+   "n": 36,
+   "start": 128.08,
+   "end": 129.84,
+   "length": 1.76,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava looks shocked, mouth open, as if screaming",
+   "broll": "no",
+   "why": "The shocked scream is a story moment tied to the narration 'Ava screamed', so it shouldn't be reused elsewhere.",
+   "lips": 1.08,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:44.28",
+    "02:44.89"
+   ],
+   "in_first": false,
+   "text": "Ava screamed."
+  },
+  {
+   "n": 37,
+   "start": 129.84,
+   "end": 134.56,
+   "length": 4.72,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava confronts Aiden, holding her phone, as he stands with his back to the camera",
+   "broll": "no",
+   "why": "Ava is speaking and the shot shows the confrontation, so it is a story event.",
+   "lips": 4.72,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:44.89",
+    "02:48.28",
+    "02:49.33",
+    "02:50.49"
+   ],
+   "in_first": false,
+   "text": "And I told you it doesn't matter. It's a good thing someone sent me these pictures, otherwise I never would have found out about you and Charlotte."
+  },
+  {
+   "n": 38,
+   "start": 134.56,
+   "end": 137.12,
+   "length": 2.56,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava talks in close-up about finding out about Aiden and Charlotte",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking the dialogue.",
+   "lips": 2.56,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:50.49"
+   ],
+   "in_first": false,
+   "text": "It's a good thing someone sent me these pictures, otherwise I never would have found out about you and Charlotte."
+  },
+  {
+   "n": 39,
+   "start": 137.12,
+   "end": 138.8,
+   "length": 1.68,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden frowns and listens to Ava's accusation",
+   "broll": "yes",
+   "why": "It is a listening reaction with no story action, so it could be cut in elsewhere in the confrontation.",
+   "lips": 0.32,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:50.49",
+    "02:53.74",
+    "02:54.34"
+   ],
+   "in_first": false,
+   "text": "It's a good thing someone sent me these pictures, otherwise I never would have found out about you and Charlotte. How could you betray me by spending time with her like this?"
+  },
+  {
+   "n": 40,
+   "start": 138.8,
+   "end": 143.12,
+   "length": 4.32,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava gestures with her phone in hand while accusing Aiden of betrayal",
+   "broll": "no",
+   "why": "She is speaking, with gestures that carry the dialogue.",
+   "lips": 4.32,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:54.34",
+    "02:56.54",
+    "02:57.07"
+   ],
+   "in_first": false,
+   "text": "How could you betray me by spending time with her like this? When you should be devoted to me."
+  },
+  {
+   "n": 41,
+   "start": 143.12,
+   "end": 145.76,
+   "length": 2.64,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden snaps back 'What are you talking about?', frustrated",
+   "broll": "no",
+   "why": "His mouth clearly speaks the line and the shot is a story beat.",
+   "lips": 2.64,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "02:57.07",
+    "03:00.94",
+    "03:01.85"
+   ],
+   "in_first": false,
+   "text": "When you should be devoted to me. What are you talking about?\""
+  },
+  {
+   "n": 42,
+   "start": 145.76,
+   "end": 147.92,
+   "length": 2.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "tosses head back, eyes closed, frustrated",
+   "broll": "yes",
+   "why": "Silent frustrated face that could be cut in elsewhere in this argument without repeating a story event.",
+   "lips": 0.16,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:03.54"
+   ],
+   "in_first": false,
+   "text": "Aiden tossed his head back, frustrated."
+  },
+  {
+   "n": 43,
+   "start": 147.92,
+   "end": 151.04,
+   "length": 3.12,
+   "people": [
+    "Aiden",
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks to Ava, who is seen from behind",
+   "broll": "no",
+   "why": "His mouth is clearly speaking his line.",
+   "lips": 3.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:03.54",
+    "03:08.16"
+   ],
+   "in_first": false,
+   "text": "Aiden tossed his head back, frustrated. You were the one who said Charlotte and I should go out together."
+  },
+  {
+   "n": 44,
+   "start": 151.04,
+   "end": 152.48,
+   "length": 1.44,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "stands still, listening to Aiden over his shoulder",
+   "broll": "yes",
+   "why": "Neutral listening shot of Ava with no mouth movement or story action.",
+   "lips": 0.28,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:08.16"
+   ],
+   "in_first": false,
+   "text": "You were the one who said Charlotte and I should go out together."
+  },
+  {
+   "n": 45,
+   "start": 152.48,
+   "end": 157.12,
+   "length": 4.64,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks, upset, about trusting him and Charlotte",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking dialogue.",
+   "lips": 4.64,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:16.24",
+    "03:18.50",
+    "03:19.10"
+   ],
+   "in_first": false,
+   "text": "That's because I thought I could trust you. Or at least, I thought I could trust her."
+  },
+  {
+   "n": 46,
+   "start": 157.12,
+   "end": 158.24,
+   "length": 1.12,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "stands facing the camera with a serious look",
+   "broll": "yes",
+   "why": "Quiet neutral shot of Aiden that works as a cutaway elsewhere in the scene.",
+   "lips": 0.28,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:20.24"
+   ],
+   "in_first": false,
+   "text": "Or at least, I thought I could trust her."
+  },
+  {
+   "n": 47,
+   "start": 158.24,
+   "end": 161.36,
+   "length": 3.12,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks about knowing Charlotte for years, then grimaces",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking dialogue.",
+   "lips": 3.12,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:21.57"
+   ],
+   "in_first": false,
+   "text": "I've known Charlotte for years longer than almost anyone else.\""
+  },
+  {
+   "n": 48,
+   "start": 161.36,
+   "end": 164.24,
+   "length": 2.88,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Close-up of Ava looking off to the side with a tense, worried face",
+   "broll": "yes",
+   "why": "A face-only reaction with no story action, so it can be cut in elsewhere in the scene. Her hair looks longer than in the cast description, but she is the only match.",
+   "lips": 1.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:12.89",
+    "03:21.57"
+   ],
+   "in_first": false,
+   "text": "Ava paced back and forth across the room."
+  },
+  {
+   "n": 49,
+   "start": 164.24,
+   "end": 167.12,
+   "length": 2.88,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden looks up and away with a pained, uneasy expression, hands in his pockets",
+   "broll": "yes",
+   "why": "He is not clearly speaking and shows only a reaction, so it works as a cutaway in the same office scene.",
+   "lips": 0.8,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:12.89",
+    "03:24.66"
+   ],
+   "in_first": false,
+   "text": "Ava paced back and forth across the room. But the two of you, to think this whole time you were just flirting with one another behind my back."
+  },
+  {
+   "n": 50,
+   "start": 167.12,
+   "end": 170.4,
+   "length": 3.28,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks angrily, accusing them of flirting",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking the narrated line.",
+   "lips": 3.28,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:24.66",
+    "03:28.02"
+   ],
+   "in_first": false,
+   "text": "But the two of you, to think this whole time you were just flirting with one another behind my back."
+  },
+  {
+   "n": 51,
+   "start": 170.4,
+   "end": 171.92,
+   "length": 1.52,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Aiden stands facing the camera with a serious look, saying nothing",
+   "broll": "yes",
+   "why": "He is only standing and listening with no special action, so it can be reused in this scene.",
+   "lips": 0.4,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:28.02"
+   ],
+   "in_first": false,
+   "text": "But the two of you, to think this whole time you were just flirting with one another behind my back."
+  },
+  {
+   "n": 52,
+   "start": 171.92,
+   "end": 179.36,
+   "length": 7.44,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks, upset and near tears, over Aiden's shoulder, saying she feels like an idiot",
+   "broll": "no",
+   "why": "Ava is clearly speaking the key dialogue, with Aiden's back in the foreground.",
+   "lips": 7.44,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:31.86",
+    "03:34.14",
+    "03:36.68"
+   ],
+   "in_first": false,
+   "text": "I knew something was going on between you guys ever since that day you ran into a shopping on the street. God, I feel like such an idiot."
+  },
+  {
+   "n": 53,
+   "start": 179.36,
+   "end": 185.28,
+   "length": 5.92,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden says nothing is going on and puts his hand on his chest",
+   "broll": "no",
+   "why": "He is speaking, and the hand-on-heart gesture is a story moment.",
+   "lips": 5.44,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:36.68",
+    "03:37.66",
+    "03:41.34",
+    "03:42.38"
+   ],
+   "in_first": false,
+   "text": "Ava, nothing is going on between us, I swear. Aiden held his hand over his heart as he spoke."
+  },
+  {
+   "n": 54,
+   "start": 185.28,
+   "end": 187.44,
+   "length": 2.16,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Ava stands still in the office, looking toward Aiden with a serious expression",
+   "broll": "yes",
+   "why": "Her mouth is closed and she is only listening, so the shot can be cut in elsewhere in the scene.",
+   "lips": 0.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:42.38",
+    "03:43.78"
+   ],
+   "in_first": false,
+   "text": "Aiden held his hand over his heart as he spoke."
+  },
+  {
+   "n": 55,
+   "start": 187.44,
+   "end": 192.32,
+   "length": 4.88,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks with his hand on his chest, swearing his word as her husband",
+   "broll": "no",
+   "why": "His mouth is clearly speaking, and the hand-on-heart gesture is a story moment.",
+   "lips": 4.16,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:43.78",
+    "03:44.95",
+    "03:45.92",
+    "03:47.75"
+   ],
+   "in_first": false,
+   "text": "I give you my word as your husband. That's going to have to be good enough for you."
+  },
+  {
+   "n": 56,
+   "start": 192.32,
+   "end": 197.28,
+   "length": 4.96,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava looks upset and shakes her head, not believing him",
+   "broll": "no",
+   "why": "Her head shake is tied to the narration of this moment, and showing it elsewhere would repeat the story beat.",
+   "lips": 2.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:50.27",
+    "03:55.38"
+   ],
+   "in_first": false,
+   "text": "I don't believe you,\" she shook her head."
+  },
+  {
+   "n": 57,
+   "start": 197.28,
+   "end": 207.2,
+   "length": 9.92,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava holds her phone and speaks, upset, about the affair with her best friend",
+   "broll": "no",
+   "why": "She is speaking her accusation, so it is a dialogue shot.",
+   "lips": 9.92,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "03:56.22",
+    "03:57.90",
+    "03:58.64",
+    "04:02.46"
+   ],
+   "in_first": false,
+   "text": "How could you do this to me, Aiden? It's bad enough that you're having an affair, but with my best friend? Our marriage may mean nothing to you, but think about how it looks to other people."
+  },
+  {
+   "n": 58,
+   "start": 207.2,
+   "end": 216.16,
+   "length": 8.96,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava argues angrily, close up, holding her phone",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking and she is delivering a key line.",
+   "lips": 8.96,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "04:02.46",
+    "04:08.30",
+    "04:10.50",
+    "04:10.94",
+    "04:13.10"
+   ],
+   "in_first": false,
+   "text": "Our marriage may mean nothing to you, but think about how it looks to other people. My family has been right about you the whole time. This marriage has just been one disaster after another.\""
+  },
+  {
+   "n": 59,
+   "start": 216.16,
+   "end": 224.32,
+   "length": 8.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks, complaining about Ava's family and the vows of marriage",
+   "broll": "no",
+   "why": "His mouth is clearly speaking and he is delivering story dialogue.",
+   "lips": 7.24,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "04:13.10",
+    "04:17.43",
+    "04:20.15",
+    "04:20.62"
+   ],
+   "in_first": false,
+   "text": "Aidan laughed. So now suddenly the vows of marriage matter to you? For weeks now, you and your family have been torturing me."
+  },
+  {
+   "n": 60,
+   "start": 224.32,
+   "end": 225.44,
+   "length": 1.12,
+   "people": [
+    "Ava"
+   ],
+   "place": "office with city skyline view",
+   "type": "talking",
+   "action": "Ava holds her phone and speaks, caption 'Your mother's been trying to set you up with'",
+   "broll": "no",
+   "why": "Her mouth is speaking and the line continues the dialogue.",
+   "lips": 0.48,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:23.36",
+    "04:24.06"
+   ],
+   "in_first": false,
+   "text": "For weeks now, you and your family have been torturing me. Your mother has been trying to set you up with Craig and trying to get you to divorce me so you can find a more suitable match."
+  },
+  {
+   "n": 61,
+   "start": 225.44,
+   "end": 234.64,
+   "length": 9.2,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office with city skyline view",
+   "type": "talking",
+   "action": "Aiden speaks and gestures, saying the line about Craig and divorce",
+   "broll": "no",
+   "why": "He is clearly speaking, so it is dialogue.",
+   "lips": 8.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:24.06",
+    "04:30.59",
+    "04:35.11"
+   ],
+   "in_first": false,
+   "text": "Your mother has been trying to set you up with Craig and trying to get you to divorce me so you can find a more suitable match. But now you want to talk about what marriage is?\""
+  },
+  {
+   "n": 62,
+   "start": 234.64,
+   "end": 236.0,
+   "length": 1.36,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office with city skyline view",
+   "type": "reaction",
+   "action": "Ava listens with crossed arms and a sneer while Aiden's shoulder is in the foreground",
+   "broll": "yes",
+   "why": "It is a face reaction with no story event, and it can be cut in elsewhere in the scene.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:36.18"
+   ],
+   "in_first": false,
+   "text": "Ava sneered."
+  },
+  {
+   "n": 63,
+   "start": 236.0,
+   "end": 246.0,
+   "length": 10.0,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office with city skyline view",
+   "type": "talking",
+   "action": "Ava confronts Aiden, pointing and asking about an affair with Charlotte",
+   "broll": "no",
+   "why": "Ava is speaking with gestures, so it is dialogue.",
+   "lips": 9.6,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:41.92",
+    "04:43.01"
+   ],
+   "in_first": false,
+   "text": "Stop trying to deflect and just be honest with me. If you're having an affair with Charlotte, you need to tell me right now. Lying will only make things worse for you."
+  },
+  {
+   "n": 64,
+   "start": 246.0,
+   "end": 250.56,
+   "length": 4.56,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office with city skyline view",
+   "type": "talking",
+   "action": "Aiden angrily denies deflecting and says he has no interest in Charlotte",
+   "broll": "no",
+   "why": "He is clearly speaking, so it is dialogue.",
+   "lips": 4.56,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:47.38"
+   ],
+   "in_first": false,
+   "text": "I'm not deflecting Ava. I have no interest in Charlotte, okay?\""
+  },
+  {
+   "n": 65,
+   "start": 250.56,
+   "end": 251.84,
+   "length": 1.28,
+   "people": [
+    "Ava"
+   ],
+   "place": "office with city skyline view",
+   "type": "neutral",
+   "action": "Ava stands in the office looking toward Aiden",
+   "broll": "yes",
+   "why": "She is just standing with no story action, so it works as a cutaway in this scene.",
+   "lips": 1.28,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with skyline view",
+   "same_scene": false,
+   "used": [
+    "04:48.66"
+   ],
+   "in_first": false,
+   "text": "I have no interest in Charlotte, okay?\" Even as he said the words, he wasn't so sure he believed them himself."
+  },
+  {
+   "n": 66,
+   "start": 251.84,
+   "end": 259.04,
+   "length": 7.2,
+   "people": [
+    "Aiden",
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden touches his collar and chin, thinking, while Ava stands in the foreground",
+   "broll": "yes",
+   "why": "He is pensive and not clearly speaking, so the shot works as a reaction cutaway within the office argument.",
+   "lips": 0.24,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "04:48.66",
+    "04:58.10"
+   ],
+   "in_first": false,
+   "text": "Even as he said the words, he wasn't so sure he believed them himself. He couldn't deny that he was attracted to Charlotte, but he certainly wasn't trying to pursue her either."
+  },
+  {
+   "n": 67,
+   "start": 259.04,
+   "end": 259.92,
+   "length": 0.88,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks, upset, facing Aiden, who is seen from behind",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking, so it is a dialogue shot.",
+   "lips": 0.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "04:58.10"
+   ],
+   "in_first": false,
+   "text": "He couldn't deny that he was attracted to Charlotte, but he certainly wasn't trying to pursue her either."
+  },
+  {
+   "n": 68,
+   "start": 259.92,
+   "end": 264.4,
+   "length": 4.48,
+   "people": [
+    "Aiden",
+    "Ava"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Aiden turns from the window toward Ava and stands facing her",
+   "broll": "yes",
+   "why": "He is just turning and standing with no special story action, so it could be cut in elsewhere in the scene.",
+   "lips": 0.92,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "04:58.10",
+    "05:04.78"
+   ],
+   "in_first": false,
+   "text": "He couldn't deny that he was attracted to Charlotte, but he certainly wasn't trying to pursue her either. He turned to Ava, tapping his foot impatiently."
+  },
+  {
+   "n": 69,
+   "start": 264.4,
+   "end": 269.36,
+   "length": 4.96,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden taps his foot impatiently, then stands with his hand in his pocket and speaks",
+   "broll": "no",
+   "why": "The foot tapping is a specific story detail and he is speaking the line, so it should stay in its own place.",
+   "lips": 2.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:04.78",
+    "05:09.24",
+    "05:12.20"
+   ],
+   "in_first": false,
+   "text": "He turned to Ava, tapping his foot impatiently. You're the one who's always spending time with Craig.\""
+  },
+  {
+   "n": 70,
+   "start": 269.36,
+   "end": 278.24,
+   "length": 8.88,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava wipes a tear and defends herself about the drink with Craig",
+   "broll": "no",
+   "why": "She speaks and wipes a tear, which are story moments tied to the dialogue.",
+   "lips": 5.12,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:12.20",
+    "05:17.28",
+    "05:18.72",
+    "05:19.24",
+    "05:20.46"
+   ],
+   "in_first": false,
+   "text": "Ava wiped a tear from her eyes. I haven't done anything with Craig besides get one drink with him. What's so terrible about that?"
+  },
+  {
+   "n": 71,
+   "start": 278.24,
+   "end": 288.24,
+   "length": 10.0,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden argues, calling the drink a date and mentioning Ava's mother",
+   "broll": "no",
+   "why": "His mouth is clearly speaking and the shot carries key dialogue.",
+   "lips": 8.92,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:20.46",
+    "05:21.23",
+    "05:22.54",
+    "05:24.48",
+    "05:26.08",
+    "05:26.40",
+    "05:27.32",
+    "05:27.86",
+    "05:29.64"
+   ],
+   "in_first": false,
+   "text": "One drink? Aiden scoffed. That one drink was a date, Ava. Does that not count as cheating? Shit, your mother even set that date up."
+  },
+  {
+   "n": 72,
+   "start": 288.24,
+   "end": 291.44,
+   "length": 3.2,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava protests with open arms: 'Stop making a big deal out of it, nothing happened'",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking dialogue with a gesture.",
+   "lips": 3.2,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:29.64",
+    "05:30.38",
+    "05:31.48",
+    "05:32.46"
+   ],
+   "in_first": false,
+   "text": "Stop making a big deal out of it, nothing happened."
+  },
+  {
+   "n": 73,
+   "start": 291.44,
+   "end": 294.56,
+   "length": 3.12,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden laughs, then says 'Does that really matter?' with hands clasped",
+   "broll": "no",
+   "why": "He is laughing and speaking dialogue, so it is a story beat.",
+   "lips": 2.16,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:32.46",
+    "05:35.94"
+   ],
+   "in_first": false,
+   "text": "Aiden laughed. Does that really matter? it could have."
+  },
+  {
+   "n": 74,
+   "start": 294.56,
+   "end": 300.16,
+   "length": 5.6,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden gestures while saying Craig is all over her and wants to replace him",
+   "broll": "no",
+   "why": "He is speaking dialogue.",
+   "lips": 5.6,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:37.24",
+    "05:38.86",
+    "05:39.48",
+    "05:42.94",
+    "05:43.52",
+    "05:44.85"
+   ],
+   "in_first": false,
+   "text": "Does that really matter? it could have. Craig is clearly all over you. He wants to replace me.\""
+  },
+  {
+   "n": 75,
+   "start": 300.16,
+   "end": 307.6,
+   "length": 7.44,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava retorts that nobody is trying to replace him, but if he isn't careful she will",
+   "broll": "no",
+   "why": "She is speaking dialogue with a gesture.",
+   "lips": 4.72,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "05:48.66",
+    "05:53.24",
+    "05:55.00",
+    "05:56.38",
+    "05:56.89",
+    "05:59.68",
+    "06:01.00"
+   ],
+   "in_first": false,
+   "text": "Ava rolled her eyes. Nobody's trying to replace you. But if you're not careful, I will. Marriage is a contract, Ava."
+  },
+  {
+   "n": 76,
+   "start": 307.6,
+   "end": 310.24,
+   "length": 2.64,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden says marriage is a contract, like a business contract",
+   "broll": "no",
+   "why": "He is speaking dialogue.",
+   "lips": 2.64,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:01.00"
+   ],
+   "in_first": false,
+   "text": "Marriage is a contract, Ava. Just like a business contract."
+  },
+  {
+   "n": 77,
+   "start": 310.24,
+   "end": 311.12,
+   "length": 0.88,
+   "people": [
+    "Ava"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Ava listens with a stern, slightly troubled look",
+   "broll": "yes",
+   "why": "It is a silent listening reaction that could be cut in elsewhere in the same argument.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:01.00",
+    "06:03.70"
+   ],
+   "in_first": false,
+   "text": "Just like a business contract."
+  },
+  {
+   "n": 78,
+   "start": 311.12,
+   "end": 314.48,
+   "length": 3.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office (Aiden's desk, SafeTech)",
+   "type": "talking",
+   "action": "Aiden speaks, gesturing, then leans on the desk",
+   "broll": "no",
+   "why": "His mouth is clearly speaking and the subtitle shows his dialogue.",
+   "lips": 3.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:04.38",
+    "06:07.58"
+   ],
+   "in_first": false,
+   "text": "You can't just end it every time we have an argument."
+  },
+  {
+   "n": 79,
+   "start": 314.48,
+   "end": 318.24,
+   "length": 3.76,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office (Aiden's desk, SafeTech)",
+   "type": "action",
+   "action": "Aiden leans on the desk, sits down and rubs his temples",
+   "broll": "no",
+   "why": "Sitting down and rubbing his temples is a story action told in the narration at this moment.",
+   "lips": 2.04,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:07.58",
+    "06:09.00",
+    "06:13.92"
+   ],
+   "in_first": false,
+   "text": "Aiden sat down at his desk, rubbing his temples."
+  },
+  {
+   "n": 80,
+   "start": 318.24,
+   "end": 322.08,
+   "length": 3.84,
+   "people": [
+    "Ava"
+   ],
+   "place": "office with bookshelf and plant",
+   "type": "talking",
+   "action": "Ava says she is ending it, then stands still",
+   "broll": "no",
+   "why": "Her mouth speaks the dialogue line, and the narration 'Ava huffed' is a story beat.",
+   "lips": 2.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with bookshelf",
+   "same_scene": false,
+   "used": [
+    "06:14.97",
+    "06:19.52"
+   ],
+   "in_first": false,
+   "text": "I'm ending it because this isn't working. Ava huffed."
+  },
+  {
+   "n": 81,
+   "start": 322.08,
+   "end": 325.36,
+   "length": 3.28,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office (Aiden's desk, SafeTech)",
+   "type": "talking",
+   "action": "Aiden speaks and raises his hand while seated at his desk",
+   "broll": "no",
+   "why": "He is speaking dialogue with a gesture.",
+   "lips": 3.28,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:19.52",
+    "06:20.14",
+    "06:22.79"
+   ],
+   "in_first": false,
+   "text": "Yeah? Well, that's because your entire family hates me."
+  },
+  {
+   "n": 82,
+   "start": 325.36,
+   "end": 329.52,
+   "length": 4.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office (Aiden's desk, SafeTech)",
+   "type": "talking",
+   "action": "Aiden closes his eyes, speaks and points at the camera",
+   "broll": "no",
+   "why": "He talks and points, which is a story gesture.",
+   "lips": 2.24,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:22.79",
+    "06:23.51",
+    "06:24.75",
+    "06:27.88"
+   ],
+   "in_first": false,
+   "text": "Aiden rolled his eyes, your mother especially."
+  },
+  {
+   "n": 83,
+   "start": 329.52,
+   "end": 337.36,
+   "length": 7.84,
+   "people": [
+    "Ava"
+   ],
+   "place": "office with bookshelf",
+   "type": "talking",
+   "action": "Ava argues angrily and points her finger",
+   "broll": "no",
+   "why": "She is speaking dialogue and the pointing is a story moment.",
+   "lips": 4.8,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office with bookshelf",
+   "same_scene": false,
+   "used": [
+    "06:27.88",
+    "06:29.14",
+    "06:30.60",
+    "06:31.18",
+    "06:32.52"
+   ],
+   "in_first": false,
+   "text": "Ava scowled. Don't bring my mother into this. You're just trying to use her as a scapegoat. She pointed her finger at him."
+  },
+  {
+   "n": 84,
+   "start": 337.36,
+   "end": 341.04,
+   "length": 3.68,
+   "people": [
+    "Ava"
+   ],
+   "place": "Aiden's office",
+   "type": "talking",
+   "action": "Ava accuses Aiden, pointing and gesturing as she speaks",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking the accusation line.",
+   "lips": 3.6,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:32.52",
+    "06:36.84",
+    "06:40.43"
+   ],
+   "in_first": false,
+   "text": "You're the one sleeping with some other woman behind my back."
+  },
+  {
+   "n": 85,
+   "start": 341.04,
+   "end": 347.84,
+   "length": 6.8,
+   "people": [
+    "Aiden"
+   ],
+   "place": "Aiden's office, at his desk",
+   "type": "talking",
+   "action": "Aiden throws up his hands and shouts that he is not sleeping with Charlotte",
+   "broll": "no",
+   "why": "He is speaking a key line of dialogue with a gesture.",
+   "lips": 5.4,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:40.43",
+    "06:44.72",
+    "06:47.23"
+   ],
+   "in_first": false,
+   "text": "Aiden threw up his hands. How many times do I have to tell you, Ava? I'm not sleeping with Charlotte."
+  },
+  {
+   "n": 86,
+   "start": 347.84,
+   "end": 349.04,
+   "length": 1.2,
+   "people": [
+    "Ava"
+   ],
+   "place": "Aiden's office",
+   "type": "neutral",
+   "action": "Ava stands silently, seen from a low angle, during the pause",
+   "broll": "yes",
+   "why": "A silent standing shot that could be cut in elsewhere in the scene without repeating a story event.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:49.94"
+   ],
+   "in_first": false,
+   "text": "There was a long pause between them."
+  },
+  {
+   "n": 87,
+   "start": 349.04,
+   "end": 350.96,
+   "length": 1.92,
+   "people": [
+    "Aiden"
+   ],
+   "place": "Aiden's office, at his desk",
+   "type": "reaction",
+   "action": "Aiden closes his eyes, then looks up during the pause",
+   "broll": "yes",
+   "why": "A silent reaction face that fits at other moments of the argument.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "06:54.07"
+   ],
+   "in_first": false,
+   "text": "There was a long pause between them."
+  },
+  {
+   "n": 88,
+   "start": 350.96,
+   "end": 359.76,
+   "length": 8.8,
+   "people": [
+    "Ava"
+   ],
+   "place": "Aiden's office",
+   "type": "talking",
+   "action": "Ava says this isn't over and warns him about enjoying time with Charlotte",
+   "broll": "no",
+   "why": "Her mouth is speaking the threat dialogue.",
+   "lips": 6.96,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:00.78",
+    "07:05.74",
+    "07:06.80",
+    "07:08.62",
+    "07:10.02",
+    "07:12.34"
+   ],
+   "in_first": false,
+   "text": "Ava broke the silence. This isn't over, Aiden, not by a long shot. I hope you and Charlotte enjoy your time together."
+  },
+  {
+   "n": 89,
+   "start": 359.76,
+   "end": 366.96,
+   "length": 7.2,
+   "people": [
+    "Ava"
+   ],
+   "place": "Aiden's office",
+   "type": "talking",
+   "action": "Ava vows to make sure he is never happy again",
+   "broll": "no",
+   "why": "She is speaking the closing threat before she leaves.",
+   "lips": 5.84,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:12.82",
+    "07:14.30",
+    "07:14.78",
+    "07:19.82"
+   ],
+   "in_first": false,
+   "text": "Laugh it up while you can. I'll make sure you're never happy again, if it's the last thing I do.\""
+  },
+  {
+   "n": 90,
+   "start": 366.96,
+   "end": 371.6,
+   "length": 4.64,
+   "people": [
+    "Ava"
+   ],
+   "place": "Aiden's office",
+   "type": "action",
+   "action": "Ava turns and storms away toward the door",
+   "broll": "no",
+   "why": "Her exit is a story action that happens at this moment and should not be shown earlier or twice.",
+   "lips": 1.44,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:19.82",
+    "07:21.37"
+   ],
+   "in_first": false,
+   "text": "Without saying another word, she headed for the door to his office and stormed out."
+  },
+  {
+   "n": 91,
+   "start": 371.6,
+   "end": 373.76,
+   "length": 2.16,
+   "people": [
+    ""
+   ],
+   "place": "office entrance / corridor",
+   "type": "establishing",
+   "action": "Glass door of the office seen from the corridor",
+   "broll": "yes",
+   "why": "It is an empty view of the place with no story event, so it can be cut in elsewhere in the scene.",
+   "lips": 0.0,
+   "scene": "Argument between Ava and Aiden in his office",
+   "location": "office hallway",
+   "same_scene": false,
+   "used": [
+    "07:21.37"
+   ],
+   "in_first": false,
+   "text": "Without saying another word, she headed for the door to his office and stormed out."
+  },
+  {
+   "n": 92,
+   "start": 373.76,
+   "end": 384.0,
+   "length": 10.24,
+   "people": [
+    "Aiden"
+   ],
+   "place": "Aiden's office",
+   "type": "reaction",
+   "action": "Aiden hangs his head, eyes closed, exhausted",
+   "broll": "yes",
+   "why": "It is a face showing a feeling with no story event, so it can be reused in this scene.",
+   "lips": 0.0,
+   "scene": "Aiden alone, picks up the phone",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:25.84",
+    "07:28.72",
+    "07:29.95",
+    "07:32.89",
+    "07:35.07",
+    "07:36.43",
+    "07:38.82"
+   ],
+   "in_first": false,
+   "text": "Aiden hung his head over his desk. It felt like the room was still spinning. Well, that went well. After a moment or two, certain that Ava was gone, Aiden picked up his desk phone phone, and started dialing."
+  },
+  {
+   "n": 93,
+   "start": 384.0,
+   "end": 387.04,
+   "length": 3.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "Aiden's office",
+   "type": "action",
+   "action": "Aiden picks up the desk phone receiver",
+   "broll": "no",
+   "why": "Picking up the phone is a story action that has its own moment.",
+   "lips": 0.0,
+   "scene": "Aiden alone, picks up the phone",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:43.41"
+   ],
+   "in_first": false,
+   "text": "After a moment or two, certain that Ava was gone, Aiden picked up his desk phone phone, and started dialing."
+  },
+  {
+   "n": 94,
+   "start": 387.04,
+   "end": 390.4,
+   "length": 3.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "Aiden's office",
+   "type": "action",
+   "action": "Close-up of Aiden's hand dialing on the desk phone",
+   "broll": "no",
+   "why": "Dialing is a story detail and must not be shown early or twice.",
+   "lips": 0.0,
+   "scene": "Aiden alone, picks up the phone",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": ""
+  },
+  {
+   "n": 95,
+   "start": 390.4,
+   "end": 395.84,
+   "length": 5.44,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "Charlotte's office",
+   "type": "talking",
+   "action": "Charlotte answers the phone and speaks",
+   "broll": "no",
+   "why": "Her mouth is speaking, and this is the moment she answers the call.",
+   "lips": 2.32,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Charlotte's office",
+   "same_scene": false,
+   "used": [
+    "07:48.80",
+    "07:49.13",
+    "07:49.70"
+   ],
+   "in_first": false,
+   "text": "Aiden? What's going on? Charlotte picked up on the other end of the phone."
+  },
+  {
+   "n": 96,
+   "start": 395.84,
+   "end": 403.6,
+   "length": 7.76,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks on the desk phone, saying he has something to tell her",
+   "broll": "no",
+   "why": "His mouth is speaking the key line of the call.",
+   "lips": 3.76,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:49.70",
+    "07:53.20",
+    "07:53.88",
+    "07:55.78"
+   ],
+   "in_first": false,
+   "text": "Charlotte picked up on the other end of the phone. Aiden's voice was shaky. Hey, um, I have to tell you something. What?"
+  },
+  {
+   "n": 97,
+   "start": 403.6,
+   "end": 409.44,
+   "length": 5.84,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte answers the phone, asking what's going on",
+   "broll": "no",
+   "why": "She is speaking dialogue on the call.",
+   "lips": 4.24,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "07:58.36",
+    "07:59.14"
+   ],
+   "in_first": false,
+   "text": "What? What's going on? You sound worried, Aiden. Charlotte stammered."
+  },
+  {
+   "n": 98,
+   "start": 409.44,
+   "end": 411.36,
+   "length": 1.92,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden looks down and says 'It's Ava' on the phone",
+   "broll": "no",
+   "why": "He delivers a story line and the caption shows it.",
+   "lips": 0.72,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:01.38",
+    "08:02.04"
+   ],
+   "in_first": false,
+   "text": "It's Ava."
+  },
+  {
+   "n": 99,
+   "start": 411.36,
+   "end": 414.16,
+   "length": 2.8,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Charlotte listens on the phone with a serious face, pausing before replying",
+   "broll": "yes",
+   "why": "She is a silent listening reaction that fits elsewhere in the call.",
+   "lips": 0.04,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:02.04",
+    "08:03.55"
+   ],
+   "in_first": false,
+   "text": "After a long pause, Charlotte replied, What about her?"
+  },
+  {
+   "n": 100,
+   "start": 414.16,
+   "end": 415.2,
+   "length": 1.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden listens on the phone with a worried look",
+   "broll": "yes",
+   "why": "It is a worried listening face with no story action, usable elsewhere in the call.",
+   "lips": 0.52,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:03.55"
+   ],
+   "in_first": false,
+   "text": "After a long pause, Charlotte replied, What about her?"
+  },
+  {
+   "n": 101,
+   "start": 415.2,
+   "end": 419.28,
+   "length": 4.08,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte closes her laptop and asks 'What about her? Have you talked to her recently?'",
+   "broll": "no",
+   "why": "She speaks and closes the laptop, which is a story moment.",
+   "lips": 3.12,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:06.34",
+    "08:07.38",
+    "08:08.56",
+    "08:09.88"
+   ],
+   "in_first": false,
+   "text": "After a long pause, Charlotte replied, What about her? Have you talked to her recently? Aiden ran his fingers along the back of his neck."
+  },
+  {
+   "n": 102,
+   "start": 419.28,
+   "end": 424.88,
+   "length": 5.6,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden rubs the back of his neck while holding the phone away from his ear",
+   "broll": "no",
+   "why": "The neck-rubbing and sweat gesture is a story moment that the narration describes here, so it should not be reused elsewhere.",
+   "lips": 0.56,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:11.07",
+    "08:12.84"
+   ],
+   "in_first": false,
+   "text": "Aiden ran his fingers along the back of his neck. Large beads of sweat were rolling down his back."
+  },
+  {
+   "n": 103,
+   "start": 424.88,
+   "end": 427.84,
+   "length": 2.96,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte talks on the phone, then closes her eyes",
+   "broll": "no",
+   "why": "Her mouth is speaking in a phone dialogue, so it is a talking shot.",
+   "lips": 2.08,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:15.05",
+    "08:16.16",
+    "08:16.41",
+    "08:17.00"
+   ],
+   "in_first": false,
+   "text": "No? Why?"
+  },
+  {
+   "n": 104,
+   "start": 427.84,
+   "end": 433.04,
+   "length": 5.2,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden talks on the desk phone with his hand on his neck, then sighs",
+   "broll": "no",
+   "why": "He is clearly speaking the dialogue line about the photos.",
+   "lips": 2.52,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:17.21",
+    "08:18.70",
+    "08:19.66"
+   ],
+   "in_first": false,
+   "text": "Someone took photos of us at the gym. Aiden sighed heavily."
+  },
+  {
+   "n": 105,
+   "start": 433.04,
+   "end": 440.0,
+   "length": 6.96,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks into the phone in a close-up in front of the SafeTech logo",
+   "broll": "no",
+   "why": "He is speaking the lines 'Now she thinks we're having an affair' and 'What are we going to do, Charlotte?'",
+   "lips": 4.76,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:19.66",
+    "08:22.40",
+    "08:24.04",
+    "08:24.69",
+    "08:25.60"
+   ],
+   "in_first": false,
+   "text": "Now she thinks we're having an affair. What are we going to do, Charlotte?"
+  },
+  {
+   "n": 106,
+   "start": 440.0,
+   "end": 447.12,
+   "length": 7.12,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte talks on her phone and asks if Ava is spying on them",
+   "broll": "no",
+   "why": "Her mouth is speaking dialogue that moves the story forward.",
+   "lips": 5.12,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:25.60",
+    "08:26.86",
+    "08:31.34"
+   ],
+   "in_first": false,
+   "text": "Wait a minute. Do you think she's spying on us? Charlotte sputtered. Aiden nodded."
+  },
+  {
+   "n": 107,
+   "start": 447.12,
+   "end": 450.0,
+   "length": 2.88,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden says 'Who else would it be?' on the desk phone",
+   "broll": "no",
+   "why": "He is clearly speaking a dialogue line.",
+   "lips": 1.92,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:32.31",
+    "08:33.42"
+   ],
+   "in_first": false,
+   "text": "Aiden nodded. Who else would it be?"
+  },
+  {
+   "n": 108,
+   "start": 450.0,
+   "end": 452.0,
+   "length": 2.0,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "listens on the phone with a tense, worried face during the silence",
+   "broll": "yes",
+   "why": "Silent listening reaction on the phone that can be cut in elsewhere in the call.",
+   "lips": 0.56,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:34.66"
+   ],
+   "in_first": false,
+   "text": "There was another long silence."
+  },
+  {
+   "n": 109,
+   "start": 452.0,
+   "end": 457.44,
+   "length": 5.44,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "asks on the phone what was in the picture",
+   "broll": "no",
+   "why": "She speaks a story line, so it is not B-roll.",
+   "lips": 1.36,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:34.66",
+    "08:39.12",
+    "08:41.18"
+   ],
+   "in_first": false,
+   "text": "What was in the picture? Charlotte asked, when she finally spoke again."
+  },
+  {
+   "n": 110,
+   "start": 457.44,
+   "end": 462.0,
+   "length": 4.56,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "explains the picture and points to the bruises on his forehead",
+   "broll": "no",
+   "why": "He speaks and does a story gesture, pointing to the bruises.",
+   "lips": 4.08,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:41.18",
+    "08:42.19",
+    "08:44.78"
+   ],
+   "in_first": false,
+   "text": "It was a picture of when you leaned in to look at the bruises on my head."
+  },
+  {
+   "n": 111,
+   "start": 462.0,
+   "end": 464.72,
+   "length": 2.72,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "close-up of his eyes as he sighs and blinks",
+   "broll": "yes",
+   "why": "A face-only close-up of a sigh that fits other moments in the call without repeating a story event.",
+   "lips": 0.04,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:44.78",
+    "08:47.25"
+   ],
+   "in_first": false,
+   "text": "Aiden sighed. From the right angle, it looks like you're leaning in to kiss me."
+  },
+  {
+   "n": 112,
+   "start": 464.72,
+   "end": 471.12,
+   "length": 6.4,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "speaks on the phone at his desk, then stands and leans on it",
+   "broll": "no",
+   "why": "He is speaking story dialogue and moving at the desk.",
+   "lips": 5.6,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:47.25",
+    "08:50.42",
+    "08:51.14",
+    "08:53.94"
+   ],
+   "in_first": false,
+   "text": "From the right angle, it looks like you're leaning in to kiss me. I tried to explain it all to her, but she wouldn't believe me. and now she's furious with me and with you."
+  },
+  {
+   "n": 113,
+   "start": 471.12,
+   "end": 474.4,
+   "length": 3.28,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "says she is furious with him and with Ava",
+   "broll": "no",
+   "why": "Clear speaking shot that carries story dialogue.",
+   "lips": 3.28,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:53.94"
+   ],
+   "in_first": false,
+   "text": "I tried to explain it all to her, but she wouldn't believe me. and now she's furious with me and with you."
+  },
+  {
+   "n": 114,
+   "start": 474.4,
+   "end": 480.24,
+   "length": 5.84,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte speaks upset on the phone, shaky and worried",
+   "broll": "no",
+   "why": "Her mouth is clearly speaking and she is the active speaker in the call.",
+   "lips": 3.88,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "08:53.94",
+    "08:58.05",
+    "09:00.57"
+   ],
+   "in_first": false,
+   "text": "Charlotte's breath was shaky on the other end of the phone."
+  },
+  {
+   "n": 115,
+   "start": 480.24,
+   "end": 483.84,
+   "length": 3.6,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden asks on the desk phone what he should do",
+   "broll": "no",
+   "why": "His mouth clearly speaks and the line is a story dialogue moment.",
+   "lips": 3.2,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:03.94",
+    "09:04.90",
+    "09:05.94"
+   ],
+   "in_first": false,
+   "text": "What should I do, Shar?"
+  },
+  {
+   "n": 116,
+   "start": 483.84,
+   "end": 487.2,
+   "length": 3.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "neutral",
+   "action": "Aiden stands at his desk by the window holding the corded phone, face not visible",
+   "broll": "yes",
+   "why": "Torso-only shot of him waiting on the phone with no story event, so it can be cut in elsewhere in the call.",
+   "lips": 0.04,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:05.94"
+   ],
+   "in_first": false,
+   "text": "Aiden waited patiently for her reply."
+  },
+  {
+   "n": 117,
+   "start": 487.2,
+   "end": 490.16,
+   "length": 2.96,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Charlotte listens on the phone with a tense, serious look",
+   "broll": "yes",
+   "why": "Close-up of her listening and reacting with no specific action, usable elsewhere in the call.",
+   "lips": 0.48,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:05.94"
+   ],
+   "in_first": false,
+   "text": "Charlotte exhaled sharply on the other end of the phone."
+  },
+  {
+   "n": 118,
+   "start": 490.16,
+   "end": 493.84,
+   "length": 3.68,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte reassures Aiden that she will sort it out",
+   "broll": "no",
+   "why": "She is clearly speaking and the line is a story dialogue moment.",
+   "lips": 2.96,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:05.94",
+    "09:11.98",
+    "09:13.00",
+    "09:13.36",
+    "09:14.68"
+   ],
+   "in_first": false,
+   "text": "Don't worry, Aiden. I'll find a way to sort this out."
+  },
+  {
+   "n": 119,
+   "start": 493.84,
+   "end": 498.8,
+   "length": 4.96,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden frowns and asks 'How?' on the phone",
+   "broll": "no",
+   "why": "He speaks with a visible mouth and the line is a story dialogue moment.",
+   "lips": 2.84,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:14.68",
+    "09:18.18",
+    "09:18.68"
+   ],
+   "in_first": false,
+   "text": "Aiden furrowed his brow. Really? How? Just trust me, okay?"
+  },
+  {
+   "n": 120,
+   "start": 498.8,
+   "end": 503.28,
+   "length": 4.48,
+   "people": [
+    "Charlotte"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Charlotte finishes the phone call, then lowers the phone and looks at it",
+   "broll": "no",
+   "why": "She speaks on the phone and then ends the call, which is a story beat.",
+   "lips": 2.92,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:21.26",
+    "09:22.28",
+    "09:22.78"
+   ],
+   "in_first": false,
+   "text": "Just trust me, okay? I'll find a way to make this right."
+  },
+  {
+   "n": 121,
+   "start": 503.28,
+   "end": 506.64,
+   "length": 3.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden stands at the window holding the corded phone, face out of frame, the call just ended",
+   "broll": "no",
+   "why": "It shows the phone-call ending, which is a story moment, and his face is not visible.",
+   "lips": 0.0,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:24.06"
+   ],
+   "in_first": false,
+   "text": "Charlotte hung up. An Aiden was suddenly alone again in his office."
+  },
+  {
+   "n": 122,
+   "start": 506.64,
+   "end": 512.96,
+   "length": 6.32,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden hangs up the phone and leans over the desk, breathing deeply",
+   "broll": "no",
+   "why": "He hangs up and rubs his temples, which is a specific story action.",
+   "lips": 1.4,
+   "scene": "Phone call between Aiden and Charlotte",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:24.06",
+    "09:28.15",
+    "09:29.36"
+   ],
+   "in_first": false,
+   "text": "An Aiden was suddenly alone again in his office. Shit! He rubbed his temples, inhaling and exhaling deeply."
+  },
+  {
+   "n": 123,
+   "start": 512.96,
+   "end": 516.32,
+   "length": 3.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden sits down behind his laptop at the desk",
+   "broll": "no",
+   "why": "Sitting down is a story action and only happens once.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:34.36",
+    "09:35.13"
+   ],
+   "in_first": false,
+   "text": "As he sat at his desk, staring into space, his eyes landed on the safe in his office."
+  },
+  {
+   "n": 124,
+   "start": 516.32,
+   "end": 521.68,
+   "length": 5.36,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden sits in his chair with a fist at his chin, thinking and staring off",
+   "broll": "yes",
+   "why": "It is a pensive, silent look with no story event, so it could be cut in elsewhere in the scene.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:35.13",
+    "09:41.00",
+    "09:42.16"
+   ],
+   "in_first": false,
+   "text": "As he sat at his desk, staring into space, his eyes landed on the safe in his office. He suddenly remembered the briefcase that Maximilian had given him."
+  },
+  {
+   "n": 125,
+   "start": 521.68,
+   "end": 523.92,
+   "length": 2.24,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Close-up of Aiden thinking, closing his eyes and then looking up",
+   "broll": "yes",
+   "why": "It is a thoughtful face with no story action, so it works as a cutaway in this office scene.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:42.16",
+    "09:45.75"
+   ],
+   "in_first": false,
+   "text": "He suddenly remembered the briefcase that Maximilian had given him. I still need to go through those files, and I need a distraction."
+  },
+  {
+   "n": 126,
+   "start": 523.92,
+   "end": 528.96,
+   "length": 5.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Aiden speaks from behind his laptop, then stands up",
+   "broll": "no",
+   "why": "His mouth is speaking the dialogue, and he starts to get up, which is a story moment.",
+   "lips": 1.96,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:45.75",
+    "09:47.84",
+    "09:49.84"
+   ],
+   "in_first": false,
+   "text": "I still need to go through those files, and I need a distraction. He got up and opened the safe."
+  },
+  {
+   "n": 127,
+   "start": 528.96,
+   "end": 532.8,
+   "length": 3.84,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden types a code on the safe keypad, which shows access denied",
+   "broll": "no",
+   "why": "This is a specific story action, opening the safe, and it shows a result on screen.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:49.84",
+    "09:53.61"
+   ],
+   "in_first": false,
+   "text": "He got up and opened the safe. He brought the briefcase to his desk and began rifling through the files, thinking about all of the different companies he now controlled as head of the Tiger Group."
+  },
+  {
+   "n": 128,
+   "start": 532.8,
+   "end": 536.96,
+   "length": 4.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden walks to his desk carrying the briefcase and sets it down",
+   "broll": "no",
+   "why": "Bringing the briefcase to the desk is a story action that should only be shown at its own moment.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:53.61",
+    "09:58.93"
+   ],
+   "in_first": false,
+   "text": "He brought the briefcase to his desk and began rifling through the files, thinking about all of the different companies he now controlled as head of the Tiger Group."
+  },
+  {
+   "n": 129,
+   "start": 536.96,
+   "end": 542.0,
+   "length": 5.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden looks through papers from the briefcase",
+   "broll": "no",
+   "why": "Rifling through the files is the story action, and cutting it in elsewhere would show it too early or twice.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "09:58.93",
+    "10:06.55"
+   ],
+   "in_first": false,
+   "text": "He brought the briefcase to his desk and began rifling through the files, thinking about all of the different companies he now controlled as head of the Tiger Group."
+  },
+  {
+   "n": 130,
+   "start": 542.0,
+   "end": 548.24,
+   "length": 6.24,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden reads a document with a focused, thoughtful look",
+   "broll": "yes",
+   "why": "This is a close-up of a face reading and thinking, and it fits anywhere in the desk scene without showing a new event.",
+   "lips": 0.16,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:06.55",
+    "10:08.59",
+    "10:13.57"
+   ],
+   "in_first": false,
+   "text": "There's so much I could do with this money. So many different ways the Tiger Group and Chicago could benefit."
+  },
+  {
+   "n": 131,
+   "start": 548.24,
+   "end": 551.76,
+   "length": 3.52,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden looks down and reads through the pile of pages",
+   "broll": "yes",
+   "why": "It is a generic reading reaction at the desk and does not show the discovery of his father's name.",
+   "lips": 0.32,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:13.57",
+    "10:17.65"
+   ],
+   "in_first": false,
+   "text": "So many different ways the Tiger Group and Chicago could benefit. As he flipped through the pile, he spotted his father's name on one of the documents."
+  },
+  {
+   "n": 132,
+   "start": 551.76,
+   "end": 554.08,
+   "length": 2.32,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "reads a document showing 'Samuel Gibson', seen from behind",
+   "broll": "no",
+   "why": "Finding his father's name on the document is a story moment that should not be shown early or twice.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:22.93",
+    "10:25.53"
+   ],
+   "in_first": false,
+   "text": "As he flipped through the pile, he spotted his father's name on one of the documents. He teared up slightly."
+  },
+  {
+   "n": 133,
+   "start": 554.08,
+   "end": 562.4,
+   "length": 8.32,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "looks down sadly, then wipes his teary eye with his hand",
+   "broll": "yes",
+   "why": "This is an emotional reaction with no story event, so it can be cut in elsewhere in the scene.",
+   "lips": 1.8,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:27.74",
+    "10:33.58",
+    "10:35.41",
+    "10:36.84",
+    "10:38.36"
+   ],
+   "in_first": false,
+   "text": "He teared up slightly. I wish I still had my dad though. I'd give up all of this just to have him back."
+  },
+  {
+   "n": 134,
+   "start": 562.4,
+   "end": 565.6,
+   "length": 3.2,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "close-up of his face, eyes darting, noticing something",
+   "broll": "no",
+   "why": "It shows the moment he notices the new file, which is tied to the story beat, and his mouth is moving.",
+   "lips": 0.12,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:38.36"
+   ],
+   "in_first": false,
+   "text": "Toward the bottom of the stack, he came across one last file that he hadn't noticed before."
+  },
+  {
+   "n": 135,
+   "start": 565.6,
+   "end": 570.64,
+   "length": 5.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "takes a file from the briefcase and says 'What's this?'",
+   "broll": "no",
+   "why": "He speaks and discovers the file, which is a story action.",
+   "lips": 0.76,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:38.36",
+    "10:45.91"
+   ],
+   "in_first": false,
+   "text": "Toward the bottom of the stack, he came across one last file that he hadn't noticed before. What's this?"
+  },
+  {
+   "n": 136,
+   "start": 570.64,
+   "end": 576.64,
+   "length": 6.0,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "pulls the paper out of the briefcase and looks at it",
+   "broll": "no",
+   "why": "Pulling out the file is a specific story action that belongs at its own moment.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:45.91",
+    "10:48.64",
+    "10:50.59",
+    "10:52.30"
+   ],
+   "in_first": false,
+   "text": "One of the names printed on the paper stuck out to him. He pulled out the file. Sure enough, his eyes weren't deceiving him."
+  },
+  {
+   "n": 137,
+   "start": 576.64,
+   "end": 581.68,
+   "length": 5.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "extreme close-up of his eyes, frowning as he reads and realizes",
+   "broll": "yes",
+   "why": "A close-up of his eyes with no object or event could be used as a generic reaction shot.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [
+    "10:53.51",
+    "10:58.26",
+    "11:00.05"
+   ],
+   "in_first": false,
+   "text": "Sure enough, his eyes weren't deceiving him. This file is on Derek's company."
+  },
+  {
+   "n": 138,
+   "start": 581.68,
+   "end": 590.0,
+   "length": 8.32,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden reads the stack of documents about Derek's company",
+   "broll": "no",
+   "why": "The file reveal (Tiger Group's 70% stake) is a story moment, so it should not be reused as B-roll.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "To Aiden's surprise, it turned out that the Tiger Group had about a 70 stake in Derek's company, daring industries."
+  },
+  {
+   "n": 139,
+   "start": 590.0,
+   "end": 593.04,
+   "length": 3.04,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "action",
+   "action": "Aiden flips through papers from a briefcase on his desk",
+   "broll": "no",
+   "why": "He is going through documents, a story action tied to the discovery, so it should not appear twice or too early.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "Aiden's mind was racing. So, looks like Derek may owe some favors to the Tiger Group."
+  },
+  {
+   "n": 140,
+   "start": 593.04,
+   "end": 599.2,
+   "length": 6.16,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden sits with fingers steepled, thinking",
+   "broll": "yes",
+   "why": "A calm thinking reaction with no story event, so it can be cut in elsewhere in the office scene.",
+   "lips": 0.0,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "So, looks like Derek may owe some favors to the Tiger Group. After being kidnapped by Derek's thugs, I've got a score to settle."
+  },
+  {
+   "n": 141,
+   "start": 599.2,
+   "end": 607.04,
+   "length": 7.84,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden gazes out the window at the city, deep in thought",
+   "broll": "yes",
+   "why": "A neutral contemplative look in the same office that works as a cutaway.",
+   "lips": 0.56,
+   "scene": "Aiden searches the briefcase and documents",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "After being kidnapped by Derek's thugs, I've got a score to settle. And it looks like I've finally figured out the perfect way to get my revenge."
+  },
+  {
+   "n": 142,
+   "start": 607.04,
+   "end": 614.16,
+   "length": 7.12,
+   "people": [
+    "Aiden",
+    "a woman seen from behind with long dark hair"
+   ],
+   "place": "office and car",
+   "type": "reaction",
+   "action": "Aiden sits with his eyes closed, then a flashback shows a man in a car looking at a woman",
+   "broll": "no",
+   "why": "It mixes in a car flashback, which is a separate story moment, so it is not safe to reuse.",
+   "lips": 0.72,
+   "scene": "Aiden remembers a flashback",
+   "location": "mixed",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "Who took the photos of Aiden and Charlotte together? Will Ava ever get over it?"
+  },
+  {
+   "n": 143,
+   "start": 614.16,
+   "end": 616.0,
+   "length": 1.84,
+   "people": [
+    "Ava",
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "talking",
+   "action": "Ava speaks to Aiden, who is seen from behind",
+   "broll": "no",
+   "why": "Ava is clearly speaking, so this is dialogue and not B-roll.",
+   "lips": 1.84,
+   "scene": "Aiden remembers a flashback",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "Will Ava ever get over it?"
+  },
+  {
+   "n": 144,
+   "start": 616.0,
+   "end": 618.24,
+   "length": 2.24,
+   "people": [
+    "Aiden"
+   ],
+   "place": "office",
+   "type": "reaction",
+   "action": "Aiden sits at his desk with eyes closed, then opens them with a serious look",
+   "broll": "yes",
+   "why": "It is a face-only moment with no story action or speech, so it can be cut in elsewhere in the office scene.",
+   "lips": 0.04,
+   "scene": "Aiden remembers a flashback",
+   "location": "Aiden's office",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "How will Aiden get revenge on Derek for kidnapping him?"
+  },
+  {
+   "n": 145,
+   "start": 618.24,
+   "end": 627.136,
+   "length": 8.9,
+   "people": [
+    "Aiden",
+    "a blond man in a white blazer and black shirt holding a glass of red wine"
+   ],
+   "place": "upscale lounge/bar, then a glass-walled room",
+   "type": "reaction",
+   "action": "A blond man sits on a sofa with a wine glass, then Aiden looks shocked in front of glass windows",
+   "broll": "no",
+   "why": "It mixes a new character (likely Derek) with a closing promo moment, so it is not neutral filler for another part of the scene.",
+   "lips": 0.0,
+   "scene": "Lounge with the blond man",
+   "location": "mixed",
+   "same_scene": false,
+   "used": [],
+   "in_first": false,
+   "text": "How will Aiden get revenge on Derek for kidnapping him? Keep listening to Find Out More, the Godfather's Son, only on the Pocket FM app."
+  }
+ ]
+}

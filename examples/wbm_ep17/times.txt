@@ -1,0 +1,15 @@
+mksrt_it 89 s
+mksrt_en 66 s
+words 1 s
+analyze 20 s
+render 82 s
+verify 23 s
+bookends 40 s
+subs_it 172 s
+translate 23 s
+subs_en 0 s
+subs_en 170 s
+rerender+verify 31 s
+subs_it3 12 s
+subs_en2 142 s
+subs_en3 41 s

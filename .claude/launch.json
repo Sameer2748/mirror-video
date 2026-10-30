@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dubstudio",
+      "runtimeExecutable": "/Users/manish/Downloads/dub-studioo/app/scripts/start.sh",
+      "runtimeArgs": [
+        "--no-open"
+      ],
+      "port": 8765
+    }
+  ]
+}

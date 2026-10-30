@@ -1,0 +1,3422 @@
+{
+ "total_ms": 614091,
+ "segments": [
+  {
+   "kind": "clip",
+   "it_idx": 0,
+   "it_start_ms": 0,
+   "it_end_ms": 2050,
+   "us_start_ms": 1090,
+   "us_end_ms": 3803.8,
+   "it_text": "Lorenzo osservava Emma dall'auto.",
+   "us_text": "Ethan beobachtete Emily vom Auto aus.",
+   "orig": [
+    30,
+    1720,
+    1090,
+    3380
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.755
+  },
+  {
+   "kind": "clip",
+   "it_idx": 1,
+   "it_start_ms": 2050,
+   "it_end_ms": 7270,
+   "us_start_ms": 3803.8,
+   "us_end_ms": 8620,
+   "it_text": "La guardò attraversare la strada con passo deciso, chiedendosi dove fosse diretta.",
+   "us_text": "Als sie zielstrebig die Straße überquerte, fragte er sich wo sie denn wohl hinwollte.",
+   "orig": [
+    2050,
+    6310,
+    4100,
+    8620
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.084
+  },
+  {
+   "kind": "clip",
+   "it_idx": 2,
+   "it_start_ms": 7270,
+   "it_end_ms": 11660,
+   "us_start_ms": 9700.0,
+   "us_end_ms": 14467.361581156085,
+   "it_text": "Quando la vide puntare dritta verso una macelleria, il suo sguardo si addolcì.",
+   "us_text": "Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.",
+   "orig": [
+    7270,
+    10977,
+    9700.0,
+    14467.361581156085
+   ],
+   "stretch_factor": 0.921
+  },
+  {
+   "kind": "clip",
+   "it_idx": 3,
+   "it_start_ms": 11660,
+   "it_end_ms": 16150,
+   "us_start_ms": 14467.361581156085,
+   "us_end_ms": 19200,
+   "it_text": "Un sorriso gli spuntò sulle labbra, prima ancora di riuscire a reprimerlo.",
+   "us_text": "Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.",
+   "orig": [
+    11660,
+    15340,
+    14467.361581156085,
+    19200
+   ],
+   "stretch_factor": 0.949
+  },
+  {
+   "kind": "clip",
+   "it_idx": 4,
+   "it_start_ms": 16150,
+   "it_end_ms": 17700,
+   "us_start_ms": 20980,
+   "us_end_ms": 22495.0,
+   "it_text": "Arrosto di vitello.",
+   "us_text": "Schweinebraten.",
+   "orig": [
+    16150,
+    17220,
+    20980,
+    22060
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.023
+  },
+  {
+   "kind": "clip",
+   "it_idx": 5,
+   "it_start_ms": 17700,
+   "it_end_ms": 23860,
+   "us_start_ms": 22495.0,
+   "us_end_ms": 28840,
+   "it_text": "Aveva davvero scoperto il suo piatto preferito, senza che lui le avesse mai detto nulla?",
+   "us_text": "Hatte sie wirklich sein Lieblingsgericht herausgefunden, obwohl er bisher nie ein Wort darüber verloren hatte?",
+   "orig": [
+    17700,
+    22360,
+    22930,
+    28840
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.971
+  },
+  {
+   "kind": "clip",
+   "it_idx": 6,
+   "it_start_ms": 23860,
+   "it_end_ms": 25220,
+   "us_start_ms": 30450,
+   "us_end_ms": 31500,
+   "it_text": "Sospirò.",
+   "us_text": "Er seufzte kurz.",
+   "orig": [
+    23860,
+    24420,
+    30450,
+    31500
+   ],
+   "stretch_factor": 1.295
+  },
+  {
+   "kind": "clip",
+   "it_idx": 7,
+   "it_start_ms": 25220,
+   "it_end_ms": 29800,
+   "us_start_ms": 32700,
+   "us_end_ms": 36720,
+   "it_text": "Se lei faceva un passo verso di lui, lui poteva ricambiare.",
+   "us_text": "Wenn sie etwas für ihn tat, konnte er ja auch mal etwas für sie tun.",
+   "orig": [
+    25220,
+    28660,
+    32700,
+    36720
+   ],
+   "stretch_factor": 1.139
+  },
+  {
+   "kind": "clip",
+   "it_idx": 8,
+   "it_start_ms": 29800,
+   "it_end_ms": 36440,
+   "us_start_ms": 38230,
+   "us_end_ms": 44420,
+   "it_text": "La seguì con lo sguardo finché non sparì nel negozio, poi tirò fuori il cellulare e chiamò Daniele.",
+   "us_text": "Er schaut ihr noch kurz nach und kaum war sie im Laden verschwunden, zog er sein Handy heraus und wählte Daniels Nummer.",
+   "orig": [
+    29800,
+    35280,
+    38230,
+    44420
+   ],
+   "stretch_factor": 1.073
+  },
+  {
+   "kind": "clip",
+   "it_idx": 9,
+   "it_start_ms": 36440,
+   "it_end_ms": 42180,
+   "us_start_ms": 45800,
+   "us_end_ms": 52230,
+   "it_text": "«Daniele, devi muovere qualche filo per me», disse Lorenzo appena l'altro rispose.",
+   "us_text": "„Hey Daniel, du musst ein paar Fäden für mich ziehen\", sagte Ethan, als Daniel das Gespräch annahm.",
+   "orig": [
+    36440,
+    41380,
+    45800,
+    52230
+   ],
+   "stretch_factor": 0.893
+  },
+  {
+   "kind": "clip",
+   "it_idx": 10,
+   "it_start_ms": 42180,
+   "it_end_ms": 48620,
+   "us_start_ms": 53660,
+   "us_end_ms": 60220,
+   "it_text": "«Fai entrare la ICM Design nella gara d'appalto per il Polo dell'Innovazione Lombardo.»",
+   "us_text": "„Bring ICM Design ins Rennen um das Projekt für die Umgestaltung des California Culture and Technology Centers.\"",
+   "orig": [
+    42180,
+    47180,
+    53660,
+    60220
+   ],
+   "stretch_factor": 0.982
+  },
+  {
+   "kind": "clip",
+   "it_idx": 11,
+   "it_start_ms": 48620,
+   "it_end_ms": 51500,
+   "us_start_ms": 61770,
+   "us_end_ms": 63940,
+   "it_text": "Dall'altra parte cadde il silenzio.",
+   "us_text": "Am anderen Ende herrschte kurzes Schweigen.",
+   "orig": [
+    48620,
+    50340,
+    61770,
+    63940
+   ],
+   "stretch_factor": 1.327
+  },
+  {
+   "kind": "clip",
+   "it_idx": 12,
+   "it_start_ms": 51500,
+   "it_end_ms": 53450,
+   "us_start_ms": 66220,
+   "us_end_ms": 67438.75,
+   "it_text": "«La ICM Design?»",
+   "us_text": "„ICM Design?“",
+   "orig": [
+    51500,
+    52760,
+    66220,
+    67420
+   ],
+   "stretch_factor": 1.6
+  },
+  {
+   "kind": "clip",
+   "it_idx": 13,
+   "it_start_ms": 53450,
+   "it_end_ms": 55050,
+   "us_start_ms": 68710,
+   "us_end_ms": 70760.0,
+   "it_text": "Daniele sbuffò.",
+   "us_text": "Daniel schnaubte ungläubig.",
+   "orig": [
+    53450,
+    54300,
+    68710,
+    70340
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.78
+  },
+  {
+   "kind": "clip",
+   "it_idx": 14,
+   "it_start_ms": 55050,
+   "it_end_ms": 55880,
+   "us_start_ms": 70760.0,
+   "us_end_ms": 72507.80249999999,
+   "it_text": "«Quella aziendina?",
+   "us_text": "„Diese kleine Klitsche?",
+   "orig": [
+    55050,
+    55880,
+    71180,
+    72440
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.475
+  },
+  {
+   "kind": "clip",
+   "it_idx": 15,
+   "it_start_ms": 55880,
+   "it_end_ms": 59185,
+   "us_start_ms": 72507.80249999999,
+   "us_end_ms": 74641.23,
+   "it_text": "È un progetto fuori dalla loro portata.»",
+   "us_text": "Das ist doch drei Nummern zu groß für die.”",
+   "orig": [
+    55880,
+    58380,
+    73140,
+    75080
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.549
+  },
+  {
+   "kind": "clip",
+   "it_idx": 16,
+   "it_start_ms": 59185,
+   "it_end_ms": 64070,
+   "us_start_ms": 76230,
+   "us_end_ms": 80547.133,
+   "it_text": "Si fermò un istante, intuendo dove volesse arrivare.",
+   "us_text": "Er hielt kurz inne, dann dämmerte ihm, worauf Ethan hinaus wollte.",
+   "orig": [
+    59990,
+    63160,
+    76230,
+    79880
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.132
+  },
+  {
+   "kind": "clip",
+   "it_idx": 17,
+   "it_start_ms": 64070,
+   "it_end_ms": 67220,
+   "us_start_ms": 80547.133,
+   "us_end_ms": 83526.1686746988,
+   "it_text": "La sua voce si caricò di incredulità.",
+   "us_text": "Ungläubigkeit sprach aus ihm, als er fortfuhr: \"Kann es sein, dass du Emily Kaiser hilfst?",
+   "orig": [
+    64070,
+    66040,
+    80640.0,
+    83526.1686746988
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.057
+  },
+  {
+   "kind": "clip",
+   "it_idx": 18,
+   "it_start_ms": 67220,
+   "it_end_ms": 69990,
+   "us_start_ms": 83526.1686746988,
+   "us_end_ms": 87110.0,
+   "it_text": "«Non dirmi che stai aiutando Emma Reali.",
+   "us_text": "Ungläubigkeit sprach aus ihm, als er fortfuhr: \"Kann es sein, dass du Emily Kaiser hilfst?",
+   "orig": [
+    67220,
+    69400,
+    83526.1686746988,
+    86720
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.773
+  },
+  {
+   "kind": "clip",
+   "it_idx": 19,
+   "it_start_ms": 69990,
+   "it_end_ms": 72030,
+   "us_start_ms": 87110.0,
+   "us_end_ms": 90600,
+   "it_text": "Questo non è da te.»",
+   "us_text": "Mein Lieber, das ist ja nicht gerade … typisch für dich.\"",
+   "orig": [
+    69990,
+    70860,
+    87500,
+    90600
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.585
+  },
+  {
+   "kind": "clip",
+   "it_idx": 20,
+   "it_start_ms": 72030,
+   "it_end_ms": 73240,
+   "us_start_ms": 92070.0,
+   "us_end_ms": 92863.82978723405,
+   "it_text": "«Ah sì?",
+   "us_text": "„Ach ja, was ist denn typisch für mich?\"",
+   "orig": [
+    72030,
+    72440,
+    92070.0,
+    92863.82978723405
+   ],
+   "stretch_factor": 1.524
+  },
+  {
+   "kind": "clip",
+   "it_idx": 21,
+   "it_start_ms": 73240,
+   "it_end_ms": 75420,
+   "us_start_ms": 92863.82978723405,
+   "us_end_ms": 94800,
+   "it_text": "E cosa sarebbe da me?»",
+   "us_text": "„Ach ja, was ist denn typisch für mich?\"",
+   "orig": [
+    73240,
+    74240,
+    92863.82978723405,
+    94800
+   ],
+   "stretch_factor": 1.126
+  },
+  {
+   "kind": "clip",
+   "it_idx": 22,
+   "it_start_ms": 75420,
+   "it_end_ms": 77920,
+   "us_start_ms": 95890,
+   "us_end_ms": 98440,
+   "it_text": "Il tono di Lorenzo si abbassò.",
+   "us_text": "Ethans Stimme wurde um eine Nuance kälter.",
+   "orig": [
+    75420,
+    76960,
+    95890,
+    98440
+   ],
+   "stretch_factor": 0.98
+  },
+  {
+   "kind": "clip",
+   "it_idx": 23,
+   "it_start_ms": 77920,
+   "it_end_ms": 87220,
+   "us_start_ms": 99740,
+   "us_end_ms": 108260,
+   "it_text": "Daniele scelse saggiamente di tacere, anche se lconosceva benissimo la risposta: Essere freddo e calcolatore.",
+   "us_text": "Daniel entschied sich klugerweise für Schweigen, obwohl in seinem Kopf die offensichtliche Antwort widerhallte: Kalt. Berechnend.",
+   "orig": [
+    77920,
+    85760,
+    99740,
+    108260
+   ],
+   "stretch_factor": 1.092
+  },
+  {
+   "kind": "clip",
+   "it_idx": 24,
+   "it_start_ms": 87220,
+   "it_end_ms": 91520,
+   "us_start_ms": 110750.0,
+   "us_end_ms": 115547.84905660378,
+   "it_text": "Si schiarì la voce, tornando professionale.",
+   "us_text": "Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.",
+   "orig": [
+    87220,
+    90280,
+    110750.0,
+    115547.84905660378
+   ],
+   "stretch_factor": 0.896
+  },
+  {
+   "kind": "clip",
+   "it_idx": 25,
+   "it_start_ms": 91520,
+   "it_end_ms": 94390,
+   "us_start_ms": 115547.84905660378,
+   "us_end_ms": 119330.0,
+   "it_text": "«Va bene, conosco qualcuno ai vertici.",
+   "us_text": "Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.",
+   "orig": [
+    91520,
+    93760,
+    115547.84905660378,
+    119060
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.759
+  },
+  {
+   "kind": "clip",
+   "it_idx": 26,
+   "it_start_ms": 94390,
+   "it_end_ms": 96780,
+   "us_start_ms": 119330.0,
+   "us_end_ms": 122088.633,
+   "it_text": "Devo fargli vincere l'appalto?",
+   "us_text": "Soll ich das Projekt für sie festzurren?",
+   "orig": [
+    94390,
+    95840,
+    119600,
+    121280
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.866
+  },
+  {
+   "kind": "clip",
+   "it_idx": 27,
+   "it_start_ms": 96780,
+   "it_end_ms": 100670,
+   "us_start_ms": 122088.633,
+   "us_end_ms": 127779.933481153,
+   "it_text": "Guarda che partecipa anche il Gruppo Reali insieme ad altri colossi.",
+   "us_text": "Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf.\"",
+   "orig": [
+    96780,
+    100220,
+    122250.0,
+    127779.933481153
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.683
+  },
+  {
+   "kind": "clip",
+   "it_idx": 28,
+   "it_start_ms": 100670,
+   "it_end_ms": 102410,
+   "us_start_ms": 127779.933481153,
+   "us_end_ms": 129895.0,
+   "it_text": "Sarà un massacro.»",
+   "us_text": "Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf.\"",
+   "orig": [
+    100670,
+    101740,
+    127779.933481153,
+    129500
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.823
+  },
+  {
+   "kind": "clip",
+   "it_idx": 29,
+   "it_start_ms": 102410,
+   "it_end_ms": 106040,
+   "us_start_ms": 129895.0,
+   "us_end_ms": 138738.6,
+   "it_text": "La risposta di Lorenzo lo spiazzò: «Non serve.",
+   "us_text": "Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.",
+   "orig": [
+    102410,
+    105700,
+    130290,
+    138080
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.41
+  },
+  {
+   "kind": "clip",
+   "it_idx": 30,
+   "it_start_ms": 106040,
+   "it_end_ms": 108960,
+   "us_start_ms": 138738.6,
+   "us_end_ms": 140645.0,
+   "it_text": "Farla partecipare è sufficiente.»",
+   "us_text": "Dass sie mitmachen kann, muss reichen.\"",
+   "orig": [
+    106040,
+    107840,
+    138820,
+    140440
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.532
+  },
+  {
+   "kind": "clip",
+   "it_idx": 31,
+   "it_start_ms": 108960,
+   "it_end_ms": 110940,
+   "us_start_ms": 141690.0,
+   "us_end_ms": 143101.78217821784,
+   "it_text": "Fece una pausa.",
+   "us_text": "Er hielt kurz inne und fuhr dann fort: \"Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient.\"",
+   "orig": [
+    108960,
+    109800,
+    141690.0,
+    143101.78217821784
+   ],
+   "stretch_factor": 1.402
+  },
+  {
+   "kind": "clip",
+   "it_idx": 32,
+   "it_start_ms": 110940,
+   "it_end_ms": 115260,
+   "us_start_ms": 143101.78217821784,
+   "us_end_ms": 149215.733,
+   "it_text": "«Se non sa vincere con le sue forze, non se lo merita.»",
+   "us_text": "Er hielt kurz inne und fuhr dann fort: \"Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient.\"",
+   "orig": [
+    110940,
+    114140,
+    143101.78217821784,
+    148480
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.707
+  },
+  {
+   "kind": "clip",
+   "it_idx": 33,
+   "it_start_ms": 115260,
+   "it_end_ms": 118110,
+   "us_start_ms": 149215.733,
+   "us_end_ms": 151640.0,
+   "it_text": "Daniele emise un fischio sommesso.",
+   "us_text": "Daniel stieß einen leisen Pfiff aus.",
+   "orig": [
+    115260,
+    117180,
+    149240,
+    151240
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.176
+  },
+  {
+   "kind": "clip",
+   "it_idx": 34,
+   "it_start_ms": 118110,
+   "it_end_ms": 119210,
+   "us_start_ms": 151640.0,
+   "us_end_ms": 153033.75,
+   "it_text": "Spietato.",
+   "us_text": "Gnadenlos.",
+   "orig": [
+    118110,
+    118820,
+    152040,
+    152720
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.789
+  },
+  {
+   "kind": "clip",
+   "it_idx": 35,
+   "it_start_ms": 119210,
+   "it_end_ms": 121560,
+   "us_start_ms": 153033.75,
+   "us_end_ms": 154750.28938906753,
+   "it_text": "Persino con sua moglie.",
+   "us_text": "Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.",
+   "orig": [
+    119210,
+    120500,
+    153340.0,
+    154750.28938906753
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.369
+  },
+  {
+   "kind": "clip",
+   "it_idx": 36,
+   "it_start_ms": 121560,
+   "it_end_ms": 124250,
+   "us_start_ms": 154750.28938906753,
+   "us_end_ms": 157065.0,
+   "it_text": "Avrebbe voluto dirlo ad alta voce.",
+   "us_text": "Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.",
+   "orig": [
+    121560,
+    123380,
+    154750.28938906753,
+    156740
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.162
+  },
+  {
+   "kind": "clip",
+   "it_idx": 37,
+   "it_start_ms": 124250,
+   "it_end_ms": 128620,
+   "us_start_ms": 157065.0,
+   "us_end_ms": 161590.0,
+   "it_text": "Invece, si limitò a rispondere formale: «Ricevuto.",
+   "us_text": "Tatsächlich antwortete er aber nur geschäftig: „Verstanden.",
+   "orig": [
+    124250,
+    128280,
+    157390,
+    161300
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.966
+  },
+  {
+   "kind": "clip",
+   "it_idx": 38,
+   "it_start_ms": 128620,
+   "it_end_ms": 130520,
+   "us_start_ms": 161590.0,
+   "us_end_ms": 163333.75,
+   "it_text": "Me ne occupo io.»",
+   "us_text": "Ich kümmere mich darum\".",
+   "orig": [
+    128620,
+    129510,
+    161880,
+    162740
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.09
+  },
+  {
+   "kind": "clip",
+   "it_idx": 39,
+   "it_start_ms": 130520,
+   "it_end_ms": 133770,
+   "us_start_ms": 163333.75,
+   "us_end_ms": 166560,
+   "it_text": "Ma la mossa di Lorenzo lo aveva sorpreso.",
+   "us_text": "Dennoch hatte Ethans Aktion Eindruck bei ihm hinterlassen..",
+   "orig": [
+    130520,
+    132700,
+    163600,
+    166560
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.007
+  },
+  {
+   "kind": "clip",
+   "it_idx": 40,
+   "it_start_ms": 133770,
+   "it_end_ms": 140570,
+   "us_start_ms": 167570,
+   "us_end_ms": 173265.23532388662,
+   "it_text": "Pochi minuti dopo Emma tornò, stringendo un sacchetto con la migliore carne di vitello della macelleria.",
+   "us_text": "Wenige Minuten später kehrte Emily zurück, eine Tüte mit bestem Schweinefleisch in der Hand.",
+   "orig": [
+    133770,
+    139480,
+    167570,
+    172800
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.194
+  },
+  {
+   "kind": "clip",
+   "it_idx": 41,
+   "it_start_ms": 140570,
+   "it_end_ms": 141380,
+   "us_start_ms": 173265.23532388662,
+   "us_end_ms": 174236.72064777327,
+   "it_text": "«Fatto.",
+   "us_text": "„Ist erledigt. Deine Firma ist dabei\", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.",
+   "orig": [
+    140570,
+    140900,
+    173880.0,
+    174236.72064777327
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.834
+  },
+  {
+   "kind": "clip",
+   "it_idx": 42,
+   "it_start_ms": 141380,
+   "it_end_ms": 147910,
+   "us_start_ms": 174236.72064777327,
+   "us_end_ms": 180268.54251012145,
+   "it_text": "La tua azienda è dentro», disse Lorenzo con disinvoltura, mettendo via il cellulare.",
+   "us_text": "„Ist erledigt. Deine Firma ist dabei\", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.",
+   "orig": [
+    141380,
+    146960,
+    174236.72064777327,
+    180268.54251012145
+   ],
+   "stretch_factor": 1.083
+  },
+  {
+   "kind": "clip",
+   "it_idx": 43,
+   "it_start_ms": 147910,
+   "it_end_ms": 153020,
+   "us_start_ms": 180268.54251012145,
+   "us_end_ms": 184560,
+   "it_text": "Come se non avesse appena stravolto la carriera di lei con una singola chiamata.",
+   "us_text": "„Ist erledigt. Deine Firma ist dabei\", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.",
+   "orig": [
+    147910,
+    151880,
+    180268.54251012145,
+    184560
+   ],
+   "stretch_factor": 1.191
+  },
+  {
+   "kind": "clip",
+   "it_idx": 44,
+   "it_start_ms": 153020,
+   "it_end_ms": 155260,
+   "us_start_ms": 185750.0,
+   "us_end_ms": 187627.04081632654,
+   "it_text": "Lei sbatté le palpebre.",
+   "us_text": "Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?",
+   "orig": [
+    153020,
+    154320,
+    185750.0,
+    187627.04081632654
+   ],
+   "stretch_factor": 1.193
+  },
+  {
+   "kind": "clip",
+   "it_idx": 45,
+   "it_start_ms": 155260,
+   "it_end_ms": 160700,
+   "us_start_ms": 187627.04081632654,
+   "us_end_ms": 194861.333,
+   "it_text": "«Vuoi dire che la ICM Design può partecipare alla gara per il Polo dell'Innovazione?",
+   "us_text": "Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?",
+   "orig": [
+    155260,
+    159840,
+    187627.04081632654,
+    194240
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.752
+  },
+  {
+   "kind": "clip",
+   "it_idx": 46,
+   "it_start_ms": 160700,
+   "it_end_ms": 162810,
+   "us_start_ms": 194861.333,
+   "us_end_ms": 196284.375,
+   "it_text": "Così, dal nulla?»",
+   "us_text": "Einfach so?\"",
+   "orig": [
+    160700,
+    161740,
+    194920,
+    195640
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.483
+  },
+  {
+   "kind": "clip",
+   "it_idx": 47,
+   "it_start_ms": 162810,
+   "it_end_ms": 164250,
+   "us_start_ms": 196284.375,
+   "us_end_ms": 198565.033,
+   "it_text": "Lo fissò.",
+   "us_text": "Sie sah ihn mit großen Augen an.",
+   "orig": [
+    162810,
+    163360,
+    196330,
+    197920
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.631
+  },
+  {
+   "kind": "clip",
+   "it_idx": 48,
+   "it_start_ms": 164250,
+   "it_end_ms": 169310,
+   "us_start_ms": 198565.033,
+   "us_end_ms": 203548.63636363635,
+   "it_text": "Quell'uomo aveva tra le mani un potere che lei non aveva nemmeno immaginato .",
+   "us_text": "Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte. Er zuckte nur mit den Schultern.",
+   "orig": [
+    164250,
+    168160,
+    198750.0,
+    203548.63636363635
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.015
+  },
+  {
+   "kind": "clip",
+   "it_idx": 49,
+   "it_start_ms": 169310,
+   "it_end_ms": 171540,
+   "us_start_ms": 203548.63636363635,
+   "us_end_ms": 204960,
+   "it_text": "Lui fece spallucce.",
+   "us_text": "Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte. Er zuckte nur mit den Schultern.",
+   "orig": [
+    169310,
+    170460,
+    203548.63636363635,
+    204960
+   ],
+   "stretch_factor": 1.58
+  },
+  {
+   "kind": "clip",
+   "it_idx": 50,
+   "it_start_ms": 171540,
+   "it_end_ms": 174920,
+   "us_start_ms": 206450,
+   "us_end_ms": 209542.667,
+   "it_text": "«Grazie», disse lei, sincera.",
+   "us_text": "„Danke\", sagte sie aufrichtig.",
+   "orig": [
+    171540,
+    173780,
+    206450,
+    208800
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.093
+  },
+  {
+   "kind": "clip",
+   "it_idx": 51,
+   "it_start_ms": 174920,
+   "it_end_ms": 177530,
+   "us_start_ms": 209542.667,
+   "us_end_ms": 212600,
+   "it_text": "Lorenzo trattenne un sorriso.",
+   "us_text": "Seine Mundwinkel kräuselten sich zu einem schwachen Lächeln.",
+   "orig": [
+    174920,
+    176570,
+    209600,
+    212600
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.854
+  },
+  {
+   "kind": "clip",
+   "it_idx": 52,
+   "it_start_ms": 177530,
+   "it_end_ms": 178630,
+   "us_start_ms": 213680,
+   "us_end_ms": 215014.8,
+   "it_text": "«Andiamo a casa.",
+   "us_text": "„Lass uns nach Hause fahren.",
+   "orig": [
+    177530,
+    178260,
+    213680,
+    214860
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.824
+  },
+  {
+   "kind": "clip",
+   "it_idx": 53,
+   "it_start_ms": 178630,
+   "it_end_ms": 181260,
+   "us_start_ms": 215014.8,
+   "us_end_ms": 217684.133,
+   "it_text": "Voglio il mio arrosto di vitello.»",
+   "us_text": "Ich freue mich schon auf den Schweinebraten.\"",
+   "orig": [
+    178630,
+    180280,
+    215350,
+    217000
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.985
+  },
+  {
+   "kind": "clip",
+   "it_idx": 54,
+   "it_start_ms": 181260,
+   "it_end_ms": 183740,
+   "us_start_ms": 217684.133,
+   "us_end_ms": 220700,
+   "it_text": "Emma lo guardò interdetta.",
+   "us_text": "Ein gespielt überraschter Ausdruck huschte über ihr Gesicht.",
+   "orig": [
+    181260,
+    182640,
+    217790,
+    220700
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.822
+  },
+  {
+   "kind": "clip",
+   "it_idx": 55,
+   "it_start_ms": 183740,
+   "it_end_ms": 186540,
+   "us_start_ms": 221780.0,
+   "us_end_ms": 224810.3,
+   "it_text": "«Oh, ma io non volevo fare l'arrosto...",
+   "us_text": "„Oh, das hatte ich gar nicht vor… Ich dachte eher an Schweinefleisch-Kartoffel-Eintopf.\"",
+   "orig": [
+    183740,
+    185960,
+    221780.0,
+    224810.3
+   ],
+   "stretch_factor": 0.924
+  },
+  {
+   "kind": "clip",
+   "it_idx": 56,
+   "it_start_ms": 186540,
+   "it_end_ms": 189550,
+   "us_start_ms": 224810.3,
+   "us_end_ms": 227240,
+   "it_text": "Pensavo a uno stufato con le patate.»",
+   "us_text": "„Oh, das hatte ich gar nicht vor… Ich dachte eher an Schweinefleisch-Kartoffel-Eintopf.\"",
+   "orig": [
+    186540,
+    188320,
+    224810.3,
+    227240
+   ],
+   "stretch_factor": 1.239
+  },
+  {
+   "kind": "clip",
+   "it_idx": 57,
+   "it_start_ms": 189550,
+   "it_end_ms": 194845,
+   "us_start_ms": 228600,
+   "us_end_ms": 238260,
+   "it_text": "Lorenzo rimase incredulo e confuso, quasi offeso da quelle parole.",
+   "us_text": "Ethan hatte seine Mimik nicht mehr im Griff. Eine ganze Bandbreite von Emotionen durchlief sein Gesicht – Ungläubigkeit, Verwirrung und leichter Verrat.",
+   "orig": [
+    189550,
+    193700,
+    228600,
+    238260
+   ],
+   "stretch_factor": 0.548
+  },
+  {
+   "kind": "clip",
+   "it_idx": 58,
+   "it_start_ms": 194845,
+   "it_end_ms": 197690,
+   "us_start_ms": 238260,
+   "us_end_ms": 243109.5333,
+   "it_text": "Emma scoppiò a ridere.",
+   "us_text": "„Haha\" Emily konnte ihr Lachen nicht zurückhalten.",
+   "orig": [
+    195990,
+    197060,
+    238260,
+    243060
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.587
+  },
+  {
+   "kind": "clip",
+   "it_idx": 59,
+   "it_start_ms": 197690,
+   "it_end_ms": 199200,
+   "us_start_ms": 243109.5333,
+   "us_end_ms": 245150.0,
+   "it_text": "«Ti sto prendendo in giro.",
+   "us_text": "„Ich veräppel dich doch nur.",
+   "orig": [
+    197690,
+    198840,
+    243660,
+    244860
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.74
+  },
+  {
+   "kind": "clip",
+   "it_idx": 60,
+   "it_start_ms": 199200,
+   "it_end_ms": 201320,
+   "us_start_ms": 245150.0,
+   "us_end_ms": 247614.033,
+   "it_text": "Certo che faccio l'arrosto.»",
+   "us_text": "Natürlich mache ich Schweinebraten.\"",
+   "orig": [
+    199200,
+    200460,
+    245440,
+    247180
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.86
+  },
+  {
+   "kind": "clip",
+   "it_idx": 61,
+   "it_start_ms": 201320,
+   "it_end_ms": 202800,
+   "us_start_ms": 247614.033,
+   "us_end_ms": 249040,
+   "it_text": "«Emma Reali.»",
+   "us_text": "„Emily Kaiser.\"",
+   "orig": [
+    201320,
+    202220,
+    248020,
+    249040
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.038
+  },
+  {
+   "kind": "clip",
+   "it_idx": 62,
+   "it_start_ms": 202800,
+   "it_end_ms": 204590,
+   "us_start_ms": 250400,
+   "us_end_ms": 254180,
+   "it_text": "Scandì il suo nome.",
+   "us_text": "Er sprach ihren Namen laut aus und sah sie mit verengten Augen an.",
+   "orig": [
+    202800,
+    203780,
+    250400,
+    254180
+   ],
+   "stretch_factor": 0.474
+  },
+  {
+   "kind": "clip",
+   "it_idx": 63,
+   "it_start_ms": 204590,
+   "it_end_ms": 205950,
+   "us_start_ms": 255860,
+   "us_end_ms": 257030.0,
+   "it_text": "Questa donna...",
+   "us_text": "Diese Frau!",
+   "orig": [
+    204590,
+    205540,
+    255860,
+    256660
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.162
+  },
+  {
+   "kind": "clip",
+   "it_idx": 64,
+   "it_start_ms": 205950,
+   "it_end_ms": 210490,
+   "us_start_ms": 257030.0,
+   "us_end_ms": 262120,
+   "it_text": "Come osa prendermi in giro, proprio ora che le ho fatto un favore?",
+   "us_text": "Wie konnte sie es wagen, ihn zu necken, nachdem er einen Hauch von Freundlichkeit gezeigt hatte?",
+   "orig": [
+    205950,
+    209360,
+    257350,
+    262120
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.892
+  },
+  {
+   "kind": "clip",
+   "it_idx": 65,
+   "it_start_ms": 210490,
+   "it_end_ms": 212510,
+   "us_start_ms": 263500,
+   "us_end_ms": 265555.0,
+   "it_text": "Emma intuì il cambio di umore.",
+   "us_text": "Emily spürte, dass er ernster wurde.",
+   "orig": [
+    210490,
+    212000,
+    263500,
+    265220
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.983
+  },
+  {
+   "kind": "clip",
+   "it_idx": 66,
+   "it_start_ms": 212510,
+   "it_end_ms": 217920,
+   "us_start_ms": 265555.0,
+   "us_end_ms": 273840,
+   "it_text": "Gli fece una linguaccia per smorzare la tensione: «Tranquillo, avrai il tuo arrosto.",
+   "us_text": "Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.",
+   "orig": [
+    212510,
+    217320,
+    265890,
+    273840
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.653
+  },
+  {
+   "kind": "clip",
+   "it_idx": 67,
+   "it_start_ms": 217920,
+   "it_end_ms": 221280,
+   "us_start_ms": 274880,
+   "us_end_ms": 277710.767,
+   "it_text": "Tutti hanno diritto a un peccato di gola.»",
+   "us_text": "Muss doch jeder sein kleines Guilty Pleasure haben.”",
+   "orig": [
+    217920,
+    219800,
+    274880,
+    277140
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.187
+  },
+  {
+   "kind": "clip",
+   "it_idx": 68,
+   "it_start_ms": 221280,
+   "it_end_ms": 225910,
+   "us_start_ms": 277710.767,
+   "us_end_ms": 281400,
+   "it_text": "Lorenzo sbuffò, accendendo il motore con finta indifferenza.",
+   "us_text": "Er schnaubte nur und ließ vermeintlich gleichgültig den Motor an.",
+   "orig": [
+    221280,
+    224840,
+    277920,
+    281400
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.255
+  },
+  {
+   "kind": "clip",
+   "it_idx": 69,
+   "it_start_ms": 225910,
+   "it_end_ms": 231960,
+   "us_start_ms": 283230,
+   "us_end_ms": 287330,
+   "it_text": "Guidarono in silenzio per un po', finché Emma non inclinò la testa con un sorriso malizioso.",
+   "us_text": "Sie fuhren eine Weile, dann legte Emily den Kopf schief und grinste verschmitzt.",
+   "orig": [
+    225910,
+    230880,
+    283230,
+    287330
+   ],
+   "stretch_factor": 1.476
+  },
+  {
+   "kind": "clip",
+   "it_idx": 70,
+   "it_start_ms": 231960,
+   "it_end_ms": 234530,
+   "us_start_ms": 288570,
+   "us_end_ms": 290800,
+   "it_text": "«Sai cosa piace mangiare a me?»",
+   "us_text": "„Weißt du eigentlich, was ich gerne esse?\"",
+   "orig": [
+    231960,
+    233440,
+    288570,
+    290800
+   ],
+   "stretch_factor": 1.152
+  },
+  {
+   "kind": "clip",
+   "it_idx": 71,
+   "it_start_ms": 234530,
+   "it_end_ms": 238280,
+   "us_start_ms": 291900,
+   "us_end_ms": 295350.0,
+   "it_text": "«Cibo spazzatura», rispose lui all'istante.",
+   "us_text": "„Junkfood\", antwortete er, ohne zu zögern.",
+   "orig": [
+    234530,
+    237180,
+    291900,
+    294860
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.087
+  },
+  {
+   "kind": "clip",
+   "it_idx": 72,
+   "it_start_ms": 238280,
+   "it_end_ms": 240290,
+   "us_start_ms": 295350.0,
+   "us_end_ms": 299280,
+   "it_text": "Lei rimase ammutolita.",
+   "us_text": "Sie starrte ihn mit offenem Mund an, für einen Moment sprachlos.",
+   "orig": [
+    238280,
+    239460,
+    295840,
+    299280
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.511
+  },
+  {
+   "kind": "clip",
+   "it_idx": 73,
+   "it_start_ms": 240290,
+   "it_end_ms": 243140,
+   "us_start_ms": 300410,
+   "us_end_ms": 302268.8833,
+   "it_text": "E questo che diavolo significa?",
+   "us_text": "Was soll das denn jetzt?",
+   "orig": [
+    240290,
+    241640,
+    300410,
+    301500
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.533
+  },
+  {
+   "kind": "clip",
+   "it_idx": 74,
+   "it_start_ms": 243140,
+   "it_end_ms": 247260,
+   "us_start_ms": 302268.8833,
+   "us_end_ms": 311362,
+   "it_text": "Ma si riprese in fretta, decidendo di alzare la posta.",
+   "us_text": "Aber sie fing sich schnell wieder, und sie beschloss, sich noch ein bisschen weiter vorzuwagen. Ihre Lippen verzogen sich zu einem schelmischen Schmollmund.",
+   "orig": [
+    243140,
+    246380,
+    302430,
+    311362
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.453
+  },
+  {
+   "kind": "clip",
+   "it_idx": 75,
+   "it_start_ms": 247260,
+   "it_end_ms": 251610,
+   "us_start_ms": 312920,
+   "us_end_ms": 316780,
+   "it_text": "«Forse la cosa che mi piacerebbe di più mangiare... sei tu.»",
+   "us_text": "„Vielleicht würde ich ja am liebsten … dich essen.\"",
+   "orig": [
+    247260,
+    250620,
+    312920,
+    316780
+   ],
+   "stretch_factor": 1.127
+  },
+  {
+   "kind": "clip",
+   "it_idx": 76,
+   "it_start_ms": 251610,
+   "it_end_ms": 256480,
+   "us_start_ms": 318060,
+   "us_end_ms": 321720,
+   "it_text": "Gli fece l'occhiolino, caricando la voce di esagerata dolcezza.",
+   "us_text": "Sie zwinkerte, ihre Stimme triefte vor gespielter Süße.",
+   "orig": [
+    251610,
+    255280,
+    318060,
+    321720
+   ],
+   "stretch_factor": 1.331
+  },
+  {
+   "kind": "clip",
+   "it_idx": 77,
+   "it_start_ms": 256480,
+   "it_end_ms": 259460,
+   "us_start_ms": 322890,
+   "us_end_ms": 327100,
+   "it_text": "Lorenzo le lanciò un'occhiata imperscrutabile.",
+   "us_text": "Ethan warf ihr einen Seitenblick zu, sein Gesichtsausdruck undurchdringlich.",
+   "orig": [
+    256480,
+    258800,
+    322890,
+    327100
+   ],
+   "stretch_factor": 0.708
+  },
+  {
+   "kind": "clip",
+   "it_idx": 78,
+   "it_start_ms": 259460,
+   "it_end_ms": 264000,
+   "us_start_ms": 328260,
+   "us_end_ms": 331740,
+   "it_text": "«Nessuno ti ha mai detto che non si flirta con un uomo mentre guida?»",
+   "us_text": "„Hat dich niemand davor gewarnt, mit einem Mann im Auto zu flirten?\"",
+   "orig": [
+    259460,
+    262720,
+    328260,
+    331740
+   ],
+   "stretch_factor": 1.305
+  },
+  {
+   "kind": "clip",
+   "it_idx": 79,
+   "it_start_ms": 264000,
+   "it_end_ms": 266290,
+   "us_start_ms": 332910,
+   "us_end_ms": 334940,
+   "it_text": "Il cuore di Emma perse un colpo.",
+   "us_text": "Emilys Herz setzte einen Schlag aus.",
+   "orig": [
+    264000,
+    265760,
+    332910,
+    334940
+   ],
+   "stretch_factor": 1.128
+  },
+  {
+   "kind": "clip",
+   "it_idx": 80,
+   "it_start_ms": 266290,
+   "it_end_ms": 269280,
+   "us_start_ms": 336330,
+   "us_end_ms": 338198.75,
+   "it_text": "Qual era il problema di flirtare in auto?",
+   "us_text": "Was war denn mit Flirten im Auto?",
+   "orig": [
+    266290,
+    268160,
+    336330,
+    338060
+   ],
+   "stretch_factor": 1.6
+  },
+  {
+   "kind": "clip",
+   "it_idx": 81,
+   "it_start_ms": 269280,
+   "it_end_ms": 275060,
+   "us_start_ms": 339538.95,
+   "us_end_ms": 343190.725,
+   "it_text": "A meno che lui non stesse pensando a... qualcosa di più spinto lì dentro?",
+   "us_text": "Dachte er etwa an … mehr?",
+   "orig": [
+    269280,
+    273760,
+    339300,
+    341520
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.583
+  },
+  {
+   "kind": "clip",
+   "it_idx": 82,
+   "it_start_ms": 275060,
+   "it_end_ms": 276810,
+   "us_start_ms": 343190.725,
+   "us_end_ms": 344615.24850894633,
+   "it_text": "Arrossì visibilmente.",
+   "us_text": "Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.",
+   "orig": [
+    275060,
+    276320,
+    343230.0,
+    344615.24850894633
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.228
+  },
+  {
+   "kind": "clip",
+   "it_idx": 83,
+   "it_start_ms": 276810,
+   "it_end_ms": 281300,
+   "us_start_ms": 344615.24850894633,
+   "us_end_ms": 349449.1,
+   "it_text": "La sua mente evocò immagini che non avrebbe mai ammesso ad alta voce.",
+   "us_text": "Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.",
+   "orig": [
+    276810,
+    280580,
+    344615.24850894633,
+    348760
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.929
+  },
+  {
+   "kind": "clip",
+   "it_idx": 84,
+   "it_start_ms": 281300,
+   "it_end_ms": 283860,
+   "us_start_ms": 349449.1,
+   "us_end_ms": 351760,
+   "it_text": "Non era così disinibita.",
+   "us_text": "So aufgeschlossen war sie nun auch wieder nicht.",
+   "orig": [
+    281300,
+    282720,
+    349760,
+    351760
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.108
+  },
+  {
+   "kind": "clip",
+   "it_idx": 85,
+   "it_start_ms": 283860,
+   "it_end_ms": 287980,
+   "us_start_ms": 352890,
+   "us_end_ms": 359395.0,
+   "it_text": "«Provoca incidenti mortali», la rimproverò lui.",
+   "us_text": "„Das führt zu einem Überschlagsunfall\", sagte er ausdruckslos, seine Stimme kalt wie Stahl.",
+   "orig": [
+    283860,
+    286680,
+    352890,
+    358900
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.633
+  },
+  {
+   "kind": "clip",
+   "it_idx": 86,
+   "it_start_ms": 287980,
+   "it_end_ms": 291570,
+   "us_start_ms": 359395.0,
+   "us_end_ms": 362410,
+   "it_text": "Emma si zittì, sprofondando nell'imbarazzo.",
+   "us_text": "Sie erstarrte, durch und durch beschämt.",
+   "orig": [
+    287980,
+    290800,
+    359890,
+    362410
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.191
+  },
+  {
+   "kind": "clip",
+   "it_idx": 87,
+   "it_start_ms": 291570,
+   "it_end_ms": 295730,
+   "us_start_ms": 363430,
+   "us_end_ms": 369080,
+   "it_text": "Lorenzo sorrise impercettibilmente davanti a quella reazione.",
+   "us_text": "Seine Lippen verzogen sich beim Anblick ihres beschämten Gesichtsausdrucks zu einem kaum wahrnehmbaren Lächeln.",
+   "orig": [
+    291570,
+    294780,
+    363430,
+    369080
+   ],
+   "stretch_factor": 0.736
+  },
+  {
+   "kind": "clip",
+   "it_idx": 88,
+   "it_start_ms": 295730,
+   "it_end_ms": 298970,
+   "us_start_ms": 370270,
+   "us_end_ms": 372295.0,
+   "it_text": "«Rilassati, siamo arrivati.»",
+   "us_text": "„Entspann dich, wir sind da.\"",
+   "orig": [
+    295730,
+    297540,
+    370270,
+    371940
+   ],
+   "stretch_factor": 1.6
+  },
+  {
+   "kind": "clip",
+   "it_idx": 89,
+   "it_start_ms": 298970,
+   "it_end_ms": 304490,
+   "us_start_ms": 374200,
+   "us_end_ms": 379990.0,
+   "it_text": "A casa, Emma preparò un pranzo eccellente, consumato in un silenzio confortevole.",
+   "us_text": "Zu Hause bereitete Emily ein köstliches Mittagessen zu, das beide ohne viele Worte genossen.",
+   "orig": [
+    298970,
+    303900,
+    374200,
+    379620
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.953
+  },
+  {
+   "kind": "clip",
+   "it_idx": 90,
+   "it_start_ms": 304490,
+   "it_end_ms": 309100,
+   "us_start_ms": 379990.0,
+   "us_end_ms": 385060.0,
+   "it_text": "Più tardi, Lorenzo tornò in azienda sazio e di ottimo umore.",
+   "us_text": "Anschließend fuhr Ethan satt und wesentlich besser gelaunt zurück in seine Firma.",
+   "orig": [
+    304490,
+    308360,
+    380360,
+    384700
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.909
+  },
+  {
+   "kind": "clip",
+   "it_idx": 91,
+   "it_start_ms": 309100,
+   "it_end_ms": 317060,
+   "us_start_ms": 385060.0,
+   "us_end_ms": 393200,
+   "it_text": "Anche Emma rientrò al lavoro: la notizia della gara d'appalto era già esplosa tra i corridoi della ICM Design.",
+   "us_text": "Und Emily ebenfalls, denn inzwischen war die Nachricht, dass sie an der Ausschreibung teilnehmen konnten, bei der ICM Design angekommen.",
+   "orig": [
+    309100,
+    315680,
+    385420,
+    393200
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.978
+  },
+  {
+   "kind": "clip",
+   "it_idx": 92,
+   "it_start_ms": 317060,
+   "it_end_ms": 325370,
+   "us_start_ms": 396090,
+   "us_end_ms": 402969.233,
+   "it_text": "Nella sala riunioni della ICM Design, il capo, Nicola Berlandi, faceva avanti e indietro, febbricitante.",
+   "us_text": "Im Besprechungsraum von ICM Design lief ihr Chef Nick Sterling deshalb auch aufgeregt hin und her.",
+   "orig": [
+    317060,
+    324520,
+    396090,
+    402540
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.208
+  },
+  {
+   "kind": "clip",
+   "it_idx": 93,
+   "it_start_ms": 325370,
+   "it_end_ms": 331110,
+   "us_start_ms": 402969.233,
+   "us_end_ms": 408920,
+   "it_text": "Il Polo dell'Innovazione Lombardo era il biglietto vincente che poteva cambiare tutto.",
+   "us_text": "Die Teilnahme an dem California Culture and Technology Center Projekt konnte alles verändern.",
+   "orig": [
+    325370,
+    329920,
+    403320,
+    408920
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.965
+  },
+  {
+   "kind": "clip",
+   "it_idx": 94,
+   "it_start_ms": 331110,
+   "it_end_ms": 334040,
+   "us_start_ms": 410060,
+   "us_end_ms": 412850,
+   "it_text": "Aveva convocato un vertice d'urgenza.",
+   "us_text": "Er hatte dringende Besprechung angeordnet an.",
+   "orig": [
+    331110,
+    333340,
+    410060,
+    412850
+   ],
+   "stretch_factor": 1.05
+  },
+  {
+   "kind": "clip",
+   "it_idx": 95,
+   "it_start_ms": 334040,
+   "it_end_ms": 341120,
+   "us_start_ms": 412850,
+   "us_end_ms": 420900,
+   "it_text": "Attorno al tavolo sedevano Emma, il suo collega Fabio Guida e il project manager Marco Romano.",
+   "us_text": "Um den großen Konferenztisch saßen Emily, ihr unmittelbarer Kollege Jason Adler und der Projektmanager des Unternehmens, Mark Henderson.",
+   "orig": [
+    334040,
+    339860,
+    412850,
+    420900
+   ],
+   "stretch_factor": 0.88
+  },
+  {
+   "kind": "clip",
+   "it_idx": 96,
+   "it_start_ms": 341120,
+   "it_end_ms": 345690,
+   "us_start_ms": 422260,
+   "us_end_ms": 425780,
+   "it_text": "Nicola si schiarì la voce, gli occhi accesi dall'entusiasmo.",
+   "us_text": "Sterling räusperte sich, seine Augen glänzten vor Enthusiasmus.",
+   "orig": [
+    341120,
+    344540,
+    422260,
+    425780
+   ],
+   "stretch_factor": 1.298
+  },
+  {
+   "kind": "clip",
+   "it_idx": 97,
+   "it_start_ms": 345690,
+   "it_end_ms": 351280,
+   "us_start_ms": 427110,
+   "us_end_ms": 431815.0,
+   "it_text": "«Emma, non avrei mai creduto che una ragazza giovane come te avesse questi agganci.",
+   "us_text": "„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.",
+   "orig": [
+    345690,
+    350480,
+    427110,
+    431500
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.188
+  },
+  {
+   "kind": "clip",
+   "it_idx": 98,
+   "it_start_ms": 351280,
+   "it_end_ms": 353540,
+   "us_start_ms": 431815.0,
+   "us_end_ms": 435067.967,
+   "it_text": "Ci hai fatto entrare in gara!»",
+   "us_text": "Du hast uns einen Platz in der Ausschreibung gesichert!\"",
+   "orig": [
+    351280,
+    352580,
+    432130,
+    434480
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.695
+  },
+  {
+   "kind": "clip",
+   "it_idx": 99,
+   "it_start_ms": 353540,
+   "it_end_ms": 356300,
+   "us_start_ms": 435067.967,
+   "us_end_ms": 437620.0,
+   "it_text": "La sua voce tremava d'orgoglio.",
+   "us_text": "Seine Stimme schwoll vor Stolz an.",
+   "orig": [
+    353540,
+    355160,
+    435210,
+    437320
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.081
+  },
+  {
+   "kind": "clip",
+   "it_idx": 100,
+   "it_start_ms": 356300,
+   "it_end_ms": 359380,
+   "us_start_ms": 437620.0,
+   "us_end_ms": 441365.0,
+   "it_text": "«Questo progetto bolle in pentola da cinque anni.",
+   "us_text": "„Dieses Projekt ist seit fünf Jahren in Entwicklung.",
+   "orig": [
+    356300,
+    358760,
+    437920,
+    440960
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.822
+  },
+  {
+   "kind": "clip",
+   "it_idx": 101,
+   "it_start_ms": 359380,
+   "it_end_ms": 362860,
+   "us_start_ms": 441365.0,
+   "us_end_ms": 444920,
+   "it_text": "Diventerà uno dei simboli più iconici di Milano .»",
+   "us_text": "Es wird eines der ikonischsten Wahrzeichen Kaliforniens werden.\"",
+   "orig": [
+    359380,
+    362100,
+    441770,
+    444920
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.979
+  },
+  {
+   "kind": "clip",
+   "it_idx": 102,
+   "it_start_ms": 362860,
+   "it_end_ms": 365590,
+   "us_start_ms": 446007.68,
+   "us_end_ms": 447846.96499999997,
+   "it_text": "Le sorrise, radioso.",
+   "us_text": "Er strahlte sie an.",
+   "orig": [
+    362860,
+    364380,
+    446040,
+    446960
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.484
+  },
+  {
+   "kind": "clip",
+   "it_idx": 103,
+   "it_start_ms": 365590,
+   "it_end_ms": 371870,
+   "us_start_ms": 447846.96499999997,
+   "us_end_ms": 453480,
+   "it_text": "«Anche se perdiamo, il solo fatto di essere al tavolo è un'opportunità gigantesca.»",
+   "us_text": "„Selbst wenn wir nicht gewinnen, ist allein die Einladung zur Teilnahme eine enorme Chance für unser Unternehmen.\"",
+   "orig": [
+    365590,
+    370460,
+    447980,
+    453480
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.115
+  },
+  {
+   "kind": "clip",
+   "it_idx": 104,
+   "it_start_ms": 371870,
+   "it_end_ms": 377190,
+   "us_start_ms": 454580,
+   "us_end_ms": 460360,
+   "it_text": "«Nicola, io credo davvero che possiamo vincerla, con l'idea giusta.»",
+   "us_text": "„Nick, ich bin sogar zuversichtlich, dass wir diese Ausschreibung mit dem richtigen Konzept gewinnen können.\"",
+   "orig": [
+    371870,
+    376000,
+    454580,
+    460360
+   ],
+   "stretch_factor": 0.92
+  },
+  {
+   "kind": "clip",
+   "it_idx": 105,
+   "it_start_ms": 377190,
+   "it_end_ms": 382080,
+   "us_start_ms": 461540,
+   "us_end_ms": 465640,
+   "it_text": "Emma si sporse in avanti, la voce ferma ma carica di passione.",
+   "us_text": "Emily lehnte sich vor, ihre Stimme ruhig, aber leidenschaftlich.",
+   "orig": [
+    377190,
+    380980,
+    461540,
+    465640
+   ],
+   "stretch_factor": 1.193
+  },
+  {
+   "kind": "clip",
+   "it_idx": 106,
+   "it_start_ms": 382080,
+   "it_end_ms": 387060,
+   "us_start_ms": 466740,
+   "us_end_ms": 472150.0,
+   "it_text": "«Siamo piccoli, è vero, ma possiamo appoggiarci a specialisti esterni.",
+   "us_text": "„Auch wenn wir eine kleine Firma sind, können wir bei Bedarf Spezialisten als Subunternehmer einsetzen.",
+   "orig": [
+    382080,
+    386420,
+    466740,
+    471890
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.921
+  },
+  {
+   "kind": "clip",
+   "it_idx": 107,
+   "it_start_ms": 387060,
+   "it_end_ms": 391070,
+   "us_start_ms": 472150.0,
+   "us_end_ms": 475065.0,
+   "it_text": "Non sarà una passeggiata... ma possiamo farcela.»",
+   "us_text": "Das ist keine Kleinigkeit… aber wir können es schaffen.\"",
+   "orig": [
+    387060,
+    389980,
+    472410,
+    475060
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.376
+  },
+  {
+   "kind": "clip",
+   "it_idx": 108,
+   "it_start_ms": 391070,
+   "it_end_ms": 395050,
+   "us_start_ms": 475065.0,
+   "us_end_ms": 479545.733,
+   "it_text": "Marco, il project manager, aggrottò la fronte.",
+   "us_text": "Der Projektmanager Mark runzelte skeptisch die Stirn.",
+   "orig": [
+    391070,
+    394080,
+    475070,
+    479020
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.888
+  },
+  {
+   "kind": "clip",
+   "it_idx": 109,
+   "it_start_ms": 395050,
+   "it_end_ms": 396900,
+   "us_start_ms": 479545.733,
+   "us_end_ms": 481123.125,
+   "it_text": "«Non è così semplice.",
+   "us_text": "„So einfach ist das nicht.",
+   "orig": [
+    395050,
+    396200,
+    479770,
+    480720
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.173
+  },
+  {
+   "kind": "clip",
+   "it_idx": 110,
+   "it_start_ms": 396900,
+   "it_end_ms": 399680,
+   "us_start_ms": 481123.125,
+   "us_end_ms": 484001.4457831325,
+   "it_text": "Gareggiamo contro squali quotati in borsa.",
+   "us_text": "Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen.\"",
+   "orig": [
+    396900,
+    399040,
+    481320.0,
+    484001.4457831325
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.966
+  },
+  {
+   "kind": "clip",
+   "it_idx": 111,
+   "it_start_ms": 399680,
+   "it_end_ms": 403610,
+   "us_start_ms": 484001.4457831325,
+   "us_end_ms": 488154.333,
+   "it_text": "Gente con decenni di esperienza e filiali ovunque.»",
+   "us_text": "Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen.\"",
+   "orig": [
+    399680,
+    402520,
+    484001.4457831325,
+    487560
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.946
+  },
+  {
+   "kind": "clip",
+   "it_idx": 112,
+   "it_start_ms": 403610,
+   "it_end_ms": 406530,
+   "us_start_ms": 488154.333,
+   "us_end_ms": 490389.9,
+   "it_text": "Fece una pausa carica di tensione .",
+   "us_text": "Er hielt bedeutungsvoll inne.",
+   "orig": [
+    403610,
+    405580,
+    488420,
+    489740
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.306
+  },
+  {
+   "kind": "clip",
+   "it_idx": 113,
+   "it_start_ms": 406530,
+   "it_end_ms": 409740,
+   "us_start_ms": 490389.9,
+   "us_end_ms": 493185.0,
+   "it_text": "«A proposito, c'è dentro anche il Gruppo Reali.",
+   "us_text": "„Der Kaiser Konzern nimmt übrigens auch teil.",
+   "orig": [
+    406530,
+    408940,
+    490460,
+    492880
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.148
+  },
+  {
+   "kind": "clip",
+   "it_idx": 114,
+   "it_start_ms": 409740,
+   "it_end_ms": 413990,
+   "us_start_ms": 493185.0,
+   "us_end_ms": 497530.367,
+   "it_text": "Si sono appena espansi nel design e nell'architettura d'interni.»",
+   "us_text": "Sie haben kürzlich ins Design- und Innenarchitektur-Geschäft expandiert.\"",
+   "orig": [
+    409740,
+    412960,
+    493490,
+    496940
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.978
+  },
+  {
+   "kind": "clip",
+   "it_idx": 115,
+   "it_start_ms": 413990,
+   "it_end_ms": 420880,
+   "us_start_ms": 497530.367,
+   "us_end_ms": 504160,
+   "it_text": "Lo stomaco di Emma si chiuse a sentire il nome della sua famiglia, ma il suo viso rimase imperturbabile .",
+   "us_text": "Emilys Brust zog sich bei der Erwähnung der Firma ihrer Familie zusammen, obwohl sie ihre Miene neutral hielt.",
+   "orig": [
+    413990,
+    419600,
+    497570,
+    504160
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.039
+  },
+  {
+   "kind": "clip",
+   "it_idx": 116,
+   "it_start_ms": 420880,
+   "it_end_ms": 423390,
+   "us_start_ms": 505360,
+   "us_end_ms": 506960,
+   "it_text": "Perché proprio adesso?",
+   "us_text": "Warum denn ausgerechnet jetzt?",
+   "orig": [
+    420880,
+    422080,
+    505360,
+    506960
+   ],
+   "stretch_factor": 1.569
+  },
+  {
+   "kind": "clip",
+   "it_idx": 117,
+   "it_start_ms": 423390,
+   "it_end_ms": 428740,
+   "us_start_ms": 508007.5,
+   "us_end_ms": 511040,
+   "it_text": "Si sforzò di mantenere il sangue freddo mentre rifletteva su quell'informazione.",
+   "us_text": "Sie zwang sich, sich zu konzentrieren.",
+   "orig": [
+    423390,
+    427580,
+    508200,
+    509980
+   ],
+   "stretch_factor": 1.764
+  },
+  {
+   "kind": "clip",
+   "it_idx": 118,
+   "it_start_ms": 428740,
+   "it_end_ms": 430920,
+   "us_start_ms": 511040,
+   "us_end_ms": 514070.0,
+   "it_text": "Avranno anche i soldi e l'esperienza.",
+   "us_text": "Kann ja sein, dass die Erfahrung im Designbereich haben.",
+   "orig": [
+    428740,
+    430480,
+    511040,
+    513820
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.719
+  },
+  {
+   "kind": "clip",
+   "it_idx": 119,
+   "it_start_ms": 430920,
+   "it_end_ms": 432090,
+   "us_start_ms": 514070.0,
+   "us_end_ms": 515948.767,
+   "it_text": "Ma la creatività?",
+   "us_text": "Aber Kreativität?",
+   "orig": [
+    430920,
+    431740,
+    514320,
+    515480
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.623
+  },
+  {
+   "kind": "clip",
+   "it_idx": 120,
+   "it_start_ms": 432090,
+   "it_end_ms": 434500,
+   "us_start_ms": 515948.767,
+   "us_end_ms": 517858.125,
+   "it_text": "Lì sono morti.",
+   "us_text": "Da hapert's bei denen.",
+   "orig": [
+    432090,
+    433000,
+    516060,
+    517140
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.262
+  },
+  {
+   "kind": "clip",
+   "it_idx": 121,
+   "it_start_ms": 434500,
+   "it_end_ms": 438830,
+   "us_start_ms": 517858.125,
+   "us_end_ms": 521520,
+   "it_text": "Dopo un istante, Emma piantò gli occhi in quelli di Nicola.",
+   "us_text": "Nach einer nachdenklichen Pause begegnete Emily Sterlings Blick.",
+   "orig": [
+    434500,
+    437800,
+    518150,
+    521520
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.182
+  },
+  {
+   "kind": "clip",
+   "it_idx": 122,
+   "it_start_ms": 438830,
+   "it_end_ms": 442010,
+   "us_start_ms": 522890,
+   "us_end_ms": 527080,
+   "it_text": "«Non facciamoci schiacciare dalla concorrenza.»",
+   "us_text": "„Wir sollten uns nicht wegen der Konkurrenz verrückt machen.\"",
+   "orig": [
+    438830,
+    440920,
+    522890,
+    527080
+   ],
+   "stretch_factor": 0.759
+  },
+  {
+   "kind": "clip",
+   "it_idx": 123,
+   "it_start_ms": 442010,
+   "it_end_ms": 444710,
+   "us_start_ms": 528427.9,
+   "us_end_ms": 529040,
+   "it_text": "Il suo tono si fece più fermo.",
+   "us_text": "Ihre Stimme gewann an Intensität.",
+   "orig": [
+    442010,
+    443640,
+    528580,
+    529040
+   ],
+   "stretch_factor": 4.411
+  },
+  {
+   "kind": "clip",
+   "it_idx": 124,
+   "it_start_ms": 444710,
+   "it_end_ms": 448930,
+   "us_start_ms": 529040,
+   "us_end_ms": 536002.133,
+   "it_text": "«Il Polo sarà aperto al pubblico, è un progetto proiettato nel futuro.",
+   "us_text": "„Das Culture and Technology Center wird für die Öffentlichkeit zugänglich sein – ein wahres Zukunftsprojekt.",
+   "orig": [
+    444710,
+    448400,
+    529040,
+    535320
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.606
+  },
+  {
+   "kind": "clip",
+   "it_idx": 125,
+   "it_start_ms": 448930,
+   "it_end_ms": 453440,
+   "us_start_ms": 536002.133,
+   "us_end_ms": 541460.1137980085,
+   "it_text": "Dobbiamo fondere il patrimonio culturale italiano con l'alta tecnologia.",
+   "us_text": "Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können.\"",
+   "orig": [
+    448930,
+    452700,
+    536210.0,
+    541460.1137980085
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.826
+  },
+  {
+   "kind": "clip",
+   "it_idx": 126,
+   "it_start_ms": 453440,
+   "it_end_ms": 457460,
+   "us_start_ms": 541460.1137980085,
+   "us_end_ms": 546000,
+   "it_text": "Creare un design che risucchi i visitatori in questi due mondi.»",
+   "us_text": "Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können.\"",
+   "orig": [
+    453440,
+    456700,
+    541460.1137980085,
+    546000
+   ],
+   "stretch_factor": 0.885
+  },
+  {
+   "kind": "clip",
+   "it_idx": 127,
+   "it_start_ms": 457460,
+   "it_end_ms": 459930,
+   "us_start_ms": 547300,
+   "us_end_ms": 549081.867,
+   "it_text": "Nicola annuì lentamente.",
+   "us_text": "Nick Sterling nickte langsam.",
+   "orig": [
+    457460,
+    458960,
+    547300,
+    548900
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.386
+  },
+  {
+   "kind": "clip",
+   "it_idx": 128,
+   "it_start_ms": 459930,
+   "it_end_ms": 461980,
+   "us_start_ms": 549081.867,
+   "us_end_ms": 551308.515,
+   "it_text": "«L'idea funziona.»",
+   "us_text": "„Gute Idee.\"",
+   "orig": [
+    459930,
+    460860,
+    549830,
+    550560
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.921
+  },
+  {
+   "kind": "clip",
+   "it_idx": 129,
+   "it_start_ms": 461980,
+   "it_end_ms": 464510,
+   "us_start_ms": 551308.515,
+   "us_end_ms": 553720.083,
+   "it_text": "Spostò lo sguardo su Fabio.",
+   "us_text": "Sein Blick wanderte zu Jason.",
+   "orig": [
+    461980,
+    463520,
+    551700,
+    553200
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.049
+  },
+  {
+   "kind": "clip",
+   "it_idx": 130,
+   "it_start_ms": 464510,
+   "it_end_ms": 466780,
+   "us_start_ms": 553720.083,
+   "us_end_ms": 557356.8,
+   "it_text": "«Tu ed Emma ci lavorerete insieme.",
+   "us_text": "„Du und Emily, ihr arbeitet bei diesem Projekt zusammen.",
+   "orig": [
+    464510,
+    466280,
+    554140,
+    557120
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.624
+  },
+  {
+   "kind": "clip",
+   "it_idx": 131,
+   "it_start_ms": 466780,
+   "it_end_ms": 468730,
+   "us_start_ms": 557356.8,
+   "us_end_ms": 560070.0,
+   "it_text": "Abbiamo quindici giorni.",
+   "us_text": "Wir haben fünfzehn Tage bis zur Abgabefrist.",
+   "orig": [
+    466780,
+    468080,
+    557660,
+    559780
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.719
+  },
+  {
+   "kind": "clip",
+   "it_idx": 132,
+   "it_start_ms": 468730,
+   "it_end_ms": 472190,
+   "us_start_ms": 560070.0,
+   "us_end_ms": 564297.067,
+   "it_text": "Mollate tutto il resto e pensate solo a questo.»",
+   "us_text": "Lasst alles andere liegen und konzentriert euch nur darauf.\"",
+   "orig": [
+    468730,
+    471260,
+    560360,
+    563420
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.819
+  },
+  {
+   "kind": "clip",
+   "it_idx": 133,
+   "it_start_ms": 472190,
+   "it_end_ms": 474320,
+   "us_start_ms": 564297.067,
+   "us_end_ms": 566390.0,
+   "it_text": "Emma si irrigidì.",
+   "us_text": "Emilys Magen zog sich zusammen.",
+   "orig": [
+    472190,
+    473117,
+    564390,
+    566040
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.018
+  },
+  {
+   "kind": "clip",
+   "it_idx": 134,
+   "it_start_ms": 474320,
+   "it_end_ms": 476120,
+   "us_start_ms": 566390.0,
+   "us_end_ms": 568127.5,
+   "it_text": "Fabio Guida?",
+   "us_text": "Jason Adler?",
+   "orig": [
+    474320,
+    475040,
+    566740,
+    567740
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.036
+  },
+  {
+   "kind": "clip",
+   "it_idx": 135,
+   "it_start_ms": 476120,
+   "it_end_ms": 479700,
+   "us_start_ms": 568127.5,
+   "us_end_ms": 572920,
+   "it_text": "Non aveva mai lavorato con lui , ma le voci giravano.",
+   "us_text": "Sie hatten bisher noch nicht zusammengearbeitet, aber sie hatte genug von ihm mitbekommen.",
+   "orig": [
+    476120,
+    478920,
+    568390,
+    572920
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.747
+  },
+  {
+   "kind": "clip",
+   "it_idx": 136,
+   "it_start_ms": 479700,
+   "it_end_ms": 481970,
+   "us_start_ms": 574020,
+   "us_end_ms": 576960.0,
+   "it_text": "Talentuoso ma arrogante.",
+   "us_text": "Talentiert, ja – aber impulsiv.",
+   "orig": [
+    479700,
+    481260,
+    574020,
+    576740
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.772
+  },
+  {
+   "kind": "clip",
+   "it_idx": 137,
+   "it_start_ms": 481970,
+   "it_end_ms": 490820,
+   "us_start_ms": 576960.0,
+   "us_end_ms": 587260.0,
+   "it_text": "Bocciava le idee altrui senza pensarci e, peggio ancora, aveva il vizio di riciclare progetti scialbi o palesemente copiati.",
+   "us_text": "Viel zu schnell mit seinen Urteilen, viel zu ungeduldig mit anderen Ideen. Und das Schlimmste: Er griff gern auf uninspirierte, abgekupferte Entwürfe zurück.",
+   "orig": [
+    481970,
+    489600,
+    577180,
+    586760
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.859
+  },
+  {
+   "kind": "clip",
+   "it_idx": 138,
+   "it_start_ms": 490820,
+   "it_end_ms": 493850,
+   "us_start_ms": 587260.0,
+   "us_end_ms": 590030.0,
+   "it_text": "Eppure, mantenne un atteggiamento calmo.",
+   "us_text": "Trotzdem blieb ihre Stimme höflich.",
+   "orig": [
+    490820,
+    493100,
+    587760,
+    589540
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.094
+  },
+  {
+   "kind": "clip",
+   "it_idx": 139,
+   "it_start_ms": 493850,
+   "it_end_ms": 495580,
+   "us_start_ms": 590030.0,
+   "us_end_ms": 592158.233,
+   "it_text": "«Posso fare una proposta?",
+   "us_text": "„Darf ich etwas vorschlagen?",
+   "orig": [
+    493850,
+    494940,
+    590520,
+    591680
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.813
+  },
+  {
+   "kind": "clip",
+   "it_idx": 140,
+   "it_start_ms": 495580,
+   "it_end_ms": 499430,
+   "us_start_ms": 592158.233,
+   "us_end_ms": 596740,
+   "it_text": "Io e Fabio potremmo sviluppare due progetti indipendenti.»",
+   "us_text": "Jason und ich könnten unabhängig voneinander einen eigenen Entwurf entwickeln.\"",
+   "orig": [
+    495580,
+    498700,
+    592650,
+    596740
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.84
+  },
+  {
+   "kind": "clip",
+   "it_idx": 141,
+   "it_start_ms": 499430,
+   "it_end_ms": 503240,
+   "us_start_ms": 597850,
+   "us_end_ms": 603380,
+   "it_text": "Fabio si sistemò a sedere , palesemente irritato.",
+   "us_text": "Jasons Kopf fuhr herum. Das gefiel ihm offensichtlich nicht. Sein Kiefer spannte sich an.",
+   "orig": [
+    499430,
+    502300,
+    597850,
+    603380
+   ],
+   "stretch_factor": 0.689
+  },
+  {
+   "kind": "clip",
+   "it_idx": 142,
+   "it_start_ms": 503240,
+   "it_end_ms": 505720,
+   "us_start_ms": 604480,
+   "us_end_ms": 606505.9,
+   "it_text": "Emma proseguì, imperturbabile.",
+   "us_text": "Sie sprach ruhig weiter.",
+   "orig": [
+    503240,
+    505140,
+    604480,
+    605680
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.224
+  },
+  {
+   "kind": "clip",
+   "it_idx": 143,
+   "it_start_ms": 505720,
+   "it_end_ms": 508140,
+   "us_start_ms": 606505.9,
+   "us_end_ms": 609260.0,
+   "it_text": "«Ogni designer ha la sua visione.",
+   "us_text": "„Jeder Designer macht seinen eigenen Ansatz.",
+   "orig": [
+    505720,
+    507580,
+    606840,
+    608970
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.879
+  },
+  {
+   "kind": "clip",
+   "it_idx": 144,
+   "it_start_ms": 508140,
+   "it_end_ms": 511960,
+   "us_start_ms": 609260.0,
+   "us_end_ms": 613070.0,
+   "it_text": "Una competizione interna tirerebbe fuori idee più fresche.",
+   "us_text": "Ein freundschaftlicher Wettbewerb könnte frische Ideen hervorbringen.",
+   "orig": [
+    508140,
+    511140,
+    609550,
+    612820
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.003
+  },
+  {
+   "kind": "clip",
+   "it_idx": 145,
+   "it_start_ms": 511960,
+   "it_end_ms": 515740,
+   "us_start_ms": 613070.0,
+   "us_end_ms": 617440,
+   "it_text": "È la nostra occasione migliore per presentare qualcosa di unico.»",
+   "us_text": "Das wäre vielleicht unsere beste Chance, etwas wirklich Außergewöhnliches zu schaffen.\"",
+   "orig": [
+    511960,
+    514940,
+    613320,
+    617440
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.865
+  },
+  {
+   "kind": "clip",
+   "it_idx": 146,
+   "it_start_ms": 515740,
+   "it_end_ms": 520520,
+   "us_start_ms": 619240,
+   "us_end_ms": 622940,
+   "it_text": "Nicola tacque, soppesando la proposta con un'espressione indecifrabile.",
+   "us_text": "Sterling schwieg. Seine Stirn legte sich in nachdenkliche Falten.",
+   "orig": [
+    515740,
+    519580,
+    619240,
+    622940
+   ],
+   "stretch_factor": 1.292
+  },
+  {
+   "kind": "clip",
+   "it_idx": 147,
+   "it_start_ms": 520520,
+   "it_end_ms": 524060,
+   "us_start_ms": 624100,
+   "us_end_ms": 628480,
+   "it_text": "Fabio, al contrario, andò su tutte le furie per l'affronto.",
+   "us_text": "Jason hingegen sträubte sich. Sein Gesicht verfinsterte sich vor Empörung.",
+   "orig": [
+    520520,
+    523600,
+    624100,
+    628480
+   ],
+   "stretch_factor": 0.808
+  },
+  {
+   "kind": "clip",
+   "it_idx": 148,
+   "it_start_ms": 524060,
+   "it_end_ms": 528540,
+   "us_start_ms": 629640,
+   "us_end_ms": 632020.0,
+   "it_text": "«Che vorresti dire, hai paura che possa rallentarti?» la aggredì.",
+   "us_text": "„Was soll das heißen?\", fuhr er sie an.",
+   "orig": [
+    524060,
+    527957,
+    629640,
+    631620
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.882
+  },
+  {
+   "kind": "clip",
+   "it_idx": 149,
+   "it_start_ms": 528540,
+   "it_end_ms": 530750,
+   "us_start_ms": 632020.0,
+   "us_end_ms": 634240.0,
+   "it_text": "La sua voce squarciò la stanza.",
+   "us_text": "Seine Stimme durchbrach die Stille.",
+   "orig": [
+    528540,
+    529980,
+    632420,
+    633960
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.995
+  },
+  {
+   "kind": "clip",
+   "it_idx": 150,
+   "it_start_ms": 530750,
+   "it_end_ms": 532820,
+   "us_start_ms": 634240.0,
+   "us_end_ms": 636325.0,
+   "it_text": "«Credi di essere migliore di me?»",
+   "us_text": "„Du denkst wohl, du bist besser als ich ?\"",
+   "orig": [
+    530750,
+    532200,
+    634520,
+    636100
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.993
+  },
+  {
+   "kind": "clip",
+   "it_idx": 151,
+   "it_start_ms": 532820,
+   "it_end_ms": 535570,
+   "us_start_ms": 636325.0,
+   "us_end_ms": 639005.033,
+   "it_text": "«No», ribatté Emma, gelida.",
+   "us_text": "„Nein\", erwiderte Emily ruhig.",
+   "orig": [
+    532820,
+    534600,
+    636550,
+    638660
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.026
+  },
+  {
+   "kind": "clip",
+   "it_idx": 152,
+   "it_start_ms": 535570,
+   "it_end_ms": 537300,
+   "us_start_ms": 639005.033,
+   "us_end_ms": 641352.9411764706,
+   "it_text": "«Propongo una gara leale.",
+   "us_text": "„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn.\"",
+   "orig": [
+    535570,
+    536760,
+    639430.0,
+    641352.9411764706
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.737
+  },
+  {
+   "kind": "clip",
+   "it_idx": 153,
+   "it_start_ms": 537300,
+   "it_end_ms": 540040,
+   "us_start_ms": 641352.9411764706,
+   "us_end_ms": 644100,
+   "it_text": "Penso solo al bene della ICM.»",
+   "us_text": "„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn.\"",
+   "orig": [
+    537300,
+    539000,
+    641352.9411764706,
+    644100
+   ],
+   "stretch_factor": 0.997
+  },
+  {
+   "kind": "clip",
+   "it_idx": 154,
+   "it_start_ms": 540040,
+   "it_end_ms": 542750,
+   "us_start_ms": 645570,
+   "us_end_ms": 647580.017,
+   "it_text": "Fabio sbuffò, sprezzante.",
+   "us_text": "Jason schnaubte verächtlich.",
+   "orig": [
+    540040,
+    541780,
+    645570,
+    647080
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.348
+  },
+  {
+   "kind": "clip",
+   "it_idx": 155,
+   "it_start_ms": 542750,
+   "it_end_ms": 544340,
+   "us_start_ms": 647580.017,
+   "us_end_ms": 650205.0,
+   "it_text": "«Sei l'ultima arrivata.",
+   "us_text": "„Du bist jünger und hast gerade erst angefangen.",
+   "orig": [
+    542750,
+    543860,
+    647990,
+    650060
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.606
+  },
+  {
+   "kind": "clip",
+   "it_idx": 156,
+   "it_start_ms": 544340,
+   "it_end_ms": 548420,
+   "us_start_ms": 650205.0,
+   "us_end_ms": 653900,
+   "it_text": "Invece di abbassare la testa e imparare, ti credi chissà chi.»",
+   "us_text": "Anstatt von uns hier lernen zu wollen, überschätzt du dich maßlos.\"",
+   "orig": [
+    544340,
+    547438,
+    650350,
+    653900
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.104
+  },
+  {
+   "kind": "clip",
+   "it_idx": 157,
+   "it_start_ms": 548420,
+   "it_end_ms": 550200,
+   "us_start_ms": 654920.0,
+   "us_end_ms": 656329.1666666666,
+   "it_text": "Il suo tono si fece provocatorio .",
+   "us_text": "Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.",
+   "orig": [
+    548420,
+    550200,
+    654920.0,
+    656329.1666666666
+   ],
+   "stretch_factor": 1.263
+  },
+  {
+   "kind": "clip",
+   "it_idx": 158,
+   "it_start_ms": 550200,
+   "it_end_ms": 554180,
+   "us_start_ms": 656329.1666666666,
+   "us_end_ms": 659258.6,
+   "it_text": "«Quindici giorni sono pochissimi per un lavoro del genere.",
+   "us_text": "Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.",
+   "orig": [
+    550200,
+    553700,
+    656329.1666666666,
+    659100
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.359
+  },
+  {
+   "kind": "clip",
+   "it_idx": 159,
+   "it_start_ms": 554180,
+   "it_end_ms": 557610,
+   "us_start_ms": 659258.6,
+   "us_end_ms": 664480,
+   "it_text": "E tu rifiuti di fare squadra solo per fare la prima donna.",
+   "us_text": "Und du willst nicht mal im Team mit mir arbeiten – nur damit du die Star-Designerin spielen kannst.",
+   "orig": [
+    554180,
+    557100,
+    659680,
+    664480
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.657
+  },
+  {
+   "kind": "clip",
+   "it_idx": 160,
+   "it_start_ms": 557610,
+   "it_end_ms": 561550,
+   "us_start_ms": 665590,
+   "us_end_ms": 669700,
+   "it_text": "Ti interessa più metterti in mostra che far vincere l'azienda?»",
+   "us_text": "Ist es dir wichtiger, dich in Szene zu setzen, als dass das Unternehmen Erfolg hat?\"",
+   "orig": [
+    557610,
+    560480,
+    665590,
+    669700
+   ],
+   "stretch_factor": 0.959
+  },
+  {
+   "kind": "clip",
+   "it_idx": 161,
+   "it_start_ms": 561550,
+   "it_end_ms": 564060,
+   "us_start_ms": 671130,
+   "us_end_ms": 675200,
+   "it_text": "Emma si impose di non esplodere.",
+   "us_text": "Emily ballte unter dem Tisch die Fäuste. Sie zwang sich, ruhig zu bleiben.",
+   "orig": [
+    561550,
+    563280,
+    671130,
+    675200
+   ],
+   "stretch_factor": 0.617
+  },
+  {
+   "kind": "clip",
+   "it_idx": 162,
+   "it_start_ms": 564060,
+   "it_end_ms": 570590,
+   "us_start_ms": 676350,
+   "us_end_ms": 684760,
+   "it_text": "L'espressione di Nicola si fece diffidente, come se stesse riconsiderando l'intera faccenda.",
+   "us_text": "Sterlings Gesichtsausdruck veränderte sich. Sein nachdenklicher Blick wirkte nun reserviert, als würde er seine Einschätzung von ihr überdenken.",
+   "orig": [
+    564060,
+    569460,
+    676350,
+    684760
+   ],
+   "stretch_factor": 0.776
+  },
+  {
+   "kind": "clip",
+   "it_idx": 163,
+   "it_start_ms": 570590,
+   "it_end_ms": 575480,
+   "us_start_ms": 686070,
+   "us_end_ms": 690400,
+   "it_text": "Emma prese un respiro profondo e sostenne lo sguardo di Fabio.",
+   "us_text": "Emily holte tief Luft und begegnete Jasons wütendem Blick direkt.",
+   "orig": [
+    570590,
+    574140,
+    686070,
+    690400
+   ],
+   "stretch_factor": 1.129
+  },
+  {
+   "kind": "clip",
+   "it_idx": 164,
+   "it_start_ms": 575480,
+   "it_end_ms": 577500,
+   "us_start_ms": 691910,
+   "us_end_ms": 693559.533,
+   "it_text": "«Sono giovane, è vero.",
+   "us_text": "„Es stimmt, dass ich jung bin.",
+   "orig": [
+    575480,
+    576900,
+    691910,
+    693280
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.225
+  },
+  {
+   "kind": "clip",
+   "it_idx": 165,
+   "it_start_ms": 577500,
+   "it_end_ms": 580410,
+   "us_start_ms": 693559.533,
+   "us_end_ms": 698431.067,
+   "it_text": "Ma ho già lavorato a progetti di questa portata.",
+   "us_text": "Aber ich habe bereits an mehreren großen Projekten wie diesem mitgearbeitet.",
+   "orig": [
+    577500,
+    579800,
+    694080,
+    698120
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.597
+  },
+  {
+   "kind": "clip",
+   "it_idx": 166,
+   "it_start_ms": 580410,
+   "it_end_ms": 583230,
+   "us_start_ms": 698431.067,
+   "us_end_ms": 702006.0,
+   "it_text": "Senza contare i miei studi all'estero...»",
+   "us_text": "Ganz zu schweigen davon, dass ich im Ausland studiert habe—\" Jason stieß ein kaltes, spöttisches Lachen aus.",
+   "orig": [
+    580410,
+    582180,
+    698820.0,
+    702006.0
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.789
+  },
+  {
+   "kind": "clip",
+   "it_idx": 167,
+   "it_start_ms": 583230,
+   "it_end_ms": 586060,
+   "us_start_ms": 702006.0,
+   "us_end_ms": 706072.033,
+   "it_text": "Fabio scoppiò in una risata di scherno.",
+   "us_text": "Ganz zu schweigen davon, dass ich im Ausland studiert habe—\" Jason stieß ein kaltes, spöttisches Lachen aus.",
+   "orig": [
+    583230,
+    585160,
+    702006.0,
+    705480
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.696
+  },
+  {
+   "kind": "clip",
+   "it_idx": 168,
+   "it_start_ms": 586060,
+   "it_end_ms": 587420,
+   "us_start_ms": 706072.033,
+   "us_end_ms": 707660.0,
+   "it_text": "«Studiato all'estero?",
+   "us_text": "„Im Ausland studiert?",
+   "orig": [
+    586060,
+    587080,
+    706190,
+    707460
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.856
+  },
+  {
+   "kind": "clip",
+   "it_idx": 169,
+   "it_start_ms": 587420,
+   "it_end_ms": 588520,
+   "us_start_ms": 707660.0,
+   "us_end_ms": 708773.75,
+   "it_text": "E quindi?",
+   "us_text": "Na und?",
+   "orig": [
+    587420,
+    587860,
+    707860,
+    708320
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.988
+  },
+  {
+   "kind": "clip",
+   "it_idx": 170,
+   "it_start_ms": 588520,
+   "it_end_ms": 592880,
+   "us_start_ms": 708773.75,
+   "us_end_ms": 712293,
+   "it_text": "Spiccicare due parole in croce in un'altra lingua ti rende speciale?»",
+   "us_text": "Macht dich das Sprechen einer anderen Sprache zu etwas Besonderem?\"",
+   "orig": [
+    588520,
+    591980,
+    709000,
+    712293
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.239
+  },
+  {
+   "kind": "clip",
+   "it_idx": 171,
+   "it_start_ms": 592880,
+   "it_end_ms": 595390,
+   "us_start_ms": 713640,
+   "us_end_ms": 717183.133,
+   "it_text": "La ridicolizzò spietato.",
+   "us_text": "Seine Lippen verzogen sich zu einem verächtlichen Grinsen.",
+   "orig": [
+    592880,
+    594280,
+    713640,
+    716500
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.708
+  },
+  {
+   "kind": "clip",
+   "it_idx": 172,
+   "it_start_ms": 595390,
+   "it_end_ms": 599640,
+   "us_start_ms": 717183.133,
+   "us_end_ms": 722900,
+   "it_text": "«Se fossi il fenomeno che dici di essere, non saresti finita qui.»",
+   "us_text": "„Wenn du so fähig wärst, wie du behauptest, würdest du nicht in unserer kleinen Firma arbeiten.\"",
+   "orig": [
+    595390,
+    598840,
+    717410,
+    722900
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.743
+  },
+  {
+   "kind": "clip",
+   "it_idx": 173,
+   "it_start_ms": 599640,
+   "it_end_ms": 602380,
+   "us_start_ms": 724540,
+   "us_end_ms": 726620,
+   "it_text": "Incrociò le braccia, arrogante.",
+   "us_text": "Er verschränkte selbstgefällig die Arme.",
+   "orig": [
+    599640,
+    601440,
+    724540,
+    726620
+   ],
+   "stretch_factor": 1.317
+  },
+  {
+   "kind": "clip",
+   "it_idx": 174,
+   "it_start_ms": 602380,
+   "it_end_ms": 603480,
+   "us_start_ms": 728040,
+   "us_end_ms": 729058.75,
+   "it_text": "«Ma va bene.",
+   "us_text": "„Aber gut.",
+   "orig": [
+    602380,
+    602940,
+    728040,
+    728560
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.08
+  },
+  {
+   "kind": "clip",
+   "it_idx": 175,
+   "it_start_ms": 603480,
+   "it_end_ms": 606120,
+   "us_start_ms": 729058.75,
+   "us_end_ms": 732940.0,
+   "it_text": "Dimostralo, invece di fare la gradassa.",
+   "us_text": "Warum beweist du nicht deine Fähigkeiten, anstatt zu prahlen?",
+   "orig": [
+    603480,
+    605500,
+    729390,
+    732540
+   ],
+   "gapfill": true,
+   "stretch_factor": 0.68
+  },
+  {
+   "kind": "clip",
+   "it_idx": 176,
+   "it_start_ms": 606120,
+   "it_end_ms": 608930,
+   "us_start_ms": 732940.0,
+   "us_end_ms": 735096.25,
+   "it_text": "A chiacchiere siamo tutti fenomeni.»",
+   "us_text": "Behaupten kann man ja vieles.\"",
+   "orig": [
+    606120,
+    607900,
+    733340,
+    735040
+   ],
+   "gapfill": true,
+   "stretch_factor": 1.303
+  },
+  {
+   "kind": "clip",
+   "it_idx": 177,
+   "it_start_ms": 608930,
+   "it_end_ms": 612580,
+   "us_start_ms": 736330.0,
+   "us_end_ms": 737767.4035989717,
+   "it_text": "L'atmosfera nella stanza cambiò improvvisamente.",
+   "us_text": "Die Spannung im Raum war greifbar. ﻿",
+   "orig": [
+    608930,
+    611580,
+    736330.0,
+    737767.4035989717
+   ],
+   "stretch_factor": 2.539
+  },
+  {
+   "kind": "clip",
+   "it_idx": 178,
+   "it_start_ms": 612580,
+   "it_end_ms": 614091,
+   "us_start_ms": 737767.4035989717,
+   "us_end_ms": 738440,
+   "it_text": "C'era aria di tempesta.",
+   "us_text": "Die Spannung im Raum war greifbar. ﻿",
+   "orig": [
+    612580,
+    613820,
+    737767.4035989717,
+    738440
+   ],
+   "stretch_factor": 2.247
+  }
+ ],
+ "bleed_report": [
+  {
+   "idx": 12,
+   "before": 1.625,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«La ICM Design?»"
+  },
+  {
+   "idx": 15,
+   "before": 1.704,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "È un progetto fuori dalla loro portata.»"
+  },
+  {
+   "idx": 30,
+   "before": 1.802,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Farla partecipare è sufficiente.»"
+  },
+  {
+   "idx": 34,
+   "before": 1.618,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Spietato."
+  },
+  {
+   "idx": 35,
+   "before": 1.666,
+   "after": 1.666,
+   "changed": false,
+   "needs_review": true,
+   "text": "Persino con sua moglie."
+  },
+  {
+   "idx": 38,
+   "before": 2.209,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Me ne occupo io.»"
+  },
+  {
+   "idx": 41,
+   "before": 2.271,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«Fatto."
+  },
+  {
+   "idx": 46,
+   "before": 2.931,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Così, dal nulla?»"
+  },
+  {
+   "idx": 63,
+   "before": 1.7,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Questa donna..."
+  },
+  {
+   "idx": 73,
+   "before": 2.615,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "E questo che diavolo significa?"
+  },
+  {
+   "idx": 80,
+   "before": 1.728,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Qual era il problema di flirtare in auto?"
+  },
+  {
+   "idx": 81,
+   "before": 2.604,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "A meno che lui non stesse pensando a... qualcosa di più spin"
+  },
+  {
+   "idx": 88,
+   "before": 1.94,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«Rilassati, siamo arrivati.»"
+  },
+  {
+   "idx": 102,
+   "before": 2.967,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Le sorrise, radioso."
+  },
+  {
+   "idx": 109,
+   "before": 1.947,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«Non è così semplice."
+  },
+  {
+   "idx": 112,
+   "before": 2.212,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Fece una pausa carica di tensione ."
+  },
+  {
+   "idx": 117,
+   "before": 3.006,
+   "after": 1.764,
+   "changed": true,
+   "needs_review": false,
+   "text": "Si sforzò di mantenere il sangue freddo mentre rifletteva su"
+  },
+  {
+   "idx": 120,
+   "before": 2.231,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Lì sono morti."
+  },
+  {
+   "idx": 123,
+   "before": 5.87,
+   "after": 4.411,
+   "changed": true,
+   "needs_review": true,
+   "text": "Il suo tono si fece più fermo."
+  },
+  {
+   "idx": 128,
+   "before": 2.808,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«L'idea funziona.»"
+  },
+  {
+   "idx": 129,
+   "before": 1.687,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Spostò lo sguardo su Fabio."
+  },
+  {
+   "idx": 134,
+   "before": 1.8,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Fabio Guida?"
+  },
+  {
+   "idx": 138,
+   "before": 1.702,
+   "after": 1.702,
+   "changed": false,
+   "needs_review": true,
+   "text": "Eppure, mantenne un atteggiamento calmo."
+  },
+  {
+   "idx": 142,
+   "before": 2.067,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Emma proseguì, imperturbabile."
+  },
+  {
+   "idx": 148,
+   "before": 2.263,
+   "after": 2.263,
+   "changed": false,
+   "needs_review": true,
+   "text": "«Che vorresti dire, hai paura che possa rallentarti?» la agg"
+  },
+  {
+   "idx": 154,
+   "before": 1.795,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "Fabio sbuffò, sprezzante."
+  },
+  {
+   "idx": 169,
+   "before": 2.391,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "E quindi?"
+  },
+  {
+   "idx": 174,
+   "before": 2.115,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "«Ma va bene."
+  },
+  {
+   "idx": 176,
+   "before": 1.653,
+   "after": 1.6,
+   "changed": true,
+   "needs_review": false,
+   "text": "A chiacchiere siamo tutti fenomeni.»"
+  },
+  {
+   "idx": 177,
+   "before": 2.539,
+   "after": 2.539,
+   "changed": false,
+   "needs_review": true,
+   "text": "L'atmosfera nella stanza cambiò improvvisamente."
+  },
+  {
+   "idx": 178,
+   "before": 2.247,
+   "after": 2.247,
+   "changed": false,
+   "needs_review": true,
+   "text": "C'era aria di tempesta."
+  }
+ ]
+}

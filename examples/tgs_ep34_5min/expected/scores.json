@@ -1,0 +1,24 @@
+{
+ "baseline (today)": {
+  "found": 0.9491525423728814,
+  "precision": 0.9655172413793104,
+  "missed": 3,
+  "extra": 2,
+  "view": "0/0",
+  "pos": "0/0",
+  "speaker": "61/67",
+  "dialogue": "34/37",
+  "false_speaker": "3/30"
+ },
+ "/private/tmp/claude-501/-Users-manish-Downloads-dub-studioo/a9bb1037-f29e-4ce5-b74c-00b7ff1217ee/scratchpad/facetest/lib/face_map.json": {
+  "found": 0.9830508474576272,
+  "precision": 0.9354838709677419,
+  "missed": 1,
+  "extra": 4,
+  "view": "56/58",
+  "pos": "32/37",
+  "speaker": "66/67",
+  "dialogue": "36/37",
+  "false_speaker": "0/30"
+ }
+}

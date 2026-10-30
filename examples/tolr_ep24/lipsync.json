@@ -1,0 +1,5442 @@
+{
+ "settings": {
+  "rule": "video",
+  "use": "all",
+  "mouth_thr": 0.007,
+  "min_lip": 0.4
+ },
+ "sentences": [
+  {
+   "idx": 0,
+   "start_ms": 1090,
+   "end_ms": 3380,
+   "text": "Ethan beobachtete Emily vom Auto aus.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 1,
+   "start_ms": 4100,
+   "end_ms": 8620,
+   "text": "Als sie zielstrebig die Straße überquerte, fragte er sich wo sie denn wohl hinwollte.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 2,
+   "start_ms": 9700,
+   "end_ms": 19200,
+   "text": "Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 3,
+   "start_ms": 20980,
+   "end_ms": 22060,
+   "text": "Schweinebraten.",
+   "lips": [
+    [
+     20.98,
+     22.06
+    ]
+   ],
+   "lip_s": 1.08,
+   "speaking": true
+  },
+  {
+   "idx": 4,
+   "start_ms": 22930,
+   "end_ms": 28840,
+   "text": "Hatte sie wirklich sein Lieblingsgericht herausgefunden, obwohl er bisher nie ein Wort darüber verloren hatte?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 5,
+   "start_ms": 30450,
+   "end_ms": 31500,
+   "text": "Er seufzte kurz.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 6,
+   "start_ms": 32700,
+   "end_ms": 36720,
+   "text": "Wenn sie etwas für ihn tat, konnte er ja auch mal etwas für sie tun.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 7,
+   "start_ms": 38230,
+   "end_ms": 44420,
+   "text": "Er schaut ihr noch kurz nach und kaum war sie im Laden verschwunden, zog er sein Handy heraus und wählte Daniels Nummer.",
+   "lips": [
+    [
+     44.32,
+     44.42
+    ]
+   ],
+   "lip_s": 0.1,
+   "speaking": false
+  },
+  {
+   "idx": 8,
+   "start_ms": 45800,
+   "end_ms": 52230,
+   "text": "„Hey Daniel, du musst ein paar Fäden für mich ziehen\", sagte Ethan, als Daniel das Gespräch annahm.",
+   "lips": [
+    [
+     46.36,
+     48.2
+    ]
+   ],
+   "lip_s": 1.84,
+   "speaking": true
+  },
+  {
+   "idx": 9,
+   "start_ms": 53660,
+   "end_ms": 60220,
+   "text": "„Bring ICM Design ins Rennen um das Projekt für die Umgestaltung des California Culture and Technology Centers.\"",
+   "lips": [
+    [
+     54.72,
+     55.52
+    ],
+    [
+     57.44,
+     60.22
+    ]
+   ],
+   "lip_s": 3.58,
+   "speaking": true
+  },
+  {
+   "idx": 10,
+   "start_ms": 61770,
+   "end_ms": 63940,
+   "text": "Am anderen Ende herrschte kurzes Schweigen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 11,
+   "start_ms": 66220,
+   "end_ms": 67420,
+   "text": "„ICM Design?“",
+   "lips": [
+    [
+     66.28,
+     67.42
+    ]
+   ],
+   "lip_s": 1.14,
+   "speaking": true
+  },
+  {
+   "idx": 12,
+   "start_ms": 68710,
+   "end_ms": 70340,
+   "text": "Daniel schnaubte ungläubig.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 13,
+   "start_ms": 71180,
+   "end_ms": 72440,
+   "text": "„Diese kleine Klitsche?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 14,
+   "start_ms": 73140,
+   "end_ms": 75080,
+   "text": "Das ist doch drei Nummern zu groß für die.”",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 15,
+   "start_ms": 76230,
+   "end_ms": 79880,
+   "text": "Er hielt kurz inne, dann dämmerte ihm, worauf Ethan hinaus wollte.",
+   "lips": [
+    [
+     77.52,
+     79.2
+    ],
+    [
+     79.6,
+     79.88
+    ]
+   ],
+   "lip_s": 1.96,
+   "speaking": true
+  },
+  {
+   "idx": 16,
+   "start_ms": 80640,
+   "end_ms": 86720,
+   "text": "Ungläubigkeit sprach aus ihm, als er fortfuhr: \"Kann es sein, dass du Emily Kaiser hilfst?",
+   "lips": [
+    [
+     82.96,
+     83.72
+    ],
+    [
+     84.4,
+     85.24
+    ]
+   ],
+   "lip_s": 1.6,
+   "speaking": true
+  },
+  {
+   "idx": 17,
+   "start_ms": 87500,
+   "end_ms": 90600,
+   "text": "Mein Lieber, das ist ja nicht gerade … typisch für dich.\"",
+   "lips": [
+    [
+     87.5,
+     89.72
+    ]
+   ],
+   "lip_s": 2.22,
+   "speaking": true
+  },
+  {
+   "idx": 18,
+   "start_ms": 92070,
+   "end_ms": 94800,
+   "text": "„Ach ja, was ist denn typisch für mich?\"",
+   "lips": [
+    [
+     92.07,
+     93.04
+    ]
+   ],
+   "lip_s": 0.97,
+   "speaking": true
+  },
+  {
+   "idx": 19,
+   "start_ms": 95890,
+   "end_ms": 98440,
+   "text": "Ethans Stimme wurde um eine Nuance kälter.",
+   "lips": [
+    [
+     96.8,
+     97.32
+    ]
+   ],
+   "lip_s": 0.52,
+   "speaking": true
+  },
+  {
+   "idx": 20,
+   "start_ms": 99740,
+   "end_ms": 107180,
+   "text": "Daniel entschied sich klugerweise für Schweigen, obwohl in seinem Kopf die offensichtliche Antwort widerhallte: Kalt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 21,
+   "start_ms": 107680,
+   "end_ms": 108260,
+   "text": "Berechnend.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 22,
+   "start_ms": 108680,
+   "end_ms": 109220,
+   "text": "Gnadenlos.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 23,
+   "start_ms": 110750,
+   "end_ms": 119060,
+   "text": "Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.",
+   "lips": [
+    [
+     110.84,
+     114.72
+    ],
+    [
+     116.08,
+     117.48
+    ]
+   ],
+   "lip_s": 5.28,
+   "speaking": true
+  },
+  {
+   "idx": 24,
+   "start_ms": 119600,
+   "end_ms": 121280,
+   "text": "Soll ich das Projekt für sie festzurren?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 25,
+   "start_ms": 122250,
+   "end_ms": 129500,
+   "text": "Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf.\"",
+   "lips": [
+    [
+     128.0,
+     129.16
+    ]
+   ],
+   "lip_s": 1.16,
+   "speaking": true
+  },
+  {
+   "idx": 26,
+   "start_ms": 130290,
+   "end_ms": 138080,
+   "text": "Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.",
+   "lips": [
+    [
+     130.29,
+     131.08
+    ],
+    [
+     132.64,
+     134.04
+    ],
+    [
+     134.6,
+     135.84
+    ],
+    [
+     136.84,
+     138.08
+    ]
+   ],
+   "lip_s": 4.67,
+   "speaking": true
+  },
+  {
+   "idx": 27,
+   "start_ms": 138820,
+   "end_ms": 140440,
+   "text": "Dass sie mitmachen kann, muss reichen.\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 28,
+   "start_ms": 141690,
+   "end_ms": 148480,
+   "text": "Er hielt kurz inne und fuhr dann fort: \"Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient.\"",
+   "lips": [
+    [
+     144.16,
+     145.48
+    ],
+    [
+     146.24,
+     147.08
+    ],
+    [
+     147.52,
+     148.48
+    ]
+   ],
+   "lip_s": 3.12,
+   "speaking": true
+  },
+  {
+   "idx": 29,
+   "start_ms": 149240,
+   "end_ms": 151240,
+   "text": "Daniel stieß einen leisen Pfiff aus.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 30,
+   "start_ms": 152040,
+   "end_ms": 152720,
+   "text": "Gnadenlos.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 31,
+   "start_ms": 153340,
+   "end_ms": 156740,
+   "text": "Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.",
+   "lips": [
+    [
+     153.34,
+     153.76
+    ],
+    [
+     154.08,
+     154.48
+    ]
+   ],
+   "lip_s": 0.82,
+   "speaking": true
+  },
+  {
+   "idx": 32,
+   "start_ms": 157390,
+   "end_ms": 161300,
+   "text": "Tatsächlich antwortete er aber nur geschäftig: „Verstanden.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 33,
+   "start_ms": 161880,
+   "end_ms": 162740,
+   "text": "Ich kümmere mich darum\".",
+   "lips": [
+    [
+     162.08,
+     162.52
+    ]
+   ],
+   "lip_s": 0.44,
+   "speaking": true
+  },
+  {
+   "idx": 34,
+   "start_ms": 163600,
+   "end_ms": 166560,
+   "text": "Dennoch hatte Ethans Aktion Eindruck bei ihm hinterlassen..",
+   "lips": [
+    [
+     164.08,
+     165.0
+    ]
+   ],
+   "lip_s": 0.92,
+   "speaking": true
+  },
+  {
+   "idx": 35,
+   "start_ms": 167570,
+   "end_ms": 172800,
+   "text": "Wenige Minuten später kehrte Emily zurück, eine Tüte mit bestem Schweinefleisch in der Hand.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 36,
+   "start_ms": 173880,
+   "end_ms": 174600,
+   "text": "„Ist erledigt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 37,
+   "start_ms": 174980,
+   "end_ms": 184560,
+   "text": "Deine Firma ist dabei\", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 38,
+   "start_ms": 185750,
+   "end_ms": 194240,
+   "text": "Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 39,
+   "start_ms": 194920,
+   "end_ms": 195640,
+   "text": "Einfach so?\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 40,
+   "start_ms": 196330,
+   "end_ms": 197920,
+   "text": "Sie sah ihn mit großen Augen an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 41,
+   "start_ms": 198750,
+   "end_ms": 202440,
+   "text": "Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 42,
+   "start_ms": 203560,
+   "end_ms": 204960,
+   "text": "Er zuckte nur mit den Schultern.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 43,
+   "start_ms": 206450,
+   "end_ms": 208800,
+   "text": "„Danke\", sagte sie aufrichtig.",
+   "lips": [
+    [
+     206.45,
+     207.36
+    ]
+   ],
+   "lip_s": 0.91,
+   "speaking": true
+  },
+  {
+   "idx": 44,
+   "start_ms": 209600,
+   "end_ms": 212600,
+   "text": "Seine Mundwinkel kräuselten sich zu einem schwachen Lächeln.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 45,
+   "start_ms": 213680,
+   "end_ms": 214860,
+   "text": "„Lass uns nach Hause fahren.",
+   "lips": [
+    [
+     214.8,
+     214.86
+    ]
+   ],
+   "lip_s": 0.06,
+   "speaking": false
+  },
+  {
+   "idx": 46,
+   "start_ms": 215350,
+   "end_ms": 217000,
+   "text": "Ich freue mich schon auf den Schweinebraten.\"",
+   "lips": [
+    [
+     215.35,
+     215.6
+    ]
+   ],
+   "lip_s": 0.25,
+   "speaking": false
+  },
+  {
+   "idx": 47,
+   "start_ms": 217790,
+   "end_ms": 220700,
+   "text": "Ein gespielt überraschter Ausdruck huschte über ihr Gesicht.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 48,
+   "start_ms": 221780,
+   "end_ms": 223860,
+   "text": "„Oh, das hatte ich gar nicht vor…",
+   "lips": [
+    [
+     221.78,
+     223.64
+    ]
+   ],
+   "lip_s": 1.86,
+   "speaking": true
+  },
+  {
+   "idx": 49,
+   "start_ms": 224540,
+   "end_ms": 227240,
+   "text": "Ich dachte eher an Schweinefleisch-Kartoffel-Eintopf.\"",
+   "lips": [
+    [
+     224.54,
+     227.24
+    ]
+   ],
+   "lip_s": 2.7,
+   "speaking": true
+  },
+  {
+   "idx": 50,
+   "start_ms": 228600,
+   "end_ms": 230620,
+   "text": "Ethan hatte seine Mimik nicht mehr im Griff.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 51,
+   "start_ms": 231480,
+   "end_ms": 238260,
+   "text": "Eine ganze Bandbreite von Emotionen durchlief sein Gesicht – Ungläubigkeit, Verwirrung und leichter Verrat.",
+   "lips": [
+    [
+     235.72,
+     236.56
+    ]
+   ],
+   "lip_s": 0.84,
+   "speaking": true
+  },
+  {
+   "idx": 52,
+   "start_ms": 238260,
+   "end_ms": 243060,
+   "text": "„Haha\" Emily konnte ihr Lachen nicht zurückhalten.",
+   "lips": [
+    [
+     238.6,
+     242.36
+    ],
+    [
+     242.88,
+     243.06
+    ]
+   ],
+   "lip_s": 3.94,
+   "speaking": true
+  },
+  {
+   "idx": 53,
+   "start_ms": 243660,
+   "end_ms": 244860,
+   "text": "„Ich veräppel dich doch nur.",
+   "lips": [
+    [
+     243.66,
+     244.86
+    ]
+   ],
+   "lip_s": 1.2,
+   "speaking": true
+  },
+  {
+   "idx": 54,
+   "start_ms": 245440,
+   "end_ms": 247180,
+   "text": "Natürlich mache ich Schweinebraten.\"",
+   "lips": [
+    [
+     245.56,
+     247.18
+    ]
+   ],
+   "lip_s": 1.62,
+   "speaking": true
+  },
+  {
+   "idx": 55,
+   "start_ms": 248020,
+   "end_ms": 249040,
+   "text": "„Emily Kaiser.\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 56,
+   "start_ms": 250400,
+   "end_ms": 254180,
+   "text": "Er sprach ihren Namen laut aus und sah sie mit verengten Augen an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 57,
+   "start_ms": 255860,
+   "end_ms": 256660,
+   "text": "Diese Frau!",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 58,
+   "start_ms": 257350,
+   "end_ms": 262120,
+   "text": "Wie konnte sie es wagen, ihn zu necken, nachdem er einen Hauch von Freundlichkeit gezeigt hatte?",
+   "lips": [
+    [
+     257.35,
+     257.36
+    ],
+    [
+     258.28,
+     258.84
+    ],
+    [
+     259.64,
+     260.68
+    ]
+   ],
+   "lip_s": 1.61,
+   "speaking": true
+  },
+  {
+   "idx": 59,
+   "start_ms": 263500,
+   "end_ms": 265220,
+   "text": "Emily spürte, dass er ernster wurde.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 60,
+   "start_ms": 265890,
+   "end_ms": 273840,
+   "text": "Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.",
+   "lips": [
+    [
+     265.89,
+     266.16
+    ],
+    [
+     269.12,
+     273.84
+    ]
+   ],
+   "lip_s": 4.99,
+   "speaking": true
+  },
+  {
+   "idx": 61,
+   "start_ms": 274880,
+   "end_ms": 277140,
+   "text": "Muss doch jeder sein kleines Guilty Pleasure haben.”",
+   "lips": [
+    [
+     276.36,
+     277.14
+    ]
+   ],
+   "lip_s": 0.78,
+   "speaking": true
+  },
+  {
+   "idx": 62,
+   "start_ms": 277920,
+   "end_ms": 281400,
+   "text": "Er schnaubte nur und ließ vermeintlich gleichgültig den Motor an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 63,
+   "start_ms": 283230,
+   "end_ms": 287330,
+   "text": "Sie fuhren eine Weile, dann legte Emily den Kopf schief und grinste verschmitzt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 64,
+   "start_ms": 288570,
+   "end_ms": 290800,
+   "text": "„Weißt du eigentlich, was ich gerne esse?\"",
+   "lips": [
+    [
+     289.04,
+     290.8
+    ]
+   ],
+   "lip_s": 1.76,
+   "speaking": true
+  },
+  {
+   "idx": 65,
+   "start_ms": 291900,
+   "end_ms": 294860,
+   "text": "„Junkfood\", antwortete er, ohne zu zögern.",
+   "lips": [
+    [
+     291.9,
+     292.76
+    ]
+   ],
+   "lip_s": 0.86,
+   "speaking": true
+  },
+  {
+   "idx": 66,
+   "start_ms": 295840,
+   "end_ms": 299280,
+   "text": "Sie starrte ihn mit offenem Mund an, für einen Moment sprachlos.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 67,
+   "start_ms": 300410,
+   "end_ms": 301500,
+   "text": "Was soll das denn jetzt?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 68,
+   "start_ms": 302430,
+   "end_ms": 307080,
+   "text": "Aber sie fing sich schnell wieder, und sie beschloss, sich noch ein bisschen weiter vorzuwagen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 69,
+   "start_ms": 308290,
+   "end_ms": 311362,
+   "text": "Ihre Lippen verzogen sich zu einem schelmischen Schmollmund.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 70,
+   "start_ms": 312920,
+   "end_ms": 316780,
+   "text": "„Vielleicht würde ich ja am liebsten … dich essen.\"",
+   "lips": [
+    [
+     312.92,
+     315.48
+    ],
+    [
+     315.96,
+     316.56
+    ]
+   ],
+   "lip_s": 3.16,
+   "speaking": true
+  },
+  {
+   "idx": 71,
+   "start_ms": 318060,
+   "end_ms": 321720,
+   "text": "Sie zwinkerte, ihre Stimme triefte vor gespielter Süße.",
+   "lips": [
+    [
+     320.96,
+     321.72
+    ]
+   ],
+   "lip_s": 0.76,
+   "speaking": true
+  },
+  {
+   "idx": 72,
+   "start_ms": 322890,
+   "end_ms": 327100,
+   "text": "Ethan warf ihr einen Seitenblick zu, sein Gesichtsausdruck undurchdringlich.",
+   "lips": [
+    [
+     322.92,
+     323.36
+    ]
+   ],
+   "lip_s": 0.44,
+   "speaking": true
+  },
+  {
+   "idx": 73,
+   "start_ms": 328260,
+   "end_ms": 331740,
+   "text": "„Hat dich niemand davor gewarnt, mit einem Mann im Auto zu flirten?\"",
+   "lips": [
+    [
+     328.28,
+     329.64
+    ],
+    [
+     331.04,
+     331.74
+    ]
+   ],
+   "lip_s": 2.06,
+   "speaking": true
+  },
+  {
+   "idx": 74,
+   "start_ms": 332910,
+   "end_ms": 334940,
+   "text": "Emilys Herz setzte einen Schlag aus.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 75,
+   "start_ms": 336330,
+   "end_ms": 338060,
+   "text": "Was war denn mit Flirten im Auto?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 76,
+   "start_ms": 339300,
+   "end_ms": 341520,
+   "text": "Dachte er etwa an … mehr?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 77,
+   "start_ms": 343230,
+   "end_ms": 348760,
+   "text": "Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.",
+   "lips": [
+    [
+     344.8,
+     348.76
+    ]
+   ],
+   "lip_s": 3.96,
+   "speaking": true
+  },
+  {
+   "idx": 78,
+   "start_ms": 349760,
+   "end_ms": 351760,
+   "text": "So aufgeschlossen war sie nun auch wieder nicht.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 79,
+   "start_ms": 352890,
+   "end_ms": 358900,
+   "text": "„Das führt zu einem Überschlagsunfall\", sagte er ausdruckslos, seine Stimme kalt wie Stahl.",
+   "lips": [
+    [
+     352.89,
+     356.16
+    ]
+   ],
+   "lip_s": 3.27,
+   "speaking": true
+  },
+  {
+   "idx": 80,
+   "start_ms": 359890,
+   "end_ms": 362410,
+   "text": "Sie erstarrte, durch und durch beschämt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 81,
+   "start_ms": 363430,
+   "end_ms": 369080,
+   "text": "Seine Lippen verzogen sich beim Anblick ihres beschämten Gesichtsausdrucks zu einem kaum wahrnehmbaren Lächeln.",
+   "lips": [
+    [
+     368.88,
+     369.08
+    ]
+   ],
+   "lip_s": 0.2,
+   "speaking": false
+  },
+  {
+   "idx": 82,
+   "start_ms": 370270,
+   "end_ms": 371940,
+   "text": "„Entspann dich, wir sind da.\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 83,
+   "start_ms": 374200,
+   "end_ms": 379620,
+   "text": "Zu Hause bereitete Emily ein köstliches Mittagessen zu, das beide ohne viele Worte genossen.",
+   "lips": [
+    [
+     375.28,
+     376.4
+    ]
+   ],
+   "lip_s": 1.12,
+   "speaking": true
+  },
+  {
+   "idx": 84,
+   "start_ms": 380360,
+   "end_ms": 384700,
+   "text": "Anschließend fuhr Ethan satt und wesentlich besser gelaunt zurück in seine Firma.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 85,
+   "start_ms": 385420,
+   "end_ms": 393200,
+   "text": "Und Emily ebenfalls, denn inzwischen war die Nachricht, dass sie an der Ausschreibung teilnehmen konnten, bei der ICM Design angekommen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 86,
+   "start_ms": 396090,
+   "end_ms": 402540,
+   "text": "Im Besprechungsraum von ICM Design lief ihr Chef Nick Sterling deshalb auch aufgeregt hin und her.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 87,
+   "start_ms": 403320,
+   "end_ms": 408920,
+   "text": "Die Teilnahme an dem California Culture and Technology Center Projekt konnte alles verändern.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 88,
+   "start_ms": 410060,
+   "end_ms": 412850,
+   "text": "Er hatte dringende Besprechung angeordnet an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 89,
+   "start_ms": 412850,
+   "end_ms": 420900,
+   "text": "Um den großen Konferenztisch saßen Emily, ihr unmittelbarer Kollege Jason Adler und der Projektmanager des Unternehmens, Mark Henderson.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 90,
+   "start_ms": 422260,
+   "end_ms": 425780,
+   "text": "Sterling räusperte sich, seine Augen glänzten vor Enthusiasmus.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 91,
+   "start_ms": 427110,
+   "end_ms": 431500,
+   "text": "„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.",
+   "lips": [
+    [
+     427.28,
+     428.28
+    ],
+    [
+     428.6,
+     430.12
+    ]
+   ],
+   "lip_s": 2.52,
+   "speaking": true
+  },
+  {
+   "idx": 92,
+   "start_ms": 432130,
+   "end_ms": 434480,
+   "text": "Du hast uns einen Platz in der Ausschreibung gesichert!\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 93,
+   "start_ms": 435210,
+   "end_ms": 437320,
+   "text": "Seine Stimme schwoll vor Stolz an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 94,
+   "start_ms": 437920,
+   "end_ms": 440960,
+   "text": "„Dieses Projekt ist seit fünf Jahren in Entwicklung.",
+   "lips": [
+    [
+     438.16,
+     440.48
+    ]
+   ],
+   "lip_s": 2.32,
+   "speaking": true
+  },
+  {
+   "idx": 95,
+   "start_ms": 441770,
+   "end_ms": 444920,
+   "text": "Es wird eines der ikonischsten Wahrzeichen Kaliforniens werden.\"",
+   "lips": [
+    [
+     442.2,
+     444.92
+    ]
+   ],
+   "lip_s": 2.72,
+   "speaking": true
+  },
+  {
+   "idx": 96,
+   "start_ms": 446040,
+   "end_ms": 446960,
+   "text": "Er strahlte sie an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 97,
+   "start_ms": 447980,
+   "end_ms": 453480,
+   "text": "„Selbst wenn wir nicht gewinnen, ist allein die Einladung zur Teilnahme eine enorme Chance für unser Unternehmen.\"",
+   "lips": [
+    [
+     448.04,
+     450.92
+    ],
+    [
+     451.52,
+     452.56
+    ]
+   ],
+   "lip_s": 3.92,
+   "speaking": true
+  },
+  {
+   "idx": 98,
+   "start_ms": 454580,
+   "end_ms": 460360,
+   "text": "„Nick, ich bin sogar zuversichtlich, dass wir diese Ausschreibung mit dem richtigen Konzept gewinnen können.\"",
+   "lips": [
+    [
+     454.58,
+     457.12
+    ],
+    [
+     459.4,
+     460.36
+    ]
+   ],
+   "lip_s": 3.5,
+   "speaking": true
+  },
+  {
+   "idx": 99,
+   "start_ms": 461540,
+   "end_ms": 465640,
+   "text": "Emily lehnte sich vor, ihre Stimme ruhig, aber leidenschaftlich.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 100,
+   "start_ms": 466740,
+   "end_ms": 471890,
+   "text": "„Auch wenn wir eine kleine Firma sind, können wir bei Bedarf Spezialisten als Subunternehmer einsetzen.",
+   "lips": [
+    [
+     466.74,
+     468.32
+    ],
+    [
+     471.88,
+     471.89
+    ]
+   ],
+   "lip_s": 1.59,
+   "speaking": true
+  },
+  {
+   "idx": 101,
+   "start_ms": 472410,
+   "end_ms": 475060,
+   "text": "Das ist keine Kleinigkeit… aber wir können es schaffen.\"",
+   "lips": [
+    [
+     472.41,
+     475.06
+    ]
+   ],
+   "lip_s": 2.65,
+   "speaking": true
+  },
+  {
+   "idx": 102,
+   "start_ms": 475070,
+   "end_ms": 479020,
+   "text": "Der Projektmanager Mark runzelte skeptisch die Stirn.",
+   "lips": [
+    [
+     475.07,
+     475.48
+    ]
+   ],
+   "lip_s": 0.41,
+   "speaking": true
+  },
+  {
+   "idx": 103,
+   "start_ms": 479770,
+   "end_ms": 480720,
+   "text": "„So einfach ist das nicht.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 104,
+   "start_ms": 481320,
+   "end_ms": 487560,
+   "text": "Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen.\"",
+   "lips": [
+    [
+     484.28,
+     485.96
+    ]
+   ],
+   "lip_s": 1.68,
+   "speaking": true
+  },
+  {
+   "idx": 105,
+   "start_ms": 488420,
+   "end_ms": 489740,
+   "text": "Er hielt bedeutungsvoll inne.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 106,
+   "start_ms": 490460,
+   "end_ms": 492880,
+   "text": "„Der Kaiser Konzern nimmt übrigens auch teil.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 107,
+   "start_ms": 493490,
+   "end_ms": 496940,
+   "text": "Sie haben kürzlich ins Design- und Innenarchitektur-Geschäft expandiert.\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 108,
+   "start_ms": 497570,
+   "end_ms": 504160,
+   "text": "Emilys Brust zog sich bei der Erwähnung der Firma ihrer Familie zusammen, obwohl sie ihre Miene neutral hielt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 109,
+   "start_ms": 505360,
+   "end_ms": 506960,
+   "text": "Warum denn ausgerechnet jetzt?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 110,
+   "start_ms": 508200,
+   "end_ms": 509980,
+   "text": "Sie zwang sich, sich zu konzentrieren.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 111,
+   "start_ms": 511040,
+   "end_ms": 513820,
+   "text": "Kann ja sein, dass die Erfahrung im Designbereich haben.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 112,
+   "start_ms": 514320,
+   "end_ms": 515480,
+   "text": "Aber Kreativität?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 113,
+   "start_ms": 516060,
+   "end_ms": 517140,
+   "text": "Da hapert's bei denen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 114,
+   "start_ms": 518150,
+   "end_ms": 521520,
+   "text": "Nach einer nachdenklichen Pause begegnete Emily Sterlings Blick.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 115,
+   "start_ms": 522890,
+   "end_ms": 527080,
+   "text": "„Wir sollten uns nicht wegen der Konkurrenz verrückt machen.\"",
+   "lips": [
+    [
+     522.89,
+     524.04
+    ]
+   ],
+   "lip_s": 1.15,
+   "speaking": true
+  },
+  {
+   "idx": 116,
+   "start_ms": 528580,
+   "end_ms": 529040,
+   "text": "Ihre Stimme gewann an Intensität.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 117,
+   "start_ms": 529040,
+   "end_ms": 535320,
+   "text": "„Das Culture and Technology Center wird für die Öffentlichkeit zugänglich sein – ein wahres Zukunftsprojekt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 118,
+   "start_ms": 536210,
+   "end_ms": 546000,
+   "text": "Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können.\"",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 119,
+   "start_ms": 547300,
+   "end_ms": 548900,
+   "text": "Nick Sterling nickte langsam.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 120,
+   "start_ms": 549830,
+   "end_ms": 550560,
+   "text": "„Gute Idee.\"",
+   "lips": [
+    [
+     549.83,
+     550.04
+    ]
+   ],
+   "lip_s": 0.21,
+   "speaking": false
+  },
+  {
+   "idx": 121,
+   "start_ms": 551700,
+   "end_ms": 553200,
+   "text": "Sein Blick wanderte zu Jason.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 122,
+   "start_ms": 554140,
+   "end_ms": 557120,
+   "text": "„Du und Emily, ihr arbeitet bei diesem Projekt zusammen.",
+   "lips": [
+    [
+     554.14,
+     554.4
+    ],
+    [
+     555.16,
+     556.28
+    ]
+   ],
+   "lip_s": 1.38,
+   "speaking": true
+  },
+  {
+   "idx": 123,
+   "start_ms": 557660,
+   "end_ms": 559780,
+   "text": "Wir haben fünfzehn Tage bis zur Abgabefrist.",
+   "lips": [
+    [
+     559.4,
+     559.78
+    ]
+   ],
+   "lip_s": 0.38,
+   "speaking": false
+  },
+  {
+   "idx": 124,
+   "start_ms": 560360,
+   "end_ms": 563420,
+   "text": "Lasst alles andere liegen und konzentriert euch nur darauf.\"",
+   "lips": [
+    [
+     560.36,
+     563.42
+    ]
+   ],
+   "lip_s": 3.06,
+   "speaking": true
+  },
+  {
+   "idx": 125,
+   "start_ms": 564390,
+   "end_ms": 566040,
+   "text": "Emilys Magen zog sich zusammen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 126,
+   "start_ms": 566740,
+   "end_ms": 567740,
+   "text": "Jason Adler?",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 127,
+   "start_ms": 568390,
+   "end_ms": 572920,
+   "text": "Sie hatten bisher noch nicht zusammengearbeitet, aber sie hatte genug von ihm mitbekommen.",
+   "lips": [
+    [
+     570.04,
+     570.64
+    ]
+   ],
+   "lip_s": 0.6,
+   "speaking": true
+  },
+  {
+   "idx": 128,
+   "start_ms": 574020,
+   "end_ms": 576740,
+   "text": "Talentiert, ja – aber impulsiv.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 129,
+   "start_ms": 577180,
+   "end_ms": 581100,
+   "text": "Viel zu schnell mit seinen Urteilen, viel zu ungeduldig mit anderen Ideen.",
+   "lips": [
+    [
+     580.24,
+     580.88
+    ]
+   ],
+   "lip_s": 0.64,
+   "speaking": true
+  },
+  {
+   "idx": 130,
+   "start_ms": 581690,
+   "end_ms": 586760,
+   "text": "Und das Schlimmste: Er griff gern auf uninspirierte, abgekupferte Entwürfe zurück.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 131,
+   "start_ms": 587760,
+   "end_ms": 589540,
+   "text": "Trotzdem blieb ihre Stimme höflich.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 132,
+   "start_ms": 590520,
+   "end_ms": 591680,
+   "text": "„Darf ich etwas vorschlagen?",
+   "lips": [
+    [
+     590.52,
+     591.68
+    ]
+   ],
+   "lip_s": 1.16,
+   "speaking": true
+  },
+  {
+   "idx": 133,
+   "start_ms": 592650,
+   "end_ms": 596740,
+   "text": "Jason und ich könnten unabhängig voneinander einen eigenen Entwurf entwickeln.\"",
+   "lips": [
+    [
+     593.36,
+     596.74
+    ]
+   ],
+   "lip_s": 3.38,
+   "speaking": true
+  },
+  {
+   "idx": 134,
+   "start_ms": 597850,
+   "end_ms": 599180,
+   "text": "Jasons Kopf fuhr herum.",
+   "lips": [
+    [
+     597.85,
+     598.08
+    ]
+   ],
+   "lip_s": 0.23,
+   "speaking": false
+  },
+  {
+   "idx": 135,
+   "start_ms": 599850,
+   "end_ms": 601300,
+   "text": "Das gefiel ihm offensichtlich nicht.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 136,
+   "start_ms": 602020,
+   "end_ms": 603380,
+   "text": "Sein Kiefer spannte sich an.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 137,
+   "start_ms": 604480,
+   "end_ms": 605680,
+   "text": "Sie sprach ruhig weiter.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 138,
+   "start_ms": 606840,
+   "end_ms": 608970,
+   "text": "„Jeder Designer macht seinen eigenen Ansatz.",
+   "lips": [
+    [
+     606.84,
+     608.68
+    ]
+   ],
+   "lip_s": 1.84,
+   "speaking": true
+  },
+  {
+   "idx": 139,
+   "start_ms": 609550,
+   "end_ms": 612820,
+   "text": "Ein freundschaftlicher Wettbewerb könnte frische Ideen hervorbringen.",
+   "lips": [
+    [
+     610.16,
+     612.0
+    ]
+   ],
+   "lip_s": 1.84,
+   "speaking": true
+  },
+  {
+   "idx": 140,
+   "start_ms": 613320,
+   "end_ms": 617440,
+   "text": "Das wäre vielleicht unsere beste Chance, etwas wirklich Außergewöhnliches zu schaffen.\"",
+   "lips": [
+    [
+     613.88,
+     617.36
+    ]
+   ],
+   "lip_s": 3.48,
+   "speaking": true
+  },
+  {
+   "idx": 141,
+   "start_ms": 619240,
+   "end_ms": 620220,
+   "text": "Sterling schwieg.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 142,
+   "start_ms": 620540,
+   "end_ms": 622940,
+   "text": "Seine Stirn legte sich in nachdenkliche Falten.",
+   "lips": [
+    [
+     621.16,
+     621.6
+    ]
+   ],
+   "lip_s": 0.44,
+   "speaking": true
+  },
+  {
+   "idx": 143,
+   "start_ms": 624100,
+   "end_ms": 625760,
+   "text": "Jason hingegen sträubte sich.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 144,
+   "start_ms": 626390,
+   "end_ms": 628480,
+   "text": "Sein Gesicht verfinsterte sich vor Empörung.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 145,
+   "start_ms": 629640,
+   "end_ms": 631620,
+   "text": "„Was soll das heißen?\", fuhr er sie an.",
+   "lips": [
+    [
+     629.64,
+     631.62
+    ]
+   ],
+   "lip_s": 1.98,
+   "speaking": true
+  },
+  {
+   "idx": 146,
+   "start_ms": 632420,
+   "end_ms": 633960,
+   "text": "Seine Stimme durchbrach die Stille.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 147,
+   "start_ms": 634520,
+   "end_ms": 636100,
+   "text": "„Du denkst wohl, du bist besser als ich ?\"",
+   "lips": [
+    [
+     634.56,
+     636.1
+    ]
+   ],
+   "lip_s": 1.54,
+   "speaking": true
+  },
+  {
+   "idx": 148,
+   "start_ms": 636550,
+   "end_ms": 638660,
+   "text": "„Nein\", erwiderte Emily ruhig.",
+   "lips": [
+    [
+     636.55,
+     636.8
+    ],
+    [
+     637.72,
+     638.48
+    ]
+   ],
+   "lip_s": 1.01,
+   "speaking": true
+  },
+  {
+   "idx": 149,
+   "start_ms": 639430,
+   "end_ms": 644100,
+   "text": "„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn.\"",
+   "lips": [
+    [
+     641.36,
+     644.1
+    ]
+   ],
+   "lip_s": 2.74,
+   "speaking": true
+  },
+  {
+   "idx": 150,
+   "start_ms": 645570,
+   "end_ms": 647080,
+   "text": "Jason schnaubte verächtlich.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 151,
+   "start_ms": 647990,
+   "end_ms": 650060,
+   "text": "„Du bist jünger und hast gerade erst angefangen.",
+   "lips": [
+    [
+     647.99,
+     649.48
+    ]
+   ],
+   "lip_s": 1.49,
+   "speaking": true
+  },
+  {
+   "idx": 152,
+   "start_ms": 650350,
+   "end_ms": 653900,
+   "text": "Anstatt von uns hier lernen zu wollen, überschätzt du dich maßlos.\"",
+   "lips": [
+    [
+     651.92,
+     652.44
+    ],
+    [
+     653.08,
+     653.9
+    ]
+   ],
+   "lip_s": 1.34,
+   "speaking": true
+  },
+  {
+   "idx": 153,
+   "start_ms": 654920,
+   "end_ms": 659100,
+   "text": "Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.",
+   "lips": [
+    [
+     656.92,
+     657.6
+    ],
+    [
+     658.0,
+     659.1
+    ]
+   ],
+   "lip_s": 1.78,
+   "speaking": true
+  },
+  {
+   "idx": 154,
+   "start_ms": 659680,
+   "end_ms": 664480,
+   "text": "Und du willst nicht mal im Team mit mir arbeiten – nur damit du die Star-Designerin spielen kannst.",
+   "lips": [
+    [
+     661.64,
+     662.28
+    ]
+   ],
+   "lip_s": 0.64,
+   "speaking": true
+  },
+  {
+   "idx": 155,
+   "start_ms": 665590,
+   "end_ms": 669700,
+   "text": "Ist es dir wichtiger, dich in Szene zu setzen, als dass das Unternehmen Erfolg hat?\"",
+   "lips": [
+    [
+     668.88,
+     669.7
+    ]
+   ],
+   "lip_s": 0.82,
+   "speaking": true
+  },
+  {
+   "idx": 156,
+   "start_ms": 671130,
+   "end_ms": 673020,
+   "text": "Emily ballte unter dem Tisch die Fäuste.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 157,
+   "start_ms": 673680,
+   "end_ms": 675200,
+   "text": "Sie zwang sich, ruhig zu bleiben.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 158,
+   "start_ms": 676350,
+   "end_ms": 678600,
+   "text": "Sterlings Gesichtsausdruck veränderte sich.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 159,
+   "start_ms": 679320,
+   "end_ms": 684760,
+   "text": "Sein nachdenklicher Blick wirkte nun reserviert, als würde er seine Einschätzung von ihr überdenken.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 160,
+   "start_ms": 686070,
+   "end_ms": 690400,
+   "text": "Emily holte tief Luft und begegnete Jasons wütendem Blick direkt.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 161,
+   "start_ms": 691910,
+   "end_ms": 693280,
+   "text": "„Es stimmt, dass ich jung bin.",
+   "lips": [
+    [
+     691.91,
+     693.28
+    ]
+   ],
+   "lip_s": 1.37,
+   "speaking": true
+  },
+  {
+   "idx": 162,
+   "start_ms": 694080,
+   "end_ms": 698120,
+   "text": "Aber ich habe bereits an mehreren großen Projekten wie diesem mitgearbeitet.",
+   "lips": [
+    [
+     694.84,
+     698.12
+    ]
+   ],
+   "lip_s": 3.28,
+   "speaking": true
+  },
+  {
+   "idx": 163,
+   "start_ms": 698820,
+   "end_ms": 705480,
+   "text": "Ganz zu schweigen davon, dass ich im Ausland studiert habe—\" Jason stieß ein kaltes, spöttisches Lachen aus.",
+   "lips": [
+    [
+     699.44,
+     702.36
+    ],
+    [
+     704.56,
+     705.0
+    ]
+   ],
+   "lip_s": 3.36,
+   "speaking": true
+  },
+  {
+   "idx": 164,
+   "start_ms": 706190,
+   "end_ms": 707460,
+   "text": "„Im Ausland studiert?",
+   "lips": [
+    [
+     706.19,
+     707.12
+    ]
+   ],
+   "lip_s": 0.93,
+   "speaking": true
+  },
+  {
+   "idx": 165,
+   "start_ms": 707860,
+   "end_ms": 708320,
+   "text": "Na und?",
+   "lips": [
+    [
+     707.86,
+     708.32
+    ]
+   ],
+   "lip_s": 0.46,
+   "speaking": true
+  },
+  {
+   "idx": 166,
+   "start_ms": 709000,
+   "end_ms": 712293,
+   "text": "Macht dich das Sprechen einer anderen Sprache zu etwas Besonderem?\"",
+   "lips": [
+    [
+     709.52,
+     710.2
+    ],
+    [
+     710.72,
+     711.16
+    ],
+    [
+     711.76,
+     712.29
+    ]
+   ],
+   "lip_s": 1.65,
+   "speaking": true
+  },
+  {
+   "idx": 167,
+   "start_ms": 713640,
+   "end_ms": 716500,
+   "text": "Seine Lippen verzogen sich zu einem verächtlichen Grinsen.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 168,
+   "start_ms": 717410,
+   "end_ms": 722900,
+   "text": "„Wenn du so fähig wärst, wie du behauptest, würdest du nicht in unserer kleinen Firma arbeiten.\"",
+   "lips": [
+    [
+     717.44,
+     718.44
+    ],
+    [
+     718.88,
+     720.12
+    ],
+    [
+     721.92,
+     722.52
+    ]
+   ],
+   "lip_s": 2.84,
+   "speaking": true
+  },
+  {
+   "idx": 169,
+   "start_ms": 724540,
+   "end_ms": 726620,
+   "text": "Er verschränkte selbstgefällig die Arme.",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  },
+  {
+   "idx": 170,
+   "start_ms": 728040,
+   "end_ms": 728560,
+   "text": "„Aber gut.",
+   "lips": [
+    [
+     728.04,
+     728.56
+    ]
+   ],
+   "lip_s": 0.52,
+   "speaking": true
+  },
+  {
+   "idx": 171,
+   "start_ms": 729390,
+   "end_ms": 732540,
+   "text": "Warum beweist du nicht deine Fähigkeiten, anstatt zu prahlen?",
+   "lips": [
+    [
+     729.39,
+     729.48
+    ],
+    [
+     731.76,
+     732.54
+    ]
+   ],
+   "lip_s": 0.87,
+   "speaking": true
+  },
+  {
+   "idx": 172,
+   "start_ms": 733340,
+   "end_ms": 735040,
+   "text": "Behaupten kann man ja vieles.\"",
+   "lips": [
+    [
+     733.76,
+     735.04
+    ]
+   ],
+   "lip_s": 1.28,
+   "speaking": true
+  },
+  {
+   "idx": 173,
+   "start_ms": 736330,
+   "end_ms": 738440,
+   "text": "Die Spannung im Raum war greifbar. ﻿",
+   "lips": [],
+   "lip_s": 0,
+   "speaking": false
+  }
+ ],
+ "intervals": [
+  [
+   20.96,
+   22.32
+  ],
+  [
+   44.32,
+   44.8
+  ],
+  [
+   46.36,
+   48.2
+  ],
+  [
+   54.72,
+   55.52
+  ],
+  [
+   57.44,
+   60.72
+  ],
+  [
+   66.28,
+   68.36
+  ],
+  [
+   77.52,
+   79.2
+  ],
+  [
+   79.6,
+   80.0
+  ],
+  [
+   82.96,
+   83.72
+  ],
+  [
+   84.4,
+   85.24
+  ],
+  [
+   86.84,
+   89.72
+  ],
+  [
+   92.04,
+   93.04
+  ],
+  [
+   96.8,
+   97.32
+  ],
+  [
+   109.6,
+   110.04
+  ],
+  [
+   110.84,
+   114.72
+  ],
+  [
+   116.08,
+   117.48
+  ],
+  [
+   128.0,
+   129.16
+  ],
+  [
+   130.08,
+   131.08
+  ],
+  [
+   132.64,
+   134.04
+  ],
+  [
+   134.6,
+   135.84
+  ],
+  [
+   136.84,
+   138.52
+  ],
+  [
+   144.16,
+   145.48
+  ],
+  [
+   146.24,
+   147.08
+  ],
+  [
+   147.52,
+   149.2
+  ],
+  [
+   152.84,
+   153.76
+  ],
+  [
+   154.08,
+   154.48
+  ],
+  [
+   162.08,
+   162.52
+  ],
+  [
+   164.08,
+   165.0
+  ],
+  [
+   206.44,
+   207.36
+  ],
+  [
+   213.12,
+   213.52
+  ],
+  [
+   214.8,
+   215.6
+  ],
+  [
+   221.68,
+   223.64
+  ],
+  [
+   224.24,
+   227.52
+  ],
+  [
+   235.72,
+   236.56
+  ],
+  [
+   238.6,
+   242.36
+  ],
+  [
+   242.88,
+   245.04
+  ],
+  [
+   245.56,
+   247.56
+  ],
+  [
+   254.72,
+   255.44
+  ],
+  [
+   256.72,
+   257.36
+  ],
+  [
+   258.28,
+   258.84
+  ],
+  [
+   259.64,
+   260.68
+  ],
+  [
+   265.36,
+   266.16
+  ],
+  [
+   269.12,
+   274.8
+  ],
+  [
+   276.36,
+   277.16
+  ],
+  [
+   277.52,
+   277.92
+  ],
+  [
+   289.04,
+   290.88
+  ],
+  [
+   291.4,
+   292.76
+  ],
+  [
+   312.0,
+   315.48
+  ],
+  [
+   315.96,
+   316.56
+  ],
+  [
+   320.96,
+   321.76
+  ],
+  [
+   322.92,
+   323.36
+  ],
+  [
+   328.28,
+   329.64
+  ],
+  [
+   331.04,
+   332.56
+  ],
+  [
+   344.8,
+   349.2
+  ],
+  [
+   352.8,
+   356.16
+  ],
+  [
+   368.88,
+   369.28
+  ],
+  [
+   369.68,
+   370.12
+  ],
+  [
+   375.28,
+   376.4
+  ],
+  [
+   421.04,
+   421.64
+  ],
+  [
+   427.28,
+   428.28
+  ],
+  [
+   428.6,
+   430.12
+  ],
+  [
+   438.16,
+   440.48
+  ],
+  [
+   442.2,
+   445.32
+  ],
+  [
+   448.04,
+   450.92
+  ],
+  [
+   451.52,
+   452.56
+  ],
+  [
+   453.96,
+   457.12
+  ],
+  [
+   459.4,
+   461.16
+  ],
+  [
+   466.4,
+   468.32
+  ],
+  [
+   471.88,
+   475.48
+  ],
+  [
+   484.28,
+   485.96
+  ],
+  [
+   487.6,
+   488.28
+  ],
+  [
+   507.52,
+   507.96
+  ],
+  [
+   522.84,
+   524.04
+  ],
+  [
+   549.12,
+   550.04
+  ],
+  [
+   550.72,
+   551.32
+  ],
+  [
+   553.84,
+   554.4
+  ],
+  [
+   555.16,
+   556.28
+  ],
+  [
+   559.4,
+   563.72
+  ],
+  [
+   570.04,
+   570.64
+  ],
+  [
+   580.24,
+   580.88
+  ],
+  [
+   590.52,
+   592.04
+  ],
+  [
+   593.36,
+   596.92
+  ],
+  [
+   597.52,
+   598.08
+  ],
+  [
+   606.32,
+   608.68
+  ],
+  [
+   610.16,
+   612.0
+  ],
+  [
+   613.88,
+   617.36
+  ],
+  [
+   621.16,
+   621.6
+  ],
+  [
+   629.24,
+   631.72
+  ],
+  [
+   634.56,
+   636.8
+  ],
+  [
+   637.72,
+   638.48
+  ],
+  [
+   641.36,
+   644.48
+  ],
+  [
+   647.6,
+   649.48
+  ],
+  [
+   651.92,
+   652.44
+  ],
+  [
+   653.08,
+   654.6
+  ],
+  [
+   656.92,
+   657.6
+  ],
+  [
+   658.0,
+   659.24
+  ],
+  [
+   661.64,
+   662.28
+  ],
+  [
+   668.88,
+   669.84
+  ],
+  [
+   691.84,
+   693.76
+  ],
+  [
+   694.84,
+   698.24
+  ],
+  [
+   699.44,
+   702.36
+  ],
+  [
+   704.56,
+   705.0
+  ],
+  [
+   706.08,
+   707.12
+  ],
+  [
+   707.52,
+   708.64
+  ],
+  [
+   709.52,
+   710.2
+  ],
+  [
+   710.72,
+   711.16
+  ],
+  [
+   711.76,
+   712.72
+  ],
+  [
+   717.44,
+   718.44
+  ],
+  [
+   718.88,
+   720.12
+  ],
+  [
+   721.92,
+   722.52
+  ],
+  [
+   723.04,
+   724.16
+  ],
+  [
+   727.32,
+   729.48
+  ],
+  [
+   731.76,
+   733.04
+  ],
+  [
+   733.76,
+   735.6
+  ]
+ ],
+ "rows": {
+  "4": {
+   "it_idx": 4,
+   "slot": [
+    16150,
+    17220
+   ],
+   "speech": [
+    16150,
+    17220
+   ],
+   "sentence": [
+    20980,
+    22060
+   ],
+   "src_lines": [
+    3
+   ],
+   "lips": [
+    [
+     20.98,
+     22.06
+    ]
+   ],
+   "lip_s": 1.08,
+   "window": [
+    20980.0,
+    22060.0
+   ],
+   "stretch": 0.991,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [3] 00:20.980-00:22.060 (Whisper time), lips [[20.98, 22.06]], played whole at x0.99"
+  },
+  "9": {
+   "it_idx": 9,
+   "slot": [
+    36440,
+    42180
+   ],
+   "speech": [
+    36440,
+    41380
+   ],
+   "sentence": [
+    45800,
+    52230
+   ],
+   "src_lines": [
+    8
+   ],
+   "lips": [
+    [
+     46.36,
+     48.2
+    ]
+   ],
+   "lip_s": 1.84,
+   "window": [
+    45800.0,
+    53271.296
+   ],
+   "stretch": 0.768,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [8] 00:45.800-00:52.230 (Whisper time), lips [[46.36, 48.2]], played whole at x0.77"
+  },
+  "10": {
+   "it_idx": 10,
+   "slot": [
+    42180,
+    47180
+   ],
+   "speech": [
+    42180,
+    47180
+   ],
+   "sentence": [
+    53660,
+    60220
+   ],
+   "src_lines": [
+    9
+   ],
+   "lips": [
+    [
+     54.72,
+     55.52
+    ],
+    [
+     57.44,
+     60.22
+    ]
+   ],
+   "lip_s": 3.58,
+   "window": [
+    53660.0,
+    60220.0
+   ],
+   "stretch": 0.762,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [9] 00:53.660-01:00.220 (Whisper time), lips [[54.72, 55.52], [57.44, 60.22]], played whole at x0.76"
+  },
+  "12": {
+   "it_idx": 12,
+   "slot": [
+    51500,
+    52760
+   ],
+   "speech": [
+    51500,
+    52760
+   ],
+   "sentence": [
+    66220,
+    67420
+   ],
+   "src_lines": [
+    11
+   ],
+   "lips": [
+    [
+     66.28,
+     67.42
+    ]
+   ],
+   "lip_s": 1.14,
+   "window": [
+    66220.0,
+    67420.0
+   ],
+   "stretch": 1.05,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [11] 01:06.220-01:07.420 (Whisper time), lips [[66.28, 67.42]], played whole at x1.05"
+  },
+  "16": {
+   "it_idx": 16,
+   "slot": [
+    59990,
+    64070
+   ],
+   "speech": [
+    59990,
+    63160
+   ],
+   "sentence": [
+    76230,
+    79880
+   ],
+   "src_lines": [
+    15
+   ],
+   "lips": [
+    [
+     77.52,
+     79.2
+    ],
+    [
+     79.6,
+     79.88
+    ]
+   ],
+   "lip_s": 1.96,
+   "window": [
+    76230.0,
+    80640.0
+   ],
+   "stretch": 0.925,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [15] 01:16.230-01:19.880 (Whisper time), lips [[77.52, 79.2], [79.6, 79.88]], played whole at x0.93"
+  },
+  "17": {
+   "it_idx": 17,
+   "slot": [
+    64070,
+    67220
+   ],
+   "speech": [
+    64070,
+    66040
+   ],
+   "sentence": [
+    80640.0,
+    83526.169
+   ],
+   "src_lines": [
+    16
+   ],
+   "lips": [
+    [
+     82.96,
+     83.72
+    ],
+    [
+     84.4,
+     85.24
+    ]
+   ],
+   "lip_s": 1.6,
+   "window": [
+    80640.0,
+    83526.169
+   ],
+   "stretch": 1.091,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [16] 01:20.640-01:23.526 (Whisper time), lips [[82.96, 83.72], [84.4, 85.24]], played whole at x1.09"
+  },
+  "18": {
+   "it_idx": 18,
+   "slot": [
+    67220,
+    69990
+   ],
+   "speech": [
+    67220,
+    69400
+   ],
+   "sentence": [
+    83526.169,
+    86720
+   ],
+   "src_lines": [
+    16
+   ],
+   "lips": [
+    [
+     82.96,
+     83.72
+    ],
+    [
+     84.4,
+     85.24
+    ]
+   ],
+   "lip_s": 1.6,
+   "window": [
+    83526.169,
+    87500
+   ],
+   "stretch": 0.697,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [16] 01:23.526-01:26.720 (Whisper time), lips [[82.96, 83.72], [84.4, 85.24]], played whole at x0.70"
+  },
+  "19": {
+   "it_idx": 19,
+   "slot": [
+    69990,
+    72030
+   ],
+   "speech": [
+    69990,
+    70860
+   ],
+   "sentence": [
+    87500,
+    90600
+   ],
+   "src_lines": [
+    17
+   ],
+   "lips": [
+    [
+     87.5,
+     89.72
+    ]
+   ],
+   "lip_s": 2.22,
+   "window": [
+    87500.0,
+    92070.0
+   ],
+   "stretch": 0.446,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [17] 01:27.500-01:30.600 (Whisper time), lips [[87.5, 89.72]], played whole at x0.45"
+  },
+  "20": {
+   "it_idx": 20,
+   "slot": [
+    72030,
+    73240
+   ],
+   "speech": [
+    72030,
+    72440
+   ],
+   "sentence": [
+    92070.0,
+    92863.83
+   ],
+   "src_lines": [
+    18
+   ],
+   "lips": [
+    [
+     92.07,
+     93.04
+    ]
+   ],
+   "lip_s": 0.97,
+   "window": [
+    92070.0,
+    92863.83
+   ],
+   "stretch": 1.524,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [18] 01:32.070-01:32.864 (Whisper time), lips [[92.07, 93.04]], played whole at x1.52"
+  },
+  "21": {
+   "it_idx": 21,
+   "slot": [
+    73240,
+    75420
+   ],
+   "speech": [
+    73240,
+    74240
+   ],
+   "sentence": [
+    92863.83,
+    94800
+   ],
+   "src_lines": [
+    18
+   ],
+   "lips": [
+    [
+     92.07,
+     93.04
+    ]
+   ],
+   "lip_s": 0.97,
+   "window": [
+    92863.83,
+    95890
+   ],
+   "stretch": 0.72,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [18] 01:32.864-01:34.800 (Whisper time), lips [[92.07, 93.04]], played whole at x0.72"
+  },
+  "22": {
+   "it_idx": 22,
+   "slot": [
+    75420,
+    76960
+   ],
+   "speech": [
+    75420,
+    76960
+   ],
+   "sentence": [
+    95890,
+    98440
+   ],
+   "src_lines": [
+    19
+   ],
+   "lips": [
+    [
+     96.8,
+     97.32
+    ]
+   ],
+   "lip_s": 0.52,
+   "window": [
+    95890.0,
+    98440.0
+   ],
+   "stretch": 0.604,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [19] 01:35.890-01:38.440 (Whisper time), lips [[96.8, 97.32]], played whole at x0.60"
+  },
+  "24": {
+   "it_idx": 24,
+   "slot": [
+    87220,
+    91520
+   ],
+   "speech": [
+    87220,
+    90280
+   ],
+   "sentence": [
+    110750.0,
+    115547.849
+   ],
+   "src_lines": [
+    23
+   ],
+   "lips": [
+    [
+     110.84,
+     114.72
+    ],
+    [
+     116.08,
+     117.48
+    ]
+   ],
+   "lip_s": 5.28,
+   "window": [
+    110750.0,
+    115547.849
+   ],
+   "stretch": 0.896,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [23] 01:50.750-01:55.548 (Whisper time), lips [[110.84, 114.72], [116.08, 117.48]], played whole at x0.90"
+  },
+  "25": {
+   "it_idx": 25,
+   "slot": [
+    91520,
+    93760
+   ],
+   "speech": [
+    91520,
+    93760
+   ],
+   "sentence": [
+    115547.849,
+    119060
+   ],
+   "src_lines": [
+    23
+   ],
+   "lips": [
+    [
+     110.84,
+     114.72
+    ],
+    [
+     116.08,
+     117.48
+    ]
+   ],
+   "lip_s": 5.28,
+   "window": [
+    115547.849,
+    119060.0
+   ],
+   "stretch": 0.638,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [23] 01:55.548-01:59.060 (Whisper time), lips [[110.84, 114.72], [116.08, 117.48]], played whole at x0.64"
+  },
+  "27": {
+   "it_idx": 27,
+   "slot": [
+    96780,
+    100670
+   ],
+   "speech": [
+    96780,
+    100220
+   ],
+   "sentence": [
+    122250.0,
+    127779.933
+   ],
+   "src_lines": [
+    25
+   ],
+   "lips": [
+    [
+     128.0,
+     129.16
+    ]
+   ],
+   "lip_s": 1.16,
+   "window": [
+    122250.0,
+    127779.933
+   ],
+   "stretch": 0.703,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [25] 02:02.250-02:07.780 (Whisper time), lips [[128.0, 129.16]], played whole at x0.70"
+  },
+  "28": {
+   "it_idx": 28,
+   "slot": [
+    100670,
+    102410
+   ],
+   "speech": [
+    100670,
+    101740
+   ],
+   "sentence": [
+    127779.933,
+    129500
+   ],
+   "src_lines": [
+    25
+   ],
+   "lips": [
+    [
+     128.0,
+     129.16
+    ]
+   ],
+   "lip_s": 1.16,
+   "window": [
+    127779.933,
+    130290
+   ],
+   "stretch": 0.693,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [25] 02:07.780-02:09.500 (Whisper time), lips [[128.0, 129.16]], played whole at x0.69"
+  },
+  "29": {
+   "it_idx": 29,
+   "slot": [
+    102410,
+    105700
+   ],
+   "speech": [
+    102410,
+    105700
+   ],
+   "sentence": [
+    130290,
+    138080
+   ],
+   "src_lines": [
+    26
+   ],
+   "lips": [
+    [
+     130.29,
+     131.08
+    ],
+    [
+     132.64,
+     134.04
+    ],
+    [
+     134.6,
+     135.84
+    ],
+    [
+     136.84,
+     138.08
+    ]
+   ],
+   "lip_s": 4.67,
+   "window": [
+    130290.0,
+    138080.0
+   ],
+   "stretch": 0.422,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [26] 02:10.290-02:18.080 (Whisper time), lips [[130.29, 131.08], [132.64, 134.04], [134.6, 135.84], [136.84, 138.08]], played whole at x0.42"
+  },
+  "31": {
+   "it_idx": 31,
+   "slot": [
+    108960,
+    110940
+   ],
+   "speech": [
+    108960,
+    109800
+   ],
+   "sentence": [
+    141690.0,
+    143101.782
+   ],
+   "src_lines": [
+    28
+   ],
+   "lips": [
+    [
+     144.16,
+     145.48
+    ],
+    [
+     146.24,
+     147.08
+    ],
+    [
+     147.52,
+     148.48
+    ]
+   ],
+   "lip_s": 3.12,
+   "window": [
+    141690.0,
+    143101.782
+   ],
+   "stretch": 1.402,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [28] 02:21.690-02:23.102 (Whisper time), lips [[144.16, 145.48], [146.24, 147.08], [147.52, 148.48]], played whole at x1.40"
+  },
+  "32": {
+   "it_idx": 32,
+   "slot": [
+    110940,
+    114140
+   ],
+   "speech": [
+    110940,
+    114140
+   ],
+   "sentence": [
+    143101.782,
+    148480
+   ],
+   "src_lines": [
+    28
+   ],
+   "lips": [
+    [
+     144.16,
+     145.48
+    ],
+    [
+     146.24,
+     147.08
+    ],
+    [
+     147.52,
+     148.48
+    ]
+   ],
+   "lip_s": 3.12,
+   "window": [
+    143101.782,
+    148480.0
+   ],
+   "stretch": 0.595,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [28] 02:23.102-02:28.480 (Whisper time), lips [[144.16, 145.48], [146.24, 147.08], [147.52, 148.48]], played whole at x0.59"
+  },
+  "35": {
+   "it_idx": 35,
+   "slot": [
+    119210,
+    121560
+   ],
+   "speech": [
+    119210,
+    120500
+   ],
+   "sentence": [
+    153340.0,
+    154750.289
+   ],
+   "src_lines": [
+    31
+   ],
+   "lips": [
+    [
+     153.34,
+     153.76
+    ],
+    [
+     154.08,
+     154.48
+    ]
+   ],
+   "lip_s": 0.82,
+   "window": [
+    153340.0,
+    154750.289
+   ],
+   "stretch": 1.666,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [31] 02:33.340-02:34.750 (Whisper time), lips [[153.34, 153.76], [154.08, 154.48]], played whole at x1.67"
+  },
+  "36": {
+   "it_idx": 36,
+   "slot": [
+    121560,
+    123380
+   ],
+   "speech": [
+    121560,
+    123380
+   ],
+   "sentence": [
+    154750.289,
+    156740
+   ],
+   "src_lines": [
+    31
+   ],
+   "lips": [
+    [
+     153.34,
+     153.76
+    ],
+    [
+     154.08,
+     154.48
+    ]
+   ],
+   "lip_s": 0.82,
+   "window": [
+    154750.289,
+    156740.0
+   ],
+   "stretch": 0.915,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [31] 02:34.750-02:36.740 (Whisper time), lips [[153.34, 153.76], [154.08, 154.48]], played whole at x0.91"
+  },
+  "38": {
+   "it_idx": 38,
+   "slot": [
+    128620,
+    130520
+   ],
+   "speech": [
+    128620,
+    129510
+   ],
+   "sentence": [
+    161880,
+    162740
+   ],
+   "src_lines": [
+    33
+   ],
+   "lips": [
+    [
+     162.08,
+     162.52
+    ]
+   ],
+   "lip_s": 0.44,
+   "window": [
+    161880.0,
+    163600
+   ],
+   "stretch": 1.105,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [33] 02:41.880-02:42.740 (Whisper time), lips [[162.08, 162.52]], played whole at x1.10"
+  },
+  "39": {
+   "it_idx": 39,
+   "slot": [
+    130520,
+    132700
+   ],
+   "speech": [
+    130520,
+    132700
+   ],
+   "sentence": [
+    163600,
+    166560
+   ],
+   "src_lines": [
+    34
+   ],
+   "lips": [
+    [
+     164.08,
+     165.0
+    ]
+   ],
+   "lip_s": 0.92,
+   "window": [
+    163600.0,
+    166560.0
+   ],
+   "stretch": 0.736,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [34] 02:43.600-02:46.560 (Whisper time), lips [[164.08, 165.0]], played whole at x0.74"
+  },
+  "50": {
+   "it_idx": 50,
+   "slot": [
+    171540,
+    173780
+   ],
+   "speech": [
+    171540,
+    173780
+   ],
+   "sentence": [
+    206450,
+    208800
+   ],
+   "src_lines": [
+    43
+   ],
+   "lips": [
+    [
+     206.45,
+     207.36
+    ]
+   ],
+   "lip_s": 0.91,
+   "window": [
+    206450.0,
+    208800.0
+   ],
+   "stretch": 0.953,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [43] 03:26.450-03:28.800 (Whisper time), lips [[206.45, 207.36]], played whole at x0.95"
+  },
+  "55": {
+   "it_idx": 55,
+   "slot": [
+    183740,
+    186540
+   ],
+   "speech": [
+    183740,
+    185960
+   ],
+   "sentence": [
+    221780.0,
+    224810.3
+   ],
+   "src_lines": [
+    48,
+    49
+   ],
+   "lips": [
+    [
+     221.78,
+     223.64
+    ],
+    [
+     224.54,
+     227.24
+    ]
+   ],
+   "lip_s": 4.56,
+   "window": [
+    221780.0,
+    224810.3
+   ],
+   "stretch": 0.924,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [48, 49] 03:41.780-03:44.810 (Whisper time), lips [[221.78, 223.64], [224.54, 227.24]], played whole at x0.92"
+  },
+  "56": {
+   "it_idx": 56,
+   "slot": [
+    186540,
+    189550
+   ],
+   "speech": [
+    186540,
+    188320
+   ],
+   "sentence": [
+    224810.3,
+    227240
+   ],
+   "src_lines": [
+    48,
+    49
+   ],
+   "lips": [
+    [
+     221.78,
+     223.64
+    ],
+    [
+     224.54,
+     227.24
+    ]
+   ],
+   "lip_s": 4.56,
+   "window": [
+    224810.3,
+    228600
+   ],
+   "stretch": 0.794,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [48, 49] 03:44.810-03:47.240 (Whisper time), lips [[221.78, 223.64], [224.54, 227.24]], played whole at x0.79"
+  },
+  "57": {
+   "it_idx": 57,
+   "slot": [
+    189550,
+    194845
+   ],
+   "speech": [
+    189550,
+    193700
+   ],
+   "sentence": [
+    228600,
+    238260
+   ],
+   "src_lines": [
+    50,
+    51
+   ],
+   "lips": [
+    [
+     235.72,
+     236.56
+    ]
+   ],
+   "lip_s": 0.84,
+   "window": [
+    228600.0,
+    238260
+   ],
+   "stretch": 0.548,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [50, 51] 03:48.600-03:58.260 (Whisper time), lips [[235.72, 236.56]], played whole at x0.55"
+  },
+  "58": {
+   "it_idx": 58,
+   "slot": [
+    194845,
+    197690
+   ],
+   "speech": [
+    195990,
+    197060
+   ],
+   "sentence": [
+    238260,
+    243060
+   ],
+   "src_lines": [
+    52
+   ],
+   "lips": [
+    [
+     238.6,
+     242.36
+    ],
+    [
+     242.88,
+     243.06
+    ]
+   ],
+   "lip_s": 3.94,
+   "window": [
+    238260,
+    243660
+   ],
+   "stretch": 0.527,
+   "sentence_offset_ms": -1145,
+   "note": "lip-sync row: DE sentence(s) [52] 03:58.260-04:03.060 (Whisper time), lips [[238.6, 242.36], [242.88, 243.06]], played whole at x0.53"
+  },
+  "59": {
+   "it_idx": 59,
+   "slot": [
+    197690,
+    199200
+   ],
+   "speech": [
+    197690,
+    198840
+   ],
+   "sentence": [
+    243660,
+    244860
+   ],
+   "src_lines": [
+    53
+   ],
+   "lips": [
+    [
+     243.66,
+     244.86
+    ]
+   ],
+   "lip_s": 1.2,
+   "window": [
+    243660.0,
+    245235.652
+   ],
+   "stretch": 0.958,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [53] 04:03.660-04:04.860 (Whisper time), lips [[243.66, 244.86]], played whole at x0.96"
+  },
+  "60": {
+   "it_idx": 60,
+   "slot": [
+    199200,
+    200460
+   ],
+   "speech": [
+    199200,
+    200460
+   ],
+   "sentence": [
+    245440,
+    247180
+   ],
+   "src_lines": [
+    54
+   ],
+   "lips": [
+    [
+     245.56,
+     247.18
+    ]
+   ],
+   "lip_s": 1.62,
+   "window": [
+    245440.0,
+    247180.0
+   ],
+   "stretch": 0.724,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [54] 04:05.440-04:07.180 (Whisper time), lips [[245.56, 247.18]], played whole at x0.72"
+  },
+  "64": {
+   "it_idx": 64,
+   "slot": [
+    205950,
+    209360
+   ],
+   "speech": [
+    205950,
+    209360
+   ],
+   "sentence": [
+    257350,
+    262120
+   ],
+   "src_lines": [
+    58
+   ],
+   "lips": [
+    [
+     257.35,
+     257.36
+    ],
+    [
+     258.28,
+     258.84
+    ],
+    [
+     259.64,
+     260.68
+    ]
+   ],
+   "lip_s": 1.61,
+   "window": [
+    257350.0,
+    262120.0
+   ],
+   "stretch": 0.715,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [58] 04:17.350-04:22.120 (Whisper time), lips [[257.35, 257.36], [258.28, 258.84], [259.64, 260.68]], played whole at x0.71"
+  },
+  "66": {
+   "it_idx": 66,
+   "slot": [
+    212510,
+    217920
+   ],
+   "speech": [
+    212510,
+    217320
+   ],
+   "sentence": [
+    265890,
+    273840
+   ],
+   "src_lines": [
+    60
+   ],
+   "lips": [
+    [
+     265.89,
+     266.16
+    ],
+    [
+     269.12,
+     273.84
+    ]
+   ],
+   "lip_s": 4.99,
+   "window": [
+    265890.0,
+    274831.684
+   ],
+   "stretch": 0.605,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [60] 04:25.890-04:33.840 (Whisper time), lips [[265.89, 266.16], [269.12, 273.84]], played whole at x0.61"
+  },
+  "67": {
+   "it_idx": 67,
+   "slot": [
+    217920,
+    219800
+   ],
+   "speech": [
+    217920,
+    219800
+   ],
+   "sentence": [
+    274880,
+    277140
+   ],
+   "src_lines": [
+    61
+   ],
+   "lips": [
+    [
+     276.36,
+     277.14
+    ]
+   ],
+   "lip_s": 0.78,
+   "window": [
+    274880.0,
+    277140.0
+   ],
+   "stretch": 0.832,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [61] 04:34.880-04:37.140 (Whisper time), lips [[276.36, 277.14]], played whole at x0.83"
+  },
+  "70": {
+   "it_idx": 70,
+   "slot": [
+    231960,
+    234530
+   ],
+   "speech": [
+    231960,
+    233440
+   ],
+   "sentence": [
+    288570,
+    290800
+   ],
+   "src_lines": [
+    64
+   ],
+   "lips": [
+    [
+     289.04,
+     290.8
+    ]
+   ],
+   "lip_s": 1.76,
+   "window": [
+    288570.0,
+    291900
+   ],
+   "stretch": 0.772,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [64] 04:48.570-04:50.800 (Whisper time), lips [[289.04, 290.8]], played whole at x0.77"
+  },
+  "71": {
+   "it_idx": 71,
+   "slot": [
+    234530,
+    237180
+   ],
+   "speech": [
+    234530,
+    237180
+   ],
+   "sentence": [
+    291900,
+    294860
+   ],
+   "src_lines": [
+    65
+   ],
+   "lips": [
+    [
+     291.9,
+     292.76
+    ]
+   ],
+   "lip_s": 0.86,
+   "window": [
+    291900.0,
+    294860.0
+   ],
+   "stretch": 0.895,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [65] 04:51.900-04:54.860 (Whisper time), lips [[291.9, 292.76]], played whole at x0.90"
+  },
+  "75": {
+   "it_idx": 75,
+   "slot": [
+    247260,
+    251610
+   ],
+   "speech": [
+    247260,
+    250620
+   ],
+   "sentence": [
+    312920,
+    316780
+   ],
+   "src_lines": [
+    70
+   ],
+   "lips": [
+    [
+     312.92,
+     315.48
+    ],
+    [
+     315.96,
+     316.56
+    ]
+   ],
+   "lip_s": 3.16,
+   "window": [
+    312920.0,
+    317917.321
+   ],
+   "stretch": 0.87,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [70] 05:12.920-05:16.780 (Whisper time), lips [[312.92, 315.48], [315.96, 316.56]], played whole at x0.87"
+  },
+  "76": {
+   "it_idx": 76,
+   "slot": [
+    251610,
+    256480
+   ],
+   "speech": [
+    251610,
+    255280
+   ],
+   "sentence": [
+    318060,
+    321720
+   ],
+   "src_lines": [
+    71
+   ],
+   "lips": [
+    [
+     320.96,
+     321.72
+    ]
+   ],
+   "lip_s": 0.76,
+   "window": [
+    318060.0,
+    322890
+   ],
+   "stretch": 1.008,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [71] 05:18.060-05:21.720 (Whisper time), lips [[320.96, 321.72]], played whole at x1.01"
+  },
+  "77": {
+   "it_idx": 77,
+   "slot": [
+    256480,
+    259460
+   ],
+   "speech": [
+    256480,
+    258800
+   ],
+   "sentence": [
+    322890,
+    327100
+   ],
+   "src_lines": [
+    72
+   ],
+   "lips": [
+    [
+     322.92,
+     323.36
+    ]
+   ],
+   "lip_s": 0.44,
+   "window": [
+    322890.0,
+    328260
+   ],
+   "stretch": 0.555,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [72] 05:22.890-05:27.100 (Whisper time), lips [[322.92, 323.36]], played whole at x0.55"
+  },
+  "78": {
+   "it_idx": 78,
+   "slot": [
+    259460,
+    262720
+   ],
+   "speech": [
+    259460,
+    262720
+   ],
+   "sentence": [
+    328260,
+    331740
+   ],
+   "src_lines": [
+    73
+   ],
+   "lips": [
+    [
+     328.28,
+     329.64
+    ],
+    [
+     331.04,
+     331.74
+    ]
+   ],
+   "lip_s": 2.06,
+   "window": [
+    328260.0,
+    331740.0
+   ],
+   "stretch": 0.937,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [73] 05:28.260-05:31.740 (Whisper time), lips [[328.28, 329.64], [331.04, 331.74]], played whole at x0.94"
+  },
+  "82": {
+   "it_idx": 82,
+   "slot": [
+    275060,
+    276810
+   ],
+   "speech": [
+    275060,
+    276320
+   ],
+   "sentence": [
+    343230.0,
+    344615.249
+   ],
+   "src_lines": [
+    77
+   ],
+   "lips": [
+    [
+     344.8,
+     348.76
+    ]
+   ],
+   "lip_s": 3.96,
+   "window": [
+    343230.0,
+    344615.249
+   ],
+   "stretch": 1.263,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [77] 05:43.230-05:44.615 (Whisper time), lips [[344.8, 348.76]], played whole at x1.26"
+  },
+  "83": {
+   "it_idx": 83,
+   "slot": [
+    276810,
+    280580
+   ],
+   "speech": [
+    276810,
+    280580
+   ],
+   "sentence": [
+    344615.249,
+    348760
+   ],
+   "src_lines": [
+    77
+   ],
+   "lips": [
+    [
+     344.8,
+     348.76
+    ]
+   ],
+   "lip_s": 3.96,
+   "window": [
+    344615.249,
+    348760.0
+   ],
+   "stretch": 0.91,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [77] 05:44.615-05:48.760 (Whisper time), lips [[344.8, 348.76]], played whole at x0.91"
+  },
+  "85": {
+   "it_idx": 85,
+   "slot": [
+    283860,
+    286680
+   ],
+   "speech": [
+    283860,
+    286680
+   ],
+   "sentence": [
+    352890,
+    358900
+   ],
+   "src_lines": [
+    79
+   ],
+   "lips": [
+    [
+     352.89,
+     356.16
+    ]
+   ],
+   "lip_s": 3.27,
+   "window": [
+    352890.0,
+    358900.0
+   ],
+   "stretch": 0.469,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [79] 05:52.890-05:58.900 (Whisper time), lips [[352.89, 356.16]], played whole at x0.47"
+  },
+  "89": {
+   "it_idx": 89,
+   "slot": [
+    298970,
+    303900
+   ],
+   "speech": [
+    298970,
+    303900
+   ],
+   "sentence": [
+    374200,
+    379620
+   ],
+   "src_lines": [
+    83
+   ],
+   "lips": [
+    [
+     375.28,
+     376.4
+    ]
+   ],
+   "lip_s": 1.12,
+   "window": [
+    374200.0,
+    379620.0
+   ],
+   "stretch": 0.91,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [83] 06:14.200-06:19.620 (Whisper time), lips [[375.28, 376.4]], played whole at x0.91"
+  },
+  "97": {
+   "it_idx": 97,
+   "slot": [
+    345690,
+    350480
+   ],
+   "speech": [
+    345690,
+    350480
+   ],
+   "sentence": [
+    427110,
+    431500
+   ],
+   "src_lines": [
+    91
+   ],
+   "lips": [
+    [
+     427.28,
+     428.28
+    ],
+    [
+     428.6,
+     430.12
+    ]
+   ],
+   "lip_s": 2.52,
+   "window": [
+    427110.0,
+    431500.0
+   ],
+   "stretch": 1.091,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [91] 07:07.110-07:11.500 (Whisper time), lips [[427.28, 428.28], [428.6, 430.12]], played whole at x1.09"
+  },
+  "100": {
+   "it_idx": 100,
+   "slot": [
+    356300,
+    359380
+   ],
+   "speech": [
+    356300,
+    358760
+   ],
+   "sentence": [
+    437920,
+    440960
+   ],
+   "src_lines": [
+    94
+   ],
+   "lips": [
+    [
+     438.16,
+     440.48
+    ]
+   ],
+   "lip_s": 2.32,
+   "window": [
+    437920.0,
+    441726.179
+   ],
+   "stretch": 0.809,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [94] 07:17.920-07:20.960 (Whisper time), lips [[438.16, 440.48]], played whole at x0.81"
+  },
+  "101": {
+   "it_idx": 101,
+   "slot": [
+    359380,
+    362100
+   ],
+   "speech": [
+    359380,
+    362100
+   ],
+   "sentence": [
+    441770,
+    444920
+   ],
+   "src_lines": [
+    95
+   ],
+   "lips": [
+    [
+     442.2,
+     444.92
+    ]
+   ],
+   "lip_s": 2.72,
+   "window": [
+    441770.0,
+    444920.0
+   ],
+   "stretch": 0.863,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [95] 07:21.770-07:24.920 (Whisper time), lips [[442.2, 444.92]], played whole at x0.86"
+  },
+  "103": {
+   "it_idx": 103,
+   "slot": [
+    365590,
+    371870
+   ],
+   "speech": [
+    365590,
+    370460
+   ],
+   "sentence": [
+    447980,
+    453480
+   ],
+   "src_lines": [
+    97
+   ],
+   "lips": [
+    [
+     448.04,
+     450.92
+    ],
+    [
+     451.52,
+     452.56
+    ]
+   ],
+   "lip_s": 3.92,
+   "window": [
+    447980.0,
+    454580
+   ],
+   "stretch": 0.952,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [97] 07:27.980-07:33.480 (Whisper time), lips [[448.04, 450.92], [451.52, 452.56]], played whole at x0.95"
+  },
+  "104": {
+   "it_idx": 104,
+   "slot": [
+    371870,
+    376000
+   ],
+   "speech": [
+    371870,
+    376000
+   ],
+   "sentence": [
+    454580,
+    460360
+   ],
+   "src_lines": [
+    98
+   ],
+   "lips": [
+    [
+     454.58,
+     457.12
+    ],
+    [
+     459.4,
+     460.36
+    ]
+   ],
+   "lip_s": 3.5,
+   "window": [
+    454580.0,
+    460360.0
+   ],
+   "stretch": 0.715,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [98] 07:34.580-07:40.360 (Whisper time), lips [[454.58, 457.12], [459.4, 460.36]], played whole at x0.71"
+  },
+  "106": {
+   "it_idx": 106,
+   "slot": [
+    382080,
+    387060
+   ],
+   "speech": [
+    382080,
+    386420
+   ],
+   "sentence": [
+    466740,
+    471890
+   ],
+   "src_lines": [
+    100
+   ],
+   "lips": [
+    [
+     466.74,
+     468.32
+    ],
+    [
+     471.88,
+     471.89
+    ]
+   ],
+   "lip_s": 1.59,
+   "window": [
+    466740.0,
+    472410
+   ],
+   "stretch": 0.878,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [100] 07:46.740-07:51.890 (Whisper time), lips [[466.74, 468.32], [471.88, 471.89]], played whole at x0.88"
+  },
+  "107": {
+   "it_idx": 107,
+   "slot": [
+    387060,
+    391070
+   ],
+   "speech": [
+    387060,
+    389980
+   ],
+   "sentence": [
+    472410,
+    475060
+   ],
+   "src_lines": [
+    101
+   ],
+   "lips": [
+    [
+     472.41,
+     475.06
+    ]
+   ],
+   "lip_s": 2.65,
+   "window": [
+    472410.0,
+    475070
+   ],
+   "stretch": 1.508,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [101] 07:52.410-07:55.060 (Whisper time), lips [[472.41, 475.06]], played whole at x1.51"
+  },
+  "108": {
+   "it_idx": 108,
+   "slot": [
+    391070,
+    394080
+   ],
+   "speech": [
+    391070,
+    394080
+   ],
+   "sentence": [
+    475070,
+    479020
+   ],
+   "src_lines": [
+    102
+   ],
+   "lips": [
+    [
+     475.07,
+     475.48
+    ]
+   ],
+   "lip_s": 0.41,
+   "window": [
+    475070.0,
+    479020.0
+   ],
+   "stretch": 0.762,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [102] 07:55.070-07:59.020 (Whisper time), lips [[475.07, 475.48]], played whole at x0.76"
+  },
+  "110": {
+   "it_idx": 110,
+   "slot": [
+    396900,
+    399680
+   ],
+   "speech": [
+    396900,
+    399040
+   ],
+   "sentence": [
+    481320.0,
+    484001.446
+   ],
+   "src_lines": [
+    104
+   ],
+   "lips": [
+    [
+     484.28,
+     485.96
+    ]
+   ],
+   "lip_s": 1.68,
+   "window": [
+    481320.0,
+    484001.446
+   ],
+   "stretch": 1.037,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [104] 08:01.320-08:04.001 (Whisper time), lips [[484.28, 485.96]], played whole at x1.04"
+  },
+  "111": {
+   "it_idx": 111,
+   "slot": [
+    399680,
+    402520
+   ],
+   "speech": [
+    399680,
+    402520
+   ],
+   "sentence": [
+    484001.446,
+    487560
+   ],
+   "src_lines": [
+    104
+   ],
+   "lips": [
+    [
+     484.28,
+     485.96
+    ]
+   ],
+   "lip_s": 1.68,
+   "window": [
+    484001.446,
+    487560.0
+   ],
+   "stretch": 0.798,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [104] 08:04.001-08:07.560 (Whisper time), lips [[484.28, 485.96]], played whole at x0.80"
+  },
+  "122": {
+   "it_idx": 122,
+   "slot": [
+    438830,
+    440920
+   ],
+   "speech": [
+    438830,
+    440920
+   ],
+   "sentence": [
+    522890,
+    527080
+   ],
+   "src_lines": [
+    115
+   ],
+   "lips": [
+    [
+     522.89,
+     524.04
+    ]
+   ],
+   "lip_s": 1.15,
+   "window": [
+    522890.0,
+    527080.0
+   ],
+   "stretch": 0.499,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [115] 08:42.890-08:47.080 (Whisper time), lips [[522.89, 524.04]], played whole at x0.50"
+  },
+  "130": {
+   "it_idx": 130,
+   "slot": [
+    464510,
+    466280
+   ],
+   "speech": [
+    464510,
+    466280
+   ],
+   "sentence": [
+    554140,
+    557120
+   ],
+   "src_lines": [
+    122
+   ],
+   "lips": [
+    [
+     554.14,
+     554.4
+    ],
+    [
+     555.16,
+     556.28
+    ]
+   ],
+   "lip_s": 1.38,
+   "window": [
+    554140.0,
+    557120.0
+   ],
+   "stretch": 0.594,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [122] 09:14.140-09:17.120 (Whisper time), lips [[554.14, 554.4], [555.16, 556.28]], played whole at x0.59"
+  },
+  "132": {
+   "it_idx": 132,
+   "slot": [
+    468730,
+    471260
+   ],
+   "speech": [
+    468730,
+    471260
+   ],
+   "sentence": [
+    560360,
+    563420
+   ],
+   "src_lines": [
+    124
+   ],
+   "lips": [
+    [
+     560.36,
+     563.42
+    ]
+   ],
+   "lip_s": 3.06,
+   "window": [
+    560360.0,
+    563420.0
+   ],
+   "stretch": 0.827,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [124] 09:20.360-09:23.420 (Whisper time), lips [[560.36, 563.42]], played whole at x0.83"
+  },
+  "135": {
+   "it_idx": 135,
+   "slot": [
+    476120,
+    478920
+   ],
+   "speech": [
+    476120,
+    478920
+   ],
+   "sentence": [
+    568390,
+    572920
+   ],
+   "src_lines": [
+    127
+   ],
+   "lips": [
+    [
+     570.04,
+     570.64
+    ]
+   ],
+   "lip_s": 0.6,
+   "window": [
+    568390.0,
+    572920.0
+   ],
+   "stretch": 0.618,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [127] 09:28.390-09:32.920 (Whisper time), lips [[570.04, 570.64]], played whole at x0.62"
+  },
+  "137": {
+   "it_idx": 137,
+   "slot": [
+    481970,
+    489600
+   ],
+   "speech": [
+    481970,
+    489600
+   ],
+   "sentence": [
+    577180,
+    586760
+   ],
+   "src_lines": [
+    129,
+    130
+   ],
+   "lips": [
+    [
+     580.24,
+     580.88
+    ]
+   ],
+   "lip_s": 0.64,
+   "window": [
+    577180.0,
+    586760.0
+   ],
+   "stretch": 0.796,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [129, 130] 09:37.180-09:46.760 (Whisper time), lips [[580.24, 580.88]], played whole at x0.80"
+  },
+  "139": {
+   "it_idx": 139,
+   "slot": [
+    493850,
+    495580
+   ],
+   "speech": [
+    493850,
+    494940
+   ],
+   "sentence": [
+    590520,
+    591680
+   ],
+   "src_lines": [
+    132
+   ],
+   "lips": [
+    [
+     590.52,
+     591.68
+    ]
+   ],
+   "lip_s": 1.16,
+   "window": [
+    590520.0,
+    592361.101
+   ],
+   "stretch": 0.94,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [132] 09:50.520-09:51.680 (Whisper time), lips [[590.52, 591.68]], played whole at x0.94"
+  },
+  "140": {
+   "it_idx": 140,
+   "slot": [
+    495580,
+    498700
+   ],
+   "speech": [
+    495580,
+    498700
+   ],
+   "sentence": [
+    592650,
+    596740
+   ],
+   "src_lines": [
+    133
+   ],
+   "lips": [
+    [
+     593.36,
+     596.74
+    ]
+   ],
+   "lip_s": 3.38,
+   "window": [
+    592650.0,
+    596740.0
+   ],
+   "stretch": 0.763,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [133] 09:52.650-09:56.740 (Whisper time), lips [[593.36, 596.74]], played whole at x0.76"
+  },
+  "143": {
+   "it_idx": 143,
+   "slot": [
+    505720,
+    508140
+   ],
+   "speech": [
+    505720,
+    507580
+   ],
+   "sentence": [
+    606840,
+    608970
+   ],
+   "src_lines": [
+    138
+   ],
+   "lips": [
+    [
+     606.84,
+     608.68
+    ]
+   ],
+   "lip_s": 1.84,
+   "window": [
+    606840.0,
+    609550
+   ],
+   "stretch": 0.893,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [138] 10:06.840-10:08.970 (Whisper time), lips [[606.84, 608.68]], played whole at x0.89"
+  },
+  "144": {
+   "it_idx": 144,
+   "slot": [
+    508140,
+    511960
+   ],
+   "speech": [
+    508140,
+    511140
+   ],
+   "sentence": [
+    609550,
+    612820
+   ],
+   "src_lines": [
+    139
+   ],
+   "lips": [
+    [
+     610.16,
+     612.0
+    ]
+   ],
+   "lip_s": 1.84,
+   "window": [
+    609550.0,
+    613320
+   ],
+   "stretch": 1.013,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [139] 10:09.550-10:12.820 (Whisper time), lips [[610.16, 612.0]], played whole at x1.01"
+  },
+  "145": {
+   "it_idx": 145,
+   "slot": [
+    511960,
+    515740
+   ],
+   "speech": [
+    511960,
+    514940
+   ],
+   "sentence": [
+    613320,
+    617440
+   ],
+   "src_lines": [
+    140
+   ],
+   "lips": [
+    [
+     613.88,
+     617.36
+    ]
+   ],
+   "lip_s": 3.48,
+   "window": [
+    613320.0,
+    618546.04
+   ],
+   "stretch": 0.723,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [140] 10:13.320-10:17.440 (Whisper time), lips [[613.88, 617.36]], played whole at x0.72"
+  },
+  "146": {
+   "it_idx": 146,
+   "slot": [
+    515740,
+    519580
+   ],
+   "speech": [
+    515740,
+    519580
+   ],
+   "sentence": [
+    619240,
+    622940
+   ],
+   "src_lines": [
+    141,
+    142
+   ],
+   "lips": [
+    [
+     621.16,
+     621.6
+    ]
+   ],
+   "lip_s": 0.44,
+   "window": [
+    619240.0,
+    622940.0
+   ],
+   "stretch": 1.038,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [141, 142] 10:19.240-10:22.940 (Whisper time), lips [[621.16, 621.6]], played whole at x1.04"
+  },
+  "148": {
+   "it_idx": 148,
+   "slot": [
+    524060,
+    527957
+   ],
+   "speech": [
+    524060,
+    527957
+   ],
+   "sentence": [
+    629640,
+    631620
+   ],
+   "src_lines": [
+    145
+   ],
+   "lips": [
+    [
+     629.64,
+     631.62
+    ]
+   ],
+   "lip_s": 1.98,
+   "window": [
+    629640.0,
+    631620.0
+   ],
+   "stretch": 1.968,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [145] 10:29.640-10:31.620 (Whisper time), lips [[629.64, 631.62]], played whole at x1.97"
+  },
+  "150": {
+   "it_idx": 150,
+   "slot": [
+    530750,
+    532820
+   ],
+   "speech": [
+    530750,
+    532200
+   ],
+   "sentence": [
+    634520,
+    636100
+   ],
+   "src_lines": [
+    147
+   ],
+   "lips": [
+    [
+     634.56,
+     636.1
+    ]
+   ],
+   "lip_s": 1.54,
+   "window": [
+    634520.0,
+    636550
+   ],
+   "stretch": 1.02,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [147] 10:34.520-10:36.100 (Whisper time), lips [[634.56, 636.1]], played whole at x1.02"
+  },
+  "151": {
+   "it_idx": 151,
+   "slot": [
+    532820,
+    535570
+   ],
+   "speech": [
+    532820,
+    534600
+   ],
+   "sentence": [
+    636550,
+    638660
+   ],
+   "src_lines": [
+    148
+   ],
+   "lips": [
+    [
+     636.55,
+     636.8
+    ],
+    [
+     637.72,
+     638.48
+    ]
+   ],
+   "lip_s": 1.01,
+   "window": [
+    636550.0,
+    639430.0
+   ],
+   "stretch": 0.955,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [148] 10:36.550-10:38.660 (Whisper time), lips [[636.55, 636.8], [637.72, 638.48]], played whole at x0.95"
+  },
+  "152": {
+   "it_idx": 152,
+   "slot": [
+    535570,
+    537300
+   ],
+   "speech": [
+    535570,
+    536760
+   ],
+   "sentence": [
+    639430.0,
+    641352.941
+   ],
+   "src_lines": [
+    149
+   ],
+   "lips": [
+    [
+     641.36,
+     644.1
+    ]
+   ],
+   "lip_s": 2.74,
+   "window": [
+    639430.0,
+    641352.941
+   ],
+   "stretch": 0.9,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [149] 10:39.430-10:41.353 (Whisper time), lips [[641.36, 644.1]], played whole at x0.90"
+  },
+  "153": {
+   "it_idx": 153,
+   "slot": [
+    537300,
+    539000
+   ],
+   "speech": [
+    537300,
+    539000
+   ],
+   "sentence": [
+    641352.941,
+    644100
+   ],
+   "src_lines": [
+    149
+   ],
+   "lips": [
+    [
+     641.36,
+     644.1
+    ]
+   ],
+   "lip_s": 2.74,
+   "window": [
+    641352.941,
+    644100.0
+   ],
+   "stretch": 0.619,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [149] 10:41.353-10:44.100 (Whisper time), lips [[641.36, 644.1]], played whole at x0.62"
+  },
+  "155": {
+   "it_idx": 155,
+   "slot": [
+    542750,
+    544340
+   ],
+   "speech": [
+    542750,
+    543860
+   ],
+   "sentence": [
+    647990,
+    650060
+   ],
+   "src_lines": [
+    151
+   ],
+   "lips": [
+    [
+     647.99,
+     649.48
+    ]
+   ],
+   "lip_s": 1.49,
+   "window": [
+    647990.0,
+    650350
+   ],
+   "stretch": 0.674,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [151] 10:47.990-10:50.060 (Whisper time), lips [[647.99, 649.48]], played whole at x0.67"
+  },
+  "156": {
+   "it_idx": 156,
+   "slot": [
+    544340,
+    548420
+   ],
+   "speech": [
+    544340,
+    547438
+   ],
+   "sentence": [
+    650350,
+    653900
+   ],
+   "src_lines": [
+    152
+   ],
+   "lips": [
+    [
+     651.92,
+     652.44
+    ],
+    [
+     653.08,
+     653.9
+    ]
+   ],
+   "lip_s": 1.34,
+   "window": [
+    650350.0,
+    654920.0
+   ],
+   "stretch": 0.893,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [152] 10:50.350-10:53.900 (Whisper time), lips [[651.92, 652.44], [653.08, 653.9]], played whole at x0.89"
+  },
+  "157": {
+   "it_idx": 157,
+   "slot": [
+    548420,
+    550200
+   ],
+   "speech": [
+    548420,
+    550200
+   ],
+   "sentence": [
+    654920.0,
+    656329.167
+   ],
+   "src_lines": [
+    153
+   ],
+   "lips": [
+    [
+     656.92,
+     657.6
+    ],
+    [
+     658.0,
+     659.1
+    ]
+   ],
+   "lip_s": 1.78,
+   "window": [
+    654920.0,
+    656329.167
+   ],
+   "stretch": 1.263,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [153] 10:54.920-10:56.329 (Whisper time), lips [[656.92, 657.6], [658.0, 659.1]], played whole at x1.26"
+  },
+  "158": {
+   "it_idx": 158,
+   "slot": [
+    550200,
+    554180
+   ],
+   "speech": [
+    550200,
+    553700
+   ],
+   "sentence": [
+    656329.167,
+    659100
+   ],
+   "src_lines": [
+    153
+   ],
+   "lips": [
+    [
+     656.92,
+     657.6
+    ],
+    [
+     658.0,
+     659.1
+    ]
+   ],
+   "lip_s": 1.78,
+   "window": [
+    656329.167,
+    659480.0
+   ],
+   "stretch": 1.263,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [153] 10:56.329-10:59.100 (Whisper time), lips [[656.92, 657.6], [658.0, 659.1]], played whole at x1.26"
+  },
+  "159": {
+   "it_idx": 159,
+   "slot": [
+    554180,
+    557610
+   ],
+   "speech": [
+    554180,
+    557100
+   ],
+   "sentence": [
+    659680,
+    664480
+   ],
+   "src_lines": [
+    154
+   ],
+   "lips": [
+    [
+     661.64,
+     662.28
+    ]
+   ],
+   "lip_s": 0.64,
+   "window": [
+    659680.0,
+    665318.356
+   ],
+   "stretch": 0.608,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [154] 10:59.680-11:04.480 (Whisper time), lips [[661.64, 662.28]], played whole at x0.61"
+  },
+  "160": {
+   "it_idx": 160,
+   "slot": [
+    557610,
+    560480
+   ],
+   "speech": [
+    557610,
+    560480
+   ],
+   "sentence": [
+    665590,
+    669700
+   ],
+   "src_lines": [
+    155
+   ],
+   "lips": [
+    [
+     668.88,
+     669.7
+    ]
+   ],
+   "lip_s": 0.82,
+   "window": [
+    665590.0,
+    669700.0
+   ],
+   "stretch": 0.698,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [155] 11:05.590-11:09.700 (Whisper time), lips [[668.88, 669.7]], played whole at x0.70"
+  },
+  "164": {
+   "it_idx": 164,
+   "slot": [
+    575480,
+    577500
+   ],
+   "speech": [
+    575480,
+    576900
+   ],
+   "sentence": [
+    691910,
+    693280
+   ],
+   "src_lines": [
+    161
+   ],
+   "lips": [
+    [
+     691.91,
+     693.28
+    ]
+   ],
+   "lip_s": 1.37,
+   "window": [
+    691910.0,
+    693858.873
+   ],
+   "stretch": 1.036,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [161] 11:31.910-11:33.280 (Whisper time), lips [[691.91, 693.28]], played whole at x1.04"
+  },
+  "165": {
+   "it_idx": 165,
+   "slot": [
+    577500,
+    580410
+   ],
+   "speech": [
+    577500,
+    579800
+   ],
+   "sentence": [
+    694080,
+    698120
+   ],
+   "src_lines": [
+    162
+   ],
+   "lips": [
+    [
+     694.84,
+     698.12
+    ]
+   ],
+   "lip_s": 3.28,
+   "window": [
+    694080.0,
+    698820.0
+   ],
+   "stretch": 0.614,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [162] 11:34.080-11:38.120 (Whisper time), lips [[694.84, 698.12]], played whole at x0.61"
+  },
+  "166": {
+   "it_idx": 166,
+   "slot": [
+    580410,
+    583230
+   ],
+   "speech": [
+    580410,
+    582180
+   ],
+   "sentence": [
+    698820.0,
+    702006.0
+   ],
+   "src_lines": [
+    163
+   ],
+   "lips": [
+    [
+     699.44,
+     702.36
+    ],
+    [
+     704.56,
+     705.0
+    ]
+   ],
+   "lip_s": 3.36,
+   "window": [
+    698820.0,
+    702006.0
+   ],
+   "stretch": 0.885,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [163] 11:38.820-11:42.006 (Whisper time), lips [[699.44, 702.36], [704.56, 705.0]], played whole at x0.89"
+  },
+  "167": {
+   "it_idx": 167,
+   "slot": [
+    583230,
+    586060
+   ],
+   "speech": [
+    583230,
+    585160
+   ],
+   "sentence": [
+    702006.0,
+    705480
+   ],
+   "src_lines": [
+    163
+   ],
+   "lips": [
+    [
+     699.44,
+     702.36
+    ],
+    [
+     704.56,
+     705.0
+    ]
+   ],
+   "lip_s": 3.36,
+   "window": [
+    702006.0,
+    706190
+   ],
+   "stretch": 0.676,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [163] 11:42.006-11:45.480 (Whisper time), lips [[699.44, 702.36], [704.56, 705.0]], played whole at x0.68"
+  },
+  "168": {
+   "it_idx": 168,
+   "slot": [
+    586060,
+    587420
+   ],
+   "speech": [
+    586060,
+    587080
+   ],
+   "sentence": [
+    706190,
+    707460
+   ],
+   "src_lines": [
+    164
+   ],
+   "lips": [
+    [
+     706.19,
+     707.12
+    ]
+   ],
+   "lip_s": 0.93,
+   "window": [
+    706190.0,
+    707860
+   ],
+   "stretch": 0.814,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [164] 11:46.190-11:47.460 (Whisper time), lips [[706.19, 707.12]], played whole at x0.81"
+  },
+  "169": {
+   "it_idx": 169,
+   "slot": [
+    587420,
+    588520
+   ],
+   "speech": [
+    587420,
+    587860
+   ],
+   "sentence": [
+    707860,
+    708320
+   ],
+   "src_lines": [
+    165
+   ],
+   "lips": [
+    [
+     707.86,
+     708.32
+    ]
+   ],
+   "lip_s": 0.46,
+   "window": [
+    707860.0,
+    709000
+   ],
+   "stretch": 0.965,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [165] 11:47.860-11:48.320 (Whisper time), lips [[707.86, 708.32]], played whole at x0.96"
+  },
+  "170": {
+   "it_idx": 170,
+   "slot": [
+    588520,
+    591980
+   ],
+   "speech": [
+    588520,
+    591980
+   ],
+   "sentence": [
+    709000,
+    712293
+   ],
+   "src_lines": [
+    166
+   ],
+   "lips": [
+    [
+     709.52,
+     710.2
+    ],
+    [
+     710.72,
+     711.16
+    ],
+    [
+     711.76,
+     712.29
+    ]
+   ],
+   "lip_s": 1.65,
+   "window": [
+    709000.0,
+    712293.0
+   ],
+   "stretch": 1.051,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [166] 11:49.000-11:52.293 (Whisper time), lips [[709.52, 710.2], [710.72, 711.16], [711.76, 712.29]], played whole at x1.05"
+  },
+  "172": {
+   "it_idx": 172,
+   "slot": [
+    595390,
+    598840
+   ],
+   "speech": [
+    595390,
+    598840
+   ],
+   "sentence": [
+    717410,
+    722900
+   ],
+   "src_lines": [
+    168
+   ],
+   "lips": [
+    [
+     717.44,
+     718.44
+    ],
+    [
+     718.88,
+     720.12
+    ],
+    [
+     721.92,
+     722.52
+    ]
+   ],
+   "lip_s": 2.84,
+   "window": [
+    717410.0,
+    722900.0
+   ],
+   "stretch": 0.628,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [168] 11:57.410-12:02.900 (Whisper time), lips [[717.44, 718.44], [718.88, 720.12], [721.92, 722.52]], played whole at x0.63"
+  },
+  "174": {
+   "it_idx": 174,
+   "slot": [
+    602380,
+    603480
+   ],
+   "speech": [
+    602380,
+    602940
+   ],
+   "sentence": [
+    728040,
+    728560
+   ],
+   "src_lines": [
+    170
+   ],
+   "lips": [
+    [
+     728.04,
+     728.56
+    ]
+   ],
+   "lip_s": 0.52,
+   "window": [
+    728040.0,
+    729061.429
+   ],
+   "stretch": 1.077,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [170] 12:08.040-12:08.560 (Whisper time), lips [[728.04, 728.56]], played whole at x1.08"
+  },
+  "175": {
+   "it_idx": 175,
+   "slot": [
+    603480,
+    606120
+   ],
+   "speech": [
+    603480,
+    605500
+   ],
+   "sentence": [
+    729390,
+    732540
+   ],
+   "src_lines": [
+    171
+   ],
+   "lips": [
+    [
+     729.39,
+     729.48
+    ],
+    [
+     731.76,
+     732.54
+    ]
+   ],
+   "lip_s": 0.87,
+   "window": [
+    729390.0,
+    733340
+   ],
+   "stretch": 0.668,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [171] 12:09.390-12:12.540 (Whisper time), lips [[729.39, 729.48], [731.76, 732.54]], played whole at x0.67"
+  },
+  "176": {
+   "it_idx": 176,
+   "slot": [
+    606120,
+    607900
+   ],
+   "speech": [
+    606120,
+    607900
+   ],
+   "sentence": [
+    733340,
+    735040
+   ],
+   "src_lines": [
+    172
+   ],
+   "lips": [
+    [
+     733.76,
+     735.04
+    ]
+   ],
+   "lip_s": 1.28,
+   "window": [
+    733340.0,
+    735040.0
+   ],
+   "stretch": 1.047,
+   "sentence_offset_ms": 0,
+   "note": "lip-sync row: DE sentence(s) [172] 12:13.340-12:15.040 (Whisper time), lips [[733.76, 735.04]], played whole at x1.05"
+  }
+ }
+}

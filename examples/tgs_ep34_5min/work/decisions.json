@@ -1,0 +1,649 @@
+{
+ "groups": [
+  {
+   "members": [
+    1,
+    2
+   ],
+   "dub_prefixes": [
+    "Das ist nicht das, wonach es a",
+    "Lass es mich erklären!“"
+   ],
+   "src": 0,
+   "src_prefix": "If it's not what it looks like",
+   "reason": "AI full read: D1 and D2 are two clauses of one plea ('not what it looks like' / 'let me explain') and both sit on S0. They must be one group, not two rows on the same footage."
+  },
+  {
+   "members": [
+    3,
+    4,
+    5,
+    6
+   ],
+   "dub_prefixes": [
+    "Sie hatte Paul in den letzten",
+    "Aber dermaßen in Rage hatte er",
+    "Sie bebte vor Wut und fuchtelt",
+    "Aber er hatte es trotzdem sofo"
+   ],
+   "src": [
+    1,
+    4
+   ],
+   "src_prefix": "As soon as Aiden saw the photo",
+   "reason": "joined in Dub Studio: rows 3-6 share source footage. joined in Dub Studio: rows 3-5 share source footage. AI claude-sonnet-5-5 (0.45): Anya shaking the phone wildly in his face is S1 'Ava shoved [the photo] in his face'. Neighbouring D3 is a mismatch: its insults and weeks of belittling are added content that S1 does not carry. | AI full read: D5 (she waves the phone in his face) is S1. D6 (he recognises the picture at once) is the 'as soon as he sa"
+  },
+  {
+   "members": [
+    7,
+    8,
+    9
+   ],
+   "dub_prefixes": [
+    "Das Bild.",
+    "Nicht von ihm als Tiger.",
+    "Sondern vom Parkplatz des Fitn"
+   ],
+   "src": 5,
+   "src_prefix": "On Ava's phone screen was a ph",
+   "reason": "AI full read: 'Das Bild' / 'not of him as a tiger' / 'from the gym parking lot' are clauses about the one photo in S5 (the gym parking lot photo). They must share it as one group."
+  },
+  {
+   "members": [
+    17,
+    18
+   ],
+   "dub_prefixes": [
+    "„Seid ihr jetzt schon so dreis",
+    "Ihr seid das Letzte!“"
+   ],
+   "src": [
+    9,
+    10
+   ],
+   "src_prefix": "What are you and Charlotte doi",
+   "reason": "AI full read: D17 and D18 are one quoted accusation, 'so shameless making out in public ... you're the worst'. It maps to S9-S10, so both rows are one group; D18 alone was a x5.4 fast clip on the same footage as D17."
+  },
+  {
+   "members": [
+    26,
+    27
+   ],
+   "dub_prefixes": [
+    "Charlotte und ich waren nur be",
+    "Sie hat die Verletzung an mein"
+   ],
+   "src": [
+    19,
+    20
+   ],
+   "src_prefix": "Charlotte and I just went to t",
+   "reason": "AI full read: D26 and D27 are the two halves of S19 ('went to the gym... she noticed the bruises on my head'), which continues in S20 ('take a closer look'). Grouping the span fixes the fast/slow mismatch."
+  },
+  {
+   "members": [
+    33,
+    34
+   ],
+   "dub_prefixes": [
+    "Paul blinzelte fassungslos.",
+    "Er fühlte sich in die Ecke ged"
+   ],
+   "src": 26,
+   "src_prefix": "You He had no idea how to defe",
+   "reason": "AI full read: Both rows show S26 ('He had no idea how to defend himself'). Paul's stunned blink and feeling cornered are the same beat, so they become one group."
+  },
+  {
+   "members": [
+    38,
+    39
+   ],
+   "dub_prefixes": [
+    "Paul stand auf und ging unruhi",
+    "Seine Finger strichen nervös ü"
+   ],
+   "src": 32,
+   "src_prefix": "Aiden paced slightly, running",
+   "reason": "AI full read: Pacing behind the desk and fingers on the desk edge are both clauses of S32; the two rows must not show the same footage separately"
+  },
+  {
+   "members": [
+    41,
+    42
+   ],
+   "dub_prefixes": [
+    "Wer…",
+    "Wer hat dir diese Fotos geschi"
+   ],
+   "src": 34,
+   "src_prefix": "Who sent you these photos?",
+   "reason": "AI full read: 'Wer…' and 'Wer hat dir diese Fotos geschickt?' are one question, 'Who sent you these photos?'"
+  },
+  {
+   "members": [
+    50,
+    51
+   ],
+   "dub_prefixes": [
+    "„Zum Glück habe ich sie!",
+    "Sonst hätte ich nie erfahren,"
+   ],
+   "src": 46,
+   "src_prefix": "It's a good thing someone sent",
+   "reason": "AI full read: D50 and D51 are two clauses of S46 ('It's a good thing someone sent me these pictures, otherwise I never would have found out'). Both showed S46 as separate rows, so they become one group."
+  },
+  {
+   "members": [
+    68,
+    69
+   ],
+   "dub_prefixes": [
+    "„Aber ich glaube dir kein besc",
+    "Sie schüttelte den Kopf, wüten"
+   ],
+   "src": [
+    62,
+    63
+   ],
+   "src_prefix": "That's going to have to be goo",
+   "reason": "AI full read: D68 (\"I don't believe you\") and D69 (she shakes her head, angry tears) are both clauses of S63, \"I don't believe you,\" she shook her head. They were stacked on S63 as separate rows. Grouping them on [62,63] adds the unused S62 (\"That's going to have to be good enough for you\"), which belongs to the same moment right after the vow, and removes the slow-motion."
+  },
+  {
+   "members": [
+    79,
+    80
+   ],
+   "dub_prefixes": [
+    "Und jetzt… jetzt willst du mir",
+    "Dass ich nicht lache!“"
+   ],
+   "src": 73,
+   "src_prefix": "But now you want to talk about",
+   "reason": "AI full read: D79 and D80 are two clauses of S73 ('But now you want to talk about what marriage is?'), so they must share its footage as one group instead of showing it as separate rows."
+  },
+  {
+   "members": [
+    82,
+    83
+   ],
+   "dub_prefixes": [
+    "„Hör auf, abzulenken!",
+    "Wenn du mit Charlotte schläfst"
+   ],
+   "src": [
+    75,
+    77
+   ],
+   "src_prefix": "Stop trying to deflect and jus",
+   "reason": "AI full read: D82 'Hör auf, abzulenken!' and D83 'Wenn du mit Charlotte schläfst...' together retell S75-S76 (stop deflecting, tell me if you're having an affair). Grouping them on that span fixes D82's too-fast clip.; AI review: also shows S77"
+  },
+  {
+   "members": [
+    97,
+    98
+   ],
+   "dub_prefixes": [
+    "„Mach kein Drama daraus.",
+    "Es ist nichts passiert!“"
+   ],
+   "src": 92,
+   "src_prefix": "Stop making a big deal out of",
+   "reason": "AI full read: 'Mach kein Drama daraus' and 'Es ist nichts passiert' are the two clauses of S92 'Stop making a big deal out of it, nothing happened'. They must not show it as separate rows."
+  },
+  {
+   "members": [
+    100,
+    101
+   ],
+   "dub_prefixes": [
+    "„Spielt das eine Rolle?",
+    "Es hätte passieren können!"
+   ],
+   "src": 94,
+   "src_prefix": "Does that really matter? it co",
+   "reason": "AI full read: 'Spielt das eine Rolle?' and 'Es hätte passieren können!' are the two halves of S94 'Does that really matter? it could have.'"
+  },
+  {
+   "members": [
+    106,
+    107,
+    108
+   ],
+   "dub_prefixes": [
+    "„Du bist eine jämmerliche Heul",
+    "Niemand versucht, dich zu erse",
+    "Aber wenn du nicht aufpasst, w"
+   ],
+   "src": [
+    98,
+    99
+   ],
+   "src_prefix": "Nobody's trying to replace you",
+   "reason": "joined in Dub Studio: rows 106-108 share source footage. joined in Dub Studio: rows 106-108 share source footage. AI claude-sonnet-5-5 (0.35): 'Du bist eine jämmerliche Heulsuse!' is an added insult with no direct source line, but it opens her reply in the same beat as S98 and S99. Neighbour D107 uses S98 and D108 uses S99. Giving it its own source would repeat footage, so I span the beat of her answer. Weak match; the insult itself is new. | AI full re"
+  },
+  {
+   "members": [
+    114,
+    115
+   ],
+   "dub_prefixes": [
+    "Paul seufzte.",
+    "„Und niemand mehr, als deine M"
+   ],
+   "src": 108,
+   "src_prefix": "Aiden rolled his eyes, your mo",
+   "reason": "AI full read: 'Paul seufzte' is the 'Aiden rolled his eyes' reaction in S108, and 'Und niemand mehr, als deine Mutter' is its tail 'your mother especially'. The rows are clauses of one sentence. This also keeps story order, since S105-106 are used by D112-113."
+  },
+  {
+   "members": [
+    126,
+    127
+   ],
+   "dub_prefixes": [
+    "„Das ist noch nicht vorbei, Pa",
+    "Noch lange nicht."
+   ],
+   "src": 119,
+   "src_prefix": "This isn't over, Aiden, not by",
+   "reason": "AI full read: 'Das ist noch nicht vorbei, Paul.' and 'Noch lange nicht.' are two clauses of the single source line 'This isn't over, Aiden, not by a long shot.' They were separate rows on the same footage, so they become one group."
+  },
+  {
+   "members": [
+    135,
+    136
+   ],
+   "dub_prefixes": [
+    "Er wartete einen Moment, bis e",
+    "Dann griff er zum Telefonhörer"
+   ],
+   "src": 127,
+   "src_prefix": "After a moment or two, certain",
+   "reason": "AI full read: Both rows are clauses of S127: 'after a moment, certain Ava was gone' and 'picked up the phone and started dialing'. They must share that footage as one group instead of showing it as two separate rows."
+  },
+  {
+   "members": [
+    140,
+    141
+   ],
+   "dub_prefixes": [
+    "„Hey.",
+    "Ich muss dir was sagen.“"
+   ],
+   "src": 132,
+   "src_prefix": "Hey, um, I have to tell you so",
+   "reason": "AI full read: 'Hey.' and 'Ich muss dir was sagen.' are both the single source line S132, 'Hey, um, I have to tell you something'. Both rows were on S132 as separate rows, so they become one group."
+  },
+  {
+   "members": [
+    146,
+    147
+   ],
+   "dub_prefixes": [
+    "Am Ende der Leitung sortierte",
+    "„Was ist mit ihr?“"
+   ],
+   "src": 138,
+   "src_prefix": "After a long pause, Charlotte",
+   "reason": "AI full read: 'Charlotte sortierte ihre Gedanken' is the 'After a long pause, Charlotte replied' clause of S138. 'Was ist mit ihr?' is its quote, so both rows share S138. S136 'Charlotte stammered' is not used here; the dub uses the stammer later (D158)."
+  },
+  {
+   "members": [
+    153,
+    154
+   ],
+   "dub_prefixes": [
+    "„Jemand hat Fotos von uns gema",
+    "Beim Fitnessstudio.“"
+   ],
+   "src": 144,
+   "src_prefix": "Someone took photos of us at t",
+   "reason": "AI full read: 'Jemand hat Fotos von uns gemacht' and 'Beim Fitnessstudio' are two clauses of S144, 'Someone took photos of us at the gym.' They must not show the same footage as separate rows."
+  },
+  {
+   "members": [
+    165,
+    166
+   ],
+   "dub_prefixes": [
+    "Ich habe versucht, es ihr zu e",
+    "Sie ist rasend vor Wut… auf mi"
+   ],
+   "src": 159,
+   "src_prefix": "I tried to explain it all to h",
+   "reason": "AI full read: Both rows are clauses of the single source sentence S159 ('I tried to explain... she's furious with me and with you'), so they form one group."
+  },
+  {
+   "members": [
+    182,
+    183
+   ],
+   "dub_prefixes": [
+    "Ich muss diese Unterlagen imme",
+    "Und ich brauche dringend Ablen"
+   ],
+   "src": 177,
+   "src_prefix": "I still need to go through tho",
+   "reason": "AI full read: 'Ich muss die Unterlagen noch durchgehen' and 'ich brauche Ablenkung' are the two clauses of S177, so they share it as one group."
+  },
+  {
+   "members": [
+    185,
+    186
+   ],
+   "dub_prefixes": [
+    "Er holte den schweren Koffer h",
+    "Sein Blick flog über die Namen"
+   ],
+   "src": 179,
+   "src_prefix": "He brought the briefcase to hi",
+   "reason": "AI full read: Taking the case to the desk and leafing through the files, plus the glance over the company names, are both in S179, so they form one group."
+  },
+  {
+   "members": [
+    187,
+    188
+   ],
+   "dub_prefixes": [
+    "Es ist unglaublich, was ich al",
+    "Mithilfe des Syndikats könnte"
+   ],
+   "src": [
+    180,
+    181
+   ],
+   "src_prefix": "There's so much I could do wit",
+   "reason": "AI full read: 'So much I could do with this money' and 'change Frankfurt via the syndicate' are S180 and S181, so the pair takes the span and avoids slow motion."
+  },
+  {
+   "members": [
+    189,
+    190
+   ],
+   "dub_prefixes": [
+    "Als er eine Seite umblätterte,",
+    "Franks Name, in geschwungener"
+   ],
+   "src": 182,
+   "src_prefix": "As he flipped through the pile",
+   "reason": "AI full read: Spotting the father's signature and 'Frank's name in ink' are both S182, so they form one group."
+  },
+  {
+   "members": [
+    191,
+    192
+   ],
+   "dub_prefixes": [
+    "Paul spürte, wie sich ein ural",
+    "Weil er ihn verloren hatte."
+   ],
+   "src": [
+    183,
+    184
+   ],
+   "src_prefix": "He teared up slightly.",
+   "reason": "AI full read: The old feeling creeping in and 'because he had lost him' match 'He teared up slightly' and 'I wish I still had my dad'. The span avoids the x4 slow motion."
+  },
+  {
+   "members": [
+    193,
+    194
+   ],
+   "dub_prefixes": [
+    "Wäre er doch nur hier.",
+    "Ich gäbe alles dafür."
+   ],
+   "src": 185,
+   "src_prefix": "I'd give up all of this just t",
+   "reason": "AI full read: 'Wäre er doch nur hier' and 'Ich gäbe alles dafür' both tell S185, 'I'd give up all of this just to have him back'. They must be one group instead of two rows on the same footage."
+  },
+  {
+   "members": [
+    198,
+    199
+   ],
+   "dub_prefixes": [
+    "Tatsächlich.",
+    "Seine Augen täuschten ihn nich"
+   ],
+   "src": 190,
+   "src_prefix": "Sure enough, his eyes weren't",
+   "reason": "AI full read: 'Tatsächlich. Seine Augen täuschten ihn nicht.' is the single sentence S190, 'Sure enough, his eyes weren't deceiving him'. D198 was on the same footage as D199."
+  }
+ ],
+ "assign": {
+  "16": {
+   "dub_prefix": "In Anyas Blicken loderte Hass.",
+   "src": 8,
+   "src_prefix": "Ava glared at him.",
+   "reason": "AI claude-sonnet-5-5 (0.8): 'Hatred blazed in Anya's eyes' is the unused S8 'Ava glared at him', which also fits the story order."
+  },
+  "22": {
+   "dub_prefix": "„Lass es mich erklären, Anya.“",
+   "src": [
+    14,
+    15
+   ],
+   "src_prefix": "Sure.",
+   "reason": "AI review: also shows S14"
+  },
+  "29": {
+   "dub_prefix": "„Oh bitte.",
+   "src": [
+    22,
+    23
+   ],
+   "src_prefix": "Ava rolled her eyes.",
+   "reason": "AI full read: 'Oh bitte.' is Ava's eye-roll and scoff 'Oh yeah?'. The unused S22 'Ava rolled her eyes' belongs to this beat, so the span avoids slow motion."
+  },
+  "35": {
+   "dub_prefix": "„Warum vertraust du mir einfac",
+   "src": [
+    27,
+    28
+   ],
+   "src_prefix": "Why don't you trust me?\"",
+   "reason": "AI full read: 'Why don't you trust me?' plus the unused S28 'He finally asked' match 'rief er jetzt laut', so the span fixes the slow motion."
+  },
+  "36": {
+   "dub_prefix": "„Warum sollte ich?“, zischte s",
+   "src": [
+    29,
+    30
+   ],
+   "src_prefix": "Ava scoffed.",
+   "reason": "AI full read: 'Warum sollte ich?' plus zischte sie = 'Ava scoffed' + the unused 'Why should I trust you?'"
+  },
+  "46": {
+   "dub_prefix": "Sag mir sofort die Wahrheit, w",
+   "src": [
+    38,
+    40
+   ],
+   "src_prefix": "Tell me right now.",
+   "reason": "AI full read: 'Sag mir sofort die Wahrheit, was läuft da zwischen euch' = 'Tell me right now' + 'Is something going on between the two of you?' + 'Tell me the truth', all unused lines in the same moment"
+  },
+  "47": {
+   "dub_prefix": "„Ich sage dir die Wahrheit!“,",
+   "src": [
+    41,
+    42
+   ],
+   "src_prefix": "I am telling you the truth.\"",
+   "reason": "AI full read: 'Ich sage dir die Wahrheit!', blaffte Paul = 'I am telling you the truth' + 'Aiden huffed' (unused)"
+  },
+  "49": {
+   "dub_prefix": "„Das spielt keine verdammte Ro",
+   "src": [
+    44,
+    45
+   ],
+   "src_prefix": "Ava screamed.",
+   "reason": "AI full read: 'Das spielt keine verdammte Rolle!', schrie Anya = 'Ava screamed' (S44) plus the unused 'And I told you it doesn't matter' (S45). This also removes the 4.6x slow-motion."
+  },
+  "57": {
+   "dub_prefix": "Anya stampfte rastlos durch da",
+   "src": 55,
+   "src_prefix": "Ava paced back and forth acros",
+   "reason": "AI claude-sonnet-5-5 (0.8): 'Anya stampfte rastlos durch das Büro' = S55 'Ava paced back and forth across the room', which is unused and sits in this moment (after S54, before S56). Anya = Ava. The automatic match to S172 is wrong."
+  },
+  "84": {
+   "dub_prefix": "„Ich lenke nicht ab!",
+   "src": [
+    78,
+    79
+   ],
+   "src_prefix": "I'm not deflecting Ava.",
+   "reason": "AI full read: 'Ich lenke nicht ab!' is S78. The unused S79 ('I have no interest in Charlotte, okay?') is the same denial and the same beat. The 4 s gap before D85 suggests the dub line continues into it."
+  },
+  "109": {
+   "dub_prefix": "„Eine Ehe ist ein Vertrag, Any",
+   "src": [
+    100,
+    101
+   ],
+   "src_prefix": "Marriage is a contract, Ava.",
+   "reason": "AI full read: 'Eine Ehe ist ein Vertrag… genau wie im Geschäft' merges S100 with the unused S101 'Just like a business contract'. This also fixes the slow motion."
+  },
+  "111": {
+   "dub_prefix": "Paul ließ sich ebenfalls schwe",
+   "src": 103,
+   "src_prefix": "Aiden sat down at his desk, ru",
+   "reason": "AI claude-sonnet-5-5 (0.9): 'Paul ließ sich ... in seinen Sessel fallen und rieb sich die pochenden Schläfen' is the unused S103 'Aiden sat down at his desk, rubbing his temples.'"
+  },
+  "112": {
+   "dub_prefix": "„Ich beende es, weil es nicht",
+   "src": [
+    104,
+    105
+   ],
+   "src_prefix": "I'm ending it because this isn",
+   "reason": "AI full read: 'fauchte sie' is the 'Ava huffed' beat (unused neighbour S105), added to 'I'm ending it because this isn't working'. Fixes the x2.9 slow motion."
+  },
+  "113": {
+   "dub_prefix": "„Ja, weil deine ganze Familie",
+   "src": [
+    106,
+    107
+   ],
+   "src_prefix": "Yeah?",
+   "reason": "AI full read: 'Ja, weil deine ganze Familie mich hasst' = 'Yeah? Well, that's because your entire family hates me' (S106+S107)."
+  },
+  "116": {
+   "dub_prefix": "„Zieh meine Mutter da nicht mi",
+   "src": [
+    109,
+    110
+   ],
+   "src_prefix": "Ava scowled.",
+   "reason": "AI review: also shows S109"
+  },
+  "142": {
+   "dub_prefix": "Pauls Stimme zitterte leicht.",
+   "src": 131,
+   "src_prefix": "Aiden's voice was shaky.",
+   "reason": "AI claude-sonnet-5-5 (0.92): 'Pauls Stimme zitterte leicht' is 'Aiden's voice was shaky' (S131), which is unused and sits at exactly this moment."
+  },
+  "144": {
+   "dub_prefix": "Was ist passiert… du klingst b",
+   "src": [
+    134,
+    136
+   ],
+   "src_prefix": "What's going on?",
+   "reason": "AI full read: 'Was ist passiert… du klingst besorgt?' merges 'What's going on?' and 'You sound worried, Aiden.' (S134 and S135).; AI review: also shows S136"
+  },
+  "145": {
+   "dub_prefix": "„Es geht um Anya.“",
+   "src": 137,
+   "src_prefix": "It's Ava.",
+   "reason": "AI full read: 'Es geht um Anya' is the unused 'It's Ava.' (S137). S135 already belongs to D144."
+  },
+  "158": {
+   "dub_prefix": "„W-warte mal… glaubst du, sie",
+   "src": [
+    148,
+    150
+   ],
+   "src_prefix": "Wait a minute.",
+   "reason": "AI full read: Merges 'Wait a minute', 'Do you think she's spying on us?' and 'Charlotte sputtered'. S148 and S149 are unused and belong to this beat."
+  },
+  "159": {
+   "dub_prefix": "„Wer sollte es sonst sein?“",
+   "src": [
+    151,
+    152
+   ],
+   "src_prefix": "Aiden nodded.",
+   "reason": "AI full read: 'Aiden nodded' (S151, unused) leads into 'Who else would it be?', so the span fills the clip."
+  },
+  "161": {
+   "dub_prefix": "„Was war auf dem Bild zu sehen",
+   "src": [
+    154,
+    155
+   ],
+   "src_prefix": "What was in the picture?",
+   "reason": "AI full read: The question 'What was in the picture?' is joined with the unused 'Charlotte asked, when she finally spoke again' (S155)."
+  },
+  "170": {
+   "dub_prefix": "Charlotte atmete scharf aus, a",
+   "src": [
+    162,
+    163
+   ],
+   "src_prefix": "Aiden waited patiently for her",
+   "reason": "AI full read: D170 is Charlotte's sharp exhale after Aiden's question. S163 carries it, and the unused S162 ('Aiden waited patiently for her reply') is the same beat just before it. Spanning both gives the row enough footage and removes the slow motion."
+  },
+  "178": {
+   "dub_prefix": "Sie hatte aufgelegt.",
+   "src": [
+    171,
+    172
+   ],
+   "src_prefix": "Charlotte hung up.",
+   "reason": "AI review: also shows S172"
+  },
+  "179": {
+   "dub_prefix": "Paul massierte sich die Schläf",
+   "src": [
+    173,
+    174
+   ],
+   "src_prefix": "Shit!",
+   "reason": "AI review: also shows S173"
+  },
+  "196": {
+   "dub_prefix": "Einer der Namen auf dem Deckbl",
+   "src": [
+    187,
+    188
+   ],
+   "src_prefix": "What's this?",
+   "reason": "AI full read: The unused 'What's this?' (S187) belongs to the beat of a name catching his eye (S188). Spanning both gives the row enough footage."
+  },
+  "200": {
+   "dub_prefix": "Die Akte gehörte zu Ginos Firm",
+   "src": 191,
+   "src_prefix": "This file is on Derek's compan",
+   "reason": "AI claude-sonnet-5-5 (0.9): 'Die Akte gehörte zu Ginos Firma' is the unused S191 'This file is on Derek's company', with the dub name Gino for Derek."
+  }
+ },
+ "confirm": {},
+ "repeat": {},
+ "gap": {
+  "0": "AI claude-sonnet-5-5 (0.5): Opening plea 'Anya, bitte!'. Neighbours D1 and D2 and the nearby source lines (S0, S15, S17) do not say it. It is a teaser line the adaptation added, so it gets B-roll.",
+  "10": "AI claude-sonnet-5-5 (0.55): 'A sharp, high-resolution shot' is an added detail. S5-S7 around it only describe the photo content, and S7 (bruises) is a different meaning. The story is changed here.",
+  "12": "not found: its footage is also used by row 17 (AI matching); add a clip",
+  "13": "not found: its footage is also used by row 17 (AI matching); add a clip",
+  "14": "AI claude-sonnet-5-5 (0.55): 'The spy in the car' is added narration. The only related source line, S13 (someone was taking our picture), is already used by D21, and no nearby unused line says it.",
+  "15": "AI claude-sonnet-5-5 (0.5): 'He had pressed the shutter before Paul noticed him' is an added event. S13 carries the 'someone was photographing us' idea but belongs to D21. No unused source line says it.",
+  "31": "AI claude-sonnet-5-5 (0.8): The coffee cup grabbed and smashed against the wall is an added event. I checked D30 (S24 'You really expect me to believe that?'), D32 (S25 'terrible liar') and the unused S22 'Ava rolled her eyes', which comes before S23. None of them says it, so the story is changed here.",
+  "61": "AI claude-sonnet-5-5 (0.6): 'She stopped and stared at Paul, shaken' is an added beat. Neighbours: S55 (pacing) is taken by row 57, S56 is used by row 62 (the 'two of you behind my back' speech), and no unused source line says she stopped or stared. The story is changed here, so B-roll covers it.",
+  "104": "AI claude-sonnet-5-5 (0.8): The inner thought 'Und das werde ich niemals zulassen, blitzte es ihm durch den Kopf' is not in the source. Neighbours S96 and S97 and the unused lines around them do not say it. The adaptation added it, so the story is changed here.",
+  "124": "AI claude-sonnet-5-5 (0.6): Row 124 adds a detail: only the air conditioner humming and their heavy breathing. Neighbours checked: S117 'long pause between them' is already used by D123, and S118 'Ava broke the silence' belongs to D125. No unused source line mentions the AC or breathing, so the story is changed here and B-roll covers it.",
+  "167": "AI claude-sonnet-5-5 (0.7): 'Oh mein Gott.' is an added interjection. S160 (shaky breath) is already used by row 168, and S161 ('What should I do') is used by row 169. The unused S162 (Aiden waited) does not carry it either. The only similar exclamation is S173 'Shit!', which is far away in a different beat. The story is changed here, so this is not found and B-roll covers it."
+ },
+ "unused_notes": {
+  "7": "AI: The dub never says Charlotte was only leaning in to inspect the bruises on his forehead. D11 only shows the photo of Paul and Charlotte, and D16 jumps to Anya's glare."
+ }
+}

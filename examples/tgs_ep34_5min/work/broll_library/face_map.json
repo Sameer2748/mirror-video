@@ -1,0 +1,2923 @@
+{
+ "video": "/Users/manish/Downloads/TGS US_DE/US/TGS EPISODE 34.mp4",
+ "fps": 5,
+ "groups": {
+  "9": {
+   "name": "Ava",
+   "faces": 212,
+   "how": "vote {'Ava': 128}"
+  },
+  "29": {
+   "name": "Aiden",
+   "faces": 1403,
+   "how": "vote {'Aiden': 1261, 'Ava': 8}"
+  },
+  "6": {
+   "name": "Ava",
+   "faces": 10,
+   "how": "vote {'Ava': 10}"
+  },
+  "10": {
+   "name": "Ava",
+   "faces": 649,
+   "how": "vote {'Ava': 541, 'Aiden': 4}"
+  },
+  "7": {
+   "name": "Ava",
+   "faces": 23,
+   "how": "Claude (reference faces)"
+  },
+  "28": {
+   "name": "Aiden",
+   "faces": 39,
+   "how": "Claude (reference faces)"
+  },
+  "26": {
+   "name": "Aiden",
+   "faces": 13,
+   "how": "vote {'Aiden': 13}"
+  },
+  "23": {
+   "name": "Aiden",
+   "faces": 6,
+   "how": "vote {'Aiden': 6}"
+  },
+  "8": {
+   "name": "Ava",
+   "faces": 19,
+   "how": "vote {'Ava': 19}"
+  },
+  "27": {
+   "name": "Aiden",
+   "faces": 30,
+   "how": "vote {'Aiden': 30}"
+  },
+  "5": {
+   "name": "Charlotte",
+   "faces": 104,
+   "how": "vote {'Charlotte': 104}"
+  },
+  "4": {
+   "name": "Charlotte",
+   "faces": 117,
+   "how": "vote {'Charlotte': 117}"
+  },
+  "3": {
+   "name": "Charlotte",
+   "faces": 22,
+   "how": "vote {'Charlotte': 22}"
+  },
+  "24": {
+   "name": "Aiden",
+   "faces": 13,
+   "how": "vote {'Aiden': 13}"
+  },
+  "20": {
+   "name": "Aiden",
+   "faces": 18,
+   "how": "vote {'Aiden': 18}"
+  },
+  "19": {
+   "name": "Aiden",
+   "faces": 13,
+   "how": "vote {'Aiden': 13}"
+  },
+  "17": {
+   "name": "Aiden",
+   "faces": 4,
+   "how": "vote {'Aiden': 4}"
+  },
+  "15": {
+   "name": "Aiden",
+   "faces": 7,
+   "how": "vote {'Aiden': 7}"
+  },
+  "30": {
+   "name": "Aiden",
+   "faces": 70,
+   "how": "vote {'Aiden': 70}"
+  },
+  "32": {
+   "name": "Aiden",
+   "faces": 5,
+   "how": "vote {'Aiden': 5}"
+  },
+  "14": {
+   "name": "Aiden",
+   "faces": 8,
+   "how": "vote {'Aiden': 8}"
+  },
+  "18": {
+   "name": "Man with swept-back blond hair drinking from a glass, not one of the listed characters",
+   "faces": 16,
+   "how": "Claude (reference faces)"
+  }
+ },
+ "shots": {
+  "0": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 0.1,
+     "to_s": 3.7,
+     "frames": 19
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 0.96,
+     "to_s": 3.76
+    }
+   ]
+  },
+  "1": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 3.94,
+     "to_s": 5.74,
+     "frames": 10
+    }
+   ],
+   "talking": []
+  },
+  "2": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 5.94,
+     "to_s": 7.74,
+     "frames": 10
+    }
+   ],
+   "talking": []
+  },
+  "3": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 8.02,
+     "to_s": 12.82,
+     "frames": 25
+    }
+   ],
+   "talking": []
+  },
+  "4": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 13.06,
+     "to_s": 13.86,
+     "frames": 5
+    }
+   ],
+   "talking": []
+  },
+  "5": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 14.1,
+     "to_s": 16.1,
+     "frames": 11
+    }
+   ],
+   "talking": []
+  },
+  "6": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 16.34,
+     "to_s": 19.34,
+     "frames": 16
+    }
+   ],
+   "talking": []
+  },
+  "7": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 19.54,
+     "to_s": 22.54,
+     "frames": 16
+    },
+    {
+     "name": "Ava",
+     "pos": "right",
+     "view": "back",
+     "from_s": 22.74,
+     "to_s": 28.94,
+     "frames": 28,
+     "how": "Claude (body crop)"
+    },
+    {
+     "name": "unknown person",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 20.34,
+     "to_s": 28.94,
+     "frames": 77,
+     "how": null
+    }
+   ],
+   "talking": []
+  },
+  "8": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 29.34,
+     "to_s": 34.94,
+     "frames": 29
+    },
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "back",
+     "from_s": 29.94,
+     "to_s": 34.94,
+     "frames": 24,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "9": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 35.42,
+     "to_s": 37.62,
+     "frames": 12
+    }
+   ],
+   "talking": []
+  },
+  "10": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 37.78,
+     "to_s": 44.18,
+     "frames": 33
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 37.68,
+     "to_s": 43.2
+    }
+   ]
+  },
+  "11": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 44.34,
+     "to_s": 47.74,
+     "frames": 18
+    }
+   ],
+   "talking": []
+  },
+  "12": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 47.94,
+     "to_s": 50.14,
+     "frames": 12
+    }
+   ],
+   "talking": []
+  },
+  "13": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 50.42,
+     "to_s": 53.62,
+     "frames": 17
+    }
+   ],
+   "talking": []
+  },
+  "14": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 53.86,
+     "to_s": 55.26,
+     "frames": 8
+    },
+    {
+     "name": "Ava",
+     "pos": "right",
+     "view": "back",
+     "from_s": 53.86,
+     "to_s": 54.06,
+     "frames": 2,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 53.8,
+     "to_s": 55.32
+    }
+   ]
+  },
+  "15": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 55.46,
+     "to_s": 59.06,
+     "frames": 19
+    }
+   ],
+   "talking": []
+  },
+  "16": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 59.22,
+     "to_s": 63.62,
+     "frames": 23
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 59.52,
+     "to_s": 59.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 60.0,
+     "to_s": 63.68
+    }
+   ]
+  },
+  "17": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 63.86,
+     "to_s": 68.26,
+     "frames": 23
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 63.88,
+     "to_s": 68.24
+    }
+   ]
+  },
+  "18": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 68.42,
+     "to_s": 73.22,
+     "frames": 25
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 68.32,
+     "to_s": 70.24
+    },
+    {
+     "name": "Aiden",
+     "from_s": 72.16,
+     "to_s": 73.28
+    }
+   ]
+  },
+  "19": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 73.38,
+     "to_s": 76.18,
+     "frames": 15
+    }
+   ],
+   "talking": []
+  },
+  "20": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 76.34,
+     "to_s": 79.94,
+     "frames": 19
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 76.34,
+     "to_s": 79.74,
+     "frames": 18,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 76.56,
+     "to_s": 77.04
+    },
+    {
+     "name": "Ava",
+     "from_s": 77.68,
+     "to_s": 79.28
+    }
+   ]
+  },
+  "21": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "face",
+     "from_s": 80.02,
+     "to_s": 84.02,
+     "frames": 21
+    },
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "back",
+     "from_s": 80.02,
+     "to_s": 84.22,
+     "frames": 22,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 80.24,
+     "to_s": 82.52
+    },
+    {
+     "name": "Ava",
+     "from_s": 83.16,
+     "to_s": 84.12
+    }
+   ]
+  },
+  "22": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 84.34,
+     "to_s": 88.74,
+     "frames": 23
+    }
+   ],
+   "talking": []
+  },
+  "23": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 88.98,
+     "to_s": 90.98,
+     "frames": 11
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 89.44,
+     "to_s": 89.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 90.0,
+     "to_s": 90.6
+    }
+   ]
+  },
+  "24": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 91.14,
+     "to_s": 91.94,
+     "frames": 5
+    }
+   ],
+   "talking": []
+  },
+  "25": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 92.1,
+     "to_s": 93.9,
+     "frames": 10
+    }
+   ],
+   "talking": []
+  },
+  "26": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 94.1,
+     "to_s": 98.9,
+     "frames": 25
+    },
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "back",
+     "from_s": 94.1,
+     "to_s": 95.9,
+     "frames": 10,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 94.08,
+     "to_s": 98.88
+    }
+   ]
+  },
+  "27": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 99.06,
+     "to_s": 100.86,
+     "frames": 10
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 99.06,
+     "to_s": 100.86,
+     "frames": 10,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "28": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 100.98,
+     "to_s": 104.18,
+     "frames": 17,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "29": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 104.34,
+     "to_s": 111.74,
+     "frames": 38
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 104.48,
+     "to_s": 104.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 105.68,
+     "to_s": 107.2
+    },
+    {
+     "name": "Aiden",
+     "from_s": 108.0,
+     "to_s": 111.72
+    }
+   ]
+  },
+  "30": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 111.94,
+     "to_s": 114.14,
+     "frames": 12
+    }
+   ],
+   "talking": []
+  },
+  "31": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 114.42,
+     "to_s": 116.22,
+     "frames": 10
+    }
+   ],
+   "talking": []
+  },
+  "32": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 116.5,
+     "to_s": 122.5,
+     "frames": 31
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 116.84,
+     "to_s": 118.32
+    },
+    {
+     "name": "Ava",
+     "from_s": 118.88,
+     "to_s": 119.96
+    },
+    {
+     "name": "Ava",
+     "from_s": 120.0,
+     "to_s": 121.96
+    }
+   ]
+  },
+  "33": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 122.74,
+     "to_s": 123.94,
+     "frames": 7
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 122.64,
+     "to_s": 124.0
+    }
+   ]
+  },
+  "34": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 124.18,
+     "to_s": 124.78,
+     "frames": 4
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 124.18,
+     "to_s": 124.78,
+     "frames": 4,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "35": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 124.98,
+     "to_s": 127.98,
+     "frames": 16
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 126.48,
+     "to_s": 127.92
+    }
+   ]
+  },
+  "36": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 128.18,
+     "to_s": 129.78,
+     "frames": 9
+    }
+   ],
+   "talking": []
+  },
+  "37": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "right",
+     "view": "face",
+     "from_s": 129.94,
+     "to_s": 134.54,
+     "frames": 24
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 129.94,
+     "to_s": 134.54,
+     "frames": 24,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 130.0,
+     "to_s": 131.84
+    },
+    {
+     "name": "Ava",
+     "from_s": 132.52,
+     "to_s": 134.28
+    }
+   ]
+  },
+  "38": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 134.66,
+     "to_s": 137.06,
+     "frames": 13
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 135.0,
+     "to_s": 137.08
+    }
+   ]
+  },
+  "39": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 137.22,
+     "to_s": 138.62,
+     "frames": 8
+    }
+   ],
+   "talking": []
+  },
+  "40": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 138.9,
+     "to_s": 143.1,
+     "frames": 22
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 138.84,
+     "to_s": 143.08
+    }
+   ]
+  },
+  "41": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 143.22,
+     "to_s": 145.62,
+     "frames": 13
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 144.52,
+     "to_s": 145.64
+    }
+   ]
+  },
+  "42": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 145.86,
+     "to_s": 147.86,
+     "frames": 11
+    }
+   ],
+   "talking": []
+  },
+  "43": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 148.02,
+     "to_s": 150.82,
+     "frames": 15
+    },
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "back",
+     "from_s": 148.02,
+     "to_s": 151.02,
+     "frames": 14,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 149.08,
+     "to_s": 149.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 150.0,
+     "to_s": 150.96
+    }
+   ]
+  },
+  "44": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 151.14,
+     "to_s": 152.34,
+     "frames": 7
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 151.14,
+     "to_s": 152.34,
+     "frames": 7,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "45": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 152.58,
+     "to_s": 156.98,
+     "frames": 23
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 152.6,
+     "to_s": 154.24
+    },
+    {
+     "name": "Ava",
+     "from_s": 155.0,
+     "to_s": 155.52
+    },
+    {
+     "name": "Ava",
+     "from_s": 156.16,
+     "to_s": 157.04
+    }
+   ]
+  },
+  "46": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 157.22,
+     "to_s": 158.22,
+     "frames": 6
+    }
+   ],
+   "talking": []
+  },
+  "47": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 158.34,
+     "to_s": 161.34,
+     "frames": 16
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 158.24,
+     "to_s": 161.28
+    }
+   ]
+  },
+  "48": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 161.46,
+     "to_s": 164.06,
+     "frames": 14,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "49": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 164.34,
+     "to_s": 166.94,
+     "frames": 14
+    }
+   ],
+   "talking": []
+  },
+  "50": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 167.22,
+     "to_s": 170.22,
+     "frames": 16
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 167.48,
+     "to_s": 170.36
+    }
+   ]
+  },
+  "51": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 170.5,
+     "to_s": 171.9,
+     "frames": 8
+    }
+   ],
+   "talking": []
+  },
+  "52": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 172.02,
+     "to_s": 179.22,
+     "frames": 37
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 172.02,
+     "to_s": 179.22,
+     "frames": 35,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 176.0,
+     "to_s": 176.64
+    },
+    {
+     "name": "Ava",
+     "from_s": 177.56,
+     "to_s": 178.72
+    }
+   ]
+  },
+  "53": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 179.46,
+     "to_s": 185.26,
+     "frames": 30
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 180.36,
+     "to_s": 183.44
+    }
+   ]
+  },
+  "54": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 185.38,
+     "to_s": 187.38,
+     "frames": 11
+    }
+   ],
+   "talking": []
+  },
+  "55": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 187.54,
+     "to_s": 192.14,
+     "frames": 24
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 187.64,
+     "to_s": 189.76
+    },
+    {
+     "name": "Aiden",
+     "from_s": 190.72,
+     "to_s": 192.24
+    }
+   ]
+  },
+  "56": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 192.42,
+     "to_s": 197.22,
+     "frames": 25
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 194.28,
+     "to_s": 194.96
+    }
+   ]
+  },
+  "57": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 197.38,
+     "to_s": 207.18,
+     "frames": 50
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 197.48,
+     "to_s": 198.92
+    },
+    {
+     "name": "Ava",
+     "from_s": 199.84,
+     "to_s": 201.8
+    },
+    {
+     "name": "Ava",
+     "from_s": 202.4,
+     "to_s": 203.8
+    },
+    {
+     "name": "Ava",
+     "from_s": 204.64,
+     "to_s": 207.08
+    }
+   ]
+  },
+  "58": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 207.3,
+     "to_s": 216.1,
+     "frames": 45
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 207.32,
+     "to_s": 209.08
+    },
+    {
+     "name": "Ava",
+     "from_s": 211.32,
+     "to_s": 211.72
+    },
+    {
+     "name": "Ava",
+     "from_s": 212.44,
+     "to_s": 214.0
+    }
+   ]
+  },
+  "59": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 216.26,
+     "to_s": 224.26,
+     "frames": 41
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 217.96,
+     "to_s": 224.2
+    }
+   ]
+  },
+  "60": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 224.42,
+     "to_s": 225.42,
+     "frames": 6
+    }
+   ],
+   "talking": []
+  },
+  "61": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 225.54,
+     "to_s": 234.54,
+     "frames": 46
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 225.48,
+     "to_s": 231.48
+    },
+    {
+     "name": "Aiden",
+     "from_s": 232.08,
+     "to_s": 234.28
+    }
+   ]
+  },
+  "62": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "right",
+     "view": "face",
+     "from_s": 234.74,
+     "to_s": 235.94,
+     "frames": 7
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 234.74,
+     "to_s": 235.94,
+     "frames": 7,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "63": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "right",
+     "view": "face",
+     "from_s": 236.1,
+     "to_s": 245.9,
+     "frames": 50
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 236.1,
+     "to_s": 245.9,
+     "frames": 50,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 236.44,
+     "to_s": 239.76
+    },
+    {
+     "name": "Ava",
+     "from_s": 240.24,
+     "to_s": 245.76
+    }
+   ]
+  },
+  "64": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 246.1,
+     "to_s": 250.5,
+     "frames": 23
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 246.52,
+     "to_s": 250.04
+    }
+   ]
+  },
+  "65": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 250.66,
+     "to_s": 251.66,
+     "frames": 6
+    }
+   ],
+   "talking": []
+  },
+  "66": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 251.94,
+     "to_s": 258.94,
+     "frames": 36
+    },
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "back",
+     "from_s": 251.94,
+     "to_s": 254.94,
+     "frames": 16,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "67": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 259.14,
+     "to_s": 259.74,
+     "frames": 4
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 259.14,
+     "to_s": 259.34,
+     "frames": 2,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "68": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 260.02,
+     "to_s": 264.22,
+     "frames": 22
+    },
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "back",
+     "from_s": 262.82,
+     "to_s": 264.42,
+     "frames": 9,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "69": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 267.3,
+     "to_s": 269.3,
+     "frames": 11
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 264.5,
+     "to_s": 267.1,
+     "frames": 14,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 267.16,
+     "to_s": 269.12
+    }
+   ]
+  },
+  "70": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 269.46,
+     "to_s": 278.26,
+     "frames": 45
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 272.92,
+     "to_s": 276.0
+    },
+    {
+     "name": "Ava",
+     "from_s": 277.12,
+     "to_s": 277.96
+    }
+   ]
+  },
+  "71": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 278.34,
+     "to_s": 288.14,
+     "frames": 50
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 278.68,
+     "to_s": 279.6
+    },
+    {
+     "name": "Aiden",
+     "from_s": 281.64,
+     "to_s": 281.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 283.32,
+     "to_s": 284.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 285.0,
+     "to_s": 288.04
+    }
+   ]
+  },
+  "72": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 288.34,
+     "to_s": 291.34,
+     "frames": 16
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 288.6,
+     "to_s": 291.28
+    }
+   ]
+  },
+  "73": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 291.54,
+     "to_s": 294.54,
+     "frames": 16
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 293.4,
+     "to_s": 294.32
+    }
+   ]
+  },
+  "74": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 294.66,
+     "to_s": 300.06,
+     "frames": 28
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 295.2,
+     "to_s": 299.64
+    }
+   ]
+  },
+  "75": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 300.26,
+     "to_s": 307.46,
+     "frames": 37
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 304.92,
+     "to_s": 306.28
+    }
+   ]
+  },
+  "76": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 307.7,
+     "to_s": 310.1,
+     "frames": 13
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 307.72,
+     "to_s": 310.16
+    }
+   ]
+  },
+  "77": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 310.34,
+     "to_s": 310.94,
+     "frames": 4
+    }
+   ],
+   "talking": []
+  },
+  "78": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "face",
+     "from_s": 311.22,
+     "to_s": 314.42,
+     "frames": 17
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 311.2,
+     "to_s": 314.0
+    }
+   ]
+  },
+  "79": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 314.58,
+     "to_s": 318.18,
+     "frames": 19
+    }
+   ],
+   "talking": []
+  },
+  "80": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 318.34,
+     "to_s": 321.94,
+     "frames": 19
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 319.32,
+     "to_s": 319.96
+    }
+   ]
+  },
+  "81": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 322.18,
+     "to_s": 325.38,
+     "frames": 17
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 322.12,
+     "to_s": 324.84
+    }
+   ]
+  },
+  "82": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 325.46,
+     "to_s": 329.46,
+     "frames": 21
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 327.48,
+     "to_s": 328.88
+    }
+   ]
+  },
+  "83": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 329.62,
+     "to_s": 337.22,
+     "frames": 39
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 331.24,
+     "to_s": 334.76
+    }
+   ]
+  },
+  "84": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 337.46,
+     "to_s": 340.86,
+     "frames": 18
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 338.04,
+     "to_s": 340.96
+    }
+   ]
+  },
+  "85": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 341.14,
+     "to_s": 347.74,
+     "frames": 34
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 343.56,
+     "to_s": 344.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 345.0,
+     "to_s": 347.8
+    }
+   ]
+  },
+  "86": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 347.94,
+     "to_s": 348.94,
+     "frames": 6
+    }
+   ],
+   "talking": []
+  },
+  "87": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 349.14,
+     "to_s": 350.94,
+     "frames": 10
+    }
+   ],
+   "talking": []
+  },
+  "88": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 351.06,
+     "to_s": 359.66,
+     "frames": 44
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 353.6,
+     "to_s": 354.88
+    },
+    {
+     "name": "Ava",
+     "from_s": 355.2,
+     "to_s": 356.48
+    },
+    {
+     "name": "Ava",
+     "from_s": 357.44,
+     "to_s": 359.64
+    }
+   ]
+  },
+  "89": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 359.86,
+     "to_s": 366.86,
+     "frames": 36
+    }
+   ],
+   "talking": [
+    {
+     "name": "Ava",
+     "from_s": 360.0,
+     "to_s": 361.32
+    },
+    {
+     "name": "Ava",
+     "from_s": 362.0,
+     "to_s": 364.32
+    },
+    {
+     "name": "Ava",
+     "from_s": 365.04,
+     "to_s": 366.48
+    }
+   ]
+  },
+  "90": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 367.06,
+     "to_s": 368.06,
+     "frames": 6
+    }
+   ],
+   "talking": []
+  },
+  "91": {
+   "persons": [],
+   "talking": []
+  },
+  "92": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 373.86,
+     "to_s": 383.66,
+     "frames": 48
+    }
+   ],
+   "talking": []
+  },
+  "93": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 384.1,
+     "to_s": 386.9,
+     "frames": 15
+    }
+   ],
+   "talking": []
+  },
+  "94": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 387.14,
+     "to_s": 390.34,
+     "frames": 17,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "95": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 390.5,
+     "to_s": 395.7,
+     "frames": 27
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 391.12,
+     "to_s": 391.6
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 392.04,
+     "to_s": 392.88
+    }
+   ]
+  },
+  "96": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 395.94,
+     "to_s": 403.54,
+     "frames": 35
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 401.04,
+     "to_s": 402.28
+    }
+   ]
+  },
+  "97": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 403.7,
+     "to_s": 409.3,
+     "frames": 29
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 403.68,
+     "to_s": 404.96
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 405.0,
+     "to_s": 405.52
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 406.24,
+     "to_s": 407.76
+    }
+   ]
+  },
+  "98": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 409.54,
+     "to_s": 411.34,
+     "frames": 10,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "unknown face",
+     "from_s": 410.6,
+     "to_s": 411.32
+    }
+   ]
+  },
+  "99": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "left",
+     "view": "face",
+     "from_s": 411.46,
+     "to_s": 414.06,
+     "frames": 14
+    }
+   ],
+   "talking": []
+  },
+  "100": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 414.26,
+     "to_s": 415.06,
+     "frames": 5,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "101": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "left",
+     "view": "face",
+     "from_s": 415.3,
+     "to_s": 419.3,
+     "frames": 21
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 415.28,
+     "to_s": 416.4
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 416.76,
+     "to_s": 418.24
+    }
+   ]
+  },
+  "102": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 419.38,
+     "to_s": 424.78,
+     "frames": 28
+    }
+   ],
+   "talking": []
+  },
+  "103": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 427.18,
+     "to_s": 427.78,
+     "frames": 4
+    },
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 424.98,
+     "to_s": 426.98,
+     "frames": 11,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 425.92,
+     "to_s": 427.76
+    }
+   ]
+  },
+  "104": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 427.94,
+     "to_s": 432.94,
+     "frames": 26
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 428.88,
+     "to_s": 430.76
+    }
+   ]
+  },
+  "105": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 433.14,
+     "to_s": 439.94,
+     "frames": 35,
+     "how": "elimination"
+    }
+   ],
+   "talking": [
+    {
+     "name": "unknown face",
+     "from_s": 433.88,
+     "to_s": 434.96
+    },
+    {
+     "name": "unknown face",
+     "from_s": 435.6,
+     "to_s": 436.76
+    },
+    {
+     "name": "unknown face",
+     "from_s": 438.24,
+     "to_s": 439.72
+    }
+   ]
+  },
+  "106": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 440.1,
+     "to_s": 447.1,
+     "frames": 36
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 440.56,
+     "to_s": 441.32
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 442.0,
+     "to_s": 443.92
+    }
+   ]
+  },
+  "107": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 447.22,
+     "to_s": 450.02,
+     "frames": 15
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 447.16,
+     "to_s": 447.96
+    },
+    {
+     "name": "Aiden",
+     "from_s": 448.32,
+     "to_s": 449.32
+    }
+   ]
+  },
+  "108": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 450.5,
+     "to_s": 451.9,
+     "frames": 7
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 450.1,
+     "to_s": 450.9,
+     "frames": 3,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "109": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 452.1,
+     "to_s": 457.3,
+     "frames": 27
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 452.92,
+     "to_s": 453.92
+    }
+   ]
+  },
+  "110": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 457.54,
+     "to_s": 461.94,
+     "frames": 23
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 458.24,
+     "to_s": 461.36
+    }
+   ]
+  },
+  "111": {
+   "persons": [],
+   "talking": []
+  },
+  "112": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 464.82,
+     "to_s": 471.02,
+     "frames": 29
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 465.6,
+     "to_s": 469.24
+    }
+   ]
+  },
+  "113": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 471.22,
+     "to_s": 474.42,
+     "frames": 17
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 471.6,
+     "to_s": 473.16
+    },
+    {
+     "name": "Aiden",
+     "from_s": 473.52,
+     "to_s": 474.36
+    }
+   ]
+  },
+  "114": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 474.5,
+     "to_s": 480.1,
+     "frames": 29
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 475.8,
+     "to_s": 476.64
+    }
+   ]
+  },
+  "115": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 480.34,
+     "to_s": 483.74,
+     "frames": 17
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 481.96,
+     "to_s": 483.04
+    }
+   ]
+  },
+  "116": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "back",
+     "from_s": 483.94,
+     "to_s": 487.14,
+     "frames": 17,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "117": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 487.3,
+     "to_s": 490.1,
+     "frames": 15
+    }
+   ],
+   "talking": []
+  },
+  "118": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 490.26,
+     "to_s": 493.86,
+     "frames": 19
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 490.84,
+     "to_s": 493.36
+    }
+   ]
+  },
+  "119": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 493.94,
+     "to_s": 498.74,
+     "frames": 25
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 496.08,
+     "to_s": 496.56
+    },
+    {
+     "name": "Aiden",
+     "from_s": 497.12,
+     "to_s": 498.4
+    }
+   ]
+  },
+  "120": {
+   "persons": [
+    {
+     "name": "Charlotte",
+     "pos": "right",
+     "view": "profile",
+     "from_s": 498.9,
+     "to_s": 503.1,
+     "frames": 22
+    }
+   ],
+   "talking": [
+    {
+     "name": "Charlotte",
+     "from_s": 498.96,
+     "to_s": 500.08
+    },
+    {
+     "name": "Charlotte",
+     "from_s": 500.84,
+     "to_s": 502.08
+    }
+   ]
+  },
+  "121": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "back",
+     "from_s": 503.38,
+     "to_s": 506.58,
+     "frames": 17,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "122": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 506.74,
+     "to_s": 512.74,
+     "frames": 28
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 508.84,
+     "to_s": 509.16
+    }
+   ]
+  },
+  "123": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 514.46,
+     "to_s": 516.26,
+     "frames": 10
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 513.06,
+     "to_s": 514.06,
+     "frames": 6,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "124": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 516.42,
+     "to_s": 521.62,
+     "frames": 27
+    }
+   ],
+   "talking": []
+  },
+  "125": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 521.78,
+     "to_s": 523.78,
+     "frames": 11
+    }
+   ],
+   "talking": []
+  },
+  "126": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 524.02,
+     "to_s": 527.42,
+     "frames": 18
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 527.62,
+     "to_s": 528.82,
+     "frames": 7,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "127": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 529.06,
+     "to_s": 532.46,
+     "frames": 31
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 531.46,
+     "to_s": 532.66,
+     "frames": 6,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "128": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 534.5,
+     "to_s": 536.9,
+     "frames": 13
+    },
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 532.9,
+     "to_s": 534.3,
+     "frames": 8,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "129": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "face",
+     "from_s": 537.06,
+     "to_s": 541.86,
+     "frames": 25
+    }
+   ],
+   "talking": []
+  },
+  "130": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 542.1,
+     "to_s": 548.1,
+     "frames": 31
+    }
+   ],
+   "talking": []
+  },
+  "131": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 548.34,
+     "to_s": 551.74,
+     "frames": 18
+    }
+   ],
+   "talking": []
+  },
+  "132": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 551.86,
+     "to_s": 554.06,
+     "frames": 12,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "133": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "face",
+     "from_s": 554.18,
+     "to_s": 562.38,
+     "frames": 42
+    }
+   ],
+   "talking": [
+    {
+     "name": "Aiden",
+     "from_s": 561.36,
+     "to_s": 561.76
+    }
+   ]
+  },
+  "134": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 562.5,
+     "to_s": 565.5,
+     "frames": 16,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "135": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "face",
+     "from_s": 565.7,
+     "to_s": 570.5,
+     "frames": 25
+    }
+   ],
+   "talking": []
+  },
+  "136": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "face",
+     "from_s": 570.74,
+     "to_s": 576.54,
+     "frames": 30
+    }
+   ],
+   "talking": []
+  },
+  "137": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 576.74,
+     "to_s": 578.54,
+     "frames": 8,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "138": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 581.78,
+     "to_s": 584.18,
+     "frames": 13
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 584.38,
+     "to_s": 587.58,
+     "frames": 17,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "139": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "profile",
+     "from_s": 590.1,
+     "to_s": 592.9,
+     "frames": 15
+    }
+   ],
+   "talking": []
+  },
+  "140": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 593.14,
+     "to_s": 599.14,
+     "frames": 31
+    }
+   ],
+   "talking": []
+  },
+  "141": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "left",
+     "view": "back",
+     "from_s": 599.3,
+     "to_s": 606.9,
+     "frames": 39
+    }
+   ],
+   "talking": []
+  },
+  "142": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 607.14,
+     "to_s": 613.94,
+     "frames": 35
+    },
+    {
+     "name": "Charlotte",
+     "pos": "left",
+     "view": "back",
+     "from_s": 609.94,
+     "to_s": 614.14,
+     "frames": 20,
+     "how": "Claude (body crop)"
+    }
+   ],
+   "talking": []
+  },
+  "143": {
+   "persons": [
+    {
+     "name": "Ava",
+     "pos": "left",
+     "view": "face",
+     "from_s": 614.26,
+     "to_s": 615.86,
+     "frames": 9
+    },
+    {
+     "name": "Aiden",
+     "pos": "right",
+     "view": "back",
+     "from_s": 614.26,
+     "to_s": 615.66,
+     "frames": 8,
+     "how": "elimination"
+    }
+   ],
+   "talking": []
+  },
+  "144": {
+   "persons": [
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 616.1,
+     "to_s": 618.1,
+     "frames": 11
+    }
+   ],
+   "talking": []
+  },
+  "145": {
+   "persons": [
+    {
+     "name": "Man with swept-back blond hair drinking from a glass, not one of the listed characters",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 618.34,
+     "to_s": 621.34,
+     "frames": 16
+    },
+    {
+     "name": "Aiden",
+     "pos": "centre",
+     "view": "face",
+     "from_s": 621.94,
+     "to_s": 626.94,
+     "frames": 26
+    },
+    {
+     "name": "unclear blurred person in background",
+     "pos": "left",
+     "view": "back",
+     "from_s": 618.34,
+     "to_s": 621.34,
+     "frames": 16,
+     "how": "Claude (body crop)"
+    },
+    {
+     "name": "unknown person",
+     "pos": "centre",
+     "view": "back",
+     "from_s": 618.34,
+     "to_s": 621.34,
+     "frames": 14,
+     "how": null
+    }
+   ],
+   "talking": []
+  }
+ },
+ "seconds": 440,
+ "timing": {
+  "decode": 57,
+  "faces": 136,
+  "persons": 219
+ }
+}

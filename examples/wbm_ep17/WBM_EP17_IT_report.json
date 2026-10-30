@@ -1,0 +1,462 @@
+{
+  "episode": 0,
+  "script": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/italy/drive-download-20261012T114637Z-1-001/Episode 17 - I Giochi Temuti.docx",
+  "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/srtclean/heard_words.srt",
+  "num_blocks": 1004,
+  "num_corrected": 48,
+  "num_flagged": 4,
+  "num_stage_directions_not_spoken": 0,
+  "timestamp_fixes": 0,
+  "validation": {
+    "issues": [],
+    "quote_style_detected": "guillemet",
+    "quote_open": 24,
+    "quote_close": 24,
+    "quotes_balanced": true
+  },
+  "quote_imbalance_suspects": [],
+  "canonical_names_missing": [],
+  "checks": [
+    {
+      "type": "script-only-not-inserted",
+      "srt": "",
+      "script": "17 - I Giochi Temuti",
+      "blocks": []
+    },
+    {
+      "type": "corrected",
+      "srt": "L 'allenamento",
+      "script": "L'allenamento",
+      "blocks": [
+        9,
+        10
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "blocco",
+      "script": "bloccò",
+      "blocks": [
+        18
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l 'allenamento",
+      "script": "l'allenamento",
+      "blocks": [
+        26,
+        27
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l 'ora",
+      "script": "l'ora",
+      "blocks": [
+        33,
+        34
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l 'idea",
+      "script": "l'idea",
+      "blocks": [
+        85,
+        86
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "oppiataccia bruciarli",
+      "script": "occhiataccia bruciargli",
+      "blocks": [
+        120,
+        121
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l",
+      "script": "la",
+      "blocks": [
+        170
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "Sì, inumidile",
+      "script": "Si inumidì le",
+      "blocks": [
+        179,
+        180
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "sgrano agli",
+      "script": "sgranò gli",
+      "blocks": [
+        196,
+        197
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "pregando la",
+      "script": "pregandola",
+      "blocks": [
+        203,
+        204
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "avessi",
+      "script": "avesse",
+      "blocks": [
+        239
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "murmorio",
+      "script": "mormorio",
+      "blocks": [
+        253
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "in vasa",
+      "script": "invasa",
+      "blocks": [
+        272,
+        273
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "rindio a",
+      "script": "ringhiò",
+      "blocks": [
+        292,
+        293
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "piantando",
+      "script": "piantandogli",
+      "blocks": [
+        319
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "gliocchi",
+      "script": "occhi",
+      "blocks": [
+        321
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "a lice,",
+      "script": "Alice",
+      "blocks": [
+        333,
+        334
+      ]
+    },
+    {
+      "type": "audio-only-extra",
+      "srt": "era.",
+      "script": "",
+      "blocks": [
+        352
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "un 'ambra innaturale. La",
+      "script": "un'ambra innaturale.La",
+      "blocks": [
+        378,
+        379,
+        380,
+        381
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "c 'era",
+      "script": "c'era",
+      "blocks": [
+        412,
+        413
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l 'avrebbe",
+      "script": "l'avrebbe",
+      "blocks": [
+        417,
+        418
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "all 'indietro,",
+      "script": "all'indietro.",
+      "blocks": [
+        454,
+        455
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "un 'ombra",
+      "script": "un'ombra",
+      "blocks": [
+        457,
+        458
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "rivoltollo",
+      "script": "rivoltò lo",
+      "blocks": [
+        478
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "schiacco",
+      "script": "schiocco",
+      "blocks": [
+        481
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "dall 'armatura",
+      "script": "dall'armatura",
+      "blocks": [
+        518,
+        519
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "un 'aura",
+      "script": "un'aura",
+      "blocks": [
+        532,
+        533
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "su Sussurro",
+      "script": "sussurrò",
+      "blocks": [
+        544,
+        545
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "trassudava",
+      "script": "trasudava",
+      "blocks": [
+        550
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "dell 'icantropo.",
+      "script": "del licantropo.",
+      "blocks": [
+        559,
+        560
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "Mi",
+      "script": "«M-mi",
+      "blocks": [
+        621
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "piagnucolo a",
+      "script": "piagnucolò",
+      "blocks": [
+        624,
+        625
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "battecciglio.",
+      "script": "batté ciglio.",
+      "blocks": [
+        642
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "Sussurro,",
+      "script": "sussurrò,",
+      "blocks": [
+        646
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "Li",
+      "script": "Gli",
+      "blocks": [
+        656
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "urlo",
+      "script": "urlò",
+      "blocks": [
+        667
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "schernide Metrio,",
+      "script": "schernì Demetrio,",
+      "blocks": [
+        690,
+        691
+      ]
+    },
+    {
+      "type": "audio-only-extra",
+      "srt": "a",
+      "script": "",
+      "blocks": [
+        728
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "apri",
+      "script": "aprì",
+      "blocks": [
+        782
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "cercadaria.",
+      "script": "cerca d'aria.",
+      "blocks": [
+        794
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "ed",
+      "script": "e",
+      "blocks": [
+        799
+      ]
+    },
+    {
+      "type": "audio-only-extra",
+      "srt": "'ancinante,",
+      "script": "",
+      "blocks": [
+        817
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "dall 'infermiera",
+      "script": "dall'infermiera",
+      "blocks": [
+        831,
+        832
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "liquido",
+      "script": "liquidò",
+      "blocks": [
+        839
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "trascino",
+      "script": "trascinò",
+      "blocks": [
+        848
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "l 'attenzione",
+      "script": "l'attenzione",
+      "blocks": [
+        866,
+        867
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "fecerà brividire.",
+      "script": "fece rabbrividire.",
+      "blocks": [
+        900,
+        901
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "si",
+      "script": "se",
+      "blocks": [
+        925
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "ringrazzi",
+      "script": "ringrazi",
+      "blocks": [
+        967
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "risa",
+      "script": "rise",
+      "blocks": [
+        975
+      ]
+    },
+    {
+      "type": "corrected",
+      "srt": "inizio",
+      "script": "iniziò",
+      "blocks": [
+        978
+      ]
+    }
+  ]
+}

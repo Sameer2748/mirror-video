@@ -1,0 +1,786 @@
+SOURCE SRT OFFSET: +0.000s (none needed); source subtitle times are moved by +0.000s
+TIMING CHECK DUB: subtitles vs speech in Episode 17 - I Giochi Temuti.mp3: -0.04s (match 0.77 vs 0.09); last subtitle ends 439.7s, media is 440.3s
+TIMING CHECK SRC: subtitles vs speech in WBM Ep - 17.mp4: -0.03s (match 0.40 vs 0.06); last subtitle ends 427.5s, media is 429.9s
+DUB: using word-timed sentences from sentences_dub.json (150 sentences, times from the audio)
+DUB: raw cues=160 (0ms in raw file=0) -> sentences=150 (0ms after overlap resolution=0) -> dropped single-word 0ms=0 -> re-timed multi-word 0ms=0 -> rows=150
+SRC: using word-timed sentences from sentences_src.json (151 sentences, times from the audio)
+SRC: raw cues=154 (0ms in raw file=0) -> sentences=151 (0ms after overlap resolution=0) -> dropped single-word 0ms=0 -> re-timed multi-word 0ms=0 -> rows=151
+
+==== ALL 150 DUB ROWS (automatic result) ====
+DUB#  0 [00:00.400-00:02.240] 'Erano a un passo dal campo di atletica.'
+        -> ** UNMATCHED **  top: SRC#0 0.44 'They were almost at the track field for ' | SRC#127 0.41 'and Grant shuffled away,' | SRC#129 0.39 'The crowd partying to let him leave.'
+DUB#  1 [00:02.720-00:04.340] "L'allenamento stava per iniziare,"
+        -> SRC#0 [00:01.730] "They were almost at the track field for practice when someone's loud comment caught their attention."  (DP match 0.511)
+DUB#  2 [00:04.620-00:07.620] 'ma una voce stridula bloccò Viola e Alice sul posto.'
+        -> SRC#34 [01:32.150] 'Alice gasped.'  (Case A reuse 0.690)
+DUB#  3 [00:08.400-00:10.640] "Scommetto che l'allenamento sarà un massacro."
+        -> SRC#1 [00:08.160] 'But practice is going to be brutal.'  (DP match 0.725)
+DUB#  4 [00:10.920-00:13.200] "Non vedo l'ora di guardare questi umani crollare."
+        -> SRC#2 [00:10.410] "Can't wait to see these humans totally wipe out."  (DP match 0.818)
+DUB#  5 [00:13.510-00:14.840] 'Sono così gracilini.'
+        -> SRC#3 [00:13.600] 'Weaklings that they are.'  (DP match 0.326)
+DUB#  6 [00:15.770-00:18.800] 'Viola si girò di scatto verso lo stronzo che aveva parlato.'
+        -> SRC#4 [00:16.880] "Violet's head whipped around to face the jerk who'd just spoken."  (DP match 0.545)
+DUB#  7 [00:19.450-00:20.460] 'Non le serviva Alice,'
+        -> SRC#5 [00:20.760] 'Even without Alice,'  (DP match 0.789)
+DUB#  8 [00:20.900-00:22.360] 'la sua enciclopedia vivente,'
+        -> SRC#6 [00:22.600] 'her walking encyclopedia,'  (DP match 0.684)
+DUB#  9 [00:22.720-00:24.820] 'per capire che si trattava di un licantropo.'
+        -> SRC#7 [00:24.560] 'she could tell from his words that he was a werewolf.'  (DP match 0.370)
+DUB# 10 [00:25.710-00:28.700] 'Solo quegli arroganti si divertivano a umiliare gli umani.'
+        -> SRC#8 [00:27.700] 'Only those arrogant werewolves got a kick out of human suffering.'  (DP match 0.595)
+DUB# 11 [00:29.510-00:30.700] 'Forse era prevenuta lei.'
+        -> SRC#9 [00:31.920] 'Maybe she was prejudiced,'  (DP match 0.723)
+DUB# 12 [00:31.390-00:38.400] "O forse l'idea che umani e licantropi potessero convivere pacificamente in quella scuola era solo una gigantesca utopia."
+        -> SRC#10 [00:33.780] "because the violets still couldn't wrap her head around humans and werewolves peacefully coexisting at school."  (DP match 0.500)
+DUB# 13 [00:40.310-00:44.600] 'Era solo questione di tempo e quella bomba a orologeria sarebbe scoppiata.'
+        -> SRC#11 [00:40.260] 'It was a ticking time bomb.'  (DP match 0.831)
+DUB# 14 [00:45.410-00:48.920] 'Il licantropo dovette sentire la sua occhiataccia bruciargli addosso.'
+        -> SRC#12 [00:42.880] 'The werewolf must have felt her glare because he turned,'  (DP match 0.490)
+DUB# 15 [00:49.430-00:50.800] 'Si girò e la fissò.'
+        -> SRC#15 [00:51.180] 'Then his eyes narrowed and he growled.'  (Case A reuse 0.557)
+DUB# 16 [00:51.980-00:53.120] 'Un attimo di sorpresa,'
+        -> SRC#14 [00:48.280] 'He looked momentarily surprised.'  (DP match 0.689)
+DUB# 17 [00:53.570-00:57.300] 'poi gli occhi si assottigliarono e dalla sua gola salì un ringhio.'
+        -> SRC#15 [00:51.180] 'Then his eyes narrowed and he growled.'  (DP match 0.669)
+DUB# 18 [00:58.300-00:59.620] 'Che hai da guardare, umana?'
+        -> SRC#16 [00:53.880] 'What are you staring at, Prey?'  (DP match 0.708)
+DUB# 19 [01:00.710-01:02.120] 'Viola sorrise beffarda.'
+        -> SRC#17 [00:57.340] 'Violet raised an eyebrow.'  (DP match 0.482)
+DUB# 20 [01:02.840-01:04.180] 'Voleva giocare a fare il duro?'
+        -> SRC#18 [00:59.160] "Oh, so that's how he wanted to play it?"  (DP match 0.582)
+DUB# 21 [01:05.140-01:06.020] 'Sfortuna per lui,'
+        -> SRC#19 [01:02.440] 'Unfortunately for him,'  (DP match 0.854)
+DUB# 22 [01:06.440-01:08.060] 'Viola aveva una lingua tagliente.'
+        -> ** UNMATCHED **  top: SRC#9 0.46 'Maybe she was prejudiced,' | SRC#71 0.46 'The sound was sickening,' | SRC#108 0.45 'stiffly and stammered.'
+DUB# 23 [01:08.670-01:10.560] 'Un difetto che non la aiutava, anzi.'
+        -> SRC#36 [01:36.940] "Oh, no, she didn't."  (Case A reuse 0.660)
+DUB# 24 [01:11.080-01:12.960] 'Finiva per cacciarla sempre nei guai.'
+        -> SRC#20 [01:04.360] 'she had a smart mouth that usually got her into trouble,'  (DP match 0.643)
+DUB# 25 [01:13.950-01:15.060] 'Si inumidì le labbra.'
+        -> SRC#22 [01:08.880] 'She licked her lips,'  (DP match 0.791)
+DUB# 26 [01:15.540-01:17.340] 'Il sangue le pulsava nelle orecchie.'
+        -> SRC#74 [03:21.330] 'Someone gasped behind her,'  (Case A reuse 0.532)
+DUB# 27 [01:17.930-01:20.280] 'Alice, che aveva capito cosa stava per fare,'
+        -> SRC#24 [01:12.260] 'Alice seemed to sense her intentions.'  (DP match 0.898)
+DUB# 28 [01:20.720-01:25.540] 'sgranò gli occhi e scosse la testa pregandola silenziosamente di lasciar perdere.'
+        -> SRC#27 [01:17.960] 'silently warning her to back off.'  (DP match 0.664)
+DUB# 29 [01:26.840-01:27.580] 'Troppo tardi.'
+        -> SRC#28 [01:20.680] 'Too late.'  (DP match 0.982)
+DUB# 30 [01:28.850-01:31.420] 'Lo so che muori dalla voglia di avere la mia attenzione,'
+        -> SRC#32 [01:26.750] 'dying for my attention, dog?'  (DP match 0.481)
+DUB# 31 [01:31.500-01:33.760] 'cagnolino... lo provocò Viola.'
+        -> SRC#33 [01:29.060] 'And there it was.'  (DP match 0.386)
+DUB# 32 [01:34.910-01:35.840] 'Alice sussultò.'
+        -> SRC#34 [01:32.150] 'Alice gasped.'  (DP match 0.788)
+DUB# 33 [01:36.840-01:38.160] 'Nel raggio di dieci metri,'
+        -> ** UNMATCHED **  top: SRC#68 0.34 'suddenly, someone stepped in.' | SRC#44 0.33 'Well, kind of.' | SRC#33 0.31 'And there it was.'
+DUB# 34 [01:38.500-01:39.700] 'tutti si congelarono.'
+        -> SRC#38 [01:40.160] 'Everyone with an earshot froze like Violet had just committed a major crime.'  (DP match 0.599)
+DUB# 35 [01:40.050-01:43.240] 'Sembrava che Viola avesse appena firmato la sua condanna a morte.'
+        -> ** UNMATCHED **  top: SRC#77 0.41 'or she would have been splattered.' | SRC#40 0.38 "she's so dead and Grant's gonna rip her " | SRC#38 0.37 'Everyone with an earshot froze like Viol'
+DUB# 36 [01:44.300-01:46.960] 'Il silenzio si ruppe in un mormorio strisciante.'
+        -> SRC#39 [01:45.320] 'Seconds later, whispers started. and Violet caught snippets like,'  (DP match 0.511)
+DUB# 37 [01:47.480-01:50.540] 'Viola captò solo dei frammenti: È finita.'
+        -> ** UNMATCHED **  top: SRC#121 0.42 'but Asher had not only broken bones,' | SRC#40 0.41 "she's so dead and Grant's gonna rip her " | SRC#118 0.40 'Asher finally let go,'
+DUB# 38 [01:51.330-01:52.600] 'Giulio la farà a pezzi.'
+        -> SRC#40 [01:49.220] "she's so dead and Grant's gonna rip her apart."  (DP match 0.505)
+DUB# 39 [01:53.500-01:54.780] 'Nonostante quelle minacce,'
+        -> SRC#41 [01:55.370] 'Despite the ominous whispers,'  (DP match 0.613)
+DUB# 40 [01:55.140-01:57.240] 'si sentì invasa da una strana calma.'
+        -> SRC#42 [01:57.160] 'Violet felt strangely confident.'  (DP match 0.592)
+DUB# 41 [01:57.830-02:00.600] 'Non avrebbe mai abbassato la testa davanti a un bullo.'
+        -> SRC#43 [01:59.540] 'She refused to back down from bullies.'  (DP match 0.372)
+DUB# 42 [02:01.660-02:04.020] 'Come mi hai chiamato? ringhiò Giulio.'
+        -> SRC#46 [02:04.950] 'Did you just call me?'  (DP match 0.718)
+DUB# 43 [02:04.760-02:06.280] 'Le sue narici si dilatarono.'
+        -> SRC#108 [05:02.440] 'stiffly and stammered.'  (Case A reuse 0.666)
+DUB# 44 [02:06.980-02:11.160] 'Il lupo dentro di lui spingeva per uscire e non prometteva nulla di buono.'
+        -> SRC#48 [02:08.960] 'his nostrils flaring as his wolf started to emerge,'  (DP match 0.624)
+DUB# 45 [02:12.360-02:14.400] 'Hai capito bene rispose Viola,'
+        -> SRC#49 [02:12.560] 'triggered by her words.'  (DP match 0.455)
+DUB# 46 [02:14.700-02:16.180] 'piantandogli gli occhi in faccia.'
+        -> SRC#50 [02:14.670] 'You mean the same way you called me prey?'  (DP match 0.331)
+DUB# 47 [02:17.130-02:19.040] 'O sei duro di comprendonio, cagnolino?'
+        -> SRC#51 [02:17.700] "Or can't you take a joke, dog?"  (DP match 0.579)
+DUB# 48 [02:20.220-02:25.320] 'Viola, basta! gridò Alice tirandola per un braccio con tutta la forza che aveva.'
+        -> SRC#54 [02:23.780] 'Alice cried, desperately trying to pull her away.'  (DP match 0.658)
+DUB# 49 [02:26.150-02:27.790] 'Ma Viola piantò i piedi a terra.'
+        -> SRC#55 [02:27.220] "But Violet wouldn't budge."  (DP match 0.476)
+DUB# 50 [02:28.260-02:28.960] 'Era più alta,'
+        -> SRC#56 [02:29.080] 'She was bigger than Alice,'  (DP match 0.545)
+DUB# 51 [02:29.220-02:32.660] 'più solida, e la sua amica non riuscì a spostarla di un millimetro.'
+        -> SRC#57 [02:30.640] "and the smaller girl couldn't move her an itch."  (DP match 0.580)
+DUB# 52 [02:34.490-02:35.180] 'Poi accadde.'
+        -> SRC#68 [03:05.940] 'suddenly, someone stepped in.'  (Case A reuse 0.555)
+DUB# 53 [02:35.990-02:41.700] "Gli occhi di Giulio si accesero di un'ambra innaturale.La sua parte ferina aveva preso il controllo."
+        -> SRC#58 [02:33.840] "Violet saw the moment Grant's eyes flashed amber,"  (DP match 0.534)
+DUB# 54 [02:43.020-02:44.000] 'Impulsiva, sì.'
+        -> SRC#60 [02:39.880] 'While she might be impulsive and hot -headed,'  (DP match 0.635)
+DUB# 55 [02:44.480-02:45.460] 'Stupida, no.'
+        -> SRC#135 [06:12.990] 'Oh no.'  (Case A reuse 0.805)
+DUB# 56 [02:46.580-02:49.380] 'Il cervello di Viola scattò in modalità sopravvivenza.'
+        -> ** UNMATCHED **  top: SRC#62 0.41 'She started mentally calculating how man' | SRC#82 0.41 'rescuing her with an aura of pure menace' | SRC#39 0.33 'Seconds later, whispers started. and Vio'
+DUB# 57 [02:49.860-02:52.440] 'Calcolò i passi che la separavano dal bordo del campo.'
+        -> SRC#62 [02:45.400] 'She started mentally calculating how many steps it would take to reach the exit where help would surely come.'  (DP match 0.546)
+DUB# 58 [02:53.040-02:53.680] "Lì c'era gente,"
+        -> SRC#70 [03:10.890] "in front of everyone's shocked eyes, polled."  (Case A reuse 0.532)
+DUB# 59 [02:54.270-02:55.840] "lì qualcuno l'avrebbe aiutata."
+        -> SRC#63 [02:52.180] 'She was positive it would.'  (DP match 0.490)
+DUB# 60 [02:56.290-02:57.220] 'Doveva farcela.'
+        -> ** UNMATCHED **  top: SRC#19 0.53 'Unfortunately for him,' | SRC#44 0.50 'Well, kind of.' | SRC#18 0.48 "Oh, so that's how he wanted to play it?"
+DUB# 61 [02:58.360-02:59.610] 'Ti insegno io il rispetto.'
+        -> SRC#64 [02:54.500] "I'll teach you a lesson today."  (DP match 0.482)
+DUB# 62 [03:00.180-03:01.600] 'Non sei altro che una preda,'
+        -> SRC#65 [02:57.690] 'Grant growled, a mix of man and wolf,'  (DP match 0.339)
+DUB# 63 [03:02.400-03:03.660] 'le sputò addosso Giulio.'
+        -> ** UNMATCHED **  top: SRC#95 0.49 'His earlier bravado replaced by desperat' | SRC#66 0.46 'as he lunged toward her.' | SRC#132 0.45 'The look on his face told her he intende'
+DUB# 64 [03:04.370-03:05.500] 'E le si scagliò contro,'
+        -> SRC#66 [03:00.560] 'as he lunged toward her.'  (DP match 0.592)
+DUB# 65 [03:05.910-03:08.500] 'con il corpo che ormai di umano aveva ben poco.'
+        -> ** UNMATCHED **  top: SRC#3 0.44 'Weaklings that they are.' | SRC#128 0.42 'head hung low.' | SRC#57 0.41 "and the smaller girl couldn't move her a"
+DUB# 66 [03:09.600-03:10.860] "Viola scattò all'indietro."
+        -> SRC#67 [03:03.520] 'Violet braced herself to run when,'  (DP match 0.405)
+DUB# 67 [03:11.240-03:12.240] "Ma un'ombra la superò."
+        -> SRC#68 [03:05.940] 'suddenly, someone stepped in.'  (DP match 0.407)
+DUB# 68 [03:12.720-03:15.560] 'Una mano enorme afferrò il braccio teso di Giulio.'
+        -> SRC#69 [03:07.860] "A strong hand grabbed Grant's arm and,"  (DP match 0.745)
+DUB# 69 [03:15.940-03:17.160] 'E lo girò con violenza.'
+        -> SRC#147 [06:55.150] 'unfazed by her punches to his back.'  (Case A reuse 0.579)
+DUB# 70 [03:18.360-03:20.200] 'Il suono le rivoltò lo stomaco.'
+        -> SRC#71 [03:14.040] 'The sound was sickening,'  (DP match 0.673)
+DUB# 71 [03:20.780-03:21.980] 'Uno schiocco umido,'
+        -> SRC#112 [05:15.360] 'That psycho.'  (Case A reuse 0.619)
+DUB# 72 [03:22.540-03:25.540] 'il rumore inconfondibile di ossa che si sbriciolavano.'
+        -> SRC#72 [03:15.620] 'a wet, cracking noise of shattering bones filled the hall.'  (DP match 0.735)
+DUB# 73 [03:26.630-03:29.160] 'Cazzo! sbottò qualcuno alle sue spalle,'
+        -> SRC#73 [03:19.660] 'Oh god!'  (DP match 0.585)
+DUB# 74 [03:29.220-03:30.940] 'strozzato da un conato di vomito.'
+        -> SRC#75 [03:22.960] 'followed by the sound of vomiting.'  (DP match 0.830)
+DUB# 75 [03:32.220-03:33.320] 'Viola si pietrificò.'
+        -> SRC#77 [03:27.320] 'or she would have been splattered.'  (DP match 0.577)
+DUB# 76 [03:33.950-03:35.740] 'Il respiro le si incastrò in gola.'
+        -> SRC#78 [03:30.320] 'Violet froze, eyes wide with shock as Asher nightshade took over.'  (DP match 0.372)
+DUB# 77 [03:36.910-03:38.300] 'Niente principe azzurro.'
+        -> SRC#79 [03:35.380] "He wasn't some fairytale prince swooping in to save the day."  (DP match 0.563)
+DUB# 78 [03:39.500-03:41.720] "Niente cavaliere dall'armatura scintillante."
+        -> SRC#80 [03:39.220] 'No knight in shining armor here,'  (DP match 0.737)
+DUB# 79 [03:43.070-03:46.600] 'Era lui, Demetrio, maledetto, Vesper.'
+        -> SRC#95 [04:25.920] 'His earlier bravado replaced by desperate pleas.'  (Case A reuse 0.504)
+DUB# 80 [03:48.050-03:49.340] 'Era un predatore oscuro,'
+        -> SRC#81 [03:41.380] 'just a dark knight,'  (DP match 0.560)
+DUB# 81 [03:49.870-03:53.440] "avvolto da un'aura così densa e minacciosa da togliere il fiato."
+        -> SRC#82 [03:42.860] 'rescuing her with an aura of pure menace.'  (DP match 0.447)
+DUB# 82 [03:55.120-03:57.280] 'Ciao, Giulio, sussurrò Demetrio.'
+        -> SRC#83 [03:46.980] 'Hello, Grant.'  (DP match 0.480)
+DUB# 83 [03:58.500-04:03.830] 'La sua voce trasudava autorità mentre le sue dita stritolavano la carne del licantropo.'
+        -> SRC#84 [03:48.950] "Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy."  (DP match 0.571)
+DUB# 84 [04:04.980-04:08.460] 'Ti ho appena sentito chiamare la mia Viola... la tua preda?'
+        -> SRC#85 [03:56.380] 'Did I just hear you call my violet your prey?'  (DP match 0.738)
+DUB# 85 [04:09.510-04:12.380] 'Nessuno ti ha spiegato che solo io posso darle la caccia?'
+        -> SRC#87 [04:05.040] 'and only I,'  (DP match 0.528)
+DUB# 86 [04:13.730-04:14.740] 'In un giorno normale,'
+        -> ** UNMATCHED **  top: SRC#64 0.36 "I'll teach you a lesson today." | SRC#44 0.36 'Well, kind of.' | SRC#117 0.34 'There you go.'
+DUB# 87 [04:15.340-04:19.640] 'Viola gli avrebbe riso in faccia e se la sarebbe cavata con una battuta velenosa.'
+        -> SRC#89 [04:09.140] 'Normally Violet would have rolled her eyes at his words and argued,'  (DP match 0.573)
+DUB# 88 [04:20.410-04:22.800] 'Ma ora il terrore le aveva cucito la bocca.'
+        -> SRC#90 [04:12.910] 'but she was too horrified to speak.'  (DP match 0.703)
+DUB# 89 [04:23.560-04:24.660] 'Poteva solo fissarlo,'
+        -> SRC#91 [04:15.670] 'She could only stand there,'  (DP match 0.470)
+DUB# 90 [04:25.220-04:28.100] 'paralizzata dalla brutalità di quel dominio assoluto.'
+        -> SRC#92 [04:17.260] "dumbfounded by Asher's brutal display of dominance."  (DP match 0.636)
+DUB# 91 [04:29.410-04:32.780] 'M-mi dispiace, Demetrio! piagnucolò Giulio.'
+        -> SRC#93 [04:19.860] 'I\'m s -s -s -sorry, Elva."'  (DP match 0.533)
+DUB# 92 [04:33.400-04:34.880] 'Il bullo arrogante era sparito,'
+        -> SRC#95 [04:25.920] 'His earlier bravado replaced by desperate pleas.'  (DP match 0.539)
+DUB# 93 [04:35.160-04:37.700] 'al suo posto un cucciolo patetico e tremante.'
+        -> SRC#110 [05:08.080] 'What are you sorry for, dog?"'  (Case A reuse 0.616)
+DUB# 94 [04:38.810-04:40.360] 'Demetrio non batté ciglio.'
+        -> SRC#96 [04:29.900] 'Asher remained unmoved.'  (DP match 0.367)
+DUB# 95 [04:41.380-04:41.780] 'Davvero?'
+        -> SRC#97 [04:31.880] 'Really?'  (DP match 0.719)
+DUB# 96 [04:42.310-04:43.986] 'Ti dispiace? sussurrò,'
+        -> SRC#98 [04:33.000] 'Are you?'  (DP match 0.517)
+DUB# 97 [04:44.390-04:46.720] 'con una voce che avrebbe potuto tagliare il ghiaccio.'
+        -> SRC#99 [04:34.680] 'His voice was ice -cold as he twisted the arm further.'  (DP match 0.600)
+DUB# 98 [04:47.400-04:49.020] 'Gli torse il braccio ancora più forte.'
+        -> SRC#99 [04:34.680] 'His voice was ice -cold as he twisted the arm further.'  (Case A reuse 0.576)
+DUB# 99 [04:50.240-04:50.580] 'Sì!'
+        -> SRC#100 [04:38.740] 'Heck, I am!'  (DP match 0.673)
+DUB#100 [04:50.780-04:51.260] 'Ti prego!'
+        -> SRC#101 [04:40.330] 'I seriously am, dad!'  (DP match 0.410)
+DUB#101 [04:51.560-04:53.440] 'Fermati! urlò Giulio,'
+        -> SRC#102 [04:43.360] 'Grant cried out like a child as Asher applied even more pressure.'  (DP match 0.371)
+DUB#102 [04:53.740-04:56.480] 'mentre la morsa di Demetrio si stringeva sempre di più..'
+        -> ** UNMATCHED **  top: SRC#95 0.51 'His earlier bravado replaced by desperat' | SRC#48 0.45 'his nostrils flaring as his wolf started' | SRC#15 0.45 'Then his eyes narrowed and he growled.'
+DUB#103 [04:57.480-04:58.300] 'E ora dimmi,'
+        -> SRC#103 [04:48.620] 'Noddy, Grant, now,'  (DP match 0.622)
+DUB#104 [04:58.700-05:03.080] 'Giulietto... cosa si fa in questi casi? lo schernì Demetrio,'
+        -> ** UNMATCHED **  top: SRC#95 0.54 'His earlier bravado replaced by desperat' | SRC#19 0.53 'Unfortunately for him,' | SRC#65 0.52 'Grant growled, a mix of man and wolf,'
+DUB#105 [05:03.520-05:05.600] 'indicando Viola con un cenno del mento.'
+        -> ** UNMATCHED **  top: SRC#72 0.38 'a wet, cracking noise of shattering bone' | SRC#44 0.36 'Well, kind of.' | SRC#33 0.34 'And there it was.'
+DUB#106 [05:06.830-05:08.200] 'Giulio seguì il suo sguardo.'
+        -> SRC#106 [04:57.240] 'Grant followed his gaze and seemed to get the message.'  (DP match 0.568)
+DUB#107 [05:08.940-05:09.780] 'Capì immediatamente.'
+        -> SRC#107 [05:00.500] 'He instantly bowed his head,'  (DP match 0.492)
+DUB#108 [05:11.100-05:14.940] 'Abbassò la testa e piegandosi come un cane bastonato balbettò:'
+        -> SRC#108 [05:02.440] 'stiffly and stammered.'  (DP match 0.660)
+DUB#109 [05:15.600-05:17.900] 'Mi dispiace tanto, Signorina Viola.'
+        -> SRC#109 [05:04.600] "I'm so sorry, Miss Violet."  (DP match 0.864)
+DUB#110 [05:18.750-05:19.840] 'Di cosa ti dispiace,'
+        -> SRC#110 [05:08.080] 'What are you sorry for, dog?"'  (DP match 0.723)
+DUB#111 [05:19.840-05:21.900] 'cane? lo incalzò Demetrio.'
+        -> ** UNMATCHED **  top: SRC#65 0.55 'Grant growled, a mix of man and wolf,' | SRC#59 0.54 'his wolf taking over.' | SRC#48 0.50 'his nostrils flaring as his wolf started'
+DUB#112 [05:22.660-05:24.520] 'Una risata bassa gli vibrò nel petto.'
+        -> SRC#111 [05:11.380] 'Asher taunted, chuckling like he was enjoying the whole thing.'  (DP match 0.644)
+DUB#113 [05:25.320-05:27.160] 'Si stava godendo ogni secondo.'
+        -> SRC#146 [06:51.970] 'He laughed, continuing to walk,'  (Case A reuse 0.555)
+DUB#114 [05:28.360-05:31.100] 'Di aver cercato di farle del male, Signorina Viola.'
+        -> SRC#113 [05:17.040] 'For trying to hurt you,'  (DP match 0.667)
+DUB#115 [05:31.750-05:34.360] 'Non succederà mai più! implorò Giulio.'
+        -> SRC#114 [05:18.960] 'it will never happen again.'  (DP match 0.558)
+DUB#116 [05:35.070-05:37.960] 'Il terrore gli aveva reso la voce stridula e acuta.'
+        -> SRC#119 [05:32.370] 'and Grant gasped like a drowning man surfacing for air.'  (DP match 0.524)
+DUB#117 [05:38.640-05:41.840] 'Sapeva che Demetrio lo avrebbe ucciso senza pensarci due volte.'
+        -> ** UNMATCHED **  top: SRC#79 0.41 "He wasn't some fairytale prince swooping" | SRC#7 0.41 'she could tell from his words that he wa' | SRC#77 0.36 'or she would have been splattered.'
+DUB#118 [05:43.000-05:45.000] 'Molto bene. disse Demetrio.'
+        -> ** UNMATCHED **  top: SRC#63 0.44 'She was positive it would.' | SRC#44 0.44 'Well, kind of.' | SRC#145 0.43 'That is how you thank your savior, my vi'
+DUB#119 [05:45.690-05:46.660] 'Poi aprì la mano.'
+        -> SRC#120 [05:36.370] 'The move had looked simple,'  (DP match 0.334)
+DUB#120 [05:47.480-05:48.700] 'Giulio crollò a terra,'
+        -> SRC#121 [05:38.440] 'but Asher had not only broken bones,'  (DP match 0.444)
+DUB#121 [05:49.200-05:51.400] "annaspando come un annegato in cerca d'aria."
+        -> ** UNMATCHED **  top: SRC#119 0.61 'and Grant gasped like a drowning man sur' | SRC#72 0.43 'a wet, cracking noise of shattering bone' | SRC#77 0.42 'or she would have been splattered.'
+DUB#122 [05:51.400-05:58.060] 'Era bastato un movimento e Demetrio gli aveva frantumato le ossa e strappato la spalla dalla sede.'
+        -> SRC#122 [05:41.240] "but also dislocated Grant's shoulder."  (DP match 0.438)
+DUB#123 [05:58.800-06:00.780] 'Il dolore doveva essere lancinante.'
+        -> SRC#123 [05:44.020] 'It had been pure hell.'  (DP match 0.433)
+DUB#124 [06:01.820-06:04.320] 'Ma a Demetrio non fregava assolutamente nulla.'
+        -> ** UNMATCHED **  top: SRC#55 0.44 "But Violet wouldn't budge." | SRC#79 0.42 "He wasn't some fairytale prince swooping" | SRC#36 0.42 "Oh, no, she didn't."
+DUB#125 [06:05.420-06:06.640] 'Ora sparisci, cagnolino.'
+        -> SRC#124 [05:46.570] 'Now, move along, doggie.'  (DP match 0.616)
+DUB#126 [06:07.240-06:09.980] "Vai a piangere dall'infermiera e falle curare quel braccio."
+        -> SRC#125 [05:48.900] 'Go find the school nurse and have her deal with that nasty injury.'  (DP match 0.685)
+DUB#127 [06:10.970-06:13.120] 'Lo liquidò con un gesto annoiato della mano.'
+        -> SRC#126 [05:53.100] 'Asher dismissed him with a wave,'  (DP match 0.513)
+DUB#128 [06:14.120-06:15.260] 'Giulio si trascinò via,'
+        -> SRC#127 [05:55.330] 'and Grant shuffled away,'  (DP match 0.523)
+DUB#129 [06:15.620-06:16.480] 'a testa bassa,'
+        -> SRC#128 [05:57.080] 'head hung low.'  (DP match 0.761)
+DUB#130 [06:16.940-06:19.740] 'mentre la folla si apriva in fretta per non essere sfiorata.'
+        -> SRC#129 [05:59.080] 'The crowd partying to let him leave.'  (DP match 0.533)
+DUB#131 [06:20.910-06:24.500] "Sparito Giulio, l'attenzione di Demetrio si spostò su Viola."
+        -> SRC#131 [06:03.220] 'Asher turned his attention to Violet.'  (DP match 0.405)
+DUB#132 [06:25.220-06:27.360] 'Il suo viso era una maschera indecifrabile.'
+        -> SRC#132 [06:05.520] 'The look on his face told her he intended to.'  (DP match 0.376)
+DUB#133 [06:28.460-06:30.480] 'Affrontare Giulio era stato uno scherzo.'
+        -> SRC#134 [06:11.180] "but it wasn't good."  (DP match 0.350)
+DUB#134 [06:31.180-06:36.300] 'Ma quel sorriso predatorio che si era aperto sulle labbra di Demetrio... la fece rabbrividire.'
+        -> SRC#138 [06:18.920] "unsettling smile on Asher's face Scent shivers down her spine."  (DP match 0.531)
+DUB#135 [06:37.540-06:41.540] 'Non mi lascerò neanche sfiorare Viola scattò per scappare.'
+        -> SRC#139 [06:23.770] 'Nope, not doing this.'  (DP match 0.346)
+DUB#136 [06:42.180-06:44.220] 'Ma Demetrio, veloce come un lampo,'
+        -> SRC#141 [06:28.280] 'but Asher moved just as fast,'  (DP match 0.438)
+DUB#137 [06:44.620-06:45.420] 'le afferrò la vita,'
+        -> ** UNMATCHED **  top: SRC#82 0.49 'rescuing her with an aura of pure menace' | SRC#119 0.45 'and Grant gasped like a drowning man sur' | SRC#49 0.42 'triggered by her words.'
+DUB#138 [06:45.420-06:46.540] 'inchiodandola a sé,'
+        -> SRC#142 [06:30.740] "grabbing her around the waist as if he'd predicted her move."  (DP match 0.509)
+DUB#139 [06:47.330-06:50.360] 'come se avesse letto in anticipo ogni sua intenzione.'
+        -> ** UNMATCHED **  top: SRC#49 0.44 'triggered by her words.' | SRC#132 0.44 'The look on his face told her he intende' | SRC#41 0.44 'Despite the ominous whispers,'
+DUB#140 [06:51.580-06:54.300] 'Mettimi giù, stronzo! urlò lei.'
+        -> SRC#143 [06:34.690] 'Put me down, you jerk!'  (DP match 0.734)
+DUB#141 [06:55.190-06:57.240] 'Si dimenò con tutta la forza che aveva,'
+        -> ** UNMATCHED **  top: SRC#82 0.46 'rescuing her with an aura of pure menace' | SRC#66 0.46 'as he lunged toward her.' | SRC#95 0.43 'His earlier bravado replaced by desperat'
+DUB#142 [06:57.690-07:00.480] 'ma lui se la caricò in spalla senza il minimo sforzo.'
+        -> SRC#144 [06:37.590] 'She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.'  (DP match 0.499)
+DUB#143 [07:01.250-07:03.520] 'Per lui, Viola pesava quanto una piuma.'
+        -> ** UNMATCHED **  top: SRC#4 0.43 "Violet's head whipped around to face the" | SRC#77 0.43 'or she would have been splattered.' | SRC#121 0.43 'but Asher had not only broken bones,'
+DUB#144 [07:04.570-07:06.220] 'È così che ringrazi il tuo eroe,'
+        -> SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'  (DP match 0.695)
+DUB#145 [07:06.560-07:08.760] 'mio fiore di Violetta? rise lui.'
+        -> SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'  (Case A reuse 0.518)
+DUB#146 [07:09.490-07:10.640] 'E iniziò a camminare,'
+        -> SRC#146 [06:51.970] 'He laughed, continuing to walk,'  (DP match 0.629)
+DUB#147 [07:11.080-07:14.820] 'ignorando del tutto i pugni disperati che lei gli dava sulla schiena.'
+        -> SRC#147 [06:55.150] 'unfazed by her punches to his back.'  (DP match 0.791)
+DUB#148 [07:15.600-07:16.660] 'Dove la stava portando?'
+        -> ** UNMATCHED **  top: SRC#117 0.46 'There you go.' | SRC#85 0.45 'Did I just hear you call my violet your ' | SRC#46 0.43 'Did you just call me?'
+DUB#149 [07:16.660-07:19.680] 'E, soprattutto, che cosa aveva intenzione di farle?'
+        -> SRC#150 [07:04.240] 'This has to be a nightmare, she thought.'  (DP match 0.429)
+
+DP matched 112/150 dub rows (75%)
+
+==== DUPLICATE CHECK: source lines claimed by more than one dub row ====
+SRC#15 [00:51.180] 'Then his eyes narrowed and he growled.'
+     DUB#15 'Si girò e la fissò.'  (Case A reuse 0.557)
+     DUB#17 'poi gli occhi si assottigliarono e dalla sua gola salì un ringhio.'  (DP match 0.669)
+SRC#34 [01:32.150] 'Alice gasped.'
+     DUB#2 'ma una voce stridula bloccò Viola e Alice sul posto.'  (Case A reuse 0.690)
+     DUB#32 'Alice sussultò.'  (DP match 0.788)
+SRC#68 [03:05.940] 'suddenly, someone stepped in.'
+     DUB#52 'Poi accadde.'  (Case A reuse 0.555)
+     DUB#67 "Ma un'ombra la superò."  (DP match 0.407)
+SRC#95 [04:25.920] 'His earlier bravado replaced by desperate pleas.'
+     DUB#79 'Era lui, Demetrio, maledetto, Vesper.'  (Case A reuse 0.504)
+     DUB#92 'Il bullo arrogante era sparito,'  (DP match 0.539)
+SRC#99 [04:34.680] 'His voice was ice -cold as he twisted the arm further.'
+     DUB#97 'con una voce che avrebbe potuto tagliare il ghiaccio.'  (DP match 0.600)
+     DUB#98 'Gli torse il braccio ancora più forte.'  (Case A reuse 0.576)
+SRC#108 [05:02.440] 'stiffly and stammered.'
+     DUB#43 'Le sue narici si dilatarono.'  (Case A reuse 0.666)
+     DUB#108 'Abbassò la testa e piegandosi come un cane bastonato balbettò:'  (DP match 0.660)
+SRC#110 [05:08.080] 'What are you sorry for, dog?"'
+     DUB#93 'al suo posto un cucciolo patetico e tremante.'  (Case A reuse 0.616)
+     DUB#110 'Di cosa ti dispiace,'  (DP match 0.723)
+SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'
+     DUB#144 'È così che ringrazi il tuo eroe,'  (DP match 0.695)
+     DUB#145 'mio fiore di Violetta? rise lui.'  (Case A reuse 0.518)
+SRC#146 [06:51.970] 'He laughed, continuing to walk,'
+     DUB#113 'Si stava godendo ogni secondo.'  (Case A reuse 0.555)
+     DUB#146 'E iniziò a camminare,'  (DP match 0.629)
+SRC#147 [06:55.150] 'unfazed by her punches to his back.'
+     DUB#69 'E lo girò con violenza.'  (Case A reuse 0.579)
+     DUB#147 'ignorando del tutto i pugni disperati che lei gli dava sulla schiena.'  (DP match 0.791)
+
+==== ROWS YOU MUST READ (unmatched or Case A) with their neighbours ====
+-- DUB#0 'Erano a un passo dal campo di atletica.'
+     n+1 DUB#1 "L'allenamento stava per iniziare," -> SRC#0 [00:01.730] "They were almost at the track field for practice when someone's loud comment caught their attention."
+     n+2 DUB#2 'ma una voce stridula bloccò Viola e Alice sul posto.' -> SRC#34 [01:32.150] 'Alice gasped.'
+-- DUB#2 'ma una voce stridula bloccò Viola e Alice sul posto.'
+     n-2 DUB#0 'Erano a un passo dal campo di atletica.' -> (unmatched)
+     n-1 DUB#1 "L'allenamento stava per iniziare," -> SRC#0 [00:01.730] "They were almost at the track field for practice when someone's loud comment caught their attention."
+     n+1 DUB#3 "Scommetto che l'allenamento sarà un massacro." -> SRC#1 [00:08.160] 'But practice is going to be brutal.'
+     n+2 DUB#4 "Non vedo l'ora di guardare questi umani crollare." -> SRC#2 [00:10.410] "Can't wait to see these humans totally wipe out."
+-- DUB#15 'Si girò e la fissò.'
+     n-2 DUB#13 'Era solo questione di tempo e quella bomba a orologeria sare' -> SRC#11 [00:40.260] 'It was a ticking time bomb.'
+     n-1 DUB#14 'Il licantropo dovette sentire la sua occhiataccia bruciargli' -> SRC#12 [00:42.880] 'The werewolf must have felt her glare because he turned,'
+     n+1 DUB#16 'Un attimo di sorpresa,' -> SRC#14 [00:48.280] 'He looked momentarily surprised.'
+     n+2 DUB#17 'poi gli occhi si assottigliarono e dalla sua gola salì un ri' -> SRC#15 [00:51.180] 'Then his eyes narrowed and he growled.'
+-- DUB#22 'Viola aveva una lingua tagliente.'
+     n-2 DUB#20 'Voleva giocare a fare il duro?' -> SRC#18 [00:59.160] "Oh, so that's how he wanted to play it?"
+     n-1 DUB#21 'Sfortuna per lui,' -> SRC#19 [01:02.440] 'Unfortunately for him,'
+     n+1 DUB#23 'Un difetto che non la aiutava, anzi.' -> SRC#36 [01:36.940] "Oh, no, she didn't."
+     n+2 DUB#24 'Finiva per cacciarla sempre nei guai.' -> SRC#20 [01:04.360] 'she had a smart mouth that usually got her into trouble,'
+-- DUB#23 'Un difetto che non la aiutava, anzi.'
+     n-2 DUB#21 'Sfortuna per lui,' -> SRC#19 [01:02.440] 'Unfortunately for him,'
+     n-1 DUB#22 'Viola aveva una lingua tagliente.' -> (unmatched)
+     n+1 DUB#24 'Finiva per cacciarla sempre nei guai.' -> SRC#20 [01:04.360] 'she had a smart mouth that usually got her into trouble,'
+     n+2 DUB#25 'Si inumidì le labbra.' -> SRC#22 [01:08.880] 'She licked her lips,'
+-- DUB#26 'Il sangue le pulsava nelle orecchie.'
+     n-2 DUB#24 'Finiva per cacciarla sempre nei guai.' -> SRC#20 [01:04.360] 'she had a smart mouth that usually got her into trouble,'
+     n-1 DUB#25 'Si inumidì le labbra.' -> SRC#22 [01:08.880] 'She licked her lips,'
+     n+1 DUB#27 'Alice, che aveva capito cosa stava per fare,' -> SRC#24 [01:12.260] 'Alice seemed to sense her intentions.'
+     n+2 DUB#28 'sgranò gli occhi e scosse la testa pregandola silenziosament' -> SRC#27 [01:17.960] 'silently warning her to back off.'
+-- DUB#33 'Nel raggio di dieci metri,'
+     n-2 DUB#31 'cagnolino... lo provocò Viola.' -> SRC#33 [01:29.060] 'And there it was.'
+     n-1 DUB#32 'Alice sussultò.' -> SRC#34 [01:32.150] 'Alice gasped.'
+     n+1 DUB#34 'tutti si congelarono.' -> SRC#38 [01:40.160] 'Everyone with an earshot froze like Violet had just committed a major crime.'
+     n+2 DUB#35 'Sembrava che Viola avesse appena firmato la sua condanna a m' -> (unmatched)
+-- DUB#35 'Sembrava che Viola avesse appena firmato la sua condanna a morte.'
+     n-2 DUB#33 'Nel raggio di dieci metri,' -> (unmatched)
+     n-1 DUB#34 'tutti si congelarono.' -> SRC#38 [01:40.160] 'Everyone with an earshot froze like Violet had just committed a major crime.'
+     n+1 DUB#36 'Il silenzio si ruppe in un mormorio strisciante.' -> SRC#39 [01:45.320] 'Seconds later, whispers started. and Violet caught snippets like,'
+     n+2 DUB#37 'Viola captò solo dei frammenti: È finita.' -> (unmatched)
+-- DUB#37 'Viola captò solo dei frammenti: È finita.'
+     n-2 DUB#35 'Sembrava che Viola avesse appena firmato la sua condanna a m' -> (unmatched)
+     n-1 DUB#36 'Il silenzio si ruppe in un mormorio strisciante.' -> SRC#39 [01:45.320] 'Seconds later, whispers started. and Violet caught snippets like,'
+     n+1 DUB#38 'Giulio la farà a pezzi.' -> SRC#40 [01:49.220] "she's so dead and Grant's gonna rip her apart."
+     n+2 DUB#39 'Nonostante quelle minacce,' -> SRC#41 [01:55.370] 'Despite the ominous whispers,'
+-- DUB#43 'Le sue narici si dilatarono.'
+     n-2 DUB#41 'Non avrebbe mai abbassato la testa davanti a un bullo.' -> SRC#43 [01:59.540] 'She refused to back down from bullies.'
+     n-1 DUB#42 'Come mi hai chiamato? ringhiò Giulio.' -> SRC#46 [02:04.950] 'Did you just call me?'
+     n+1 DUB#44 'Il lupo dentro di lui spingeva per uscire e non prometteva n' -> SRC#48 [02:08.960] 'his nostrils flaring as his wolf started to emerge,'
+     n+2 DUB#45 'Hai capito bene rispose Viola,' -> SRC#49 [02:12.560] 'triggered by her words.'
+-- DUB#52 'Poi accadde.'
+     n-2 DUB#50 'Era più alta,' -> SRC#56 [02:29.080] 'She was bigger than Alice,'
+     n-1 DUB#51 'più solida, e la sua amica non riuscì a spostarla di un mill' -> SRC#57 [02:30.640] "and the smaller girl couldn't move her an itch."
+     n+1 DUB#53 "Gli occhi di Giulio si accesero di un'ambra innaturale.La su" -> SRC#58 [02:33.840] "Violet saw the moment Grant's eyes flashed amber,"
+     n+2 DUB#54 'Impulsiva, sì.' -> SRC#60 [02:39.880] 'While she might be impulsive and hot -headed,'
+-- DUB#55 'Stupida, no.'
+     n-2 DUB#53 "Gli occhi di Giulio si accesero di un'ambra innaturale.La su" -> SRC#58 [02:33.840] "Violet saw the moment Grant's eyes flashed amber,"
+     n-1 DUB#54 'Impulsiva, sì.' -> SRC#60 [02:39.880] 'While she might be impulsive and hot -headed,'
+     n+1 DUB#56 'Il cervello di Viola scattò in modalità sopravvivenza.' -> (unmatched)
+     n+2 DUB#57 'Calcolò i passi che la separavano dal bordo del campo.' -> SRC#62 [02:45.400] 'She started mentally calculating how many steps it would take to reach the exit where help would surely come.'
+-- DUB#56 'Il cervello di Viola scattò in modalità sopravvivenza.'
+     n-2 DUB#54 'Impulsiva, sì.' -> SRC#60 [02:39.880] 'While she might be impulsive and hot -headed,'
+     n-1 DUB#55 'Stupida, no.' -> SRC#135 [06:12.990] 'Oh no.'
+     n+1 DUB#57 'Calcolò i passi che la separavano dal bordo del campo.' -> SRC#62 [02:45.400] 'She started mentally calculating how many steps it would take to reach the exit where help would surely come.'
+     n+2 DUB#58 "Lì c'era gente," -> SRC#70 [03:10.890] "in front of everyone's shocked eyes, polled."
+-- DUB#58 "Lì c'era gente,"
+     n-2 DUB#56 'Il cervello di Viola scattò in modalità sopravvivenza.' -> (unmatched)
+     n-1 DUB#57 'Calcolò i passi che la separavano dal bordo del campo.' -> SRC#62 [02:45.400] 'She started mentally calculating how many steps it would take to reach the exit where help would surely come.'
+     n+1 DUB#59 "lì qualcuno l'avrebbe aiutata." -> SRC#63 [02:52.180] 'She was positive it would.'
+     n+2 DUB#60 'Doveva farcela.' -> (unmatched)
+-- DUB#60 'Doveva farcela.'
+     n-2 DUB#58 "Lì c'era gente," -> SRC#70 [03:10.890] "in front of everyone's shocked eyes, polled."
+     n-1 DUB#59 "lì qualcuno l'avrebbe aiutata." -> SRC#63 [02:52.180] 'She was positive it would.'
+     n+1 DUB#61 'Ti insegno io il rispetto.' -> SRC#64 [02:54.500] "I'll teach you a lesson today."
+     n+2 DUB#62 'Non sei altro che una preda,' -> SRC#65 [02:57.690] 'Grant growled, a mix of man and wolf,'
+-- DUB#63 'le sputò addosso Giulio.'
+     n-2 DUB#61 'Ti insegno io il rispetto.' -> SRC#64 [02:54.500] "I'll teach you a lesson today."
+     n-1 DUB#62 'Non sei altro che una preda,' -> SRC#65 [02:57.690] 'Grant growled, a mix of man and wolf,'
+     n+1 DUB#64 'E le si scagliò contro,' -> SRC#66 [03:00.560] 'as he lunged toward her.'
+     n+2 DUB#65 'con il corpo che ormai di umano aveva ben poco.' -> (unmatched)
+-- DUB#65 'con il corpo che ormai di umano aveva ben poco.'
+     n-2 DUB#63 'le sputò addosso Giulio.' -> (unmatched)
+     n-1 DUB#64 'E le si scagliò contro,' -> SRC#66 [03:00.560] 'as he lunged toward her.'
+     n+1 DUB#66 "Viola scattò all'indietro." -> SRC#67 [03:03.520] 'Violet braced herself to run when,'
+     n+2 DUB#67 "Ma un'ombra la superò." -> SRC#68 [03:05.940] 'suddenly, someone stepped in.'
+-- DUB#69 'E lo girò con violenza.'
+     n-2 DUB#67 "Ma un'ombra la superò." -> SRC#68 [03:05.940] 'suddenly, someone stepped in.'
+     n-1 DUB#68 'Una mano enorme afferrò il braccio teso di Giulio.' -> SRC#69 [03:07.860] "A strong hand grabbed Grant's arm and,"
+     n+1 DUB#70 'Il suono le rivoltò lo stomaco.' -> SRC#71 [03:14.040] 'The sound was sickening,'
+     n+2 DUB#71 'Uno schiocco umido,' -> SRC#112 [05:15.360] 'That psycho.'
+-- DUB#71 'Uno schiocco umido,'
+     n-2 DUB#69 'E lo girò con violenza.' -> SRC#147 [06:55.150] 'unfazed by her punches to his back.'
+     n-1 DUB#70 'Il suono le rivoltò lo stomaco.' -> SRC#71 [03:14.040] 'The sound was sickening,'
+     n+1 DUB#72 'il rumore inconfondibile di ossa che si sbriciolavano.' -> SRC#72 [03:15.620] 'a wet, cracking noise of shattering bones filled the hall.'
+     n+2 DUB#73 'Cazzo! sbottò qualcuno alle sue spalle,' -> SRC#73 [03:19.660] 'Oh god!'
+-- DUB#79 'Era lui, Demetrio, maledetto, Vesper.'
+     n-2 DUB#77 'Niente principe azzurro.' -> SRC#79 [03:35.380] "He wasn't some fairytale prince swooping in to save the day."
+     n-1 DUB#78 "Niente cavaliere dall'armatura scintillante." -> SRC#80 [03:39.220] 'No knight in shining armor here,'
+     n+1 DUB#80 'Era un predatore oscuro,' -> SRC#81 [03:41.380] 'just a dark knight,'
+     n+2 DUB#81 "avvolto da un'aura così densa e minacciosa da togliere il fi" -> SRC#82 [03:42.860] 'rescuing her with an aura of pure menace.'
+-- DUB#86 'In un giorno normale,'
+     n-2 DUB#84 'Ti ho appena sentito chiamare la mia Viola... la tua preda?' -> SRC#85 [03:56.380] 'Did I just hear you call my violet your prey?'
+     n-1 DUB#85 'Nessuno ti ha spiegato che solo io posso darle la caccia?' -> SRC#87 [04:05.040] 'and only I,'
+     n+1 DUB#87 'Viola gli avrebbe riso in faccia e se la sarebbe cavata con ' -> SRC#89 [04:09.140] 'Normally Violet would have rolled her eyes at his words and argued,'
+     n+2 DUB#88 'Ma ora il terrore le aveva cucito la bocca.' -> SRC#90 [04:12.910] 'but she was too horrified to speak.'
+-- DUB#93 'al suo posto un cucciolo patetico e tremante.'
+     n-2 DUB#91 'M-mi dispiace, Demetrio! piagnucolò Giulio.' -> SRC#93 [04:19.860] 'I\'m s -s -s -sorry, Elva."'
+     n-1 DUB#92 'Il bullo arrogante era sparito,' -> SRC#95 [04:25.920] 'His earlier bravado replaced by desperate pleas.'
+     n+1 DUB#94 'Demetrio non batté ciglio.' -> SRC#96 [04:29.900] 'Asher remained unmoved.'
+     n+2 DUB#95 'Davvero?' -> SRC#97 [04:31.880] 'Really?'
+-- DUB#98 'Gli torse il braccio ancora più forte.'
+     n-2 DUB#96 'Ti dispiace? sussurrò,' -> SRC#98 [04:33.000] 'Are you?'
+     n-1 DUB#97 'con una voce che avrebbe potuto tagliare il ghiaccio.' -> SRC#99 [04:34.680] 'His voice was ice -cold as he twisted the arm further.'
+     n+1 DUB#99 'Sì!' -> SRC#100 [04:38.740] 'Heck, I am!'
+     n+2 DUB#100 'Ti prego!' -> SRC#101 [04:40.330] 'I seriously am, dad!'
+-- DUB#102 'mentre la morsa di Demetrio si stringeva sempre di più..'
+     n-2 DUB#100 'Ti prego!' -> SRC#101 [04:40.330] 'I seriously am, dad!'
+     n-1 DUB#101 'Fermati! urlò Giulio,' -> SRC#102 [04:43.360] 'Grant cried out like a child as Asher applied even more pressure.'
+     n+1 DUB#103 'E ora dimmi,' -> SRC#103 [04:48.620] 'Noddy, Grant, now,'
+     n+2 DUB#104 'Giulietto... cosa si fa in questi casi? lo schernì Demetrio,' -> (unmatched)
+-- DUB#104 'Giulietto... cosa si fa in questi casi? lo schernì Demetrio,'
+     n-2 DUB#102 'mentre la morsa di Demetrio si stringeva sempre di più..' -> (unmatched)
+     n-1 DUB#103 'E ora dimmi,' -> SRC#103 [04:48.620] 'Noddy, Grant, now,'
+     n+1 DUB#105 'indicando Viola con un cenno del mento.' -> (unmatched)
+     n+2 DUB#106 'Giulio seguì il suo sguardo.' -> SRC#106 [04:57.240] 'Grant followed his gaze and seemed to get the message.'
+-- DUB#105 'indicando Viola con un cenno del mento.'
+     n-2 DUB#103 'E ora dimmi,' -> SRC#103 [04:48.620] 'Noddy, Grant, now,'
+     n-1 DUB#104 'Giulietto... cosa si fa in questi casi? lo schernì Demetrio,' -> (unmatched)
+     n+1 DUB#106 'Giulio seguì il suo sguardo.' -> SRC#106 [04:57.240] 'Grant followed his gaze and seemed to get the message.'
+     n+2 DUB#107 'Capì immediatamente.' -> SRC#107 [05:00.500] 'He instantly bowed his head,'
+-- DUB#111 'cane? lo incalzò Demetrio.'
+     n-2 DUB#109 'Mi dispiace tanto, Signorina Viola.' -> SRC#109 [05:04.600] "I'm so sorry, Miss Violet."
+     n-1 DUB#110 'Di cosa ti dispiace,' -> SRC#110 [05:08.080] 'What are you sorry for, dog?"'
+     n+1 DUB#112 'Una risata bassa gli vibrò nel petto.' -> SRC#111 [05:11.380] 'Asher taunted, chuckling like he was enjoying the whole thing.'
+     n+2 DUB#113 'Si stava godendo ogni secondo.' -> SRC#146 [06:51.970] 'He laughed, continuing to walk,'
+-- DUB#113 'Si stava godendo ogni secondo.'
+     n-2 DUB#111 'cane? lo incalzò Demetrio.' -> (unmatched)
+     n-1 DUB#112 'Una risata bassa gli vibrò nel petto.' -> SRC#111 [05:11.380] 'Asher taunted, chuckling like he was enjoying the whole thing.'
+     n+1 DUB#114 'Di aver cercato di farle del male, Signorina Viola.' -> SRC#113 [05:17.040] 'For trying to hurt you,'
+     n+2 DUB#115 'Non succederà mai più! implorò Giulio.' -> SRC#114 [05:18.960] 'it will never happen again.'
+-- DUB#117 'Sapeva che Demetrio lo avrebbe ucciso senza pensarci due volte.'
+     n-2 DUB#115 'Non succederà mai più! implorò Giulio.' -> SRC#114 [05:18.960] 'it will never happen again.'
+     n-1 DUB#116 'Il terrore gli aveva reso la voce stridula e acuta.' -> SRC#119 [05:32.370] 'and Grant gasped like a drowning man surfacing for air.'
+     n+1 DUB#118 'Molto bene. disse Demetrio.' -> (unmatched)
+     n+2 DUB#119 'Poi aprì la mano.' -> SRC#120 [05:36.370] 'The move had looked simple,'
+-- DUB#118 'Molto bene. disse Demetrio.'
+     n-2 DUB#116 'Il terrore gli aveva reso la voce stridula e acuta.' -> SRC#119 [05:32.370] 'and Grant gasped like a drowning man surfacing for air.'
+     n-1 DUB#117 'Sapeva che Demetrio lo avrebbe ucciso senza pensarci due vol' -> (unmatched)
+     n+1 DUB#119 'Poi aprì la mano.' -> SRC#120 [05:36.370] 'The move had looked simple,'
+     n+2 DUB#120 'Giulio crollò a terra,' -> SRC#121 [05:38.440] 'but Asher had not only broken bones,'
+-- DUB#121 "annaspando come un annegato in cerca d'aria."
+     n-2 DUB#119 'Poi aprì la mano.' -> SRC#120 [05:36.370] 'The move had looked simple,'
+     n-1 DUB#120 'Giulio crollò a terra,' -> SRC#121 [05:38.440] 'but Asher had not only broken bones,'
+     n+1 DUB#122 'Era bastato un movimento e Demetrio gli aveva frantumato le ' -> SRC#122 [05:41.240] "but also dislocated Grant's shoulder."
+     n+2 DUB#123 'Il dolore doveva essere lancinante.' -> SRC#123 [05:44.020] 'It had been pure hell.'
+-- DUB#124 'Ma a Demetrio non fregava assolutamente nulla.'
+     n-2 DUB#122 'Era bastato un movimento e Demetrio gli aveva frantumato le ' -> SRC#122 [05:41.240] "but also dislocated Grant's shoulder."
+     n-1 DUB#123 'Il dolore doveva essere lancinante.' -> SRC#123 [05:44.020] 'It had been pure hell.'
+     n+1 DUB#125 'Ora sparisci, cagnolino.' -> SRC#124 [05:46.570] 'Now, move along, doggie.'
+     n+2 DUB#126 "Vai a piangere dall'infermiera e falle curare quel braccio." -> SRC#125 [05:48.900] 'Go find the school nurse and have her deal with that nasty injury.'
+-- DUB#137 'le afferrò la vita,'
+     n-2 DUB#135 'Non mi lascerò neanche sfiorare Viola scattò per scappare.' -> SRC#139 [06:23.770] 'Nope, not doing this.'
+     n-1 DUB#136 'Ma Demetrio, veloce come un lampo,' -> SRC#141 [06:28.280] 'but Asher moved just as fast,'
+     n+1 DUB#138 'inchiodandola a sé,' -> SRC#142 [06:30.740] "grabbing her around the waist as if he'd predicted her move."
+     n+2 DUB#139 'come se avesse letto in anticipo ogni sua intenzione.' -> (unmatched)
+-- DUB#139 'come se avesse letto in anticipo ogni sua intenzione.'
+     n-2 DUB#137 'le afferrò la vita,' -> (unmatched)
+     n-1 DUB#138 'inchiodandola a sé,' -> SRC#142 [06:30.740] "grabbing her around the waist as if he'd predicted her move."
+     n+1 DUB#140 'Mettimi giù, stronzo! urlò lei.' -> SRC#143 [06:34.690] 'Put me down, you jerk!'
+     n+2 DUB#141 'Si dimenò con tutta la forza che aveva,' -> (unmatched)
+-- DUB#141 'Si dimenò con tutta la forza che aveva,'
+     n-2 DUB#139 'come se avesse letto in anticipo ogni sua intenzione.' -> (unmatched)
+     n-1 DUB#140 'Mettimi giù, stronzo! urlò lei.' -> SRC#143 [06:34.690] 'Put me down, you jerk!'
+     n+1 DUB#142 'ma lui se la caricò in spalla senza il minimo sforzo.' -> SRC#144 [06:37.590] 'She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.'
+     n+2 DUB#143 'Per lui, Viola pesava quanto una piuma.' -> (unmatched)
+-- DUB#143 'Per lui, Viola pesava quanto una piuma.'
+     n-2 DUB#141 'Si dimenò con tutta la forza che aveva,' -> (unmatched)
+     n-1 DUB#142 'ma lui se la caricò in spalla senza il minimo sforzo.' -> SRC#144 [06:37.590] 'She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.'
+     n+1 DUB#144 'È così che ringrazi il tuo eroe,' -> SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'
+     n+2 DUB#145 'mio fiore di Violetta? rise lui.' -> SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'
+-- DUB#145 'mio fiore di Violetta? rise lui.'
+     n-2 DUB#143 'Per lui, Viola pesava quanto una piuma.' -> (unmatched)
+     n-1 DUB#144 'È così che ringrazi il tuo eroe,' -> SRC#145 [06:46.920] 'That is how you thank your savior, my violet.'
+     n+1 DUB#146 'E iniziò a camminare,' -> SRC#146 [06:51.970] 'He laughed, continuing to walk,'
+     n+2 DUB#147 'ignorando del tutto i pugni disperati che lei gli dava sulla' -> SRC#147 [06:55.150] 'unfazed by her punches to his back.'
+-- DUB#148 'Dove la stava portando?'
+     n-2 DUB#146 'E iniziò a camminare,' -> SRC#146 [06:51.970] 'He laughed, continuing to walk,'
+     n-1 DUB#147 'ignorando del tutto i pugni disperati che lei gli dava sulla' -> SRC#147 [06:55.150] 'unfazed by her punches to his back.'
+     n+1 DUB#149 'E, soprattutto, che cosa aveva intenzione di farle?' -> SRC#150 [07:04.240] 'This has to be a nightmare, she thought.'
+
+==== DP MATCHES WORTH A SECOND LOOK (speed would be >1.6x slow or >2x fast, or a neighbouring source line is unused) ====
+   DUB#1 "L'allenamento stava per iniziare," -> SRC#0 'They were almost at the track field for pract'  (speed 0.32)
+   DUB#13 'Era solo questione di tempo e quella bomba a orolo' -> SRC#11 'It was a ticking time bomb.'  (speed 2.86)
+   DUB#14 'Il licantropo dovette sentire la sua occhiataccia ' -> SRC#12 'The werewolf must have felt her glare because'  (unused neighbour SRC#[13])
+   DUB#16 'Un attimo di sorpresa,' -> SRC#14 'He looked momentarily surprised.'  (unused neighbour SRC#[13])
+   DUB#17 'poi gli occhi si assottigliarono e dalla sua gola ' -> SRC#15 'Then his eyes narrowed and he growled.'  (speed 1.78)
+   DUB#24 'Finiva per cacciarla sempre nei guai.' -> SRC#20 'she had a smart mouth that usually got her in'  (unused neighbour SRC#[21])
+   DUB#25 'Si inumidì le labbra.' -> SRC#22 'She licked her lips,'  (unused neighbour SRC#[21, 23])
+   DUB#27 'Alice, che aveva capito cosa stava per fare,' -> SRC#24 'Alice seemed to sense her intentions.'  (unused neighbour SRC#[23, 25])
+   DUB#28 'sgranò gli occhi e scosse la testa pregandola sile' -> SRC#27 'silently warning her to back off.'  (speed 2.56 unused neighbour SRC#[26])
+   DUB#29 'Troppo tardi.' -> SRC#28 'Too late.'  (unused neighbour SRC#[29])
+   DUB#30 'Lo so che muori dalla voglia di avere la mia atten' -> SRC#32 'dying for my attention, dog?'  (unused neighbour SRC#[31])
+   DUB#32 'Alice sussultò.' -> SRC#34 'Alice gasped.'  (unused neighbour SRC#[35])
+   DUB#34 'tutti si congelarono.' -> SRC#38 'Everyone with an earshot froze like Violet ha'  (speed 0.28 unused neighbour SRC#[37])
+   DUB#38 'Giulio la farà a pezzi.' -> SRC#40 "she's so dead and Grant's gonna rip her apart"  (speed 0.27)
+   DUB#41 'Non avrebbe mai abbassato la testa davanti a un bu' -> SRC#43 'She refused to back down from bullies.'  (speed 1.75 unused neighbour SRC#[44])
+   DUB#42 'Come mi hai chiamato? ringhiò Giulio.' -> SRC#46 'Did you just call me?'  (speed 2.48 unused neighbour SRC#[45, 47])
+   DUB#44 'Il lupo dentro di lui spingeva per uscire e non pr' -> SRC#48 'his nostrils flaring as his wolf started to e'  (unused neighbour SRC#[47])
+   DUB#45 'Hai capito bene rispose Viola,' -> SRC#49 'triggered by her words.'  (speed 1.79)
+   DUB#47 'O sei duro di comprendonio, cagnolino?' -> SRC#51 "Or can't you take a joke, dog?"  (unused neighbour SRC#[52])
+   DUB#48 'Viola, basta! gridò Alice tirandola per un braccio' -> SRC#54 'Alice cried, desperately trying to pull her a'  (speed 1.77 unused neighbour SRC#[53])
+   DUB#53 "Gli occhi di Giulio si accesero di un'ambra innatu" -> SRC#58 "Violet saw the moment Grant's eyes flashed am"  (speed 2.18 unused neighbour SRC#[59])
+   DUB#54 'Impulsiva, sì.' -> SRC#60 'While she might be impulsive and hot -headed,'  (speed 0.39 unused neighbour SRC#[59, 61])
+   DUB#57 'Calcolò i passi che la separavano dal bordo del ca' -> SRC#62 'She started mentally calculating how many ste'  (speed 0.43 unused neighbour SRC#[61])
+   DUB#70 'Il suono le rivoltò lo stomaco.' -> SRC#71 'The sound was sickening,'  (speed 1.77)
+   DUB#73 'Cazzo! sbottò qualcuno alle sue spalle,' -> SRC#73 'Oh god!'  (speed 3.83)
+   DUB#74 'strozzato da un conato di vomito.' -> SRC#75 'followed by the sound of vomiting.'  (unused neighbour SRC#[76])
+   DUB#75 'Viola si pietrificò.' -> SRC#77 'or she would have been splattered.'  (unused neighbour SRC#[76])
+   DUB#76 'Il respiro le si incastrò in gola.' -> SRC#78 'Violet froze, eyes wide with shock as Asher n'  (speed 0.42)
+   DUB#77 'Niente principe azzurro.' -> SRC#79 "He wasn't some fairytale prince swooping in t"  (speed 0.46)
+   DUB#82 'Ciao, Giulio, sussurrò Demetrio.' -> SRC#83 'Hello, Grant.'  (speed 1.83)
+   DUB#84 'Ti ho appena sentito chiamare la mia Viola... la t' -> SRC#85 'Did I just hear you call my violet your prey?'  (unused neighbour SRC#[86])
+   DUB#85 'Nessuno ti ha spiegato che solo io posso darle la ' -> SRC#87 'and only I,'  (speed 2.56 unused neighbour SRC#[86, 88])
+   DUB#87 'Viola gli avrebbe riso in faccia e se la sarebbe c' -> SRC#89 'Normally Violet would have rolled her eyes at'  (unused neighbour SRC#[88])
+   DUB#91 'M-mi dispiace, Demetrio! piagnucolò Giulio.' -> SRC#93 'I\'m s -s -s -sorry, Elva."'  (unused neighbour SRC#[94])
+   DUB#92 'Il bullo arrogante era sparito,' -> SRC#95 'His earlier bravado replaced by desperate ple'  (unused neighbour SRC#[94])
+   DUB#96 'Ti dispiace? sussurrò,' -> SRC#98 'Are you?'  (speed 2.70)
+   DUB#99 'Sì!' -> SRC#100 'Heck, I am!'  (speed 0.30)
+   DUB#100 'Ti prego!' -> SRC#101 'I seriously am, dad!'  (speed 0.23)
+   DUB#101 'Fermati! urlò Giulio,' -> SRC#102 'Grant cried out like a child as Asher applied'  (speed 0.45)
+   DUB#103 'E ora dimmi,' -> SRC#103 'Noddy, Grant, now,'  (speed 0.39 unused neighbour SRC#[104])
+   DUB#106 'Giulio seguì il suo sguardo.' -> SRC#106 'Grant followed his gaze and seemed to get the'  (unused neighbour SRC#[105])
+   DUB#108 'Abbassò la testa e piegandosi come un cane bastona' -> SRC#108 'stiffly and stammered.'  (speed 2.53)
+   DUB#110 'Di cosa ti dispiace,' -> SRC#110 'What are you sorry for, dog?"'  (speed 0.33)
+   DUB#114 'Di aver cercato di farle del male, Signorina Viola' -> SRC#113 'For trying to hurt you,'  (speed 1.69)
+   DUB#115 'Non succederà mai più! implorò Giulio.' -> SRC#114 'it will never happen again.'  (speed 2.51 unused neighbour SRC#[115])
+   DUB#116 'Il terrore gli aveva reso la voce stridula e acuta' -> SRC#119 'and Grant gasped like a drowning man surfacin'  (unused neighbour SRC#[118])
+   DUB#122 'Era bastato un movimento e Demetrio gli aveva fran' -> SRC#122 "but also dislocated Grant's shoulder."  (speed 3.58)
+   DUB#123 'Il dolore doveva essere lancinante.' -> SRC#123 'It had been pure hell.'  (speed 1.62)
+   DUB#130 'mentre la folla si apriva in fretta per non essere' -> SRC#129 'The crowd partying to let him leave.'  (speed 1.73 unused neighbour SRC#[130])
+   DUB#131 "Sparito Giulio, l'attenzione di Demetrio si spostò" -> SRC#131 'Asher turned his attention to Violet.'  (speed 2.19 unused neighbour SRC#[130])
+   DUB#132 'Il suo viso era una maschera indecifrabile.' -> SRC#132 'The look on his face told her he intended to.'  (unused neighbour SRC#[133])
+   DUB#133 'Affrontare Giulio era stato uno scherzo.' -> SRC#134 "but it wasn't good."  (speed 3.37 unused neighbour SRC#[133])
+   DUB#134 'Ma quel sorriso predatorio che si era aperto sulle' -> SRC#138 "unsettling smile on Asher's face Scent shiver"  (unused neighbour SRC#[137])
+   DUB#135 'Non mi lascerò neanche sfiorare Viola scattò per s' -> SRC#139 'Nope, not doing this.'  (speed 2.68 unused neighbour SRC#[140])
+   DUB#136 'Ma Demetrio, veloce come un lampo,' -> SRC#141 'but Asher moved just as fast,'  (unused neighbour SRC#[140])
+   DUB#138 'inchiodandola a sé,' -> SRC#142 "grabbing her around the waist as if he'd pred"  (speed 0.39)
+   DUB#140 'Mettimi giù, stronzo! urlò lei.' -> SRC#143 'Put me down, you jerk!'  (speed 1.99)
+   DUB#142 'ma lui se la caricò in spalla senza il minimo sfor' -> SRC#144 'She yelled, struggling as he effortlessly tos'  (speed 0.43)
+   DUB#144 'È così che ringrazi il tuo eroe,' -> SRC#145 'That is how you thank your savior, my violet.'  (speed 0.41)
+   DUB#147 'ignorando del tutto i pugni disperati che lei gli ' -> SRC#147 'unfazed by her punches to his back.'  (speed 2.38 unused neighbour SRC#[148])
+   DUB#149 'E, soprattutto, che cosa aveva intenzione di farle' -> SRC#150 'This has to be a nightmare, she thought.'  (unused neighbour SRC#[149])
+
+==== source lines no dub row uses yet ====
+SRC#13 [00:46.160] 'his eyes locking with hers.'
+SRC#21 [01:07.120] 'not out of it.'
+SRC#23 [01:10.150] 'ready for a coming showdown.'
+SRC#25 [01:14.900] 'Her eyes widened,'
+SRC#26 [01:16.340] 'and she shook her head,'
+SRC#29 [01:21.300] 'Oh, I\'m sorry."'
+SRC#30 [01:24.300] 'Violet shot back.'
+SRC#31 [01:25.640] 'Are you, like,'
+SRC#35 [01:33.640] 'Pretty much everyone nearby did, too.'
+SRC#37 [01:38.720] 'But Violet did.'
+SRC#44 [02:01.960] 'Well, kind of.'
+SRC#45 [02:04.130] 'What?'
+SRC#47 [02:06.820] 'The werewolf grant growled,'
+SRC#52 [02:20.480] 'She sassed back. back.'
+SRC#53 [02:22.100] 'Violet!'
+SRC#59 [02:36.960] 'his wolf taking over.'
+SRC#61 [02:43.020] "Violet wasn't completely stupid."
+SRC#76 [03:25.560] "Thankfully, it wasn't Alice,"
+SRC#86 [04:02.280] "Hasn't anyone told you that I,"
+SRC#88 [04:06.710] 'hunt her alone?'
+SRC#94 [04:24.340] 'Grant moaned.'
+SRC#104 [04:51.190] 'what do you do when you\'re sorry?"'
+SRC#105 [04:54.300] 'Asher teased, glancing at Violet.'
+SRC#115 [05:21.180] 'Grant apologized, his tone sincere now,'
+SRC#116 [05:24.420] "realizing Asher wasn't in the mood for games."
+SRC#117 [05:28.090] 'There you go.'
+SRC#118 [05:30.500] 'Asher finally let go,'
+SRC#130 [06:01.760] 'With Grant gone,'
+SRC#133 [06:08.610] "Well, she wasn't sure,"
+SRC#136 [06:15.340] "Standing up to Grant hadn't scared her,"
+SRC#137 [06:17.780] 'but the dark,'
+SRC#140 [06:26.160] 'Violet spun around to run,'
+SRC#148 [06:57.980] 'When his teasing became too overwhelming,'
+SRC#149 [07:00.520] 'he swatted her butt and Violet instantly froze.'
+
+==== possible repeated passages in the dub (>=4-word sentences, similarity >= 0.8) ====
+
+==== SOURCE TIMELINE ====
+SRC#  0 [00:01.730-00:06.800] "They were almost at the track field for practice when someone's loud comment caught their attention."
+SRC#  1 [00:08.160-00:09.820] 'But practice is going to be brutal.'
+SRC#  2 [00:10.410-00:12.960] "Can't wait to see these humans totally wipe out."
+SRC#  3 [00:13.600-00:14.650] 'Weaklings that they are.'
+SRC#  4 [00:16.880-00:20.040] "Violet's head whipped around to face the jerk who'd just spoken."
+SRC#  5 [00:20.760-00:22.140] 'Even without Alice,'
+SRC#  6 [00:22.600-00:23.880] 'her walking encyclopedia,'
+SRC#  7 [00:24.560-00:27.120] 'she could tell from his words that he was a werewolf.'
+SRC#  8 [00:27.700-00:31.120] 'Only those arrogant werewolves got a kick out of human suffering.'
+SRC#  9 [00:31.920-00:33.520] 'Maybe she was prejudiced,'
+SRC# 10 [00:33.780-00:39.440] "because the violets still couldn't wrap her head around humans and werewolves peacefully coexisting at school."
+SRC# 11 [00:40.260-00:41.760] 'It was a ticking time bomb.'
+SRC# 12 [00:42.880-00:45.660] 'The werewolf must have felt her glare because he turned,'
+SRC# 13 [00:46.160-00:47.460] 'his eyes locking with hers.'
+SRC# 14 [00:48.280-00:49.940] 'He looked momentarily surprised.'
+SRC# 15 [00:51.180-00:53.280] 'Then his eyes narrowed and he growled.'
+SRC# 16 [00:53.880-00:56.000] 'What are you staring at, Prey?'
+SRC# 17 [00:57.340-00:58.420] 'Violet raised an eyebrow.'
+SRC# 18 [00:59.160-01:01.280] "Oh, so that's how he wanted to play it?"
+SRC# 19 [01:02.440-01:03.780] 'Unfortunately for him,'
+SRC# 20 [01:04.360-01:06.760] 'she had a smart mouth that usually got her into trouble,'
+SRC# 21 [01:07.120-01:08.120] 'not out of it.'
+SRC# 22 [01:08.880-01:09.800] 'She licked her lips,'
+SRC# 23 [01:10.150-01:11.460] 'ready for a coming showdown.'
+SRC# 24 [01:12.260-01:14.100] 'Alice seemed to sense her intentions.'
+SRC# 25 [01:14.900-01:16.060] 'Her eyes widened,'
+SRC# 26 [01:16.340-01:17.340] 'and she shook her head,'
+SRC# 27 [01:17.960-01:19.840] 'silently warning her to back off.'
+SRC# 28 [01:20.680-01:21.300] 'Too late.'
+SRC# 29 [01:21.300-01:24.300] 'Oh, I\'m sorry."'
+SRC# 30 [01:24.300-01:25.300] 'Violet shot back.'
+SRC# 31 [01:25.640-01:26.270] 'Are you, like,'
+SRC# 32 [01:26.750-01:28.620] 'dying for my attention, dog?'
+SRC# 33 [01:29.060-01:31.460] 'And there it was.'
+SRC# 34 [01:32.150-01:33.120] 'Alice gasped.'
+SRC# 35 [01:33.640-01:35.610] 'Pretty much everyone nearby did, too.'
+SRC# 36 [01:36.940-01:38.040] "Oh, no, she didn't."
+SRC# 37 [01:38.720-01:39.560] 'But Violet did.'
+SRC# 38 [01:40.160-01:44.400] 'Everyone with an earshot froze like Violet had just committed a major crime.'
+SRC# 39 [01:45.320-01:48.940] 'Seconds later, whispers started. and Violet caught snippets like,'
+SRC# 40 [01:49.220-01:53.860] "she's so dead and Grant's gonna rip her apart."
+SRC# 41 [01:55.370-01:56.740] 'Despite the ominous whispers,'
+SRC# 42 [01:57.160-01:58.700] 'Violet felt strangely confident.'
+SRC# 43 [01:59.540-02:01.120] 'She refused to back down from bullies.'
+SRC# 44 [02:01.960-02:02.890] 'Well, kind of.'
+SRC# 45 [02:04.130-02:04.420] 'What?'
+SRC# 46 [02:04.950-02:05.900] 'Did you just call me?'
+SRC# 47 [02:06.820-02:08.330] 'The werewolf grant growled,'
+SRC# 48 [02:08.960-02:12.140] 'his nostrils flaring as his wolf started to emerge,'
+SRC# 49 [02:12.560-02:13.700] 'triggered by her words.'
+SRC# 50 [02:14.670-02:16.960] 'You mean the same way you called me prey?'
+SRC# 51 [02:17.700-02:19.600] "Or can't you take a joke, dog?"
+SRC# 52 [02:20.480-02:21.520] 'She sassed back. back.'
+SRC# 53 [02:22.100-02:22.740] 'Violet!'
+SRC# 54 [02:23.780-02:26.660] 'Alice cried, desperately trying to pull her away.'
+SRC# 55 [02:27.220-02:28.660] "But Violet wouldn't budge."
+SRC# 56 [02:29.080-02:30.260] 'She was bigger than Alice,'
+SRC# 57 [02:30.640-02:33.100] "and the smaller girl couldn't move her an itch."
+SRC# 58 [02:33.840-02:36.460] "Violet saw the moment Grant's eyes flashed amber,"
+SRC# 59 [02:36.960-02:38.020] 'his wolf taking over.'
+SRC# 60 [02:39.880-02:42.420] 'While she might be impulsive and hot -headed,'
+SRC# 61 [02:43.020-02:44.740] "Violet wasn't completely stupid."
+SRC# 62 [02:45.400-02:51.400] 'She started mentally calculating how many steps it would take to reach the exit where help would surely come.'
+SRC# 63 [02:52.180-02:53.380] 'She was positive it would.'
+SRC# 64 [02:54.500-02:56.660] "I'll teach you a lesson today."
+SRC# 65 [02:57.690-03:00.160] 'Grant growled, a mix of man and wolf,'
+SRC# 66 [03:00.560-03:01.580] 'as he lunged toward her.'
+SRC# 67 [03:03.520-03:05.580] 'Violet braced herself to run when,'
+SRC# 68 [03:05.940-03:07.420] 'suddenly, someone stepped in.'
+SRC# 69 [03:07.860-03:10.500] "A strong hand grabbed Grant's arm and,"
+SRC# 70 [03:10.890-03:13.140] "in front of everyone's shocked eyes, polled."
+SRC# 71 [03:14.040-03:15.080] 'The sound was sickening,'
+SRC# 72 [03:15.620-03:18.800] 'a wet, cracking noise of shattering bones filled the hall.'
+SRC# 73 [03:19.660-03:20.320] 'Oh god!'
+SRC# 74 [03:21.330-03:22.440] 'Someone gasped behind her,'
+SRC# 75 [03:22.960-03:24.290] 'followed by the sound of vomiting.'
+SRC# 76 [03:25.560-03:26.880] "Thankfully, it wasn't Alice,"
+SRC# 77 [03:27.320-03:28.880] 'or she would have been splattered.'
+SRC# 78 [03:30.320-03:34.580] 'Violet froze, eyes wide with shock as Asher nightshade took over.'
+SRC# 79 [03:35.380-03:38.390] "He wasn't some fairytale prince swooping in to save the day."
+SRC# 80 [03:39.220-03:40.920] 'No knight in shining armor here,'
+SRC# 81 [03:41.380-03:42.460] 'just a dark knight,'
+SRC# 82 [03:42.860-03:45.440] 'rescuing her with an aura of pure menace.'
+SRC# 83 [03:46.980-03:48.160] 'Hello, Grant.'
+SRC# 84 [03:48.950-03:55.560] "Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy."
+SRC# 85 [03:56.380-04:00.140] 'Did I just hear you call my violet your prey?'
+SRC# 86 [04:02.280-04:04.440] "Hasn't anyone told you that I,"
+SRC# 87 [04:05.040-04:06.160] 'and only I,'
+SRC# 88 [04:06.710-04:07.760] 'hunt her alone?'
+SRC# 89 [04:09.140-04:12.240] 'Normally Violet would have rolled her eyes at his words and argued,'
+SRC# 90 [04:12.910-04:14.900] 'but she was too horrified to speak.'
+SRC# 91 [04:15.670-04:16.990] 'She could only stand there,'
+SRC# 92 [04:17.260-04:19.860] "dumbfounded by Asher's brutal display of dominance."
+SRC# 93 [04:19.860-04:24.230] 'I\'m s -s -s -sorry, Elva."'
+SRC# 94 [04:24.340-04:25.580] 'Grant moaned.'
+SRC# 95 [04:25.920-04:28.760] 'His earlier bravado replaced by desperate pleas.'
+SRC# 96 [04:29.900-04:31.440] 'Asher remained unmoved.'
+SRC# 97 [04:31.880-04:32.460] 'Really?'
+SRC# 98 [04:33.000-04:33.620] 'Are you?'
+SRC# 99 [04:34.680-04:37.680] 'His voice was ice -cold as he twisted the arm further.'
+SRC#100 [04:38.740-04:39.880] 'Heck, I am!'
+SRC#101 [04:40.330-04:42.400] 'I seriously am, dad!'
+SRC#102 [04:43.360-04:47.560] 'Grant cried out like a child as Asher applied even more pressure.'
+SRC#103 [04:48.620-04:50.700] 'Noddy, Grant, now,'
+SRC#104 [04:51.190-04:54.300] 'what do you do when you\'re sorry?"'
+SRC#105 [04:54.300-04:56.600] 'Asher teased, glancing at Violet.'
+SRC#106 [04:57.240-04:59.700] 'Grant followed his gaze and seemed to get the message.'
+SRC#107 [05:00.500-05:01.940] 'He instantly bowed his head,'
+SRC#108 [05:02.440-05:03.960] 'stiffly and stammered.'
+SRC#109 [05:04.600-05:06.820] "I'm so sorry, Miss Violet."
+SRC#110 [05:08.080-05:11.380] 'What are you sorry for, dog?"'
+SRC#111 [05:11.380-05:14.620] 'Asher taunted, chuckling like he was enjoying the whole thing.'
+SRC#112 [05:15.360-05:15.940] 'That psycho.'
+SRC#113 [05:17.040-05:18.660] 'For trying to hurt you,'
+SRC#114 [05:18.960-05:20.000] 'it will never happen again.'
+SRC#115 [05:21.180-05:23.700] 'Grant apologized, his tone sincere now,'
+SRC#116 [05:24.420-05:26.780] "realizing Asher wasn't in the mood for games."
+SRC#117 [05:28.090-05:29.280] 'There you go.'
+SRC#118 [05:30.500-05:31.740] 'Asher finally let go,'
+SRC#119 [05:32.370-05:35.380] 'and Grant gasped like a drowning man surfacing for air.'
+SRC#120 [05:36.370-05:37.740] 'The move had looked simple,'
+SRC#121 [05:38.440-05:40.620] 'but Asher had not only broken bones,'
+SRC#122 [05:41.240-05:43.100] "but also dislocated Grant's shoulder."
+SRC#123 [05:44.020-05:45.240] 'It had been pure hell.'
+SRC#124 [05:46.570-05:48.180] 'Now, move along, doggie.'
+SRC#125 [05:48.900-05:51.900] 'Go find the school nurse and have her deal with that nasty injury.'
+SRC#126 [05:53.100-05:54.860] 'Asher dismissed him with a wave,'
+SRC#127 [05:55.330-05:56.440] 'and Grant shuffled away,'
+SRC#128 [05:57.080-05:58.060] 'head hung low.'
+SRC#129 [05:59.080-06:00.700] 'The crowd partying to let him leave.'
+SRC#130 [06:01.760-06:02.760] 'With Grant gone,'
+SRC#131 [06:03.220-06:04.860] 'Asher turned his attention to Violet.'
+SRC#132 [06:05.520-06:07.980] 'The look on his face told her he intended to.'
+SRC#133 [06:08.610-06:10.290] "Well, she wasn't sure,"
+SRC#134 [06:11.180-06:11.780] "but it wasn't good."
+SRC#135 [06:12.990-06:13.520] 'Oh no.'
+SRC#136 [06:15.340-06:17.480] "Standing up to Grant hadn't scared her,"
+SRC#137 [06:17.780-06:18.760] 'but the dark,'
+SRC#138 [06:18.920-06:22.820] "unsettling smile on Asher's face Scent shivers down her spine."
+SRC#139 [06:23.770-06:25.260] 'Nope, not doing this.'
+SRC#140 [06:26.160-06:27.580] 'Violet spun around to run,'
+SRC#141 [06:28.280-06:30.100] 'but Asher moved just as fast,'
+SRC#142 [06:30.740-06:33.640] "grabbing her around the waist as if he'd predicted her move."
+SRC#143 [06:34.690-06:36.060] 'Put me down, you jerk!'
+SRC#144 [06:37.590-06:44.040] 'She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.'
+SRC#145 [06:46.920-06:50.920] 'That is how you thank your savior, my violet.'
+SRC#146 [06:51.970-06:54.150] 'He laughed, continuing to walk,'
+SRC#147 [06:55.150-06:56.720] 'unfazed by her punches to his back.'
+SRC#148 [06:57.980-06:59.740] 'When his teasing became too overwhelming,'
+SRC#149 [07:00.520-07:03.460] 'he swatted her butt and Violet instantly froze.'
+SRC#150 [07:04.240-07:07.480] 'This has to be a nightmare, she thought.'

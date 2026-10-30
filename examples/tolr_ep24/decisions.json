@@ -1,0 +1,357 @@
+{
+ "groups": [
+  {
+   "members": [
+    2,
+    3
+   ],
+   "dub_prefixes": [
+    "Quando la vide pun",
+    "Un sorriso gli spu"
+   ],
+   "src": 2,
+   "src_prefix": "Doch als er sah, d",
+   "reason": "one DE sentence: saw the butcher, gaze softened + smile he couldn't suppress"
+  },
+  {
+   "members": [
+    17,
+    18
+   ],
+   "dub_prefixes": [
+    "La sua voce si car",
+    "«Non dirmi che sta"
+   ],
+   "src": 16,
+   "src_prefix": "Ungläubigkeit spra",
+   "reason": "disbelief + 'are you helping Emily Kaiser?' in one DE sentence"
+  },
+  {
+   "members": [
+    20,
+    21
+   ],
+   "dub_prefixes": [
+    "«Ah sì?",
+    "E cosa sarebbe da "
+   ],
+   "src": 18,
+   "src_prefix": "„Ach ja, was ist d",
+   "reason": "'Ach ja, was ist denn typisch fuer mich?' split into two IT lines"
+  },
+  {
+   "members": [
+    24,
+    25
+   ],
+   "dub_prefixes": [
+    "Si schiarì la voce",
+    "«Va bene, conosco "
+   ],
+   "src": 23,
+   "src_prefix": "Stattdessen räuspe",
+   "reason": "cleared his throat + 'OK, I know someone at the top'"
+  },
+  {
+   "members": [
+    27,
+    28
+   ],
+   "dub_prefixes": [
+    "Guarda che parteci",
+    "Sarà un massacro.»"
+   ],
+   "src": 25,
+   "src_prefix": "Allerdings bieten ",
+   "reason": "Kaiser group and other giants also bid + it will be a brutal fight"
+  },
+  {
+   "members": [
+    31,
+    32
+   ],
+   "dub_prefixes": [
+    "Fece una pausa.",
+    "«Se non sa vincere"
+   ],
+   "src": 28,
+   "src_prefix": "Er hielt kurz inne",
+   "reason": "paused, then continued: if she can't win on her own..."
+  },
+  {
+   "members": [
+    35,
+    36
+   ],
+   "dub_prefixes": [
+    "Persino con sua mo",
+    "Avrebbe voluto dir"
+   ],
+   "src": 31,
+   "src_prefix": "Sogar mit seiner e",
+   "reason": "'Even with his own wife.' + 'he would have liked to say'"
+  },
+  {
+   "members": [
+    41,
+    42,
+    43
+   ],
+   "dub_prefixes": [
+    "«Fatto.",
+    "La tua azienda è d",
+    "Come se non avesse"
+   ],
+   "src": [
+    36,
+    37
+   ],
+   "src_prefix": "„Ist erledigt.",
+   "reason": "'Ist erledigt. Deine Firma ist dabei', said casually ... as if he hadn't changed her career; spreads the 2.8x-slow 'Fatto.'"
+  },
+  {
+   "members": [
+    44,
+    45
+   ],
+   "dub_prefixes": [
+    "Lei sbatté le palp",
+    "«Vuoi dire che la "
+   ],
+   "src": 38,
+   "src_prefix": "Sie blinzelte über",
+   "reason": "she blinked + 'you mean ICM Design can take part?'"
+  },
+  {
+   "members": [
+    48,
+    49
+   ],
+   "dub_prefixes": [
+    "Quell'uomo aveva t",
+    "Lui fece spallucce"
+   ],
+   "src": [
+    41,
+    42
+   ],
+   "src_prefix": "Dieser Mann war of",
+   "reason": "neighbours in both languages; spreads the 1.9x-slow row 46"
+  },
+  {
+   "members": [
+    55,
+    56
+   ],
+   "dub_prefixes": [
+    "«Oh, ma io non vol",
+    "Pensavo a uno stuf"
+   ],
+   "src": [
+    48,
+    49
+   ],
+   "src_prefix": "„Oh, das hatte ich",
+   "reason": "'Oh, I wasn't going to... I was thinking of a stew' -- spreads the 1.9x-slow row 54"
+  },
+  {
+   "members": [
+    82,
+    83
+   ],
+   "dub_prefixes": [
+    "Arrossì visibilmen",
+    "La sua mente evocò"
+   ],
+   "src": 77,
+   "src_prefix": "Hitze schoss ihr i",
+   "reason": "blushed + her mind conjured images she'd never admit: one DE sentence"
+  },
+  {
+   "members": [
+    110,
+    111
+   ],
+   "dub_prefixes": [
+    "Gareggiamo contro ",
+    "Gente con decenni "
+   ],
+   "src": 104,
+   "src_prefix": "Wir treten gegen b",
+   "reason": "we compete against listed corporations with decades of experience: one DE sentence"
+  },
+  {
+   "members": [
+    125,
+    126
+   ],
+   "dub_prefixes": [
+    "Dobbiamo fondere i",
+    "Creare un design c"
+   ],
+   "src": 118,
+   "src_prefix": "Wir sollten kultur",
+   "reason": "fuse heritage with technology + design that pulls visitors into both worlds: one DE sentence"
+  },
+  {
+   "members": [
+    152,
+    153
+   ],
+   "dub_prefixes": [
+    "«Propongo una gara",
+    "Penso solo al bene"
+   ],
+   "src": 149,
+   "src_prefix": "„Ich schlage einen",
+   "reason": "fair competition + only the best for ICM: one DE sentence"
+  },
+  {
+   "members": [
+    157,
+    158
+   ],
+   "dub_prefixes": [
+    "Il suo tono si fec",
+    "«Quindici giorni s"
+   ],
+   "src": 153,
+   "src_prefix": "Sein Ton wurde 15 ",
+   "reason": "'Sein Ton wurde 15 Tage reichen...' = tone became provocative + 15 days too few"
+  },
+  {
+   "members": [
+    166,
+    167
+   ],
+   "dub_prefixes": [
+    "Senza contare i mi",
+    "Fabio scoppiò in u"
+   ],
+   "src": 163,
+   "src_prefix": "Ganz zu schweigen ",
+   "reason": "studied abroad + Jason laughed coldly: one DE sentence"
+  },
+  {
+   "members": [
+    177,
+    178
+   ],
+   "dub_prefixes": [
+    "L'atmosfera nella ",
+    "C'era aria di temp"
+   ],
+   "src": 173,
+   "src_prefix": "Die Spannung im Ra",
+   "reason": "tension in the room / a storm in the air: same closing beat"
+  }
+ ],
+ "assign": {
+  "26": {
+   "dub_prefix": "Devo fargli vincer",
+   "src": 24,
+   "src_prefix": "Soll ich das Proje",
+   "reason": "'Soll ich das Projekt fuer sie festzurren?' = should I make them win the tender?"
+  },
+  "47": {
+   "dub_prefix": "Lo fissò.",
+   "src": 40,
+   "src_prefix": "Sie sah ihn mit gr",
+   "reason": "'Lo fisso.' = she looked at him wide-eyed"
+  },
+  "57": {
+   "dub_prefix": "Lorenzo rimase inc",
+   "src": [
+    50,
+    51
+   ],
+   "src_prefix": "Ethan hatte seine ",
+   "reason": "lost control of his expression + range of emotions"
+  },
+  "74": {
+   "dub_prefix": "Ma si riprese in f",
+   "src": [
+    68,
+    69
+   ],
+   "src_prefix": "Aber sie fing sich",
+   "reason": "recovered quickly and went further + her lips into a pout (IT leaves out the pout)"
+  },
+  "112": {
+   "dub_prefix": "Fece una pausa car",
+   "src": 105,
+   "src_prefix": "Er hielt bedeutung",
+   "reason": "'Er hielt bedeutungsvoll inne.' = a pause full of tension"
+  },
+  "137": {
+   "dub_prefix": "Bocciava le idee a",
+   "src": [
+    129,
+    130
+   ],
+   "src_prefix": "Viel zu schnell mi",
+   "reason": "too quick to judge others' ideas + recycled copied designs: exactly both lines"
+  },
+  "141": {
+   "dub_prefix": "Fabio si sistemò a",
+   "src": [
+    134,
+    136
+   ],
+   "src_prefix": "Jasons Kopf fuhr h",
+   "reason": "head turned, didn't like it, jaw tensed = sat up visibly irritated"
+  },
+  "146": {
+   "dub_prefix": "Nicola tacque, sop",
+   "src": [
+    141,
+    142
+   ],
+   "src_prefix": "Sterling schwieg.",
+   "reason": "Sterling stayed silent + thoughtful frown"
+  },
+  "147": {
+   "dub_prefix": "Fabio, al contrari",
+   "src": [
+    143,
+    144
+   ],
+   "src_prefix": "Jason hingegen str",
+   "reason": "Jason bristled + face darkened with outrage"
+  },
+  "161": {
+   "dub_prefix": "Emma si impose di ",
+   "src": [
+    156,
+    157
+   ],
+   "src_prefix": "Emily ballte unter",
+   "reason": "clenched fists under the table + forced herself to stay calm"
+  },
+  "162": {
+   "dub_prefix": "L'espressione di N",
+   "src": [
+    158,
+    159
+   ],
+   "src_prefix": "Sterlings Gesichts",
+   "reason": "Sterling's expression changed + reserved look"
+  },
+  "23": {
+   "dub_prefix": "Daniele scelse saggiamente",
+   "src": [
+    20,
+    21
+   ],
+   "src_prefix": "Daniel entschied sich",
+   "reason": "'...la risposta: freddo e calcolatore' = DE '...Antwort: Kalt.' + 'Berechnend.' (cold + calculating)"
+  }
+ },
+ "confirm": {},
+ "repeat": {},
+ "gap": {},
+ "unused_notes": {
+  "22": "'Gnadenlos.' (ruthless) -- the Italian list here stops at 'freddo e calcolatore'; IT says 'Spietato.' only later (IT#34 = DE#30)."
+ },
+ "speech_notes_old": "(text-based speech/narration overrides from the first run are not used: the video analyser decides now)"
+}

@@ -1,0 +1,45 @@
+{
+ "dub_srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_IT_clauses.srt",
+ "dub_audio": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/italy/drive-download-20261012T114528Z-1-001/Episode 17 - I Giochi Temuti.mp3",
+ "src_srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_EN_clauses.srt",
+ "src_video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/US/WBM Ep - 17.mp4",
+ "models": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/adaptation-tool/data/models",
+ "src_offset_ms": 0,
+ "src_offset_how": "none needed",
+ "sheet_out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/wbm_ep17_it_us_mapping.xlsx",
+ "labels": "IT,US",
+ "manifest": "manifest_groups.json",
+ "groups_review": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/wbm_ep17_dynamic_groups_review.xlsx",
+ "video_out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/video_groups_nosubs.mp4",
+ "video_manifest": "manifest_groups.json",
+ "opening_s": 1.467,
+ "ending_s": 0.0,
+ "clean_final": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_clean.mp4",
+ "ending_src_s": 427.5,
+ "clean_nofx": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_clean.mp4",
+ "subs_outputs": {
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_it_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_IT.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_clean.mp4",
+   "offset_s": 1.467,
+   "style": "box"
+  },
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_en_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_english.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_final_clean.mp4",
+   "offset_s": 1.467,
+   "style": "box"
+  }
+ },
+ "translation": {
+  "out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/outputs/ep17_v2/WBM_EP17_IT_english.srt",
+  "source": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_IT.srt",
+  "engine": "file",
+  "sl": "it",
+  "tl": "en",
+  "cues": 212,
+  "sentences": 115,
+  "names_kept": {},
+  "names_fixed_in_context": {}
+ }
+}

@@ -1,0 +1,12 @@
+sheet+manifest 21 s
+lipsync+groups 1 s
+render 99 s
+verify 23 s
+bookends 47 s
+transitions 176 s
+transitions2 44 s
+subs_it 170 s
+subs_it2 88 s
+translate 8 s
+subs_en 143 s
+subs_en2 97 s

@@ -1,0 +1,682 @@
+{
+ "groups": [
+  {
+   "members": [
+    0,
+    1,
+    2
+   ],
+   "dub_prefixes": [
+    "Erano a un passo dal campo di",
+    "L'allenamento stava per inizia",
+    "ma una voce stridula bloccò Vi"
+   ],
+   "src": 0,
+   "src_prefix": "They were almost at the track",
+   "reason": "three clauses of the one opening sentence"
+  },
+  {
+   "members": [
+    12,
+    13
+   ],
+   "dub_prefixes": [
+    "O forse l'idea che umani e lic",
+    "Era solo questione di tempo e"
+   ],
+   "src": [
+    10,
+    11
+   ],
+   "src_prefix": "because the violets still coul",
+   "reason": "coexisting = utopia; ticking time bomb (one beat; S11 alone would play x0.35)"
+  },
+  {
+   "members": [
+    22,
+    23,
+    24
+   ],
+   "dub_prefixes": [
+    "Viola aveva una lingua taglien",
+    "Un difetto che non la aiutava,",
+    "Finiva per cacciarla sempre ne"
+   ],
+   "src": [
+    20,
+    21
+   ],
+   "src_prefix": "she had a smart mouth that usu",
+   "reason": "smart mouth that got her into trouble, not out of it"
+  },
+  {
+   "members": [
+    30,
+    31
+   ],
+   "dub_prefixes": [
+    "Lo so che muori dalla voglia d",
+    "cagnolino... lo provocò Viola."
+   ],
+   "src": [
+    29,
+    32
+   ],
+   "src_prefix": "Oh, I'm sorry.\"",
+   "reason": "'dying for my attention, dog?' Violet shot back"
+  },
+  {
+   "members": [
+    33,
+    34,
+    35
+   ],
+   "dub_prefixes": [
+    "Nel raggio di dieci metri,",
+    "tutti si congelarono.",
+    "Sembrava che Viola avesse appe"
+   ],
+   "src": 38,
+   "src_prefix": "Everyone with an earshot froze",
+   "reason": "everyone within earshot froze, like she had committed a crime"
+  },
+  {
+   "members": [
+    36,
+    37,
+    38
+   ],
+   "dub_prefixes": [
+    "Il silenzio si ruppe in un mor",
+    "Viola captò solo dei frammenti",
+    "Giulio la farà a pezzi."
+   ],
+   "src": [
+    39,
+    40
+   ],
+   "src_prefix": "Seconds later, whispers starte",
+   "reason": "whispers, snippets: she's so dead, Grant's gonna rip her apart"
+  },
+  {
+   "members": [
+    43,
+    44
+   ],
+   "dub_prefixes": [
+    "Le sue narici si dilatarono.",
+    "Il lupo dentro di lui spingeva"
+   ],
+   "src": [
+    47,
+    49
+   ],
+   "src_prefix": "The werewolf grant growled,",
+   "reason": "growled, nostrils flaring as his wolf emerged, triggered"
+  },
+  {
+   "members": [
+    52,
+    53,
+    54
+   ],
+   "dub_prefixes": [
+    "Poi accadde.",
+    "Gli occhi di Giulio si acceser",
+    "Impulsiva, sì."
+   ],
+   "src": [
+    58,
+    60
+   ],
+   "src_prefix": "Violet saw the moment Grant's",
+   "reason": "eyes flashed amber, wolf taking over; impulsive"
+  },
+  {
+   "members": [
+    55,
+    56,
+    57,
+    58,
+    59,
+    60
+   ],
+   "dub_prefixes": [
+    "Stupida, no.",
+    "Il cervello di Viola scattò in",
+    "Calcolò i passi che la separav",
+    "Lì c'era gente,",
+    "lì qualcuno l'avrebbe aiutata.",
+    "Doveva farcela."
+   ],
+   "src": [
+    61,
+    63
+   ],
+   "src_prefix": "Violet wasn't completely stupi",
+   "reason": "not stupid; calculating steps to the exit where help would come; sure it would"
+  },
+  {
+   "members": [
+    61,
+    62,
+    63,
+    64,
+    65
+   ],
+   "dub_prefixes": [
+    "Ti insegno io il rispetto.",
+    "Non sei altro che una preda,",
+    "le sputò addosso Giulio.",
+    "E le si scagliò contro,",
+    "con il corpo che ormai di uman"
+   ],
+   "src": [
+    64,
+    66
+   ],
+   "src_prefix": "I'll teach you a lesson today.",
+   "reason": "teach you a lesson; growled, half man half wolf; lunged at her"
+  },
+  {
+   "members": [
+    71,
+    72
+   ],
+   "dub_prefixes": [
+    "Uno schiocco umido,",
+    "il rumore inconfondibile di os"
+   ],
+   "src": 72,
+   "src_prefix": "a wet, cracking noise of shatt",
+   "reason": "wet crack of shattering bones"
+  },
+  {
+   "members": [
+    75,
+    76
+   ],
+   "dub_prefixes": [
+    "Viola si pietrificò.",
+    "Il respiro le si incastrò in g"
+   ],
+   "src": 78,
+   "src_prefix": "Violet froze, eyes wide with s",
+   "reason": "froze, eyes wide with shock"
+  },
+  {
+   "members": [
+    77,
+    78,
+    79,
+    80,
+    81
+   ],
+   "dub_prefixes": [
+    "Niente principe azzurro.",
+    "Niente cavaliere dall'armatura",
+    "Era lui, Demetrio, maledetto,",
+    "Era un predatore oscuro,",
+    "avvolto da un'aura così densa"
+   ],
+   "src": [
+    79,
+    82
+   ],
+   "src_prefix": "He wasn't some fairytale princ",
+   "reason": "no prince, no knight: a dark knight with an aura of menace"
+  },
+  {
+   "members": [
+    82,
+    83
+   ],
+   "dub_prefixes": [
+    "Ciao, Giulio, sussurrò Demetri",
+    "La sua voce trasudava autorità"
+   ],
+   "src": [
+    83,
+    84
+   ],
+   "src_prefix": "Hello, Grant.",
+   "reason": "Hello Grant; Asher drawled, crushing his arm"
+  },
+  {
+   "members": [
+    84,
+    85
+   ],
+   "dub_prefixes": [
+    "Ti ho appena sentito chiamare",
+    "Nessuno ti ha spiegato che sol"
+   ],
+   "src": [
+    85,
+    88
+   ],
+   "src_prefix": "Did I just hear you call my vi",
+   "reason": "did I hear you call her prey; I and only I hunt her"
+  },
+  {
+   "members": [
+    86,
+    87,
+    88
+   ],
+   "dub_prefixes": [
+    "In un giorno normale,",
+    "Viola gli avrebbe riso in facc",
+    "Ma ora il terrore le aveva cuc"
+   ],
+   "src": [
+    89,
+    90
+   ],
+   "src_prefix": "Normally Violet would have rol",
+   "reason": "normally she'd argue, but too horrified to speak"
+  },
+  {
+   "members": [
+    92,
+    93
+   ],
+   "dub_prefixes": [
+    "Il bullo arrogante era sparito",
+    "al suo posto un cucciolo patet"
+   ],
+   "src": [
+    94,
+    95
+   ],
+   "src_prefix": "Grant moaned.",
+   "reason": "moaned; bravado replaced by pleas"
+  },
+  {
+   "members": [
+    97,
+    98
+   ],
+   "dub_prefixes": [
+    "con una voce che avrebbe potut",
+    "Gli torse il braccio ancora pi"
+   ],
+   "src": 99,
+   "src_prefix": "His voice was ice -cold as he",
+   "reason": "ice-cold voice as he twisted the arm"
+  },
+  {
+   "members": [
+    99,
+    100,
+    101,
+    102
+   ],
+   "dub_prefixes": [
+    "Sì!",
+    "Ti prego!",
+    "Fermati! urlò Giulio,",
+    "mentre la morsa di Demetrio si"
+   ],
+   "src": [
+    100,
+    102
+   ],
+   "src_prefix": "Heck, I am!",
+   "reason": "short cries + cried out as Asher pressed harder"
+  },
+  {
+   "members": [
+    103,
+    104,
+    105
+   ],
+   "dub_prefixes": [
+    "E ora dimmi,",
+    "Giulietto... cosa si fa in que",
+    "indicando Viola con un cenno d"
+   ],
+   "src": [
+    103,
+    105
+   ],
+   "src_prefix": "Noddy, Grant, now,",
+   "reason": "now Grant, what do you do when you're sorry, teased, glancing at Violet"
+  },
+  {
+   "members": [
+    106,
+    107
+   ],
+   "dub_prefixes": [
+    "Giulio seguì il suo sguardo.",
+    "Capì immediatamente."
+   ],
+   "src": 106,
+   "src_prefix": "Grant followed his gaze and se",
+   "reason": "followed his gaze and got the message"
+  },
+  {
+   "members": [
+    110,
+    111
+   ],
+   "dub_prefixes": [
+    "Di cosa ti dispiace,",
+    "cane? lo incalzò Demetrio."
+   ],
+   "src": 110,
+   "src_prefix": "What are you sorry for, dog?\"",
+   "reason": "what are you sorry for, dog"
+  },
+  {
+   "members": [
+    112,
+    113
+   ],
+   "dub_prefixes": [
+    "Una risata bassa gli vibrò nel",
+    "Si stava godendo ogni secondo."
+   ],
+   "src": 111,
+   "src_prefix": "Asher taunted, chuckling like",
+   "reason": "chuckling, enjoying the whole thing"
+  },
+  {
+   "members": [
+    116,
+    117,
+    118,
+    119
+   ],
+   "dub_prefixes": [
+    "Il terrore gli aveva reso la v",
+    "Sapeva che Demetrio lo avrebbe",
+    "Molto bene. disse Demetrio.",
+    "Poi aprì la mano."
+   ],
+   "src": [
+    116,
+    118
+   ],
+   "src_prefix": "realizing Asher wasn't in the",
+   "reason": "not in the mood for games; there you go; let go"
+  },
+  {
+   "members": [
+    120,
+    121
+   ],
+   "dub_prefixes": [
+    "Giulio crollò a terra,",
+    "annaspando come un annegato in"
+   ],
+   "src": 119,
+   "src_prefix": "and Grant gasped like a drowni",
+   "reason": "gasped like a drowning man"
+  },
+  {
+   "members": [
+    123,
+    124
+   ],
+   "dub_prefixes": [
+    "Il dolore doveva essere lancin",
+    "Ma a Demetrio non fregava asso"
+   ],
+   "src": [
+    122,
+    123
+   ],
+   "src_prefix": "but also dislocated Grant's sh",
+   "reason": "QC 06:04: x-ray + Grant's pain; no Demetrio talking under the narration"
+  },
+  {
+   "members": [
+    136,
+    137,
+    138,
+    139
+   ],
+   "dub_prefixes": [
+    "Ma Demetrio, veloce come un la",
+    "le afferrò la vita,",
+    "inchiodandola a sé,",
+    "come se avesse letto in antici"
+   ],
+   "src": [
+    141,
+    142
+   ],
+   "src_prefix": "but Asher moved just as fast,",
+   "reason": "moved just as fast, grabbed her waist as if he predicted it"
+  },
+  {
+   "members": [
+    141,
+    142,
+    143
+   ],
+   "dub_prefixes": [
+    "Si dimenò con tutta la forza c",
+    "ma lui se la caricò in spalla",
+    "Per lui, Viola pesava quanto u"
+   ],
+   "src": 144,
+   "src_prefix": "She yelled, struggling as he e",
+   "reason": "struggling, tossed over his shoulder, weight like nothing"
+  },
+  {
+   "members": [
+    144,
+    145
+   ],
+   "dub_prefixes": [
+    "È così che ringrazi il tuo ero",
+    "mio fiore di Violetta? rise lu"
+   ],
+   "src": 145,
+   "src_prefix": "That is how you thank your sav",
+   "reason": "is that how you thank your savior, my violet"
+  },
+  {
+   "members": [
+    146,
+    147
+   ],
+   "dub_prefixes": [
+    "E iniziò a camminare,",
+    "ignorando del tutto i pugni di"
+   ],
+   "src": [
+    146,
+    147
+   ],
+   "src_prefix": "He laughed, continuing to walk",
+   "reason": "laughed, kept walking, unfazed by punches"
+  },
+  {
+   "members": [
+    148,
+    149
+   ],
+   "dub_prefixes": [
+    "Dove la stava portando?",
+    "E, soprattutto, che cosa aveva"
+   ],
+   "src": 150,
+   "src_prefix": "This has to be a nightmare, sh",
+   "reason": "her last thought (the butt-swat lines are not in the Italian)"
+  }
+ ],
+ "assign": {
+  "15": {
+   "dub_prefix": "Si girò e la fissò.",
+   "src": 13,
+   "src_prefix": "his eyes locking with hers.",
+   "reason": "he turned and stared = eyes locking with hers (Case A to S15 was wrong)"
+  },
+  "19": {
+   "dub_prefix": "Viola sorrise beffarda.",
+   "src": 18,
+   "src_prefix": "Oh, so that's how he wanted to",
+   "reason": "QC 01:02: Viola's smile is at the END of this US shot (61.3s); 'Raised an eyebrow' shot has no smile"
+  },
+  "20": {
+   "dub_prefix": "Voleva giocare a fare il duro?",
+   "src": 17,
+   "src_prefix": "Violet raised an eyebrow.",
+   "reason": "her thought; side shot of Viola, mouth still (order swapped with S18 on purpose)"
+  },
+  "26": {
+   "dub_prefix": "Il sangue le pulsava nelle ore",
+   "src": 23,
+   "src_prefix": "ready for a coming showdown.",
+   "reason": "same beat after licking her lips (Case A to S74 was wrong)"
+  },
+  "28": {
+   "dub_prefix": "sgranò gli occhi e scosse la t",
+   "src": [
+    25,
+    27
+   ],
+   "src_prefix": "Her eyes widened,",
+   "reason": "eyes widened + shook head + silently warning her"
+  },
+  "42": {
+   "dub_prefix": "Come mi hai chiamato? ringhiò",
+   "src": [
+    45,
+    46
+   ],
+   "src_prefix": "What?",
+   "reason": "What? Did you just call me?"
+  },
+  "45": {
+   "dub_prefix": "Hai capito bene rispose Viola,",
+   "src": 50,
+   "src_prefix": "You mean the same way you call",
+   "reason": "Viola's spoken reply (she talks on screen)"
+  },
+  "46": {
+   "dub_prefix": "piantandogli gli occhi in facc",
+   "src": 52,
+   "src_prefix": "She sassed back. back.",
+   "reason": "QC 02:15-02:18: narration clause gets the US shot of Viola staring, mouth still (140.5-141.5)"
+  },
+  "48": {
+   "dub_prefix": "Viola, basta! gridò Alice tira",
+   "src": [
+    53,
+    54
+   ],
+   "src_prefix": "Violet!",
+   "reason": "Violet! Alice cried, pulling her away"
+  },
+  "69": {
+   "dub_prefix": "E lo girò con violenza.",
+   "src": 70,
+   "src_prefix": "in front of everyone's shocked",
+   "reason": "twisted him in front of everyone"
+  },
+  "73": {
+   "dub_prefix": "Cazzo! sbottò qualcuno alle su",
+   "src": [
+    73,
+    74
+   ],
+   "src_prefix": "Oh god!",
+   "reason": "'Oh god!' someone gasped behind her"
+  },
+  "91": {
+   "dub_prefix": "M-mi dispiace, Demetrio! piagn",
+   "src": 93,
+   "src_prefix": "I'm s -s -s -sorry, Elva.\"",
+   "reason": "the stammered sorry"
+  },
+  "108": {
+   "dub_prefix": "Abbassò la testa e piegandosi",
+   "src": [
+    107,
+    108
+   ],
+   "src_prefix": "He instantly bowed his head,",
+   "reason": "bowed his head and stammered"
+  },
+  "114": {
+   "dub_prefix": "Di aver cercato di farle del m",
+   "src": [
+    113,
+    114
+   ],
+   "src_prefix": "For trying to hurt you,",
+   "reason": "for trying to hurt you, it will never happen again"
+  },
+  "115": {
+   "dub_prefix": "Non succederà mai più! implorò",
+   "src": 115,
+   "src_prefix": "Grant apologized, his tone sin",
+   "reason": "implorò Giulio = Grant apologized"
+  },
+  "122": {
+   "dub_prefix": "Era bastato un movimento e Dem",
+   "src": [
+    120,
+    121
+   ],
+   "src_prefix": "The move had looked simple,",
+   "reason": "the simple move, broken bones (Demetrio's grip, Demetrio looking down)"
+  },
+  "131": {
+   "dub_prefix": "Sparito Giulio, l'attenzione d",
+   "src": [
+    130,
+    131
+   ],
+   "src_prefix": "With Grant gone,",
+   "reason": "with Grant gone, Asher turned to Violet"
+  },
+  "133": {
+   "dub_prefix": "Affrontare Giulio era stato un",
+   "src": 136,
+   "src_prefix": "Standing up to Grant hadn't sc",
+   "reason": "standing up to Grant hadn't scared her"
+  },
+  "134": {
+   "dub_prefix": "Ma quel sorriso predatorio che",
+   "src": [
+    137,
+    138
+   ],
+   "src_prefix": "but the dark,",
+   "reason": "the dark unsettling smile sent shivers"
+  },
+  "135": {
+   "dub_prefix": "Non mi lascerò neanche sfiorar",
+   "src": [
+    139,
+    140
+   ],
+   "src_prefix": "Nope, not doing this.",
+   "reason": "nope, not doing this; spun around to run"
+  }
+ },
+ "confirm": {},
+ "repeat": {},
+ "gap": {},
+ "unused_notes": {
+  "33": "no Italian line",
+  "35": "everyone gasped -- folded into 'tutti si congelarono'",
+  "36": "bystander line, not in the Italian",
+  "37": "not in the Italian",
+  "44": "not in the Italian",
+  "76": "not in the Italian",
+  "77": "not in the Italian",
+  "112": "not in the Italian",
+  "133": "not in the Italian",
+  "134": "not in the Italian",
+  "135": "not in the Italian",
+  "148": "butt swat not in the Italian",
+  "149": "butt swat not in the Italian"
+ }
+}

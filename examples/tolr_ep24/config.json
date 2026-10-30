@@ -1,0 +1,249 @@
+{
+ "dub_srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/italy/SRT Clean/Episode 24 - Emma Ha Tirato Qualche Filo.srt",
+ "dub_audio": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/italy/Audio/Episode 24 - Emma Ha Tirato Qualche Filo.mp3",
+ "src_srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/ep24_gem/src_from_sentences.srt",
+ "src_video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/DE/TOLR_EP_24.mp4",
+ "models": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/adaptation-tool/data/models",
+ "src_offset_ms": 0,
+ "src_offset_how": "none needed",
+ "sheet_out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/tolr_ep24_it_de_mapping.xlsx",
+ "labels": "IT,DE",
+ "manifest": "manifest_groups.json",
+ "lipsync_review": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/tolr_ep24_lipsync_review.xlsx",
+ "groups_review": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/tolr_ep24_dynamic_groups_review.xlsx",
+ "video_manifest": "manifest_groups.json",
+ "video_out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/ep24_ours/video_groups_nosubs.mp4",
+ "opening_s": 0.933,
+ "ending_s": 2.5,
+ "clean_final": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_clean.mp4",
+ "ending_src_s": 738.567,
+ "clean_nofx": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/ep24_ours/clean_noglow.mp4",
+ "transitions": {
+  "styles": [
+   "light_leak",
+   "blur_dissolve",
+   "zoom_blur"
+  ],
+  "seed": 24,
+  "length": 1.0,
+  "plan": [
+   {
+    "t": 0.933,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 17.083,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 18.153,
+    "style": "light_leak"
+   },
+   {
+    "t": 37.373,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 53.693,
+    "style": "light_leak"
+   },
+   {
+    "t": 60.923,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 71.793,
+    "style": "light_leak"
+   },
+   {
+    "t": 77.893,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 106.633,
+    "style": "light_leak"
+   },
+   {
+    "t": 133.633,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 172.473,
+    "style": "light_leak"
+   },
+   {
+    "t": 174.713,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 184.673,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 190.483,
+    "style": "light_leak"
+   },
+   {
+    "t": 195.778,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 197.993,
+    "style": "light_leak"
+   },
+   {
+    "t": 201.393,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 206.883,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 218.253,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 238.113,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 248.193,
+    "style": "light_leak"
+   },
+   {
+    "t": 259.733,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 263.653,
+    "style": "light_leak"
+   },
+   {
+    "t": 275.993,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 287.613,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 299.903,
+    "style": "light_leak"
+   },
+   {
+    "t": 304.833,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 317.993,
+    "style": "light_leak"
+   },
+   {
+    "t": 346.623,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 403.453,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 424.323,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 439.763,
+    "style": "light_leak"
+   },
+   {
+    "t": 441.853,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 465.443,
+    "style": "light_leak"
+   },
+   {
+    "t": 467.213,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 479.853,
+    "style": "light_leak"
+   },
+   {
+    "t": 516.673,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 544.793,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 558.543,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 561.413,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 576.413,
+    "style": "light_leak"
+   },
+   {
+    "t": 578.433,
+    "style": "blur_dissolve"
+   },
+   {
+    "t": 608.833,
+    "style": "zoom_blur"
+   },
+   {
+    "t": 615.024,
+    "style": "light_leak"
+   }
+  ],
+  "out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_clean.mp4"
+ },
+ "subs_outputs": {
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_gemini/TOLR_EP24_IT_final_it_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/italy/SRT Clean/Episode 24 - Emma Ha Tirato Qualche Filo.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_gemini/TOLR_EP24_IT_final_clean.mp4",
+   "offset_s": 0.933,
+   "style": "box"
+  },
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_gemini/TOLR_EP24_IT_final_en_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_gemini/TOLR_EP24_IT_english_google.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_gemini/TOLR_EP24_IT_final_clean.mp4",
+   "offset_s": 0.933,
+   "style": "box"
+  },
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_it_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/italy/SRT Clean/Episode 24 - Emma Ha Tirato Qualche Filo.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_clean.mp4",
+   "offset_s": 0.933,
+   "style": "box"
+  },
+  "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_en_subs.mp4": {
+   "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_english_google.srt",
+   "video": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_final_clean.mp4",
+   "offset_s": 0.933,
+   "style": "box"
+  }
+ },
+ "translation": {
+  "out": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/output/ep24_ourscan/TOLR_EP24_IT_english_google.srt",
+  "source": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/TOLR DE_ITaly/italy/SRT Clean/Episode 24 - Emma Ha Tirato Qualche Filo.srt",
+  "engine": "gtx",
+  "sl": "it",
+  "tl": "en",
+  "cues": 164,
+  "sentences": 179,
+  "names_kept": {
+   "Nicholas": "Nicola",
+   "Real": "Reali"
+  },
+  "names_fixed_in_context": {}
+ }
+}

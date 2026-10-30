@@ -1,0 +1,10011 @@
+{
+ "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_IT_clauses.srt",
+ "media": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/italy/drive-download-20261012T114528Z-1-001/Episode 17 - I Giochi Temuti.mp3",
+ "lang": "it",
+ "model": "small",
+ "sentences": [
+  {
+   "idx": 0,
+   "text": "Erano a un passo dal campo di atletica.",
+   "start_ms": 400,
+   "end_ms": 2240,
+   "srt_start_ms": 400,
+   "srt_end_ms": 2240,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 1,
+   "text": "L'allenamento stava per iniziare,",
+   "start_ms": 2720,
+   "end_ms": 4340,
+   "srt_start_ms": 2720,
+   "srt_end_ms": 4622,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 2,
+   "text": "ma una voce stridula bloccò Viola e Alice sul posto.",
+   "start_ms": 4620,
+   "end_ms": 7620,
+   "srt_start_ms": 4622,
+   "srt_end_ms": 7620,
+   "words": 10,
+   "same": 9,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 3,
+   "text": "Scommetto che l'allenamento sarà un massacro.",
+   "start_ms": 8400,
+   "end_ms": 10640,
+   "srt_start_ms": 8400,
+   "srt_end_ms": 10640,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 4,
+   "text": "Non vedo l'ora di guardare questi umani crollare.",
+   "start_ms": 10920,
+   "end_ms": 13200,
+   "srt_start_ms": 10920,
+   "srt_end_ms": 13200,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 5,
+   "text": "Sono così gracilini.",
+   "start_ms": 13510,
+   "end_ms": 14840,
+   "srt_start_ms": 13510,
+   "srt_end_ms": 14840,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 6,
+   "text": "Viola si girò di scatto verso lo stronzo che aveva parlato.",
+   "start_ms": 15770,
+   "end_ms": 18800,
+   "srt_start_ms": 15770,
+   "srt_end_ms": 18800,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 7,
+   "text": "Non le serviva Alice,",
+   "start_ms": 19450,
+   "end_ms": 20460,
+   "srt_start_ms": 19450,
+   "srt_end_ms": 20663,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 8,
+   "text": "la sua enciclopedia vivente,",
+   "start_ms": 20900,
+   "end_ms": 22360,
+   "srt_start_ms": 20663,
+   "srt_end_ms": 22280,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 9,
+   "text": "per capire che si trattava di un licantropo.",
+   "start_ms": 22720,
+   "end_ms": 24820,
+   "srt_start_ms": 22280,
+   "srt_end_ms": 24820,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 10,
+   "text": "Solo quegli arroganti si divertivano a umiliare gli umani.",
+   "start_ms": 25710,
+   "end_ms": 28700,
+   "srt_start_ms": 25710,
+   "srt_end_ms": 28700,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 11,
+   "text": "Forse era prevenuta lei.",
+   "start_ms": 29510,
+   "end_ms": 30700,
+   "srt_start_ms": 29510,
+   "srt_end_ms": 30700,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 12,
+   "text": "O forse l'idea che umani e licantropi potessero convivere pacificamente in quella scuola era solo una gigantesca utopia.",
+   "start_ms": 31390,
+   "end_ms": 38400,
+   "srt_start_ms": 31390,
+   "srt_end_ms": 38400,
+   "words": 18,
+   "same": 18,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 13,
+   "text": "Era solo questione di tempo e quella bomba a orologeria sarebbe scoppiata.",
+   "start_ms": 40310,
+   "end_ms": 44600,
+   "srt_start_ms": 40310,
+   "srt_end_ms": 44600,
+   "words": 12,
+   "same": 12,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 14,
+   "text": "Il licantropo dovette sentire la sua occhiataccia bruciargli addosso.",
+   "start_ms": 45410,
+   "end_ms": 48920,
+   "srt_start_ms": 45410,
+   "srt_end_ms": 48920,
+   "words": 9,
+   "same": 7,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 15,
+   "text": "Si girò e la fissò.",
+   "start_ms": 49430,
+   "end_ms": 50800,
+   "srt_start_ms": 49430,
+   "srt_end_ms": 50800,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 16,
+   "text": "Un attimo di sorpresa,",
+   "start_ms": 51980,
+   "end_ms": 53120,
+   "srt_start_ms": 51980,
+   "srt_end_ms": 53310,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 17,
+   "text": "poi gli occhi si assottigliarono e dalla sua gola salì un ringhio.",
+   "start_ms": 53570,
+   "end_ms": 57300,
+   "srt_start_ms": 53310,
+   "srt_end_ms": 57300,
+   "words": 12,
+   "same": 12,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 18,
+   "text": "Che hai da guardare, umana?",
+   "start_ms": 58300,
+   "end_ms": 59620,
+   "srt_start_ms": 58300,
+   "srt_end_ms": 59620,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 19,
+   "text": "Viola sorrise beffarda.",
+   "start_ms": 60710,
+   "end_ms": 62120,
+   "srt_start_ms": 60710,
+   "srt_end_ms": 62120,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 20,
+   "text": "Voleva giocare a fare il duro?",
+   "start_ms": 62840,
+   "end_ms": 64180,
+   "srt_start_ms": 62840,
+   "srt_end_ms": 64180,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 21,
+   "text": "Sfortuna per lui,",
+   "start_ms": 65140,
+   "end_ms": 66020,
+   "srt_start_ms": 65140,
+   "srt_end_ms": 66133,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 22,
+   "text": "Viola aveva una lingua tagliente.",
+   "start_ms": 66440,
+   "end_ms": 68060,
+   "srt_start_ms": 66133,
+   "srt_end_ms": 68060,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 23,
+   "text": "Un difetto che non la aiutava, anzi.",
+   "start_ms": 68670,
+   "end_ms": 70560,
+   "srt_start_ms": 68670,
+   "srt_end_ms": 70560,
+   "words": 7,
+   "same": 6,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 24,
+   "text": "Finiva per cacciarla sempre nei guai.",
+   "start_ms": 71080,
+   "end_ms": 72960,
+   "srt_start_ms": 71080,
+   "srt_end_ms": 72960,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 25,
+   "text": "Si inumidì le labbra.",
+   "start_ms": 73950,
+   "end_ms": 75060,
+   "srt_start_ms": 73950,
+   "srt_end_ms": 75060,
+   "words": 4,
+   "same": 1,
+   "differently": 3,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 26,
+   "text": "Il sangue le pulsava nelle orecchie.",
+   "start_ms": 75540,
+   "end_ms": 77340,
+   "srt_start_ms": 75540,
+   "srt_end_ms": 77340,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 27,
+   "text": "Alice, che aveva capito cosa stava per fare,",
+   "start_ms": 77930,
+   "end_ms": 80280,
+   "srt_start_ms": 77930,
+   "srt_end_ms": 80609,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 28,
+   "text": "sgranò gli occhi e scosse la testa pregandola silenziosamente di lasciar perdere.",
+   "start_ms": 80720,
+   "end_ms": 85540,
+   "srt_start_ms": 80609,
+   "srt_end_ms": 85540,
+   "words": 12,
+   "same": 10,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 29,
+   "text": "Troppo tardi.",
+   "start_ms": 86840,
+   "end_ms": 87580,
+   "srt_start_ms": 86840,
+   "srt_end_ms": 87580,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 30,
+   "text": "Lo so che muori dalla voglia di avere la mia attenzione,",
+   "start_ms": 88850,
+   "end_ms": 91420,
+   "srt_start_ms": 88850,
+   "srt_end_ms": 92080,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 31,
+   "text": "cagnolino... lo provocò Viola.",
+   "start_ms": 91500,
+   "end_ms": 93760,
+   "srt_start_ms": 88850,
+   "srt_end_ms": 93760,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 32,
+   "text": "Alice sussultò.",
+   "start_ms": 94910,
+   "end_ms": 95840,
+   "srt_start_ms": 94910,
+   "srt_end_ms": 95840,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 33,
+   "text": "Nel raggio di dieci metri,",
+   "start_ms": 96840,
+   "end_ms": 98160,
+   "srt_start_ms": 96840,
+   "srt_end_ms": 98422,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 34,
+   "text": "tutti si congelarono.",
+   "start_ms": 98500,
+   "end_ms": 99700,
+   "srt_start_ms": 98422,
+   "srt_end_ms": 99700,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 35,
+   "text": "Sembrava che Viola avesse appena firmato la sua condanna a morte.",
+   "start_ms": 100050,
+   "end_ms": 103240,
+   "srt_start_ms": 100050,
+   "srt_end_ms": 103240,
+   "words": 11,
+   "same": 10,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 36,
+   "text": "Il silenzio si ruppe in un mormorio strisciante.",
+   "start_ms": 104300,
+   "end_ms": 106960,
+   "srt_start_ms": 104300,
+   "srt_end_ms": 106960,
+   "words": 8,
+   "same": 7,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 37,
+   "text": "Viola captò solo dei frammenti: È finita.",
+   "start_ms": 107480,
+   "end_ms": 110540,
+   "srt_start_ms": 107480,
+   "srt_end_ms": 110540,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 38,
+   "text": "Giulio la farà a pezzi.",
+   "start_ms": 111330,
+   "end_ms": 112600,
+   "srt_start_ms": 111330,
+   "srt_end_ms": 112600,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 39,
+   "text": "Nonostante quelle minacce,",
+   "start_ms": 113500,
+   "end_ms": 114780,
+   "srt_start_ms": 113500,
+   "srt_end_ms": 115068,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 40,
+   "text": "si sentì invasa da una strana calma.",
+   "start_ms": 115140,
+   "end_ms": 117240,
+   "srt_start_ms": 115068,
+   "srt_end_ms": 117240,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 41,
+   "text": "Non avrebbe mai abbassato la testa davanti a un bullo.",
+   "start_ms": 117830,
+   "end_ms": 120600,
+   "srt_start_ms": 117830,
+   "srt_end_ms": 120600,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 42,
+   "text": "Come mi hai chiamato? ringhiò Giulio.",
+   "start_ms": 121660,
+   "end_ms": 124020,
+   "srt_start_ms": 121660,
+   "srt_end_ms": 124020,
+   "words": 6,
+   "same": 5,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 43,
+   "text": "Le sue narici si dilatarono.",
+   "start_ms": 124760,
+   "end_ms": 126280,
+   "srt_start_ms": 124760,
+   "srt_end_ms": 126280,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 44,
+   "text": "Il lupo dentro di lui spingeva per uscire e non prometteva nulla di buono.",
+   "start_ms": 126980,
+   "end_ms": 131160,
+   "srt_start_ms": 126980,
+   "srt_end_ms": 131160,
+   "words": 14,
+   "same": 14,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 45,
+   "text": "Hai capito bene rispose Viola,",
+   "start_ms": 132360,
+   "end_ms": 134400,
+   "srt_start_ms": 132360,
+   "srt_end_ms": 134179,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 46,
+   "text": "piantandogli gli occhi in faccia.",
+   "start_ms": 134700,
+   "end_ms": 136180,
+   "srt_start_ms": 134179,
+   "srt_end_ms": 136180,
+   "words": 5,
+   "same": 3,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 47,
+   "text": "O sei duro di comprendonio, cagnolino?",
+   "start_ms": 137130,
+   "end_ms": 139040,
+   "srt_start_ms": 137130,
+   "srt_end_ms": 139040,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 48,
+   "text": "Viola, basta! gridò Alice tirandola per un braccio con tutta la forza che aveva.",
+   "start_ms": 140220,
+   "end_ms": 145320,
+   "srt_start_ms": 140220,
+   "srt_end_ms": 145320,
+   "words": 14,
+   "same": 14,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 49,
+   "text": "Ma Viola piantò i piedi a terra.",
+   "start_ms": 146150,
+   "end_ms": 147790,
+   "srt_start_ms": 146150,
+   "srt_end_ms": 147620,
+   "words": 7,
+   "same": 6,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 50,
+   "text": "Era più alta,",
+   "start_ms": 148260,
+   "end_ms": 148960,
+   "srt_start_ms": 148260,
+   "srt_end_ms": 148975,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 51,
+   "text": "più solida, e la sua amica non riuscì a spostarla di un millimetro.",
+   "start_ms": 149220,
+   "end_ms": 152660,
+   "srt_start_ms": 148975,
+   "srt_end_ms": 152660,
+   "words": 13,
+   "same": 13,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 52,
+   "text": "Poi accadde.",
+   "start_ms": 154490,
+   "end_ms": 155180,
+   "srt_start_ms": 154490,
+   "srt_end_ms": 155180,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 53,
+   "text": "Gli occhi di Giulio si accesero di un'ambra innaturale.La sua parte ferina aveva preso il controllo.",
+   "start_ms": 155990,
+   "end_ms": 161700,
+   "srt_start_ms": 155990,
+   "srt_end_ms": 161700,
+   "words": 16,
+   "same": 16,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 54,
+   "text": "Impulsiva, sì.",
+   "start_ms": 163020,
+   "end_ms": 164000,
+   "srt_start_ms": 163020,
+   "srt_end_ms": 164060,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 55,
+   "text": "Stupida, no.",
+   "start_ms": 164480,
+   "end_ms": 165460,
+   "srt_start_ms": 164480,
+   "srt_end_ms": 169380,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 56,
+   "text": "Il cervello di Viola scattò in modalità sopravvivenza.",
+   "start_ms": 166580,
+   "end_ms": 169380,
+   "srt_start_ms": 164480,
+   "srt_end_ms": 169380,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 57,
+   "text": "Calcolò i passi che la separavano dal bordo del campo.",
+   "start_ms": 169860,
+   "end_ms": 172440,
+   "srt_start_ms": 169860,
+   "srt_end_ms": 172440,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 58,
+   "text": "Lì c'era gente,",
+   "start_ms": 173040,
+   "end_ms": 173680,
+   "srt_start_ms": 173040,
+   "srt_end_ms": 173973,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 59,
+   "text": "lì qualcuno l'avrebbe aiutata.",
+   "start_ms": 174270,
+   "end_ms": 175840,
+   "srt_start_ms": 173973,
+   "srt_end_ms": 175840,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 60,
+   "text": "Doveva farcela.",
+   "start_ms": 176290,
+   "end_ms": 177220,
+   "srt_start_ms": 176290,
+   "srt_end_ms": 177220,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 61,
+   "text": "Ti insegno io il rispetto.",
+   "start_ms": 178360,
+   "end_ms": 179610,
+   "srt_start_ms": 178360,
+   "srt_end_ms": 179610,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 62,
+   "text": "Non sei altro che una preda,",
+   "start_ms": 180180,
+   "end_ms": 181600,
+   "srt_start_ms": 180180,
+   "srt_end_ms": 182054,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 63,
+   "text": "le sputò addosso Giulio.",
+   "start_ms": 182400,
+   "end_ms": 183660,
+   "srt_start_ms": 182054,
+   "srt_end_ms": 183660,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 64,
+   "text": "E le si scagliò contro,",
+   "start_ms": 184370,
+   "end_ms": 185500,
+   "srt_start_ms": 184370,
+   "srt_end_ms": 185727,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 65,
+   "text": "con il corpo che ormai di umano aveva ben poco.",
+   "start_ms": 185910,
+   "end_ms": 188500,
+   "srt_start_ms": 185727,
+   "srt_end_ms": 188500,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 66,
+   "text": "Viola scattò all'indietro.",
+   "start_ms": 189600,
+   "end_ms": 190860,
+   "srt_start_ms": 189600,
+   "srt_end_ms": 190400,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 67,
+   "text": "Ma un'ombra la superò.",
+   "start_ms": 191240,
+   "end_ms": 192240,
+   "srt_start_ms": 191240,
+   "srt_end_ms": 192240,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 68,
+   "text": "Una mano enorme afferrò il braccio teso di Giulio.",
+   "start_ms": 192720,
+   "end_ms": 195560,
+   "srt_start_ms": 192720,
+   "srt_end_ms": 195560,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 69,
+   "text": "E lo girò con violenza.",
+   "start_ms": 195940,
+   "end_ms": 197160,
+   "srt_start_ms": 195940,
+   "srt_end_ms": 197160,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 70,
+   "text": "Il suono le rivoltò lo stomaco.",
+   "start_ms": 198360,
+   "end_ms": 200200,
+   "srt_start_ms": 198360,
+   "srt_end_ms": 200200,
+   "words": 6,
+   "same": 4,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 71,
+   "text": "Uno schiocco umido,",
+   "start_ms": 200780,
+   "end_ms": 201980,
+   "srt_start_ms": 200780,
+   "srt_end_ms": 202019,
+   "words": 3,
+   "same": 2,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 72,
+   "text": "il rumore inconfondibile di ossa che si sbriciolavano.",
+   "start_ms": 202540,
+   "end_ms": 205540,
+   "srt_start_ms": 202019,
+   "srt_end_ms": 205540,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 73,
+   "text": "Cazzo! sbottò qualcuno alle sue spalle,",
+   "start_ms": 206630,
+   "end_ms": 209160,
+   "srt_start_ms": 206630,
+   "srt_end_ms": 209260,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 74,
+   "text": "strozzato da un conato di vomito.",
+   "start_ms": 209220,
+   "end_ms": 210940,
+   "srt_start_ms": 209260,
+   "srt_end_ms": 210940,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 75,
+   "text": "Viola si pietrificò.",
+   "start_ms": 212220,
+   "end_ms": 213320,
+   "srt_start_ms": 212220,
+   "srt_end_ms": 213320,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 76,
+   "text": "Il respiro le si incastrò in gola.",
+   "start_ms": 213950,
+   "end_ms": 215740,
+   "srt_start_ms": 213950,
+   "srt_end_ms": 215740,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 77,
+   "text": "Niente principe azzurro.",
+   "start_ms": 216910,
+   "end_ms": 218300,
+   "srt_start_ms": 216910,
+   "srt_end_ms": 218300,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 78,
+   "text": "Niente cavaliere dall'armatura scintillante.",
+   "start_ms": 219500,
+   "end_ms": 221720,
+   "srt_start_ms": 219500,
+   "srt_end_ms": 221720,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 79,
+   "text": "Era lui, Demetrio, maledetto, Vesper.",
+   "start_ms": 223070,
+   "end_ms": 226600,
+   "srt_start_ms": 223070,
+   "srt_end_ms": 226600,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 80,
+   "text": "Era un predatore oscuro,",
+   "start_ms": 228050,
+   "end_ms": 229340,
+   "srt_start_ms": 228050,
+   "srt_end_ms": 229520,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 81,
+   "text": "avvolto da un'aura così densa e minacciosa da togliere il fiato.",
+   "start_ms": 229870,
+   "end_ms": 233440,
+   "srt_start_ms": 229520,
+   "srt_end_ms": 233440,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 82,
+   "text": "Ciao, Giulio, sussurrò Demetrio.",
+   "start_ms": 235120,
+   "end_ms": 237280,
+   "srt_start_ms": 235120,
+   "srt_end_ms": 237280,
+   "words": 4,
+   "same": 3,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 83,
+   "text": "La sua voce trasudava autorità mentre le sue dita stritolavano la carne del licantropo.",
+   "start_ms": 238500,
+   "end_ms": 243830,
+   "srt_start_ms": 238500,
+   "srt_end_ms": 243830,
+   "words": 14,
+   "same": 11,
+   "differently": 3,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 84,
+   "text": "Ti ho appena sentito chiamare la mia Viola... la tua preda?",
+   "start_ms": 244980,
+   "end_ms": 248460,
+   "srt_start_ms": 244980,
+   "srt_end_ms": 248460,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 85,
+   "text": "Nessuno ti ha spiegato che solo io posso darle la caccia?",
+   "start_ms": 249510,
+   "end_ms": 252380,
+   "srt_start_ms": 249510,
+   "srt_end_ms": 252380,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 86,
+   "text": "In un giorno normale,",
+   "start_ms": 253730,
+   "end_ms": 254740,
+   "srt_start_ms": 253730,
+   "srt_end_ms": 254947,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 87,
+   "text": "Viola gli avrebbe riso in faccia e se la sarebbe cavata con una battuta velenosa.",
+   "start_ms": 255340,
+   "end_ms": 259640,
+   "srt_start_ms": 254947,
+   "srt_end_ms": 259640,
+   "words": 15,
+   "same": 15,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 88,
+   "text": "Ma ora il terrore le aveva cucito la bocca.",
+   "start_ms": 260410,
+   "end_ms": 262800,
+   "srt_start_ms": 260410,
+   "srt_end_ms": 262800,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 89,
+   "text": "Poteva solo fissarlo,",
+   "start_ms": 263560,
+   "end_ms": 264660,
+   "srt_start_ms": 263560,
+   "srt_end_ms": 264848,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 90,
+   "text": "paralizzata dalla brutalità di quel dominio assoluto.",
+   "start_ms": 265220,
+   "end_ms": 268100,
+   "srt_start_ms": 264848,
+   "srt_end_ms": 268100,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 91,
+   "text": "M-mi dispiace, Demetrio! piagnucolò Giulio.",
+   "start_ms": 269410,
+   "end_ms": 272780,
+   "srt_start_ms": 269410,
+   "srt_end_ms": 272780,
+   "words": 5,
+   "same": 3,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 92,
+   "text": "Il bullo arrogante era sparito,",
+   "start_ms": 273400,
+   "end_ms": 274880,
+   "srt_start_ms": 273400,
+   "srt_end_ms": 275154,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 93,
+   "text": "al suo posto un cucciolo patetico e tremante.",
+   "start_ms": 275160,
+   "end_ms": 277700,
+   "srt_start_ms": 275154,
+   "srt_end_ms": 277700,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 94,
+   "text": "Demetrio non batté ciglio.",
+   "start_ms": 278810,
+   "end_ms": 280360,
+   "srt_start_ms": 278810,
+   "srt_end_ms": 280360,
+   "words": 4,
+   "same": 2,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 95,
+   "text": "Davvero?",
+   "start_ms": 281380,
+   "end_ms": 281780,
+   "srt_start_ms": 281380,
+   "srt_end_ms": 281780,
+   "words": 1,
+   "same": 1,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 96,
+   "text": "Ti dispiace? sussurrò,",
+   "start_ms": 282310,
+   "end_ms": 283986,
+   "srt_start_ms": 282310,
+   "srt_end_ms": 286720,
+   "words": 3,
+   "same": 2,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 97,
+   "text": "con una voce che avrebbe potuto tagliare il ghiaccio.",
+   "start_ms": 284390,
+   "end_ms": 286720,
+   "srt_start_ms": 283470,
+   "srt_end_ms": 286720,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 98,
+   "text": "Gli torse il braccio ancora più forte.",
+   "start_ms": 287400,
+   "end_ms": 289020,
+   "srt_start_ms": 287400,
+   "srt_end_ms": 289020,
+   "words": 7,
+   "same": 6,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 99,
+   "text": "Sì!",
+   "start_ms": 290240,
+   "end_ms": 290580,
+   "srt_start_ms": 290240,
+   "srt_end_ms": 290580,
+   "words": 1,
+   "same": 1,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 100,
+   "text": "Ti prego!",
+   "start_ms": 290780,
+   "end_ms": 291260,
+   "srt_start_ms": 290780,
+   "srt_end_ms": 291260,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 101,
+   "text": "Fermati! urlò Giulio,",
+   "start_ms": 291560,
+   "end_ms": 293440,
+   "srt_start_ms": 291560,
+   "srt_end_ms": 296480,
+   "words": 3,
+   "same": 2,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 102,
+   "text": "mentre la morsa di Demetrio si stringeva sempre di più..",
+   "start_ms": 293740,
+   "end_ms": 296480,
+   "srt_start_ms": 292680,
+   "srt_end_ms": 296480,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 103,
+   "text": "E ora dimmi,",
+   "start_ms": 297480,
+   "end_ms": 298300,
+   "srt_start_ms": 297480,
+   "srt_end_ms": 299280,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 104,
+   "text": "Giulietto... cosa si fa in questi casi? lo schernì Demetrio,",
+   "start_ms": 298700,
+   "end_ms": 303080,
+   "srt_start_ms": 297480,
+   "srt_end_ms": 303220,
+   "words": 10,
+   "same": 8,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 105,
+   "text": "indicando Viola con un cenno del mento.",
+   "start_ms": 303520,
+   "end_ms": 305600,
+   "srt_start_ms": 303220,
+   "srt_end_ms": 305600,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 106,
+   "text": "Giulio seguì il suo sguardo.",
+   "start_ms": 306830,
+   "end_ms": 308200,
+   "srt_start_ms": 306830,
+   "srt_end_ms": 308200,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 107,
+   "text": "Capì immediatamente.",
+   "start_ms": 308940,
+   "end_ms": 309780,
+   "srt_start_ms": 308940,
+   "srt_end_ms": 309780,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 108,
+   "text": "Abbassò la testa e piegandosi come un cane bastonato balbettò:",
+   "start_ms": 311100,
+   "end_ms": 314940,
+   "srt_start_ms": 311100,
+   "srt_end_ms": 315446,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 109,
+   "text": "Mi dispiace tanto, Signorina Viola.",
+   "start_ms": 315600,
+   "end_ms": 317900,
+   "srt_start_ms": 315446,
+   "srt_end_ms": 317900,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 110,
+   "text": "Di cosa ti dispiace,",
+   "start_ms": 318750,
+   "end_ms": 319840,
+   "srt_start_ms": 318750,
+   "srt_end_ms": 320220,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 111,
+   "text": "cane? lo incalzò Demetrio.",
+   "start_ms": 319840,
+   "end_ms": 321900,
+   "srt_start_ms": 318750,
+   "srt_end_ms": 321900,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 112,
+   "text": "Una risata bassa gli vibrò nel petto.",
+   "start_ms": 322660,
+   "end_ms": 324520,
+   "srt_start_ms": 322660,
+   "srt_end_ms": 324520,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 113,
+   "text": "Si stava godendo ogni secondo.",
+   "start_ms": 325320,
+   "end_ms": 327160,
+   "srt_start_ms": 325320,
+   "srt_end_ms": 327160,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 114,
+   "text": "Di aver cercato di farle del male, Signorina Viola.",
+   "start_ms": 328360,
+   "end_ms": 331100,
+   "srt_start_ms": 328360,
+   "srt_end_ms": 331100,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 115,
+   "text": "Non succederà mai più! implorò Giulio.",
+   "start_ms": 331750,
+   "end_ms": 334360,
+   "srt_start_ms": 331750,
+   "srt_end_ms": 334360,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 116,
+   "text": "Il terrore gli aveva reso la voce stridula e acuta.",
+   "start_ms": 335070,
+   "end_ms": 337960,
+   "srt_start_ms": 335070,
+   "srt_end_ms": 337960,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 117,
+   "text": "Sapeva che Demetrio lo avrebbe ucciso senza pensarci due volte.",
+   "start_ms": 338640,
+   "end_ms": 341840,
+   "srt_start_ms": 338640,
+   "srt_end_ms": 341840,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 118,
+   "text": "Molto bene. disse Demetrio.",
+   "start_ms": 343000,
+   "end_ms": 345000,
+   "srt_start_ms": 343000,
+   "srt_end_ms": 345000,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 119,
+   "text": "Poi aprì la mano.",
+   "start_ms": 345690,
+   "end_ms": 346660,
+   "srt_start_ms": 345690,
+   "srt_end_ms": 346660,
+   "words": 4,
+   "same": 3,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 120,
+   "text": "Giulio crollò a terra,",
+   "start_ms": 347480,
+   "end_ms": 348700,
+   "srt_start_ms": 347480,
+   "srt_end_ms": 348787,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 121,
+   "text": "annaspando come un annegato in cerca d'aria.",
+   "start_ms": 349200,
+   "end_ms": 351400,
+   "srt_start_ms": 348787,
+   "srt_end_ms": 351400,
+   "words": 7,
+   "same": 5,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 122,
+   "text": "Era bastato un movimento e Demetrio gli aveva frantumato le ossa e strappato la spalla dalla sede.",
+   "start_ms": 351400,
+   "end_ms": 358060,
+   "srt_start_ms": 351400,
+   "srt_end_ms": 358060,
+   "words": 17,
+   "same": 15,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 123,
+   "text": "Il dolore doveva essere lancinante.",
+   "start_ms": 358800,
+   "end_ms": 360780,
+   "srt_start_ms": 358800,
+   "srt_end_ms": 360200,
+   "words": 5,
+   "same": 4,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 124,
+   "text": "Ma a Demetrio non fregava assolutamente nulla.",
+   "start_ms": 361820,
+   "end_ms": 364320,
+   "srt_start_ms": 361820,
+   "srt_end_ms": 364320,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 125,
+   "text": "Ora sparisci, cagnolino.",
+   "start_ms": 365420,
+   "end_ms": 366640,
+   "srt_start_ms": 365420,
+   "srt_end_ms": 366640,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 126,
+   "text": "Vai a piangere dall'infermiera e falle curare quel braccio.",
+   "start_ms": 367240,
+   "end_ms": 369980,
+   "srt_start_ms": 367240,
+   "srt_end_ms": 369980,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 127,
+   "text": "Lo liquidò con un gesto annoiato della mano.",
+   "start_ms": 370970,
+   "end_ms": 373120,
+   "srt_start_ms": 370970,
+   "srt_end_ms": 373120,
+   "words": 8,
+   "same": 7,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 128,
+   "text": "Giulio si trascinò via,",
+   "start_ms": 374120,
+   "end_ms": 375260,
+   "srt_start_ms": 374120,
+   "srt_end_ms": 375453,
+   "words": 4,
+   "same": 3,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 129,
+   "text": "a testa bassa,",
+   "start_ms": 375620,
+   "end_ms": 376480,
+   "srt_start_ms": 375453,
+   "srt_end_ms": 376264,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 130,
+   "text": "mentre la folla si apriva in fretta per non essere sfiorata.",
+   "start_ms": 376940,
+   "end_ms": 379740,
+   "srt_start_ms": 376264,
+   "srt_end_ms": 379740,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 131,
+   "text": "Sparito Giulio, l'attenzione di Demetrio si spostò su Viola.",
+   "start_ms": 380910,
+   "end_ms": 384500,
+   "srt_start_ms": 380910,
+   "srt_end_ms": 384500,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 132,
+   "text": "Il suo viso era una maschera indecifrabile.",
+   "start_ms": 385220,
+   "end_ms": 387360,
+   "srt_start_ms": 385220,
+   "srt_end_ms": 387360,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 133,
+   "text": "Affrontare Giulio era stato uno scherzo.",
+   "start_ms": 388460,
+   "end_ms": 390480,
+   "srt_start_ms": 388460,
+   "srt_end_ms": 390480,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 134,
+   "text": "Ma quel sorriso predatorio che si era aperto sulle labbra di Demetrio... la fece rabbrividire.",
+   "start_ms": 391180,
+   "end_ms": 396300,
+   "srt_start_ms": 391180,
+   "srt_end_ms": 396300,
+   "words": 15,
+   "same": 13,
+   "differently": 2,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 135,
+   "text": "Non mi lascerò neanche sfiorare Viola scattò per scappare.",
+   "start_ms": 397540,
+   "end_ms": 401540,
+   "srt_start_ms": 397540,
+   "srt_end_ms": 401540,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 136,
+   "text": "Ma Demetrio, veloce come un lampo,",
+   "start_ms": 402180,
+   "end_ms": 404220,
+   "srt_start_ms": 402180,
+   "srt_end_ms": 404405,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 137,
+   "text": "le afferrò la vita,",
+   "start_ms": 404620,
+   "end_ms": 405420,
+   "srt_start_ms": 404405,
+   "srt_end_ms": 405648,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 138,
+   "text": "inchiodandola a sé,",
+   "start_ms": 405420,
+   "end_ms": 406540,
+   "srt_start_ms": 405648,
+   "srt_end_ms": 406891,
+   "words": 3,
+   "same": 1,
+   "differently": 1,
+   "not_heard": 1,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 139,
+   "text": "come se avesse letto in anticipo ogni sua intenzione.",
+   "start_ms": 407330,
+   "end_ms": 410360,
+   "srt_start_ms": 406891,
+   "srt_end_ms": 410360,
+   "words": 9,
+   "same": 8,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 140,
+   "text": "Mettimi giù, stronzo! urlò lei.",
+   "start_ms": 411580,
+   "end_ms": 414300,
+   "srt_start_ms": 411580,
+   "srt_end_ms": 414300,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 141,
+   "text": "Si dimenò con tutta la forza che aveva,",
+   "start_ms": 415190,
+   "end_ms": 417240,
+   "srt_start_ms": 415190,
+   "srt_end_ms": 417432,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 142,
+   "text": "ma lui se la caricò in spalla senza il minimo sforzo.",
+   "start_ms": 417690,
+   "end_ms": 420480,
+   "srt_start_ms": 417432,
+   "srt_end_ms": 420480,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 143,
+   "text": "Per lui, Viola pesava quanto una piuma.",
+   "start_ms": 421250,
+   "end_ms": 423520,
+   "srt_start_ms": 421250,
+   "srt_end_ms": 423520,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 144,
+   "text": "È così che ringrazi il tuo eroe,",
+   "start_ms": 424570,
+   "end_ms": 426220,
+   "srt_start_ms": 424570,
+   "srt_end_ms": 426277,
+   "words": 7,
+   "same": 6,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 145,
+   "text": "mio fiore di Violetta? rise lui.",
+   "start_ms": 426560,
+   "end_ms": 428760,
+   "srt_start_ms": 426277,
+   "srt_end_ms": 428760,
+   "words": 6,
+   "same": 5,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 146,
+   "text": "E iniziò a camminare,",
+   "start_ms": 429490,
+   "end_ms": 430640,
+   "srt_start_ms": 429490,
+   "srt_end_ms": 430734,
+   "words": 4,
+   "same": 3,
+   "differently": 1,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 147,
+   "text": "ignorando del tutto i pugni disperati che lei gli dava sulla schiena.",
+   "start_ms": 431080,
+   "end_ms": 434820,
+   "srt_start_ms": 430734,
+   "srt_end_ms": 434820,
+   "words": 12,
+   "same": 12,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 148,
+   "text": "Dove la stava portando?",
+   "start_ms": 435600,
+   "end_ms": 436660,
+   "srt_start_ms": 435600,
+   "srt_end_ms": 436660,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 149,
+   "text": "E, soprattutto, che cosa aveva intenzione di farle?",
+   "start_ms": 436660,
+   "end_ms": 439680,
+   "srt_start_ms": 436660,
+   "srt_end_ms": 439680,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  }
+ ],
+ "words": [
+  {
+   "sent": 0,
+   "word": "Erano",
+   "start": 0.4,
+   "end": 0.66,
+   "heard_as": "Erano",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "a",
+   "start": 0.66,
+   "end": 0.82,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "un",
+   "start": 0.82,
+   "end": 0.85,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "passo",
+   "start": 0.88,
+   "end": 1.04,
+   "heard_as": "passo",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "dal",
+   "start": 1.04,
+   "end": 1.28,
+   "heard_as": "dal",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "campo",
+   "start": 1.28,
+   "end": 1.54,
+   "heard_as": "campo",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "di",
+   "start": 1.54,
+   "end": 1.7,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "atletica.",
+   "start": 1.7,
+   "end": 2.24,
+   "heard_as": "atletica.",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "L'allenamento",
+   "start": 2.72,
+   "end": 3.24,
+   "heard_as": "L 'allenamento",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "stava",
+   "start": 3.24,
+   "end": 3.56,
+   "heard_as": "stava",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "per",
+   "start": 3.56,
+   "end": 3.78,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "iniziare,",
+   "start": 3.78,
+   "end": 4.34,
+   "heard_as": "iniziare,",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "ma",
+   "start": 4.62,
+   "end": 4.7,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "una",
+   "start": 4.7,
+   "end": 4.84,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "voce",
+   "start": 4.84,
+   "end": 5.1,
+   "heard_as": "voce",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "stridula",
+   "start": 5.1,
+   "end": 5.68,
+   "heard_as": "stridula",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "bloccò",
+   "start": 5.68,
+   "end": 6.03,
+   "heard_as": "blocco",
+   "status": "written differently"
+  },
+  {
+   "sent": 2,
+   "word": "Viola",
+   "start": 6.1,
+   "end": 6.48,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "e",
+   "start": 6.48,
+   "end": 6.64,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "Alice",
+   "start": 6.64,
+   "end": 6.78,
+   "heard_as": "Alice",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "sul",
+   "start": 6.78,
+   "end": 7.12,
+   "heard_as": "sul",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "posto.",
+   "start": 7.17,
+   "end": 7.62,
+   "heard_as": "posto.",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "Scommetto",
+   "start": 8.4,
+   "end": 8.84,
+   "heard_as": "Scommetto",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "che",
+   "start": 8.84,
+   "end": 9.02,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "l'allenamento",
+   "start": 9.02,
+   "end": 9.6,
+   "heard_as": "l 'allenamento",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "sarà",
+   "start": 9.6,
+   "end": 9.86,
+   "heard_as": "sarà",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "un",
+   "start": 9.86,
+   "end": 10.02,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "massacro.",
+   "start": 10.02,
+   "end": 10.64,
+   "heard_as": "massacro,",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "Non",
+   "start": 10.92,
+   "end": 11.02,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "vedo",
+   "start": 11.02,
+   "end": 11.3,
+   "heard_as": "vedo",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "l'ora",
+   "start": 11.3,
+   "end": 11.48,
+   "heard_as": "l 'ora",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "di",
+   "start": 11.48,
+   "end": 11.64,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "guardare",
+   "start": 11.64,
+   "end": 12.02,
+   "heard_as": "guardare",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "questi",
+   "start": 12.02,
+   "end": 12.27,
+   "heard_as": "questi",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "umani",
+   "start": 12.31,
+   "end": 12.62,
+   "heard_as": "umani",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "crollare.",
+   "start": 12.62,
+   "end": 13.2,
+   "heard_as": "crollare,",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "Sono",
+   "start": 13.51,
+   "end": 13.74,
+   "heard_as": "sono",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "così",
+   "start": 13.74,
+   "end": 14.06,
+   "heard_as": "così",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "gracilini.",
+   "start": 14.06,
+   "end": 14.84,
+   "heard_as": "gracilini.",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "Viola",
+   "start": 15.77,
+   "end": 16.04,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "si",
+   "start": 16.04,
+   "end": 16.22,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "girò",
+   "start": 16.22,
+   "end": 16.48,
+   "heard_as": "girò",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "di",
+   "start": 16.48,
+   "end": 16.6,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "scatto",
+   "start": 16.6,
+   "end": 16.96,
+   "heard_as": "scatto",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "verso",
+   "start": 16.96,
+   "end": 17.2,
+   "heard_as": "verso",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "lo",
+   "start": 17.2,
+   "end": 17.44,
+   "heard_as": "lo",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "stronzo",
+   "start": 17.44,
+   "end": 17.88,
+   "heard_as": "stronzo",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "che",
+   "start": 17.88,
+   "end": 18.02,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "aveva",
+   "start": 18.02,
+   "end": 18.28,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "parlato.",
+   "start": 18.28,
+   "end": 18.8,
+   "heard_as": "parlato.",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "Non",
+   "start": 19.45,
+   "end": 19.6,
+   "heard_as": "Non",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "le",
+   "start": 19.6,
+   "end": 19.72,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "serviva",
+   "start": 19.72,
+   "end": 20.12,
+   "heard_as": "serviva",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "Alice,",
+   "start": 20.12,
+   "end": 20.46,
+   "heard_as": "Alice,",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "la",
+   "start": 20.9,
+   "end": 21.0,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "sua",
+   "start": 21.0,
+   "end": 21.16,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "enciclopedia",
+   "start": 21.16,
+   "end": 21.68,
+   "heard_as": "enciclopedia",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "vivente,",
+   "start": 21.68,
+   "end": 22.36,
+   "heard_as": "vivente,",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "per",
+   "start": 22.72,
+   "end": 22.84,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "capire",
+   "start": 22.84,
+   "end": 23.18,
+   "heard_as": "capire",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "che",
+   "start": 23.18,
+   "end": 23.32,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "si",
+   "start": 23.32,
+   "end": 23.46,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "trattava",
+   "start": 23.46,
+   "end": 23.88,
+   "heard_as": "trattava",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "di",
+   "start": 23.88,
+   "end": 24.02,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "un",
+   "start": 24.02,
+   "end": 24.12,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "licantropo.",
+   "start": 24.12,
+   "end": 24.82,
+   "heard_as": "licantropo.",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "Solo",
+   "start": 25.71,
+   "end": 25.96,
+   "heard_as": "Solo",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "quegli",
+   "start": 25.96,
+   "end": 26.26,
+   "heard_as": "quegli",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "arroganti",
+   "start": 26.26,
+   "end": 26.84,
+   "heard_as": "arroganti",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "si",
+   "start": 26.84,
+   "end": 27.02,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "divertivano",
+   "start": 27.02,
+   "end": 27.64,
+   "heard_as": "divertivano",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "a",
+   "start": 27.64,
+   "end": 27.76,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "umiliare",
+   "start": 27.76,
+   "end": 28.16,
+   "heard_as": "umiliare",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "gli",
+   "start": 28.16,
+   "end": 28.34,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "umani.",
+   "start": 28.34,
+   "end": 28.7,
+   "heard_as": "umani.",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "Forse",
+   "start": 29.51,
+   "end": 29.82,
+   "heard_as": "Forse",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "era",
+   "start": 29.82,
+   "end": 29.94,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "prevenuta",
+   "start": 29.94,
+   "end": 30.4,
+   "heard_as": "prevenuta",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "lei.",
+   "start": 30.4,
+   "end": 30.7,
+   "heard_as": "lei,",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "O",
+   "start": 31.39,
+   "end": 31.5,
+   "heard_as": "o",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "forse",
+   "start": 31.5,
+   "end": 31.84,
+   "heard_as": "forse",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "l'idea",
+   "start": 31.84,
+   "end": 32.22,
+   "heard_as": "l 'idea",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "che",
+   "start": 32.22,
+   "end": 32.38,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "umani",
+   "start": 32.38,
+   "end": 32.74,
+   "heard_as": "umani",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "e",
+   "start": 32.74,
+   "end": 32.86,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "licantropi",
+   "start": 32.86,
+   "end": 33.52,
+   "heard_as": "licantropi",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "potessero",
+   "start": 33.52,
+   "end": 34.02,
+   "heard_as": "potessero",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "convivere",
+   "start": 34.02,
+   "end": 34.58,
+   "heard_as": "convivere",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "pacificamente",
+   "start": 34.58,
+   "end": 35.32,
+   "heard_as": "pacificamente",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "in",
+   "start": 35.32,
+   "end": 35.52,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "quella",
+   "start": 35.52,
+   "end": 35.68,
+   "heard_as": "quella",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "scuola",
+   "start": 35.68,
+   "end": 36.16,
+   "heard_as": "scuola",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "era",
+   "start": 36.16,
+   "end": 36.48,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "solo",
+   "start": 36.74,
+   "end": 37.04,
+   "heard_as": "solo",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "una",
+   "start": 37.04,
+   "end": 37.24,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "gigantesca",
+   "start": 37.24,
+   "end": 37.88,
+   "heard_as": "gigantesca",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "utopia.",
+   "start": 37.88,
+   "end": 38.4,
+   "heard_as": "utopia.",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "Era",
+   "start": 40.31,
+   "end": 40.44,
+   "heard_as": "Era",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "solo",
+   "start": 40.44,
+   "end": 40.72,
+   "heard_as": "solo",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "questione",
+   "start": 40.72,
+   "end": 41.24,
+   "heard_as": "questione",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "di",
+   "start": 41.24,
+   "end": 41.32,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "tempo",
+   "start": 41.32,
+   "end": 41.72,
+   "heard_as": "tempo",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "e",
+   "start": 41.72,
+   "end": 41.88,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "quella",
+   "start": 42.16,
+   "end": 42.38,
+   "heard_as": "quella",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "bomba",
+   "start": 42.38,
+   "end": 42.74,
+   "heard_as": "bomba",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "a",
+   "start": 42.74,
+   "end": 42.86,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "orologeria",
+   "start": 42.86,
+   "end": 43.42,
+   "heard_as": "orologeria",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "sarebbe",
+   "start": 43.42,
+   "end": 43.98,
+   "heard_as": "sarebbe",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "scoppiata.",
+   "start": 43.98,
+   "end": 44.6,
+   "heard_as": "scoppiata.",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "Il",
+   "start": 45.41,
+   "end": 45.56,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "licantropo",
+   "start": 45.56,
+   "end": 46.16,
+   "heard_as": "licantropo",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "dovette",
+   "start": 46.16,
+   "end": 46.46,
+   "heard_as": "dovette",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "sentire",
+   "start": 46.46,
+   "end": 46.9,
+   "heard_as": "sentire",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "la",
+   "start": 46.9,
+   "end": 47.06,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "sua",
+   "start": 47.06,
+   "end": 47.22,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "occhiataccia",
+   "start": 47.22,
+   "end": 47.76,
+   "heard_as": "oppiataccia",
+   "status": "written differently"
+  },
+  {
+   "sent": 14,
+   "word": "bruciargli",
+   "start": 47.76,
+   "end": 48.32,
+   "heard_as": "bruciarli",
+   "status": "written differently"
+  },
+  {
+   "sent": 14,
+   "word": "addosso.",
+   "start": 48.32,
+   "end": 48.92,
+   "heard_as": "addosso.",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "Si",
+   "start": 49.43,
+   "end": 49.58,
+   "heard_as": "Si",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "girò",
+   "start": 49.58,
+   "end": 49.98,
+   "heard_as": "girò",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "e",
+   "start": 50.16,
+   "end": 50.26,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "la",
+   "start": 50.26,
+   "end": 50.36,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "fissò.",
+   "start": 50.36,
+   "end": 50.8,
+   "heard_as": "fissò.",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "Un",
+   "start": 51.98,
+   "end": 52.12,
+   "heard_as": "Un",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "attimo",
+   "start": 52.12,
+   "end": 52.44,
+   "heard_as": "attimo",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "di",
+   "start": 52.44,
+   "end": 52.56,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "sorpresa,",
+   "start": 52.56,
+   "end": 53.12,
+   "heard_as": "sorpresa,",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "poi",
+   "start": 53.57,
+   "end": 53.68,
+   "heard_as": "poi",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "gli",
+   "start": 53.68,
+   "end": 53.88,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "occhi",
+   "start": 53.88,
+   "end": 54.12,
+   "heard_as": "occhi",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "si",
+   "start": 54.12,
+   "end": 54.26,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "assottigliarono",
+   "start": 54.26,
+   "end": 55.24,
+   "heard_as": "assottigliarono",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "e",
+   "start": 55.47,
+   "end": 55.54,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "dalla",
+   "start": 55.54,
+   "end": 55.68,
+   "heard_as": "dalla",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "sua",
+   "start": 55.68,
+   "end": 55.94,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "gola",
+   "start": 55.94,
+   "end": 56.26,
+   "heard_as": "gola",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "salì",
+   "start": 56.26,
+   "end": 56.68,
+   "heard_as": "salì",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "un",
+   "start": 56.68,
+   "end": 56.8,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "ringhio.",
+   "start": 56.8,
+   "end": 57.3,
+   "heard_as": "ringhio.",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "Che",
+   "start": 58.3,
+   "end": 58.4,
+   "heard_as": "Che",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "hai",
+   "start": 58.4,
+   "end": 58.6,
+   "heard_as": "hai",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "da",
+   "start": 58.6,
+   "end": 58.72,
+   "heard_as": "da",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "guardare,",
+   "start": 58.72,
+   "end": 59.24,
+   "heard_as": "guardare,",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "umana?",
+   "start": 59.26,
+   "end": 59.62,
+   "heard_as": "umana?",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "Viola",
+   "start": 60.71,
+   "end": 61.02,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "sorrise",
+   "start": 61.02,
+   "end": 61.54,
+   "heard_as": "sorrise",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "beffarda.",
+   "start": 61.54,
+   "end": 62.12,
+   "heard_as": "beffarda.",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "Voleva",
+   "start": 62.84,
+   "end": 63.14,
+   "heard_as": "Voleva",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "giocare",
+   "start": 63.14,
+   "end": 63.48,
+   "heard_as": "giocare",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "a",
+   "start": 63.48,
+   "end": 63.64,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "fare",
+   "start": 63.64,
+   "end": 63.76,
+   "heard_as": "fare",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "il",
+   "start": 63.76,
+   "end": 63.9,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "duro?",
+   "start": 63.9,
+   "end": 64.18,
+   "heard_as": "duro?",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "Sfortuna",
+   "start": 65.14,
+   "end": 65.62,
+   "heard_as": "Sfortuna",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "per",
+   "start": 65.62,
+   "end": 65.78,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "lui,",
+   "start": 65.78,
+   "end": 66.02,
+   "heard_as": "lui,",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "Viola",
+   "start": 66.44,
+   "end": 66.72,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "aveva",
+   "start": 66.72,
+   "end": 67.02,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "una",
+   "start": 67.02,
+   "end": 67.2,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "lingua",
+   "start": 67.2,
+   "end": 67.48,
+   "heard_as": "lingua",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "tagliente.",
+   "start": 67.48,
+   "end": 68.06,
+   "heard_as": "tagliente.",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "Un",
+   "start": 68.67,
+   "end": 68.8,
+   "heard_as": "Un",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "difetto",
+   "start": 68.8,
+   "end": 69.12,
+   "heard_as": "difetto",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "che",
+   "start": 69.17,
+   "end": 69.34,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "non",
+   "start": 69.34,
+   "end": 69.48,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "la",
+   "start": 69.48,
+   "end": 69.677,
+   "heard_as": "l 'aiutava,",
+   "status": "written differently"
+  },
+  {
+   "sent": 23,
+   "word": "aiutava,",
+   "start": 69.677,
+   "end": 70.02,
+   "heard_as": "'aiutava,",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "anzi.",
+   "start": 70.32,
+   "end": 70.56,
+   "heard_as": "anzi.",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "Finiva",
+   "start": 71.08,
+   "end": 71.34,
+   "heard_as": "Finiva",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "per",
+   "start": 71.34,
+   "end": 71.54,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "cacciarla",
+   "start": 71.54,
+   "end": 71.96,
+   "heard_as": "cacciarla",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "sempre",
+   "start": 71.96,
+   "end": 72.36,
+   "heard_as": "sempre",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "nei",
+   "start": 72.36,
+   "end": 72.6,
+   "heard_as": "nei",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "guai.",
+   "start": 72.6,
+   "end": 72.96,
+   "heard_as": "guai.",
+   "status": "same"
+  },
+  {
+   "sent": 25,
+   "word": "Si",
+   "start": 73.95,
+   "end": 74.055,
+   "heard_as": "Sì,",
+   "status": "written differently"
+  },
+  {
+   "sent": 25,
+   "word": "inumidì",
+   "start": 74.28,
+   "end": 74.493,
+   "heard_as": "inumidile",
+   "status": "written differently"
+  },
+  {
+   "sent": 25,
+   "word": "le",
+   "start": 74.529,
+   "end": 74.6,
+   "heard_as": "inumidile",
+   "status": "written differently"
+  },
+  {
+   "sent": 25,
+   "word": "labbra.",
+   "start": 74.6,
+   "end": 75.06,
+   "heard_as": "labbra.",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "Il",
+   "start": 75.54,
+   "end": 75.68,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "sangue",
+   "start": 75.68,
+   "end": 76.04,
+   "heard_as": "sangue",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "le",
+   "start": 76.04,
+   "end": 76.14,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "pulsava",
+   "start": 76.14,
+   "end": 76.56,
+   "heard_as": "pulsava",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "nelle",
+   "start": 76.56,
+   "end": 76.78,
+   "heard_as": "nelle",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "orecchie.",
+   "start": 76.78,
+   "end": 77.34,
+   "heard_as": "orecchie.",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "Alice,",
+   "start": 77.93,
+   "end": 78.34,
+   "heard_as": "Alice,",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "che",
+   "start": 78.62,
+   "end": 78.64,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "aveva",
+   "start": 78.64,
+   "end": 78.9,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "capito",
+   "start": 78.9,
+   "end": 79.26,
+   "heard_as": "capito",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "cosa",
+   "start": 79.26,
+   "end": 79.46,
+   "heard_as": "cosa",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "stava",
+   "start": 79.46,
+   "end": 79.78,
+   "heard_as": "stava",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "per",
+   "start": 79.78,
+   "end": 80.0,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "fare,",
+   "start": 80.0,
+   "end": 80.28,
+   "heard_as": "fare,",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "sgranò",
+   "start": 80.72,
+   "end": 80.97,
+   "heard_as": "sgrano",
+   "status": "written differently"
+  },
+  {
+   "sent": 28,
+   "word": "gli",
+   "start": 81.08,
+   "end": 81.26,
+   "heard_as": "agli",
+   "status": "written differently"
+  },
+  {
+   "sent": 28,
+   "word": "occhi",
+   "start": 81.26,
+   "end": 81.64,
+   "heard_as": "occhi",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "e",
+   "start": 81.64,
+   "end": 81.88,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "scosse",
+   "start": 81.88,
+   "end": 82.18,
+   "heard_as": "scosse",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "la",
+   "start": 82.18,
+   "end": 82.36,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "testa",
+   "start": 82.36,
+   "end": 82.84,
+   "heard_as": "testa,",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "pregandola",
+   "start": 83.17,
+   "end": 83.7,
+   "heard_as": "pregando la",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "silenziosamente",
+   "start": 83.7,
+   "end": 84.44,
+   "heard_as": "silenziosamente",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "di",
+   "start": 84.44,
+   "end": 84.7,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "lasciar",
+   "start": 84.7,
+   "end": 85.02,
+   "heard_as": "lasciar",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "perdere.",
+   "start": 85.02,
+   "end": 85.54,
+   "heard_as": "perdere.",
+   "status": "same"
+  },
+  {
+   "sent": 29,
+   "word": "Troppo",
+   "start": 86.84,
+   "end": 87.08,
+   "heard_as": "Troppo",
+   "status": "same"
+  },
+  {
+   "sent": 29,
+   "word": "tardi.",
+   "start": 87.08,
+   "end": 87.58,
+   "heard_as": "tardi.",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "Lo",
+   "start": 88.85,
+   "end": 89.0,
+   "heard_as": "Lo",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "so",
+   "start": 89.0,
+   "end": 89.22,
+   "heard_as": "so",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "che",
+   "start": 89.22,
+   "end": 89.4,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "muori",
+   "start": 89.4,
+   "end": 89.7,
+   "heard_as": "muori",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "dalla",
+   "start": 89.7,
+   "end": 89.86,
+   "heard_as": "dalla",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "voglia",
+   "start": 89.86,
+   "end": 90.2,
+   "heard_as": "voglia",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "di",
+   "start": 90.2,
+   "end": 90.34,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "avere",
+   "start": 90.34,
+   "end": 90.52,
+   "heard_as": "avere",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "la",
+   "start": 90.52,
+   "end": 90.7,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "mia",
+   "start": 90.7,
+   "end": 90.82,
+   "heard_as": "mia",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "attenzione,",
+   "start": 90.82,
+   "end": 91.42,
+   "heard_as": "attenzione,",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "cagnolino...",
+   "start": 91.5,
+   "end": 92.08,
+   "heard_as": "Cagnolino.",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "lo",
+   "start": 92.85,
+   "end": 92.96,
+   "heard_as": "Lo",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "provocò",
+   "start": 92.96,
+   "end": 93.38,
+   "heard_as": "provocò",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "Viola.",
+   "start": 93.38,
+   "end": 93.76,
+   "heard_as": "Viola.",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "Alice",
+   "start": 94.91,
+   "end": 95.2,
+   "heard_as": "Alice",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "sussultò.",
+   "start": 95.2,
+   "end": 95.84,
+   "heard_as": "sussultò.",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "Nel",
+   "start": 96.84,
+   "end": 97.06,
+   "heard_as": "Nel",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "raggio",
+   "start": 97.06,
+   "end": 97.34,
+   "heard_as": "raggio",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "di",
+   "start": 97.34,
+   "end": 97.44,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "dieci",
+   "start": 97.44,
+   "end": 97.72,
+   "heard_as": "dieci",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "metri,",
+   "start": 97.72,
+   "end": 98.16,
+   "heard_as": "metri,",
+   "status": "same"
+  },
+  {
+   "sent": 34,
+   "word": "tutti",
+   "start": 98.5,
+   "end": 98.62,
+   "heard_as": "tutti",
+   "status": "same"
+  },
+  {
+   "sent": 34,
+   "word": "si",
+   "start": 98.69,
+   "end": 98.9,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 34,
+   "word": "congelarono.",
+   "start": 98.9,
+   "end": 99.7,
+   "heard_as": "congelarono.",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "Sembrava",
+   "start": 100.05,
+   "end": 100.48,
+   "heard_as": "Sembrava",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "che",
+   "start": 100.48,
+   "end": 100.62,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "Viola",
+   "start": 100.62,
+   "end": 100.9,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "avesse",
+   "start": 100.9,
+   "end": 101.2,
+   "heard_as": "avessi",
+   "status": "written differently"
+  },
+  {
+   "sent": 35,
+   "word": "appena",
+   "start": 101.45,
+   "end": 101.6,
+   "heard_as": "appena",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "firmato",
+   "start": 101.6,
+   "end": 102.12,
+   "heard_as": "firmato",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "la",
+   "start": 102.12,
+   "end": 102.24,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "sua",
+   "start": 102.24,
+   "end": 102.38,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "condanna",
+   "start": 102.38,
+   "end": 102.76,
+   "heard_as": "condanna",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "a",
+   "start": 102.76,
+   "end": 102.98,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "morte.",
+   "start": 102.98,
+   "end": 103.24,
+   "heard_as": "morte.",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "Il",
+   "start": 104.3,
+   "end": 104.46,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "silenzio",
+   "start": 104.46,
+   "end": 104.96,
+   "heard_as": "silenzio",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "si",
+   "start": 104.96,
+   "end": 105.1,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "ruppe",
+   "start": 105.1,
+   "end": 105.4,
+   "heard_as": "ruppe",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "in",
+   "start": 105.4,
+   "end": 105.54,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "un",
+   "start": 105.54,
+   "end": 105.66,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "mormorio",
+   "start": 105.66,
+   "end": 106.1,
+   "heard_as": "murmorio",
+   "status": "written differently"
+  },
+  {
+   "sent": 36,
+   "word": "strisciante.",
+   "start": 106.1,
+   "end": 106.96,
+   "heard_as": "strisciante.",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "Viola",
+   "start": 107.48,
+   "end": 107.74,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "captò",
+   "start": 107.74,
+   "end": 108.18,
+   "heard_as": "captò",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "solo",
+   "start": 108.18,
+   "end": 108.46,
+   "heard_as": "solo",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "dei",
+   "start": 108.46,
+   "end": 108.66,
+   "heard_as": "dei",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "frammenti:",
+   "start": 108.66,
+   "end": 109.0,
+   "heard_as": "frammenti.",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "È",
+   "start": 109.93,
+   "end": 110.06,
+   "heard_as": "È",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "finita.",
+   "start": 110.06,
+   "end": 110.54,
+   "heard_as": "finita.",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "Giulio",
+   "start": 111.33,
+   "end": 111.66,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "la",
+   "start": 111.66,
+   "end": 111.78,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "farà",
+   "start": 111.78,
+   "end": 112.0,
+   "heard_as": "farà",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "a",
+   "start": 112.0,
+   "end": 112.06,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "pezzi.",
+   "start": 112.12,
+   "end": 112.6,
+   "heard_as": "pezzi.",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "Nonostante",
+   "start": 113.5,
+   "end": 113.92,
+   "heard_as": "Nonostante",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "quelle",
+   "start": 113.92,
+   "end": 114.16,
+   "heard_as": "quelle",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "minacce,",
+   "start": 114.16,
+   "end": 114.78,
+   "heard_as": "minacce,",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "si",
+   "start": 115.14,
+   "end": 115.22,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "sentì",
+   "start": 115.22,
+   "end": 115.58,
+   "heard_as": "sentì",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "invasa",
+   "start": 115.58,
+   "end": 116.02,
+   "heard_as": "in vasa",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "da",
+   "start": 116.02,
+   "end": 116.14,
+   "heard_as": "da",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "una",
+   "start": 116.14,
+   "end": 116.3,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "strana",
+   "start": 116.3,
+   "end": 116.7,
+   "heard_as": "strana",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "calma.",
+   "start": 116.7,
+   "end": 117.24,
+   "heard_as": "calma.",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "Non",
+   "start": 117.83,
+   "end": 117.94,
+   "heard_as": "Non",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "avrebbe",
+   "start": 117.94,
+   "end": 118.3,
+   "heard_as": "avrebbe",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "mai",
+   "start": 118.3,
+   "end": 118.6,
+   "heard_as": "mai",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "abbassato",
+   "start": 118.6,
+   "end": 119.18,
+   "heard_as": "abbassato",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "la",
+   "start": 119.18,
+   "end": 119.32,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "testa",
+   "start": 119.32,
+   "end": 119.74,
+   "heard_as": "testa",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "davanti",
+   "start": 119.74,
+   "end": 120.08,
+   "heard_as": "davanti",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "a",
+   "start": 120.08,
+   "end": 120.16,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "un",
+   "start": 120.16,
+   "end": 120.26,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "bullo.",
+   "start": 120.26,
+   "end": 120.6,
+   "heard_as": "bullo.",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "Come",
+   "start": 121.66,
+   "end": 121.84,
+   "heard_as": "Come",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "mi",
+   "start": 121.84,
+   "end": 122.04,
+   "heard_as": "mi",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "hai",
+   "start": 122.04,
+   "end": 122.12,
+   "heard_as": "hai",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "chiamato?",
+   "start": 122.12,
+   "end": 122.62,
+   "heard_as": "chiamato?",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "ringhiò",
+   "start": 123.18,
+   "end": 123.513,
+   "heard_as": "rindio",
+   "status": "written differently"
+  },
+  {
+   "sent": 42,
+   "word": "Giulio.",
+   "start": 123.7,
+   "end": 124.02,
+   "heard_as": "Giulio.",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "Le",
+   "start": 124.76,
+   "end": 124.86,
+   "heard_as": "Le",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "sue",
+   "start": 124.86,
+   "end": 125.0,
+   "heard_as": "sue",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "narici",
+   "start": 125.0,
+   "end": 125.36,
+   "heard_as": "narici",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "si",
+   "start": 125.36,
+   "end": 125.56,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "dilatarono.",
+   "start": 125.56,
+   "end": 126.28,
+   "heard_as": "dilatarono.",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "Il",
+   "start": 126.98,
+   "end": 127.12,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "lupo",
+   "start": 127.12,
+   "end": 127.36,
+   "heard_as": "lupo",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "dentro",
+   "start": 127.36,
+   "end": 127.56,
+   "heard_as": "dentro",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "di",
+   "start": 127.56,
+   "end": 127.78,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "lui",
+   "start": 127.78,
+   "end": 127.94,
+   "heard_as": "lui",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "spingeva",
+   "start": 127.94,
+   "end": 128.54,
+   "heard_as": "spingeva",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "per",
+   "start": 128.54,
+   "end": 128.7,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "uscire",
+   "start": 128.7,
+   "end": 129.18,
+   "heard_as": "uscire",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "e",
+   "start": 129.18,
+   "end": 129.52,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "non",
+   "start": 129.52,
+   "end": 129.64,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "prometteva",
+   "start": 129.64,
+   "end": 130.2,
+   "heard_as": "prometteva",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "nulla",
+   "start": 130.2,
+   "end": 130.66,
+   "heard_as": "nulla",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "di",
+   "start": 130.66,
+   "end": 130.76,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "buono.",
+   "start": 130.76,
+   "end": 131.16,
+   "heard_as": "buono.",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "Hai",
+   "start": 132.36,
+   "end": 132.46,
+   "heard_as": "Hai",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "capito",
+   "start": 132.46,
+   "end": 132.76,
+   "heard_as": "capito",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "bene",
+   "start": 132.76,
+   "end": 133.04,
+   "heard_as": "bene?",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "rispose",
+   "start": 133.7,
+   "end": 134.02,
+   "heard_as": "rispose",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "Viola,",
+   "start": 134.02,
+   "end": 134.4,
+   "heard_as": "Viola,",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "piantandogli",
+   "start": 134.7,
+   "end": 135.24,
+   "heard_as": "piantando gli",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "gli",
+   "start": 135.24,
+   "end": 135.39,
+   "heard_as": "gliocchi",
+   "status": "written differently"
+  },
+  {
+   "sent": 46,
+   "word": "occhi",
+   "start": 135.39,
+   "end": 135.64,
+   "heard_as": "gliocchi",
+   "status": "written differently"
+  },
+  {
+   "sent": 46,
+   "word": "in",
+   "start": 135.64,
+   "end": 135.76,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "faccia.",
+   "start": 135.76,
+   "end": 136.18,
+   "heard_as": "faccia.",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "O",
+   "start": 137.13,
+   "end": 137.24,
+   "heard_as": "O",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "sei",
+   "start": 137.24,
+   "end": 137.4,
+   "heard_as": "sei",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "duro",
+   "start": 137.4,
+   "end": 137.62,
+   "heard_as": "duro",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "di",
+   "start": 137.62,
+   "end": 137.76,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "comprendonio,",
+   "start": 137.76,
+   "end": 138.48,
+   "heard_as": "comprendonio,",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "cagnolino?",
+   "start": 138.54,
+   "end": 139.04,
+   "heard_as": "Cagnolino?",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "Viola,",
+   "start": 140.22,
+   "end": 140.58,
+   "heard_as": "Viola,",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "basta!",
+   "start": 140.7,
+   "end": 140.94,
+   "heard_as": "basta!",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "gridò",
+   "start": 141.95,
+   "end": 142.3,
+   "heard_as": "gridò",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "Alice",
+   "start": 142.3,
+   "end": 142.66,
+   "heard_as": "a lice,",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "tirandola",
+   "start": 142.9,
+   "end": 143.28,
+   "heard_as": "tirandola",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "per",
+   "start": 143.28,
+   "end": 143.44,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "un",
+   "start": 143.44,
+   "end": 143.56,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "braccio",
+   "start": 143.56,
+   "end": 143.9,
+   "heard_as": "braccio",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "con",
+   "start": 143.9,
+   "end": 144.08,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "tutta",
+   "start": 144.08,
+   "end": 144.4,
+   "heard_as": "tutta",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "la",
+   "start": 144.4,
+   "end": 144.52,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "forza",
+   "start": 144.52,
+   "end": 144.82,
+   "heard_as": "forza",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "che",
+   "start": 144.82,
+   "end": 144.96,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "aveva.",
+   "start": 144.96,
+   "end": 145.32,
+   "heard_as": "aveva.",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "Ma",
+   "start": 146.15,
+   "end": 146.26,
+   "heard_as": "Ma",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "Viola",
+   "start": 146.26,
+   "end": 146.5,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "piantò",
+   "start": 146.5,
+   "end": 146.84,
+   "heard_as": "piantò",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "i",
+   "start": 146.84,
+   "end": 146.94,
+   "heard_as": "i",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "piedi",
+   "start": 146.94,
+   "end": 147.18,
+   "heard_as": "piedi",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "a",
+   "start": 147.18,
+   "end": 147.26,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "terra.",
+   "start": 147.26,
+   "end": 147.79,
+   "heard_as": "terra. era.",
+   "status": "written differently"
+  },
+  {
+   "sent": 50,
+   "word": "Era",
+   "start": 148.26,
+   "end": 148.4,
+   "heard_as": "Era",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "più",
+   "start": 148.4,
+   "end": 148.62,
+   "heard_as": "più",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "alta,",
+   "start": 148.62,
+   "end": 148.96,
+   "heard_as": "alta,",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "più",
+   "start": 149.22,
+   "end": 149.32,
+   "heard_as": "più",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "solida,",
+   "start": 149.32,
+   "end": 149.84,
+   "heard_as": "solida,",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "e",
+   "start": 150.2,
+   "end": 150.28,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "la",
+   "start": 150.28,
+   "end": 150.38,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "sua",
+   "start": 150.38,
+   "end": 150.5,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "amica",
+   "start": 150.5,
+   "end": 150.76,
+   "heard_as": "amica",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "non",
+   "start": 150.76,
+   "end": 150.94,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "riuscì",
+   "start": 150.94,
+   "end": 151.28,
+   "heard_as": "riuscì",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "a",
+   "start": 151.28,
+   "end": 151.38,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "spostarla",
+   "start": 151.38,
+   "end": 151.84,
+   "heard_as": "spostarla",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "di",
+   "start": 151.84,
+   "end": 151.98,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "un",
+   "start": 151.98,
+   "end": 152.08,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "millimetro.",
+   "start": 152.08,
+   "end": 152.66,
+   "heard_as": "millimetro.",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "Poi",
+   "start": 154.49,
+   "end": 154.64,
+   "heard_as": "Poi",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "accadde.",
+   "start": 154.64,
+   "end": 155.18,
+   "heard_as": "accadde.",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "Gli",
+   "start": 155.99,
+   "end": 156.1,
+   "heard_as": "Gli",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "occhi",
+   "start": 156.1,
+   "end": 156.36,
+   "heard_as": "occhi",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "di",
+   "start": 156.36,
+   "end": 156.48,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "Giulio",
+   "start": 156.48,
+   "end": 156.88,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "si",
+   "start": 156.88,
+   "end": 157.1,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "accesero",
+   "start": 157.1,
+   "end": 157.54,
+   "heard_as": "accesero",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "di",
+   "start": 157.54,
+   "end": 157.68,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "un'ambra",
+   "start": 157.68,
+   "end": 158.04,
+   "heard_as": "un 'ambra",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "innaturale.La",
+   "start": 158.04,
+   "end": 159.62,
+   "heard_as": "innaturale. La",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "sua",
+   "start": 159.62,
+   "end": 159.74,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "parte",
+   "start": 159.74,
+   "end": 160.02,
+   "heard_as": "parte",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "ferina",
+   "start": 160.02,
+   "end": 160.4,
+   "heard_as": "ferina",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "aveva",
+   "start": 160.4,
+   "end": 160.7,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "preso",
+   "start": 160.7,
+   "end": 160.98,
+   "heard_as": "preso",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "il",
+   "start": 160.98,
+   "end": 161.08,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "controllo.",
+   "start": 161.08,
+   "end": 161.7,
+   "heard_as": "controllo.",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "Impulsiva,",
+   "start": 163.02,
+   "end": 163.58,
+   "heard_as": "Impulsiva,",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "sì.",
+   "start": 163.86,
+   "end": 164.0,
+   "heard_as": "sì,",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "Stupida,",
+   "start": 164.48,
+   "end": 164.98,
+   "heard_as": "stupida,",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "no.",
+   "start": 165.3,
+   "end": 165.46,
+   "heard_as": "no.",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "Il",
+   "start": 166.58,
+   "end": 166.7,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "cervello",
+   "start": 166.7,
+   "end": 167.06,
+   "heard_as": "cervello",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "di",
+   "start": 167.06,
+   "end": 167.24,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "Viola",
+   "start": 167.24,
+   "end": 167.48,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "scattò",
+   "start": 167.48,
+   "end": 167.94,
+   "heard_as": "scattò",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "in",
+   "start": 167.94,
+   "end": 168.06,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "modalità",
+   "start": 168.06,
+   "end": 168.48,
+   "heard_as": "modalità",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "sopravvivenza.",
+   "start": 168.48,
+   "end": 169.38,
+   "heard_as": "sopravvivenza.",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "Calcolò",
+   "start": 169.86,
+   "end": 170.24,
+   "heard_as": "Calcolò",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "i",
+   "start": 170.24,
+   "end": 170.36,
+   "heard_as": "i",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "passi",
+   "start": 170.37,
+   "end": 170.7,
+   "heard_as": "passi",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "che",
+   "start": 170.7,
+   "end": 170.78,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "la",
+   "start": 170.78,
+   "end": 170.9,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "separavano",
+   "start": 170.9,
+   "end": 171.4,
+   "heard_as": "separavano",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "dal",
+   "start": 171.4,
+   "end": 171.58,
+   "heard_as": "dal",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "bordo",
+   "start": 171.58,
+   "end": 171.86,
+   "heard_as": "bordo",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "del",
+   "start": 171.86,
+   "end": 172.08,
+   "heard_as": "del",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "campo.",
+   "start": 172.08,
+   "end": 172.44,
+   "heard_as": "campo.",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "Lì",
+   "start": 173.04,
+   "end": 173.2,
+   "heard_as": "Lì",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "c'era",
+   "start": 173.2,
+   "end": 173.38,
+   "heard_as": "c 'era",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "gente,",
+   "start": 173.38,
+   "end": 173.68,
+   "heard_as": "gente,",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "lì",
+   "start": 174.27,
+   "end": 174.46,
+   "heard_as": "lì",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "qualcuno",
+   "start": 174.46,
+   "end": 174.9,
+   "heard_as": "qualcuno",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "l'avrebbe",
+   "start": 174.9,
+   "end": 175.2,
+   "heard_as": "l 'avrebbe",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "aiutata.",
+   "start": 175.2,
+   "end": 175.84,
+   "heard_as": "aiutata",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "Doveva",
+   "start": 176.29,
+   "end": 176.66,
+   "heard_as": "doveva",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "farcela.",
+   "start": 176.66,
+   "end": 177.22,
+   "heard_as": "farcela.",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "Ti",
+   "start": 178.36,
+   "end": 178.46,
+   "heard_as": "Ti",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "insegno",
+   "start": 178.46,
+   "end": 178.86,
+   "heard_as": "insegno",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "io",
+   "start": 178.86,
+   "end": 179.06,
+   "heard_as": "io",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "il",
+   "start": 179.06,
+   "end": 179.2,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "rispetto.",
+   "start": 179.2,
+   "end": 179.61,
+   "heard_as": "rispetto,",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "Non",
+   "start": 180.18,
+   "end": 180.3,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "sei",
+   "start": 180.3,
+   "end": 180.5,
+   "heard_as": "sei",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "altro",
+   "start": 180.5,
+   "end": 180.76,
+   "heard_as": "altro",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "che",
+   "start": 180.76,
+   "end": 180.94,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "una",
+   "start": 180.94,
+   "end": 181.1,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "preda,",
+   "start": 181.1,
+   "end": 181.6,
+   "heard_as": "preda\",",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "le",
+   "start": 182.4,
+   "end": 182.5,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "sputò",
+   "start": 182.5,
+   "end": 182.84,
+   "heard_as": "sputò",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "addosso",
+   "start": 182.84,
+   "end": 183.26,
+   "heard_as": "addosso",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "Giulio.",
+   "start": 183.26,
+   "end": 183.66,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "E",
+   "start": 184.37,
+   "end": 184.44,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "le",
+   "start": 184.44,
+   "end": 184.54,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "si",
+   "start": 184.54,
+   "end": 184.68,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "scagliò",
+   "start": 184.68,
+   "end": 185.06,
+   "heard_as": "scagliò",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "contro,",
+   "start": 185.06,
+   "end": 185.5,
+   "heard_as": "contro,",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "con",
+   "start": 185.91,
+   "end": 186.02,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "il",
+   "start": 186.02,
+   "end": 186.16,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "corpo",
+   "start": 186.16,
+   "end": 186.46,
+   "heard_as": "corpo",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "che",
+   "start": 186.46,
+   "end": 186.66,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "ormai",
+   "start": 186.66,
+   "end": 186.96,
+   "heard_as": "ormai",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "di",
+   "start": 186.96,
+   "end": 187.08,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "umano",
+   "start": 187.08,
+   "end": 187.4,
+   "heard_as": "umano",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "aveva",
+   "start": 187.4,
+   "end": 187.88,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "ben",
+   "start": 187.88,
+   "end": 188.12,
+   "heard_as": "ben",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "poco.",
+   "start": 188.12,
+   "end": 188.5,
+   "heard_as": "poco.",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "Viola",
+   "start": 189.6,
+   "end": 189.84,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "scattò",
+   "start": 189.84,
+   "end": 190.2,
+   "heard_as": "scattò",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "all'indietro.",
+   "start": 190.2,
+   "end": 190.86,
+   "heard_as": "all 'indietro,",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "Ma",
+   "start": 191.24,
+   "end": 191.32,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "un'ombra",
+   "start": 191.32,
+   "end": 191.7,
+   "heard_as": "un 'ombra",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "la",
+   "start": 191.7,
+   "end": 191.82,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "superò.",
+   "start": 191.82,
+   "end": 192.24,
+   "heard_as": "superò,",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "Una",
+   "start": 192.72,
+   "end": 192.88,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "mano",
+   "start": 192.88,
+   "end": 193.12,
+   "heard_as": "mano",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "enorme",
+   "start": 193.12,
+   "end": 193.6,
+   "heard_as": "enorme",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "afferrò",
+   "start": 193.6,
+   "end": 194.18,
+   "heard_as": "afferrò",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "il",
+   "start": 194.18,
+   "end": 194.34,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "braccio",
+   "start": 194.34,
+   "end": 194.68,
+   "heard_as": "braccio",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "teso",
+   "start": 194.68,
+   "end": 195.02,
+   "heard_as": "teso",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "di",
+   "start": 195.02,
+   "end": 195.1,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "Giulio.",
+   "start": 195.1,
+   "end": 195.56,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "E",
+   "start": 195.94,
+   "end": 196.02,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "lo",
+   "start": 196.02,
+   "end": 196.14,
+   "heard_as": "lo",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "girò",
+   "start": 196.14,
+   "end": 196.46,
+   "heard_as": "girò",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "con",
+   "start": 196.48,
+   "end": 196.62,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "violenza.",
+   "start": 196.62,
+   "end": 197.16,
+   "heard_as": "violenza.",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "Il",
+   "start": 198.36,
+   "end": 198.52,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "suono",
+   "start": 198.52,
+   "end": 198.86,
+   "heard_as": "suono",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "le",
+   "start": 198.86,
+   "end": 199.04,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "rivoltò",
+   "start": 199.04,
+   "end": 199.376,
+   "heard_as": "rivoltollo",
+   "status": "written differently"
+  },
+  {
+   "sent": 70,
+   "word": "lo",
+   "start": 199.488,
+   "end": 199.6,
+   "heard_as": "rivoltollo",
+   "status": "written differently"
+  },
+  {
+   "sent": 70,
+   "word": "stomaco.",
+   "start": 199.6,
+   "end": 200.2,
+   "heard_as": "stomaco,",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "Uno",
+   "start": 200.78,
+   "end": 200.94,
+   "heard_as": "uno",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "schiocco",
+   "start": 200.94,
+   "end": 201.34,
+   "heard_as": "schiacco",
+   "status": "written differently"
+  },
+  {
+   "sent": 71,
+   "word": "umido,",
+   "start": 201.54,
+   "end": 201.98,
+   "heard_as": "umido,",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "il",
+   "start": 202.54,
+   "end": 202.68,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "rumore",
+   "start": 202.68,
+   "end": 203.06,
+   "heard_as": "rumore",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "inconfondibile",
+   "start": 203.06,
+   "end": 203.92,
+   "heard_as": "inconfondibile",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "di",
+   "start": 203.92,
+   "end": 204.16,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "ossa",
+   "start": 204.16,
+   "end": 204.48,
+   "heard_as": "ossa",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "che",
+   "start": 204.48,
+   "end": 204.58,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "si",
+   "start": 204.58,
+   "end": 204.72,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "sbriciolavano.",
+   "start": 204.72,
+   "end": 205.54,
+   "heard_as": "sbriciolavano.",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "Cazzo!",
+   "start": 206.63,
+   "end": 207.18,
+   "heard_as": "«Cazzo",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "sbottò",
+   "start": 207.63,
+   "end": 208.06,
+   "heard_as": "sbottò",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "qualcuno",
+   "start": 208.06,
+   "end": 208.48,
+   "heard_as": "qualcuno",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "alle",
+   "start": 208.48,
+   "end": 208.64,
+   "heard_as": "alle",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "sue",
+   "start": 208.64,
+   "end": 208.78,
+   "heard_as": "sue",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "spalle,",
+   "start": 208.78,
+   "end": 209.16,
+   "heard_as": "spalle,",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "strozzato",
+   "start": 209.22,
+   "end": 209.8,
+   "heard_as": "strozzato",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "da",
+   "start": 209.8,
+   "end": 209.92,
+   "heard_as": "da",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "un",
+   "start": 209.92,
+   "end": 210.06,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "conato",
+   "start": 210.06,
+   "end": 210.38,
+   "heard_as": "conato",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "di",
+   "start": 210.38,
+   "end": 210.52,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "vomito.",
+   "start": 210.52,
+   "end": 210.94,
+   "heard_as": "vomito.",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "Viola",
+   "start": 212.22,
+   "end": 212.48,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "si",
+   "start": 212.48,
+   "end": 212.68,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "pietrificò.",
+   "start": 212.68,
+   "end": 213.32,
+   "heard_as": "pietrificò,",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "Il",
+   "start": 213.95,
+   "end": 214.1,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "respiro",
+   "start": 214.1,
+   "end": 214.56,
+   "heard_as": "respiro",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "le",
+   "start": 214.56,
+   "end": 214.7,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "si",
+   "start": 214.7,
+   "end": 214.84,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "incastrò",
+   "start": 214.84,
+   "end": 215.28,
+   "heard_as": "incastrò",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "in",
+   "start": 215.28,
+   "end": 215.44,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "gola.",
+   "start": 215.44,
+   "end": 215.74,
+   "heard_as": "gola.",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "Niente",
+   "start": 216.91,
+   "end": 217.22,
+   "heard_as": "Niente",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "principe",
+   "start": 217.22,
+   "end": 217.62,
+   "heard_as": "principe",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "azzurro.",
+   "start": 217.62,
+   "end": 218.3,
+   "heard_as": "azzurro,",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "Niente",
+   "start": 219.5,
+   "end": 219.8,
+   "heard_as": "niente",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "cavaliere",
+   "start": 219.8,
+   "end": 220.3,
+   "heard_as": "cavaliere",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "dall'armatura",
+   "start": 220.3,
+   "end": 220.88,
+   "heard_as": "dall 'armatura",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "scintillante.",
+   "start": 220.88,
+   "end": 221.72,
+   "heard_as": "scintillante.",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "Era",
+   "start": 223.07,
+   "end": 223.22,
+   "heard_as": "Era",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "lui,",
+   "start": 223.22,
+   "end": 223.52,
+   "heard_as": "lui,",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "Demetrio,",
+   "start": 224.06,
+   "end": 224.56,
+   "heard_as": "Demetrio,",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "maledetto,",
+   "start": 225.02,
+   "end": 225.39,
+   "heard_as": "maledetto,",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "Vesper.",
+   "start": 226.17,
+   "end": 226.6,
+   "heard_as": "Vesper.",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "Era",
+   "start": 228.05,
+   "end": 228.2,
+   "heard_as": "Era",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "un",
+   "start": 228.2,
+   "end": 228.34,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "predatore",
+   "start": 228.34,
+   "end": 228.76,
+   "heard_as": "predatore",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "oscuro,",
+   "start": 228.76,
+   "end": 229.34,
+   "heard_as": "oscuro,",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "avvolto",
+   "start": 229.87,
+   "end": 230.28,
+   "heard_as": "avvolto",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "da",
+   "start": 230.28,
+   "end": 230.4,
+   "heard_as": "da",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "un'aura",
+   "start": 230.4,
+   "end": 230.76,
+   "heard_as": "un 'aura",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "così",
+   "start": 230.76,
+   "end": 231.04,
+   "heard_as": "così",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "densa",
+   "start": 231.04,
+   "end": 231.62,
+   "heard_as": "densa",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "e",
+   "start": 231.62,
+   "end": 231.72,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "minacciosa",
+   "start": 231.72,
+   "end": 232.36,
+   "heard_as": "minacciosa",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "da",
+   "start": 232.36,
+   "end": 232.48,
+   "heard_as": "da",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "togliere",
+   "start": 232.48,
+   "end": 232.9,
+   "heard_as": "togliere",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "il",
+   "start": 232.9,
+   "end": 233.04,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "fiato.",
+   "start": 233.04,
+   "end": 233.44,
+   "heard_as": "fiato.",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "Ciao,",
+   "start": 235.12,
+   "end": 235.44,
+   "heard_as": "Ciao",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "Giulio,",
+   "start": 235.44,
+   "end": 235.89,
+   "heard_as": "Giulio,",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "sussurrò",
+   "start": 236.26,
+   "end": 236.738,
+   "heard_as": "su Sussurro",
+   "status": "written differently"
+  },
+  {
+   "sent": 82,
+   "word": "Demetrio.",
+   "start": 236.78,
+   "end": 237.28,
+   "heard_as": "Demetrio.",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "La",
+   "start": 238.5,
+   "end": 238.62,
+   "heard_as": "La",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "sua",
+   "start": 238.62,
+   "end": 238.78,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "voce",
+   "start": 238.78,
+   "end": 239.06,
+   "heard_as": "voce",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "trasudava",
+   "start": 239.06,
+   "end": 239.6,
+   "heard_as": "trassudava",
+   "status": "written differently"
+  },
+  {
+   "sent": 83,
+   "word": "autorità",
+   "start": 239.6,
+   "end": 240.18,
+   "heard_as": "autorità,",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "mentre",
+   "start": 240.75,
+   "end": 240.98,
+   "heard_as": "mentre",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "le",
+   "start": 240.98,
+   "end": 241.2,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "sue",
+   "start": 241.2,
+   "end": 241.34,
+   "heard_as": "sue",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "dita",
+   "start": 241.34,
+   "end": 241.64,
+   "heard_as": "dita",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "stritolavano",
+   "start": 241.64,
+   "end": 242.42,
+   "heard_as": "stritolavano",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "la",
+   "start": 242.42,
+   "end": 242.58,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "carne",
+   "start": 242.58,
+   "end": 242.86,
+   "heard_as": "carne",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "del",
+   "start": 242.86,
+   "end": 243.01,
+   "heard_as": "dell",
+   "status": "written differently"
+  },
+  {
+   "sent": 83,
+   "word": "licantropo.",
+   "start": 243.01,
+   "end": 243.83,
+   "heard_as": "dell 'icantropo.",
+   "status": "written differently"
+  },
+  {
+   "sent": 84,
+   "word": "Ti",
+   "start": 244.98,
+   "end": 245.06,
+   "heard_as": "Ti",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "ho",
+   "start": 245.06,
+   "end": 245.16,
+   "heard_as": "ho",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "appena",
+   "start": 245.16,
+   "end": 245.46,
+   "heard_as": "appena",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "sentito",
+   "start": 245.46,
+   "end": 245.9,
+   "heard_as": "sentito",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "chiamare",
+   "start": 245.9,
+   "end": 246.3,
+   "heard_as": "chiamare",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "la",
+   "start": 246.3,
+   "end": 246.44,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "mia",
+   "start": 246.44,
+   "end": 246.56,
+   "heard_as": "mia",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "Viola...",
+   "start": 246.56,
+   "end": 247.04,
+   "heard_as": "viola,",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "la",
+   "start": 247.77,
+   "end": 247.9,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "tua",
+   "start": 247.9,
+   "end": 248.02,
+   "heard_as": "tua",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "preda?",
+   "start": 248.02,
+   "end": 248.46,
+   "heard_as": "preda?",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "Nessuno",
+   "start": 249.51,
+   "end": 249.92,
+   "heard_as": "Nessuno",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "ti",
+   "start": 249.92,
+   "end": 250.08,
+   "heard_as": "ti",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "ha",
+   "start": 250.08,
+   "end": 250.16,
+   "heard_as": "ha",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "spiegato",
+   "start": 250.16,
+   "end": 250.58,
+   "heard_as": "spiegato",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "che",
+   "start": 250.58,
+   "end": 250.74,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "solo",
+   "start": 250.74,
+   "end": 250.96,
+   "heard_as": "solo",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "io",
+   "start": 250.96,
+   "end": 251.2,
+   "heard_as": "io",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "posso",
+   "start": 251.2,
+   "end": 251.4,
+   "heard_as": "posso",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "darle",
+   "start": 251.4,
+   "end": 251.84,
+   "heard_as": "darle",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "la",
+   "start": 251.84,
+   "end": 252.0,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "caccia?",
+   "start": 252.0,
+   "end": 252.38,
+   "heard_as": "caccia?",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "In",
+   "start": 253.73,
+   "end": 253.86,
+   "heard_as": "In",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "un",
+   "start": 253.86,
+   "end": 253.98,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "giorno",
+   "start": 253.98,
+   "end": 254.16,
+   "heard_as": "giorno",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "normale,",
+   "start": 254.16,
+   "end": 254.74,
+   "heard_as": "normale,",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "Viola",
+   "start": 255.34,
+   "end": 255.62,
+   "heard_as": "viola",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "gli",
+   "start": 255.62,
+   "end": 255.76,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "avrebbe",
+   "start": 255.76,
+   "end": 255.98,
+   "heard_as": "avrebbe",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "riso",
+   "start": 255.98,
+   "end": 256.32,
+   "heard_as": "riso",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "in",
+   "start": 256.32,
+   "end": 256.42,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "faccia",
+   "start": 256.42,
+   "end": 256.94,
+   "heard_as": "faccia",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "e",
+   "start": 257.3,
+   "end": 257.38,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "se",
+   "start": 257.38,
+   "end": 257.5,
+   "heard_as": "se",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "la",
+   "start": 257.5,
+   "end": 257.62,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "sarebbe",
+   "start": 257.62,
+   "end": 257.96,
+   "heard_as": "sarebbe",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "cavata",
+   "start": 257.96,
+   "end": 258.36,
+   "heard_as": "cavata",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "con",
+   "start": 258.36,
+   "end": 258.56,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "una",
+   "start": 258.56,
+   "end": 258.7,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "battuta",
+   "start": 258.7,
+   "end": 259.06,
+   "heard_as": "battuta",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "velenosa.",
+   "start": 259.06,
+   "end": 259.64,
+   "heard_as": "velenosa,",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "Ma",
+   "start": 260.41,
+   "end": 260.54,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "ora",
+   "start": 260.54,
+   "end": 260.8,
+   "heard_as": "ora",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "il",
+   "start": 260.8,
+   "end": 260.98,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "terrore",
+   "start": 260.98,
+   "end": 261.46,
+   "heard_as": "terrore",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "le",
+   "start": 261.46,
+   "end": 261.56,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "aveva",
+   "start": 261.56,
+   "end": 261.82,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "cucito",
+   "start": 261.82,
+   "end": 262.24,
+   "heard_as": "cucito",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "la",
+   "start": 262.24,
+   "end": 262.4,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "bocca.",
+   "start": 262.4,
+   "end": 262.8,
+   "heard_as": "bocca,",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "Poteva",
+   "start": 263.56,
+   "end": 263.84,
+   "heard_as": "poteva",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "solo",
+   "start": 263.84,
+   "end": 264.06,
+   "heard_as": "solo",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "fissarlo,",
+   "start": 264.06,
+   "end": 264.66,
+   "heard_as": "fissarlo,",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "paralizzata",
+   "start": 265.22,
+   "end": 265.8,
+   "heard_as": "paralizzata",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "dalla",
+   "start": 265.8,
+   "end": 266.04,
+   "heard_as": "dalla",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "brutalità",
+   "start": 266.04,
+   "end": 266.68,
+   "heard_as": "brutalità",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "di",
+   "start": 266.68,
+   "end": 266.82,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "quel",
+   "start": 266.82,
+   "end": 267.0,
+   "heard_as": "quel",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "dominio",
+   "start": 267.0,
+   "end": 267.42,
+   "heard_as": "dominio",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "assoluto.",
+   "start": 267.42,
+   "end": 268.1,
+   "heard_as": "assoluto.",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "M-mi",
+   "start": 269.41,
+   "end": 269.86,
+   "heard_as": "Mi",
+   "status": "written differently"
+  },
+  {
+   "sent": 91,
+   "word": "dispiace,",
+   "start": 269.86,
+   "end": 270.54,
+   "heard_as": "dispiace,",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "Demetrio!",
+   "start": 270.64,
+   "end": 271.26,
+   "heard_as": "Demetrio!",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "piagnucolò",
+   "start": 271.8,
+   "end": 272.214,
+   "heard_as": "piagnucolo",
+   "status": "written differently"
+  },
+  {
+   "sent": 91,
+   "word": "Giulio.",
+   "start": 272.46,
+   "end": 272.78,
+   "heard_as": "Giulio.",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "Il",
+   "start": 273.4,
+   "end": 273.54,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "bullo",
+   "start": 273.54,
+   "end": 273.76,
+   "heard_as": "bullo",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "arrogante",
+   "start": 273.76,
+   "end": 274.22,
+   "heard_as": "arrogante",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "era",
+   "start": 274.22,
+   "end": 274.38,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "sparito,",
+   "start": 274.38,
+   "end": 274.88,
+   "heard_as": "sparito,",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "al",
+   "start": 275.16,
+   "end": 275.26,
+   "heard_as": "al",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "suo",
+   "start": 275.26,
+   "end": 275.4,
+   "heard_as": "suo",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "posto",
+   "start": 275.4,
+   "end": 275.8,
+   "heard_as": "posto",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "un",
+   "start": 275.8,
+   "end": 275.92,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "cucciolo",
+   "start": 275.92,
+   "end": 276.34,
+   "heard_as": "cucciolo",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "patetico",
+   "start": 276.34,
+   "end": 277.0,
+   "heard_as": "patetico",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "e",
+   "start": 277.0,
+   "end": 277.11,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "tremante.",
+   "start": 277.15,
+   "end": 277.7,
+   "heard_as": "tremante.",
+   "status": "same"
+  },
+  {
+   "sent": 94,
+   "word": "Demetrio",
+   "start": 278.81,
+   "end": 279.34,
+   "heard_as": "Demetrio,",
+   "status": "same"
+  },
+  {
+   "sent": 94,
+   "word": "non",
+   "start": 279.38,
+   "end": 279.5,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 94,
+   "word": "batté",
+   "start": 279.5,
+   "end": 279.787,
+   "heard_as": "battecciglio.",
+   "status": "written differently"
+  },
+  {
+   "sent": 94,
+   "word": "ciglio.",
+   "start": 279.93,
+   "end": 280.36,
+   "heard_as": "battecciglio.",
+   "status": "written differently"
+  },
+  {
+   "sent": 95,
+   "word": "Davvero?",
+   "start": 281.38,
+   "end": 281.78,
+   "heard_as": "Davvero,",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "Ti",
+   "start": 282.31,
+   "end": 282.38,
+   "heard_as": "ti",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "dispiace?",
+   "start": 282.38,
+   "end": 282.9,
+   "heard_as": "dispiace.",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "sussurrò,",
+   "start": 283.47,
+   "end": 283.986,
+   "heard_as": "Sussurro,",
+   "status": "written differently"
+  },
+  {
+   "sent": 97,
+   "word": "con",
+   "start": 284.39,
+   "end": 284.5,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "una",
+   "start": 284.5,
+   "end": 284.68,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "voce",
+   "start": 284.68,
+   "end": 284.94,
+   "heard_as": "voce",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "che",
+   "start": 284.94,
+   "end": 285.08,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "avrebbe",
+   "start": 285.08,
+   "end": 285.3,
+   "heard_as": "avrebbe",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "potuto",
+   "start": 285.3,
+   "end": 285.72,
+   "heard_as": "potuto",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "tagliare",
+   "start": 285.72,
+   "end": 286.14,
+   "heard_as": "tagliare",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "il",
+   "start": 286.14,
+   "end": 286.3,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "ghiaccio.",
+   "start": 286.3,
+   "end": 286.72,
+   "heard_as": "ghiaccio.",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "Gli",
+   "start": 287.4,
+   "end": 287.54,
+   "heard_as": "Li",
+   "status": "written differently"
+  },
+  {
+   "sent": 98,
+   "word": "torse",
+   "start": 287.54,
+   "end": 287.82,
+   "heard_as": "torse",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "il",
+   "start": 287.82,
+   "end": 287.94,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "braccio",
+   "start": 287.94,
+   "end": 288.26,
+   "heard_as": "braccio",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "ancora",
+   "start": 288.26,
+   "end": 288.5,
+   "heard_as": "ancora",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "più",
+   "start": 288.5,
+   "end": 288.7,
+   "heard_as": "più",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "forte.",
+   "start": 288.7,
+   "end": 289.02,
+   "heard_as": "forte.",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "Sì!",
+   "start": 290.24,
+   "end": 290.58,
+   "heard_as": "Sì,",
+   "status": "same"
+  },
+  {
+   "sent": 100,
+   "word": "Ti",
+   "start": 290.78,
+   "end": 290.86,
+   "heard_as": "ti",
+   "status": "same"
+  },
+  {
+   "sent": 100,
+   "word": "prego!",
+   "start": 290.86,
+   "end": 291.26,
+   "heard_as": "prego,",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "Fermati!",
+   "start": 291.56,
+   "end": 292.2,
+   "heard_as": "fermati\",",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "urlò",
+   "start": 292.68,
+   "end": 292.89,
+   "heard_as": "urlo",
+   "status": "written differently"
+  },
+  {
+   "sent": 101,
+   "word": "Giulio,",
+   "start": 292.96,
+   "end": 293.44,
+   "heard_as": "Giulio,",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "mentre",
+   "start": 293.74,
+   "end": 293.88,
+   "heard_as": "mentre",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "la",
+   "start": 293.88,
+   "end": 294.1,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "morsa",
+   "start": 294.1,
+   "end": 294.38,
+   "heard_as": "morsa",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "di",
+   "start": 294.38,
+   "end": 294.56,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "Demetrio",
+   "start": 294.56,
+   "end": 295.04,
+   "heard_as": "Demetrio",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "si",
+   "start": 295.04,
+   "end": 295.2,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "stringeva",
+   "start": 295.2,
+   "end": 295.74,
+   "heard_as": "stringeva",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "sempre",
+   "start": 295.74,
+   "end": 296.02,
+   "heard_as": "sempre",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "di",
+   "start": 296.02,
+   "end": 296.22,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "più..",
+   "start": 296.22,
+   "end": 296.48,
+   "heard_as": "più.",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "E",
+   "start": 297.48,
+   "end": 297.58,
+   "heard_as": "E",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "ora",
+   "start": 297.58,
+   "end": 297.8,
+   "heard_as": "ora",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "dimmi,",
+   "start": 297.8,
+   "end": 298.3,
+   "heard_as": "dimmi,",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "Giulietto...",
+   "start": 298.7,
+   "end": 299.28,
+   "heard_as": "Giulietto,",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "cosa",
+   "start": 300.01,
+   "end": 300.18,
+   "heard_as": "Cosa",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "si",
+   "start": 300.18,
+   "end": 300.34,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "fa",
+   "start": 300.34,
+   "end": 300.52,
+   "heard_as": "fa",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "in",
+   "start": 300.52,
+   "end": 300.66,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "questi",
+   "start": 300.66,
+   "end": 300.88,
+   "heard_as": "questi",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "casi?",
+   "start": 300.88,
+   "end": 301.16,
+   "heard_as": "casi?",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "lo",
+   "start": 302.0,
+   "end": 302.14,
+   "heard_as": "Lo",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "schernì",
+   "start": 302.14,
+   "end": 302.447,
+   "heard_as": "schernide",
+   "status": "written differently"
+  },
+  {
+   "sent": 104,
+   "word": "Demetrio,",
+   "start": 302.498,
+   "end": 303.08,
+   "heard_as": "schernide Metrio,",
+   "status": "written differently"
+  },
+  {
+   "sent": 105,
+   "word": "indicando",
+   "start": 303.52,
+   "end": 304.0,
+   "heard_as": "indicando",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "Viola",
+   "start": 304.0,
+   "end": 304.34,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "con",
+   "start": 304.34,
+   "end": 304.56,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "un",
+   "start": 304.56,
+   "end": 304.7,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "cenno",
+   "start": 304.7,
+   "end": 304.98,
+   "heard_as": "cenno",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "del",
+   "start": 304.98,
+   "end": 305.14,
+   "heard_as": "del",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "mento.",
+   "start": 305.14,
+   "end": 305.6,
+   "heard_as": "mento.",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "Giulio",
+   "start": 306.83,
+   "end": 307.18,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "seguì",
+   "start": 307.18,
+   "end": 307.5,
+   "heard_as": "seguì",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "il",
+   "start": 307.5,
+   "end": 307.6,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "suo",
+   "start": 307.6,
+   "end": 307.72,
+   "heard_as": "suo",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "sguardo.",
+   "start": 307.72,
+   "end": 308.2,
+   "heard_as": "sguardo.",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "Capì",
+   "start": 308.94,
+   "end": 309.22,
+   "heard_as": "Capì",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "immediatamente.",
+   "start": 309.22,
+   "end": 309.78,
+   "heard_as": "immediatamente.",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "Abbassò",
+   "start": 311.1,
+   "end": 311.5,
+   "heard_as": "Abbassò",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "la",
+   "start": 311.5,
+   "end": 311.62,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "testa",
+   "start": 311.62,
+   "end": 312.08,
+   "heard_as": "testa",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "e",
+   "start": 312.52,
+   "end": 312.6,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "piegandosi",
+   "start": 312.6,
+   "end": 313.16,
+   "heard_as": "piegandosi",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "come",
+   "start": 313.16,
+   "end": 313.38,
+   "heard_as": "come",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "un",
+   "start": 313.38,
+   "end": 313.52,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "cane",
+   "start": 313.52,
+   "end": 313.7,
+   "heard_as": "cane",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "bastonato",
+   "start": 313.7,
+   "end": 314.32,
+   "heard_as": "bastonato",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "balbettò:",
+   "start": 314.32,
+   "end": 314.94,
+   "heard_as": "balbettò.",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "Mi",
+   "start": 315.6,
+   "end": 315.86,
+   "heard_as": "Mi",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "dispiace",
+   "start": 315.86,
+   "end": 316.28,
+   "heard_as": "dispiace",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "tanto,",
+   "start": 316.28,
+   "end": 316.7,
+   "heard_as": "tanto,",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "Signorina",
+   "start": 317.12,
+   "end": 317.56,
+   "heard_as": "signorina",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "Viola.",
+   "start": 317.56,
+   "end": 317.9,
+   "heard_as": "Viola.",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "Di",
+   "start": 318.75,
+   "end": 318.9,
+   "heard_as": "Di",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "cosa",
+   "start": 318.9,
+   "end": 319.1,
+   "heard_as": "cosa",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "ti",
+   "start": 319.1,
+   "end": 319.3,
+   "heard_as": "ti",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "dispiace,",
+   "start": 319.3,
+   "end": 319.84,
+   "heard_as": "dispiace",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "cane?",
+   "start": 319.84,
+   "end": 320.22,
+   "heard_as": "cane?",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "lo",
+   "start": 320.82,
+   "end": 320.94,
+   "heard_as": "lo",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "incalzò",
+   "start": 320.94,
+   "end": 321.38,
+   "heard_as": "incalzò",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "Demetrio.",
+   "start": 321.48,
+   "end": 321.9,
+   "heard_as": "Demetrio.",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "Una",
+   "start": 322.66,
+   "end": 322.82,
+   "heard_as": "Una",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "risata",
+   "start": 322.82,
+   "end": 323.14,
+   "heard_as": "risata",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "bassa",
+   "start": 323.14,
+   "end": 323.58,
+   "heard_as": "bassa",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "gli",
+   "start": 323.58,
+   "end": 323.72,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "vibrò",
+   "start": 323.72,
+   "end": 324.06,
+   "heard_as": "vibrò",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "nel",
+   "start": 324.06,
+   "end": 324.24,
+   "heard_as": "nel",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "petto.",
+   "start": 324.24,
+   "end": 324.52,
+   "heard_as": "petto.",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "Si",
+   "start": 325.32,
+   "end": 325.42,
+   "heard_as": "Si",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "stava",
+   "start": 325.42,
+   "end": 325.66,
+   "heard_as": "stava",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "godendo",
+   "start": 325.66,
+   "end": 326.1,
+   "heard_as": "godendo",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "ogni",
+   "start": 326.1,
+   "end": 326.6,
+   "heard_as": "ogni",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "secondo.",
+   "start": 326.6,
+   "end": 327.16,
+   "heard_as": "secondo.",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "Di",
+   "start": 328.36,
+   "end": 328.5,
+   "heard_as": "Di",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "aver",
+   "start": 328.5,
+   "end": 328.72,
+   "heard_as": "aver",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "cercato",
+   "start": 328.72,
+   "end": 329.18,
+   "heard_as": "cercato",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "di",
+   "start": 329.18,
+   "end": 329.34,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "farle",
+   "start": 329.34,
+   "end": 329.64,
+   "heard_as": "farle",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "del",
+   "start": 329.64,
+   "end": 329.84,
+   "heard_as": "del",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "male,",
+   "start": 329.84,
+   "end": 330.12,
+   "heard_as": "male,",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "Signorina",
+   "start": 330.34,
+   "end": 330.78,
+   "heard_as": "signorina",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "Viola.",
+   "start": 330.78,
+   "end": 331.1,
+   "heard_as": "Viola,",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "Non",
+   "start": 331.75,
+   "end": 331.9,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "succederà",
+   "start": 331.9,
+   "end": 332.46,
+   "heard_as": "succederà",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "mai",
+   "start": 332.46,
+   "end": 332.64,
+   "heard_as": "mai",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "più!",
+   "start": 332.64,
+   "end": 332.94,
+   "heard_as": "più,",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "implorò",
+   "start": 333.5,
+   "end": 333.92,
+   "heard_as": "implorò",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "Giulio.",
+   "start": 333.92,
+   "end": 334.36,
+   "heard_as": "Giulio.",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "Il",
+   "start": 335.07,
+   "end": 335.22,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "terrore",
+   "start": 335.22,
+   "end": 335.68,
+   "heard_as": "terrore",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "gli",
+   "start": 335.68,
+   "end": 335.8,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "aveva",
+   "start": 335.8,
+   "end": 336.04,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "reso",
+   "start": 336.04,
+   "end": 336.3,
+   "heard_as": "reso",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "la",
+   "start": 336.3,
+   "end": 336.42,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "voce",
+   "start": 336.42,
+   "end": 336.68,
+   "heard_as": "voce",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "stridula",
+   "start": 336.68,
+   "end": 337.34,
+   "heard_as": "stridula",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "e",
+   "start": 337.34,
+   "end": 337.5,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "acuta.",
+   "start": 337.5,
+   "end": 337.96,
+   "heard_as": "acuta,",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "Sapeva",
+   "start": 338.64,
+   "end": 339.04,
+   "heard_as": "sapeva",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "che",
+   "start": 339.04,
+   "end": 339.16,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "Demetrio",
+   "start": 339.16,
+   "end": 339.6,
+   "heard_as": "Demetrio",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "lo",
+   "start": 339.6,
+   "end": 339.72,
+   "heard_as": "lo",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "avrebbe",
+   "start": 339.72,
+   "end": 340.0,
+   "heard_as": "avrebbe",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "ucciso",
+   "start": 340.0,
+   "end": 340.42,
+   "heard_as": "ucciso",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "senza",
+   "start": 340.42,
+   "end": 340.64,
+   "heard_as": "senza",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "pensarci",
+   "start": 340.64,
+   "end": 341.3,
+   "heard_as": "pensarci",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "due",
+   "start": 341.3,
+   "end": 341.44,
+   "heard_as": "due",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "volte.",
+   "start": 341.44,
+   "end": 341.84,
+   "heard_as": "volte.",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "Molto",
+   "start": 343.0,
+   "end": 343.3,
+   "heard_as": "«Molto",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "bene.",
+   "start": 343.3,
+   "end": 343.75,
+   "heard_as": "bene»,",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "disse",
+   "start": 344.2,
+   "end": 344.38,
+   "heard_as": "disse",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "Demetrio.",
+   "start": 344.38,
+   "end": 345.0,
+   "heard_as": "Demetrio,",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "Poi",
+   "start": 345.69,
+   "end": 345.88,
+   "heard_as": "poi",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "aprì",
+   "start": 345.88,
+   "end": 346.165,
+   "heard_as": "apri",
+   "status": "written differently"
+  },
+  {
+   "sent": 119,
+   "word": "la",
+   "start": 346.26,
+   "end": 346.38,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "mano.",
+   "start": 346.38,
+   "end": 346.66,
+   "heard_as": "mano.",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "Giulio",
+   "start": 347.48,
+   "end": 347.84,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "crollò",
+   "start": 347.84,
+   "end": 348.2,
+   "heard_as": "crollò",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "a",
+   "start": 348.2,
+   "end": 348.34,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "terra,",
+   "start": 348.34,
+   "end": 348.7,
+   "heard_as": "terra,",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "annaspando",
+   "start": 349.2,
+   "end": 349.74,
+   "heard_as": "annaspando",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "come",
+   "start": 349.74,
+   "end": 350.02,
+   "heard_as": "come",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "un",
+   "start": 350.02,
+   "end": 350.18,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "annegato",
+   "start": 350.18,
+   "end": 350.62,
+   "heard_as": "annegato",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "in",
+   "start": 350.62,
+   "end": 350.78,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "cerca",
+   "start": 350.78,
+   "end": 351.09,
+   "heard_as": "cercadaria.",
+   "status": "written differently"
+  },
+  {
+   "sent": 121,
+   "word": "d'aria.",
+   "start": 351.09,
+   "end": 351.4,
+   "heard_as": "cercadaria.",
+   "status": "written differently"
+  },
+  {
+   "sent": 122,
+   "word": "Era",
+   "start": 351.4,
+   "end": 351.56,
+   "heard_as": "Era",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "bastato",
+   "start": 352.52,
+   "end": 352.96,
+   "heard_as": "bastato",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "un",
+   "start": 352.96,
+   "end": 353.08,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "movimento",
+   "start": 353.08,
+   "end": 353.34,
+   "heard_as": "movimento,",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "e",
+   "start": 354.16,
+   "end": 354.22,
+   "heard_as": "ed",
+   "status": "written differently"
+  },
+  {
+   "sent": 122,
+   "word": "Demetrio",
+   "start": 354.22,
+   "end": 354.7,
+   "heard_as": "ed Demetrio",
+   "status": "written differently"
+  },
+  {
+   "sent": 122,
+   "word": "gli",
+   "start": 354.7,
+   "end": 354.86,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "aveva",
+   "start": 354.86,
+   "end": 355.1,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "frantumato",
+   "start": 355.1,
+   "end": 355.7,
+   "heard_as": "frantumato",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "le",
+   "start": 355.7,
+   "end": 355.84,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "ossa",
+   "start": 355.84,
+   "end": 356.28,
+   "heard_as": "ossa",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "e",
+   "start": 356.28,
+   "end": 356.48,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "strappato",
+   "start": 356.48,
+   "end": 356.96,
+   "heard_as": "strappato",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "la",
+   "start": 356.96,
+   "end": 357.1,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "spalla",
+   "start": 357.1,
+   "end": 357.42,
+   "heard_as": "spalla",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "dalla",
+   "start": 357.42,
+   "end": 357.62,
+   "heard_as": "dalla",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "sede.",
+   "start": 357.62,
+   "end": 358.06,
+   "heard_as": "sede.",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "Il",
+   "start": 358.8,
+   "end": 358.94,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "dolore",
+   "start": 358.94,
+   "end": 359.28,
+   "heard_as": "dolore",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "doveva",
+   "start": 359.28,
+   "end": 359.66,
+   "heard_as": "doveva",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "essere",
+   "start": 359.66,
+   "end": 359.98,
+   "heard_as": "essere",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "lancinante.",
+   "start": 359.98,
+   "end": 360.78,
+   "heard_as": "lancinante. 'ancinante,",
+   "status": "written differently"
+  },
+  {
+   "sent": 124,
+   "word": "Ma",
+   "start": 361.82,
+   "end": 361.98,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "a",
+   "start": 361.98,
+   "end": 362.1,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "Demetrio",
+   "start": 362.1,
+   "end": 362.48,
+   "heard_as": "Demetrio",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "non",
+   "start": 362.48,
+   "end": 362.66,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "fregava",
+   "start": 362.66,
+   "end": 363.1,
+   "heard_as": "fregava",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "assolutamente",
+   "start": 363.1,
+   "end": 363.82,
+   "heard_as": "assolutamente",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "nulla.",
+   "start": 363.82,
+   "end": 364.32,
+   "heard_as": "nulla.",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "Ora",
+   "start": 365.42,
+   "end": 365.58,
+   "heard_as": "Ora",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "sparisci,",
+   "start": 365.58,
+   "end": 366.14,
+   "heard_as": "sparisci,",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "cagnolino.",
+   "start": 366.24,
+   "end": 366.64,
+   "heard_as": "Cagnolino,",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "Vai",
+   "start": 367.24,
+   "end": 367.36,
+   "heard_as": "vai",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "a",
+   "start": 367.36,
+   "end": 367.48,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "piangere",
+   "start": 367.48,
+   "end": 367.82,
+   "heard_as": "piangere",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "dall'infermiera",
+   "start": 367.82,
+   "end": 368.56,
+   "heard_as": "dall 'infermiera",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "e",
+   "start": 368.56,
+   "end": 368.74,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "falle",
+   "start": 368.74,
+   "end": 369.04,
+   "heard_as": "falle",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "curare",
+   "start": 369.04,
+   "end": 369.32,
+   "heard_as": "curare",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "quel",
+   "start": 369.32,
+   "end": 369.52,
+   "heard_as": "quel",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "braccio.",
+   "start": 369.52,
+   "end": 369.98,
+   "heard_as": "braccio.",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "Lo",
+   "start": 370.97,
+   "end": 371.08,
+   "heard_as": "Lo",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "liquidò",
+   "start": 371.08,
+   "end": 371.371,
+   "heard_as": "liquido",
+   "status": "written differently"
+  },
+  {
+   "sent": 127,
+   "word": "con",
+   "start": 371.42,
+   "end": 371.7,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "un",
+   "start": 371.7,
+   "end": 371.82,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "gesto",
+   "start": 371.82,
+   "end": 372.14,
+   "heard_as": "gesto",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "annoiato",
+   "start": 372.14,
+   "end": 372.56,
+   "heard_as": "annoiato",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "della",
+   "start": 372.56,
+   "end": 372.76,
+   "heard_as": "della",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "mano.",
+   "start": 372.76,
+   "end": 373.12,
+   "heard_as": "mano.",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "Giulio",
+   "start": 374.12,
+   "end": 374.42,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "si",
+   "start": 374.42,
+   "end": 374.54,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "trascinò",
+   "start": 374.54,
+   "end": 374.925,
+   "heard_as": "trascino",
+   "status": "written differently"
+  },
+  {
+   "sent": 128,
+   "word": "via,",
+   "start": 374.98,
+   "end": 375.26,
+   "heard_as": "via,",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "a",
+   "start": 375.62,
+   "end": 375.72,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "testa",
+   "start": 375.72,
+   "end": 376.0,
+   "heard_as": "testa",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "bassa,",
+   "start": 376.0,
+   "end": 376.48,
+   "heard_as": "bassa,",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "mentre",
+   "start": 376.94,
+   "end": 377.08,
+   "heard_as": "mentre",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "la",
+   "start": 377.08,
+   "end": 377.34,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "folla",
+   "start": 377.34,
+   "end": 377.6,
+   "heard_as": "folla",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "si",
+   "start": 377.6,
+   "end": 377.78,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "apriva",
+   "start": 377.78,
+   "end": 378.06,
+   "heard_as": "apriva",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "in",
+   "start": 378.06,
+   "end": 378.2,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "fretta",
+   "start": 378.2,
+   "end": 378.56,
+   "heard_as": "fretta",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "per",
+   "start": 378.56,
+   "end": 378.72,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "non",
+   "start": 378.72,
+   "end": 378.86,
+   "heard_as": "non",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "essere",
+   "start": 378.86,
+   "end": 379.12,
+   "heard_as": "essere",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "sfiorata.",
+   "start": 379.12,
+   "end": 379.74,
+   "heard_as": "sfiorata.",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Sparito",
+   "start": 380.91,
+   "end": 381.32,
+   "heard_as": "Sparito",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Giulio,",
+   "start": 381.32,
+   "end": 381.82,
+   "heard_as": "Giulio,",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "l'attenzione",
+   "start": 382.22,
+   "end": 382.72,
+   "heard_as": "l 'attenzione",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "di",
+   "start": 382.72,
+   "end": 382.88,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Demetrio",
+   "start": 382.88,
+   "end": 383.36,
+   "heard_as": "Demetrio",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "si",
+   "start": 383.36,
+   "end": 383.52,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "spostò",
+   "start": 383.52,
+   "end": 383.92,
+   "heard_as": "spostò",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "su",
+   "start": 383.92,
+   "end": 384.04,
+   "heard_as": "su",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Viola.",
+   "start": 384.04,
+   "end": 384.5,
+   "heard_as": "viola.",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "Il",
+   "start": 385.22,
+   "end": 385.36,
+   "heard_as": "Il",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "suo",
+   "start": 385.36,
+   "end": 385.52,
+   "heard_as": "suo",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "viso",
+   "start": 385.52,
+   "end": 385.86,
+   "heard_as": "viso",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "era",
+   "start": 385.86,
+   "end": 385.98,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "una",
+   "start": 385.98,
+   "end": 386.16,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "maschera",
+   "start": 386.16,
+   "end": 386.54,
+   "heard_as": "maschera",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "indecifrabile.",
+   "start": 386.54,
+   "end": 387.36,
+   "heard_as": "indecifrabile.",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "Affrontare",
+   "start": 388.46,
+   "end": 388.96,
+   "heard_as": "Affrontare",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "Giulio",
+   "start": 388.96,
+   "end": 389.32,
+   "heard_as": "Giulio",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "era",
+   "start": 389.32,
+   "end": 389.48,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "stato",
+   "start": 389.48,
+   "end": 389.74,
+   "heard_as": "stato",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "uno",
+   "start": 389.74,
+   "end": 389.92,
+   "heard_as": "uno",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "scherzo.",
+   "start": 389.92,
+   "end": 390.48,
+   "heard_as": "scherzo,",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "Ma",
+   "start": 391.18,
+   "end": 391.28,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "quel",
+   "start": 391.28,
+   "end": 391.48,
+   "heard_as": "quel",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "sorriso",
+   "start": 391.48,
+   "end": 391.92,
+   "heard_as": "sorriso",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "predatorio",
+   "start": 391.92,
+   "end": 392.46,
+   "heard_as": "predatorio",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "che",
+   "start": 392.46,
+   "end": 392.72,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "si",
+   "start": 392.72,
+   "end": 392.86,
+   "heard_as": "si",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "era",
+   "start": 392.86,
+   "end": 392.96,
+   "heard_as": "era",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "aperto",
+   "start": 392.96,
+   "end": 393.34,
+   "heard_as": "aperto",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "sulle",
+   "start": 393.34,
+   "end": 393.64,
+   "heard_as": "sulle",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "labbra",
+   "start": 393.64,
+   "end": 393.92,
+   "heard_as": "labbra",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "di",
+   "start": 393.92,
+   "end": 394.08,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "Demetrio...",
+   "start": 394.08,
+   "end": 394.6,
+   "heard_as": "Demetrio",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "la",
+   "start": 394.6,
+   "end": 394.9,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "fece",
+   "start": 395.34,
+   "end": 395.58,
+   "heard_as": "fecerà",
+   "status": "written differently"
+  },
+  {
+   "sent": 134,
+   "word": "rabbrividire.",
+   "start": 395.58,
+   "end": 396.3,
+   "heard_as": "fecerà brividire.",
+   "status": "written differently"
+  },
+  {
+   "sent": 135,
+   "word": "Non",
+   "start": 397.54,
+   "end": 397.68,
+   "heard_as": "Non",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "mi",
+   "start": 397.68,
+   "end": 397.82,
+   "heard_as": "mi",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "lascerò",
+   "start": 397.82,
+   "end": 398.22,
+   "heard_as": "lascerò",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "neanche",
+   "start": 398.22,
+   "end": 398.6,
+   "heard_as": "neanche",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "sfiorare",
+   "start": 398.6,
+   "end": 399.2,
+   "heard_as": "sfiorare.",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "Viola",
+   "start": 400.13,
+   "end": 400.4,
+   "heard_as": "Viola",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "scattò",
+   "start": 400.4,
+   "end": 400.84,
+   "heard_as": "scattò",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "per",
+   "start": 400.84,
+   "end": 401.0,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "scappare.",
+   "start": 401.0,
+   "end": 401.54,
+   "heard_as": "scappare,",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "Ma",
+   "start": 402.18,
+   "end": 402.26,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "Demetrio,",
+   "start": 402.26,
+   "end": 402.84,
+   "heard_as": "Demetrio,",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "veloce",
+   "start": 403.06,
+   "end": 403.4,
+   "heard_as": "veloce",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "come",
+   "start": 403.4,
+   "end": 403.6,
+   "heard_as": "come",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "un",
+   "start": 403.6,
+   "end": 403.74,
+   "heard_as": "un",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "lampo,",
+   "start": 403.74,
+   "end": 404.22,
+   "heard_as": "lampo,",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "le",
+   "start": 404.62,
+   "end": 404.64,
+   "heard_as": "le",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "afferrò",
+   "start": 404.64,
+   "end": 405.02,
+   "heard_as": "afferrò",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "la",
+   "start": 405.02,
+   "end": 405.16,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "vita,",
+   "start": 405.16,
+   "end": 405.42,
+   "heard_as": "vita",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "inchiodandola",
+   "start": 405.42,
+   "end": 406.4,
+   "heard_as": "inchiodando la",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "a",
+   "start": 406.4,
+   "end": 406.4,
+   "heard_as": "",
+   "status": "not heard (time filled in)"
+  },
+  {
+   "sent": 138,
+   "word": "sé,",
+   "start": 406.4,
+   "end": 406.54,
+   "heard_as": "se,",
+   "status": "written differently"
+  },
+  {
+   "sent": 139,
+   "word": "come",
+   "start": 407.33,
+   "end": 407.46,
+   "heard_as": "come",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "se",
+   "start": 407.46,
+   "end": 407.54,
+   "heard_as": "si",
+   "status": "written differently"
+  },
+  {
+   "sent": 139,
+   "word": "avesse",
+   "start": 407.62,
+   "end": 407.94,
+   "heard_as": "avesse",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "letto",
+   "start": 407.94,
+   "end": 408.22,
+   "heard_as": "letto",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "in",
+   "start": 408.22,
+   "end": 408.34,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "anticipo",
+   "start": 408.34,
+   "end": 409.0,
+   "heard_as": "anticipo",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "ogni",
+   "start": 409.07,
+   "end": 409.32,
+   "heard_as": "ogni",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "sua",
+   "start": 409.32,
+   "end": 409.6,
+   "heard_as": "sua",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "intenzione.",
+   "start": 409.6,
+   "end": 410.36,
+   "heard_as": "intenzione.",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "Mettimi",
+   "start": 411.58,
+   "end": 412.02,
+   "heard_as": "Mettimi",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "giù,",
+   "start": 412.02,
+   "end": 412.26,
+   "heard_as": "giù,",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "stronzo!",
+   "start": 412.46,
+   "end": 412.96,
+   "heard_as": "stronzo!",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "urlò",
+   "start": 413.65,
+   "end": 413.98,
+   "heard_as": "urlò",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "lei.",
+   "start": 413.98,
+   "end": 414.3,
+   "heard_as": "lei.",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "Si",
+   "start": 415.19,
+   "end": 415.34,
+   "heard_as": "Si",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "dimenò",
+   "start": 415.34,
+   "end": 415.74,
+   "heard_as": "dimenò",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "con",
+   "start": 415.74,
+   "end": 415.96,
+   "heard_as": "con",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "tutta",
+   "start": 415.96,
+   "end": 416.28,
+   "heard_as": "tutta",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "la",
+   "start": 416.28,
+   "end": 416.38,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "forza",
+   "start": 416.38,
+   "end": 416.7,
+   "heard_as": "forza",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "che",
+   "start": 416.7,
+   "end": 416.82,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "aveva,",
+   "start": 416.82,
+   "end": 417.24,
+   "heard_as": "aveva,",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "ma",
+   "start": 417.69,
+   "end": 417.8,
+   "heard_as": "ma",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "lui",
+   "start": 417.8,
+   "end": 418.0,
+   "heard_as": "lui",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "se",
+   "start": 418.0,
+   "end": 418.14,
+   "heard_as": "se",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "la",
+   "start": 418.14,
+   "end": 418.26,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "caricò",
+   "start": 418.26,
+   "end": 418.62,
+   "heard_as": "caricò",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "in",
+   "start": 418.62,
+   "end": 418.72,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "spalla",
+   "start": 418.72,
+   "end": 419.08,
+   "heard_as": "spalla",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "senza",
+   "start": 419.08,
+   "end": 419.34,
+   "heard_as": "senza",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "il",
+   "start": 419.34,
+   "end": 419.6,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "minimo",
+   "start": 419.6,
+   "end": 419.96,
+   "heard_as": "minimo",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "sforzo.",
+   "start": 419.96,
+   "end": 420.48,
+   "heard_as": "sforzo.",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "Per",
+   "start": 421.25,
+   "end": 421.4,
+   "heard_as": "per",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "lui,",
+   "start": 421.4,
+   "end": 421.64,
+   "heard_as": "lui",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "Viola",
+   "start": 421.89,
+   "end": 422.22,
+   "heard_as": "viola",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "pesava",
+   "start": 422.22,
+   "end": 422.56,
+   "heard_as": "pesava",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "quanto",
+   "start": 422.56,
+   "end": 422.78,
+   "heard_as": "quanto",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "una",
+   "start": 422.78,
+   "end": 423.08,
+   "heard_as": "una",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "piuma.",
+   "start": 423.08,
+   "end": 423.52,
+   "heard_as": "piuma.",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "È",
+   "start": 424.57,
+   "end": 424.68,
+   "heard_as": "È",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "così",
+   "start": 424.68,
+   "end": 424.94,
+   "heard_as": "così",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "che",
+   "start": 424.94,
+   "end": 425.14,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "ringrazi",
+   "start": 425.14,
+   "end": 425.64,
+   "heard_as": "ringrazzi",
+   "status": "written differently"
+  },
+  {
+   "sent": 144,
+   "word": "il",
+   "start": 425.64,
+   "end": 425.72,
+   "heard_as": "il",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "tuo",
+   "start": 425.72,
+   "end": 425.86,
+   "heard_as": "tuo",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "eroe,",
+   "start": 425.86,
+   "end": 426.22,
+   "heard_as": "eroe,",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "mio",
+   "start": 426.56,
+   "end": 426.68,
+   "heard_as": "mio",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "fiore",
+   "start": 426.68,
+   "end": 426.94,
+   "heard_as": "fiore",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "di",
+   "start": 426.94,
+   "end": 427.1,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "Violetta?",
+   "start": 427.1,
+   "end": 427.45,
+   "heard_as": "violetta,",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "rise",
+   "start": 428.19,
+   "end": 428.408,
+   "heard_as": "risa",
+   "status": "written differently"
+  },
+  {
+   "sent": 145,
+   "word": "lui.",
+   "start": 428.48,
+   "end": 428.76,
+   "heard_as": "lui,",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "E",
+   "start": 429.49,
+   "end": 429.58,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "iniziò",
+   "start": 429.58,
+   "end": 429.863,
+   "heard_as": "inizio",
+   "status": "written differently"
+  },
+  {
+   "sent": 146,
+   "word": "a",
+   "start": 429.92,
+   "end": 430.02,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "camminare,",
+   "start": 430.02,
+   "end": 430.64,
+   "heard_as": "camminare,",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "ignorando",
+   "start": 431.08,
+   "end": 431.48,
+   "heard_as": "ignorando",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "del",
+   "start": 431.48,
+   "end": 431.7,
+   "heard_as": "del",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "tutto",
+   "start": 431.7,
+   "end": 431.96,
+   "heard_as": "tutto",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "i",
+   "start": 431.98,
+   "end": 432.14,
+   "heard_as": "i",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "pugni",
+   "start": 432.14,
+   "end": 432.46,
+   "heard_as": "pugni",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "disperati",
+   "start": 432.46,
+   "end": 433.14,
+   "heard_as": "disperati",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "che",
+   "start": 433.14,
+   "end": 433.32,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "lei",
+   "start": 433.32,
+   "end": 433.58,
+   "heard_as": "lei",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "gli",
+   "start": 433.58,
+   "end": 433.76,
+   "heard_as": "gli",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "dava",
+   "start": 433.76,
+   "end": 433.98,
+   "heard_as": "dava",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "sulla",
+   "start": 433.98,
+   "end": 434.2,
+   "heard_as": "sulla",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "schiena.",
+   "start": 434.2,
+   "end": 434.82,
+   "heard_as": "schiena,",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "Dove",
+   "start": 435.6,
+   "end": 435.7,
+   "heard_as": "dove",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "la",
+   "start": 435.7,
+   "end": 435.84,
+   "heard_as": "la",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "stava",
+   "start": 435.84,
+   "end": 436.08,
+   "heard_as": "stava",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "portando?",
+   "start": 436.08,
+   "end": 436.66,
+   "heard_as": "portando",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "E,",
+   "start": 436.66,
+   "end": 436.8,
+   "heard_as": "e",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "soprattutto,",
+   "start": 437.12,
+   "end": 437.52,
+   "heard_as": "soprattutto",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "che",
+   "start": 437.52,
+   "end": 437.91,
+   "heard_as": "che",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "cosa",
+   "start": 438.16,
+   "end": 438.38,
+   "heard_as": "cosa",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "aveva",
+   "start": 438.38,
+   "end": 438.64,
+   "heard_as": "aveva",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "intenzione",
+   "start": 438.64,
+   "end": 439.12,
+   "heard_as": "intenzione",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "di",
+   "start": 439.12,
+   "end": 439.26,
+   "heard_as": "di",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "farle?",
+   "start": 439.26,
+   "end": 439.68,
+   "heard_as": "farle.",
+   "status": "same"
+  }
+ ],
+ "heard_not_in_srt": [
+  [
+   123.58,
+   123.7,
+   "a",
+   0.24
+  ],
+  [
+   272.26,
+   272.46,
+   "a",
+   0.44
+  ],
+  [
+   321.38,
+   321.48,
+   "a",
+   0.82
+  ]
+ ],
+ "first": null
+}

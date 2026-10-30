@@ -1,0 +1,4350 @@
+{
+ "par|54.30-84.43|a0": {
+  "edl": [
+   {
+    "t0": 54.3,
+    "t1": 54.83,
+    "shot": 9,
+    "from": 37.15,
+    "to": 37.68,
+    "line": null,
+    "reuse": true,
+    "why": "Ava glares, leading into her accusation"
+   },
+   {
+    "t0": 54.83,
+    "t1": 59.72,
+    "shot": 10,
+    "from": 37.68,
+    "to": 42.06,
+    "line": 17,
+    "reuse": false,
+    "why": "Ava accuses them of kissing in public, mouth starts with voice"
+   },
+   {
+    "t0": 59.72,
+    "t1": 60.72,
+    "shot": 10,
+    "from": 42.16,
+    "to": 43.04,
+    "line": 18,
+    "reuse": false,
+    "why": "Ava: 'Ihr seid das Letzte!'"
+   },
+   {
+    "t0": 60.72,
+    "t1": 65.74,
+    "shot": 11,
+    "from": 44.32,
+    "to": 47.84,
+    "line": 19,
+    "reuse": false,
+    "why": "Aiden's thoughts racing, slowed own footage"
+   },
+   {
+    "t0": 65.74,
+    "t1": 68.14,
+    "shot": 12,
+    "from": 47.84,
+    "to": 50.32,
+    "line": 20,
+    "reuse": false,
+    "why": "Gym day memory, Ava, story order"
+   },
+   {
+    "t0": 68.14,
+    "t1": 71.45,
+    "shot": 13,
+    "from": 50.32,
+    "to": 53.56,
+    "line": 21,
+    "reuse": false,
+    "why": "Aiden recalls someone watching them, before he speaks"
+   },
+   {
+    "t0": 71.45,
+    "t1": 73.0,
+    "shot": 14,
+    "from": 53.76,
+    "to": 55.36,
+    "line": 22,
+    "reuse": false,
+    "why": "Aiden says 'Lass es mich erklären', mouth on voice"
+   },
+   {
+    "t0": 73.0,
+    "t1": 77.5,
+    "shot": 15,
+    "from": 55.44,
+    "to": 59.12,
+    "line": 23,
+    "reuse": false,
+    "why": "Aiden calm and tense, forcing a steady voice"
+   },
+   {
+    "t0": 77.5,
+    "t1": 80.26,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.26,
+    "line": 23,
+    "reuse": false,
+    "why": "Aiden B-roll, mouth closed, inner turmoil"
+   },
+   {
+    "t0": 80.26,
+    "t1": 84.43,
+    "shot": 16,
+    "from": 59.12,
+    "to": 63.32,
+    "line": 24,
+    "reuse": false,
+    "why": "Aiden pleads: not what it looks like, trust me"
+   }
+  ],
+  "notes": "Shot 15 and the shot 22 B-roll are used over the long narration line. Lines 24 and 25 share one continuous shot 16 piece."
+ },
+ "par|34.36-54.30|a0": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 35.86,
+    "shot": 2,
+    "from": 6.52,
+    "to": 7.72,
+    "line": 10,
+    "reuse": false,
+    "why": "Ava thrusts the phone with the photo at Aiden, no mouth movement"
+   },
+   {
+    "t0": 35.86,
+    "t1": 38.02,
+    "shot": 7,
+    "from": 25.28,
+    "to": 27.01,
+    "line": 10,
+    "reuse": false,
+    "why": "The phone screen shows the sharp photo up close"
+   },
+   {
+    "t0": 38.02,
+    "t1": 40.92,
+    "shot": 7,
+    "from": 27.01,
+    "to": 28.9,
+    "line": 11,
+    "reuse": false,
+    "why": "Its own footage of the photo of the two in the car, slowed"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 12,
+    "reuse": true,
+    "why": "Ava holds the phone coolly while the narration describes the close faces"
+   },
+   {
+    "t0": 43.04,
+    "t1": 46.28,
+    "shot": 3,
+    "from": 8.56,
+    "to": 11.8,
+    "line": 13,
+    "reuse": true,
+    "why": "Aiden stares at the kiss-like photo, mouth closed"
+   },
+   {
+    "t0": 46.28,
+    "t1": 50.9,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Flashback in the car, from the moment the narration moves to the spy; skips the mouth-moving seconds"
+   },
+   {
+    "t0": 50.9,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 16,
+    "reuse": true,
+    "why": "Ava glares angrily at him in the office, hatred in her eyes"
+   }
+  ],
+  "notes": "Little photo footage was free, so lines 12 and 13 use reaction shots instead of the photo. Shot 8 spans lines 14 and 15 slowed to 0.8x, with its mouth-moving seconds skipped. Line 11 is slowed to about 0.65x."
+ },
+ "par|113.37-142.64|a0": {
+  "edl": [
+   {
+    "t0": 113.37,
+    "t1": 116.7,
+    "shot": 22,
+    "from": 85.44,
+    "to": 88.13,
+    "line": 33,
+    "reuse": false,
+    "why": "Aiden stunned, blinking, mouth closed, for 'fassungslos' and cornered"
+   },
+   {
+    "t0": 116.7,
+    "t1": 119.16,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.4,
+    "line": 34,
+    "reuse": true,
+    "why": "Aiden serious and cornered, silent lead-in to his outburst"
+   },
+   {
+    "t0": 119.16,
+    "t1": 122.0,
+    "shot": 23,
+    "from": 88.88,
+    "to": 91.04,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden's mouth moves as he asks why she doesn't trust him"
+   },
+   {
+    "t0": 122.0,
+    "t1": 123.0,
+    "shot": 24,
+    "from": 91.04,
+    "to": 92.0,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden hurt, waiting for her answer"
+   },
+   {
+    "t0": 123.0,
+    "t1": 123.88,
+    "shot": 25,
+    "from": 92.0,
+    "to": 92.9,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava scoffs, leading into her reply"
+   },
+   {
+    "t0": 123.88,
+    "t1": 126.6,
+    "shot": 26,
+    "from": 94.04,
+    "to": 95.8,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava's mouth starts with 'Why should I trust you?'"
+   },
+   {
+    "t0": 126.6,
+    "t1": 129.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 18.88,
+    "line": 36,
+    "reuse": true,
+    "why": "Aiden shocked, listening while she hisses back"
+   },
+   {
+    "t0": 129.0,
+    "t1": 133.56,
+    "shot": 26,
+    "from": 95.8,
+    "to": 98.96,
+    "line": 37,
+    "reuse": false,
+    "why": "Ava asks what reason he ever gave her to trust him"
+   },
+   {
+    "t0": 133.56,
+    "t1": 136.0,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 38,
+    "reuse": false,
+    "why": "Aiden with back turned begins pacing as Ava stands stern"
+   },
+   {
+    "t0": 136.0,
+    "t1": 138.0,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 38,
+    "reuse": true,
+    "why": "Ava watches him pacing behind his desk"
+   },
+   {
+    "t0": 138.0,
+    "t1": 142.64,
+    "shot": 28,
+    "from": 100.88,
+    "to": 104.24,
+    "line": 39,
+    "reuse": false,
+    "why": "His fingers slide along the wooden desk edge"
+   }
+  ],
+  "notes": "Own footage is much shorter than the dub time, so several pieces run slow (0.65-0.8x) and two cutaways fill gaps. The fingers shot starts slightly before the line that names it."
+ },
+ "par|84.43-113.37|a0": {
+  "edl": [
+   {
+    "t0": 84.43,
+    "t1": 87.06,
+    "shot": 17,
+    "from": 64.0,
+    "to": 67.25,
+    "line": 26,
+    "reuse": false,
+    "why": "Aiden explains the gym visit, mouth moving with the voice"
+   },
+   {
+    "t0": 87.06,
+    "t1": 91.3,
+    "shot": 18,
+    "from": 68.32,
+    "to": 73.28,
+    "line": 27,
+    "reuse": false,
+    "why": "Aiden explains the bruises and 'that's all', carrying into line 28"
+   },
+   {
+    "t0": 91.3,
+    "t1": 92.65,
+    "shot": 19,
+    "from": 73.6,
+    "to": 75.2,
+    "line": 28,
+    "reuse": false,
+    "why": "Ava rolls her eyes in disbelief before she speaks"
+   },
+   {
+    "t0": 92.65,
+    "t1": 93.9,
+    "shot": 20,
+    "from": 76.3,
+    "to": 77.3,
+    "line": 29,
+    "reuse": false,
+    "why": "Ava says 'Oh bitte', mouth starts with the voice"
+   },
+   {
+    "t0": 93.9,
+    "t1": 95.28,
+    "shot": 20,
+    "from": 77.3,
+    "to": 78.4,
+    "line": 30,
+    "reuse": false,
+    "why": "Ava says she doesn't buy it, mouth starts at 94.0"
+   },
+   {
+    "t0": 95.28,
+    "t1": 97.28,
+    "shot": 22,
+    "from": 85.5,
+    "to": 87.5,
+    "line": 30,
+    "reuse": false,
+    "why": "Aiden listens, stunned; B-roll while Ava's line finishes"
+   },
+   {
+    "t0": 97.28,
+    "t1": 99.68,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava glares, anger building, no mouth movement"
+   },
+   {
+    "t0": 99.68,
+    "t1": 101.68,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stern, searching for an outlet, Aiden's back in frame"
+   },
+   {
+    "t0": 101.68,
+    "t1": 103.7,
+    "shot": 54,
+    "from": 185.5,
+    "to": 187.44,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stands tense, about to explode"
+   },
+   {
+    "t0": 103.7,
+    "t1": 105.6,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava with phone, cold fury, mouth closed"
+   },
+   {
+    "t0": 105.6,
+    "t1": 107.6,
+    "shot": 25,
+    "from": 92.0,
+    "to": 94.0,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava scoffs and shuts her eyes, tension before the outburst"
+   },
+   {
+    "t0": 107.6,
+    "t1": 110.26,
+    "shot": 30,
+    "from": 111.84,
+    "to": 114.32,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava furious and annoyed; no cup shot exists"
+   },
+   {
+    "t0": 110.26,
+    "t1": 112.82,
+    "shot": 21,
+    "from": 79.92,
+    "to": 81.78,
+    "line": 32,
+    "reuse": false,
+    "why": "Ava calls him a pathetic liar, mouth starts with the voice"
+   },
+   {
+    "t0": 112.82,
+    "t1": 113.37,
+    "shot": 31,
+    "from": 114.4,
+    "to": 114.95,
+    "line": 32,
+    "reuse": false,
+    "why": "Aiden's serious face as a short reaction, mouth closed"
+   }
+  ],
+  "notes": "No coffee-cup shot exists, so Ava's non-talking reaction shots carry line 31. Lines 30 and 32 are slowed to about 0.7-0.8x; line 30 also uses a 2 s Aiden cutaway."
+ },
+ "par|142.64-174.04|a0": {
+  "edl": [
+   {
+    "t0": 142.64,
+    "t1": 143.16,
+    "shot": 39,
+    "from": 137.4,
+    "to": 137.92,
+    "line": null,
+    "reuse": false,
+    "why": "Aiden frowns, listening to Ava's betrayal accusation, before he answers"
+   },
+   {
+    "t0": 143.16,
+    "t1": 144.4,
+    "shot": 29,
+    "from": 104.57,
+    "to": 106.07,
+    "line": 40,
+    "reuse": false,
+    "why": "Aiden starts speaking 'Ich verstehe es nicht' with the voice"
+   },
+   {
+    "t0": 144.4,
+    "t1": 147.75,
+    "shot": 29,
+    "from": 108.02,
+    "to": 110.25,
+    "line": 42,
+    "reuse": false,
+    "why": "Aiden asks who sent the photos (lines 41-42), slowed"
+   },
+   {
+    "t0": 147.75,
+    "t1": 149.02,
+    "shot": 29,
+    "from": 110.25,
+    "to": 111.48,
+    "line": 43,
+    "reuse": false,
+    "why": "Aiden asks whether she is having him followed"
+   },
+   {
+    "t0": 149.02,
+    "t1": 152.0,
+    "shot": 30,
+    "from": 111.84,
+    "to": 114.32,
+    "line": 44,
+    "reuse": false,
+    "why": "Ava huffs with crossed arms, sensing a diversion"
+   },
+   {
+    "t0": 152.0,
+    "t1": 153.71,
+    "shot": 54,
+    "from": 185.6,
+    "to": 187.31,
+    "line": 44,
+    "reuse": false,
+    "why": "Ava stands still and silent, mouth closed, before she speaks"
+   },
+   {
+    "t0": 153.71,
+    "t1": 155.38,
+    "shot": 32,
+    "from": 116.4,
+    "to": 118.07,
+    "line": 45,
+    "reuse": false,
+    "why": "Ava says 'Lenk nicht vom Thema ab', mouth starts with the voice"
+   },
+   {
+    "t0": 155.38,
+    "t1": 158.54,
+    "shot": 32,
+    "from": 118.68,
+    "to": 121.84,
+    "line": 46,
+    "reuse": false,
+    "why": "Ava demands the truth, fist pointed"
+   },
+   {
+    "t0": 158.54,
+    "t1": 160.34,
+    "shot": 33,
+    "from": 122.64,
+    "to": 124.08,
+    "line": 47,
+    "reuse": false,
+    "why": "Aiden protests 'Ich sage dir die Wahrheit'"
+   },
+   {
+    "t0": 160.34,
+    "t1": 164.28,
+    "shot": 35,
+    "from": 124.88,
+    "to": 128.08,
+    "line": 48,
+    "reuse": false,
+    "why": "Aiden continues, then says he must know who took the photos"
+   },
+   {
+    "t0": 164.28,
+    "t1": 164.89,
+    "shot": 34,
+    "from": 124.2,
+    "to": 124.76,
+    "line": null,
+    "reuse": false,
+    "why": "Ava listens silently before she screams"
+   },
+   {
+    "t0": 164.89,
+    "t1": 166.65,
+    "shot": 36,
+    "from": 128.08,
+    "to": 129.84,
+    "line": 49,
+    "reuse": false,
+    "why": "Ava screams 'Das spielt keine Rolle'"
+   },
+   {
+    "t0": 166.65,
+    "t1": 168.28,
+    "shot": 37,
+    "from": 129.84,
+    "to": 131.5,
+    "line": 49,
+    "reuse": false,
+    "why": "Ava keeps shouting at Aiden, phone in hand"
+   },
+   {
+    "t0": 168.28,
+    "t1": 171.4,
+    "shot": 37,
+    "from": 131.5,
+    "to": 134.56,
+    "line": 50,
+    "reuse": false,
+    "why": "Ava: 'Zum Glück habe ich sie', mouth restarts with the voice"
+   },
+   {
+    "t0": 171.4,
+    "t1": 174.04,
+    "shot": 38,
+    "from": 134.56,
+    "to": 137.12,
+    "line": 51,
+    "reuse": false,
+    "why": "Close-up Ava: she would never have found out about their dirty game"
+   }
+  ],
+  "notes": "Lines 41-42 are slowed to about 0.67x because B-roll under 2 s is not allowed there. Shot 54 is only 1.7 s as a silent Ava filler. Piece 1 reuses a shared Aiden reaction shot."
+ },
+ "par|0.00-34.36|a0": {
+  "edl": [
+   {
+    "t0": 0.0,
+    "t1": 1.1,
+    "shot": 11,
+    "from": 44.24,
+    "to": 45.34,
+    "line": 0,
+    "reuse": false,
+    "why": "Aiden pleads, mouth starts with the voice"
+   },
+   {
+    "t0": 1.1,
+    "t1": 3.08,
+    "shot": 16,
+    "from": 59.12,
+    "to": 61.1,
+    "line": 1,
+    "reuse": false,
+    "why": "Aiden talks as he says it's not what it looks like"
+   },
+   {
+    "t0": 3.08,
+    "t1": 4.2,
+    "shot": 14,
+    "from": 53.76,
+    "to": 54.88,
+    "line": 2,
+    "reuse": false,
+    "why": "Aiden says 'let me explain', mouth moving on cue"
+   },
+   {
+    "t0": 4.2,
+    "t1": 5.6,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden shocked and uneasy before the narration"
+   },
+   {
+    "t0": 5.6,
+    "t1": 11.6,
+    "shot": 3,
+    "from": 8.56,
+    "to": 12.96,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden stares, taking her abuse"
+   },
+   {
+    "t0": 11.6,
+    "t1": 13.6,
+    "shot": 9,
+    "from": 35.2,
+    "to": 37.2,
+    "line": 3,
+    "reuse": false,
+    "why": "B-roll: Ava glares angrily, the yelling and insults"
+   },
+   {
+    "t0": 13.6,
+    "t1": 14.6,
+    "shot": 4,
+    "from": 12.96,
+    "to": 13.8,
+    "line": 4,
+    "reuse": false,
+    "why": "Aiden anxious as her rage builds"
+   },
+   {
+    "t0": 14.6,
+    "t1": 16.9,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 4,
+    "reuse": false,
+    "why": "Ava stands holding the phone, furious"
+   },
+   {
+    "t0": 16.9,
+    "t1": 19.9,
+    "shot": 2,
+    "from": 5.84,
+    "to": 7.92,
+    "line": 5,
+    "reuse": false,
+    "why": "Ava thrusts the phone toward his face when it is told"
+   },
+   {
+    "t0": 19.9,
+    "t1": 22.7,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.3,
+    "line": 5,
+    "reuse": false,
+    "why": "B-roll: Aiden stunned by the near head hit"
+   },
+   {
+    "t0": 22.7,
+    "t1": 27.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 19.44,
+    "line": 6,
+    "reuse": false,
+    "why": "Aiden stares, recognising it immediately"
+   },
+   {
+    "t0": 27.0,
+    "t1": 28.43,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 6,
+    "reuse": true,
+    "why": "Aiden's uneasy face before the photo is named"
+   },
+   {
+    "t0": 28.43,
+    "t1": 34.36,
+    "shot": 7,
+    "from": 19.44,
+    "to": 24.34,
+    "line": 7,
+    "reuse": false,
+    "why": "Phone showing the photo of Aiden and Charlotte in the parking lot"
+   }
+  ],
+  "notes": "Group 3-6 lacks enough footage, so several pieces run at 0.69-0.8x. Shot 14 mouth keeps moving briefly past line 2's end."
+ },
+ "par|235.80-263.71|a0": {
+  "edl": [
+   {
+    "t0": 235.8,
+    "t1": 236.3,
+    "shot": 56,
+    "from": 196.78,
+    "to": 197.28,
+    "line": 70,
+    "reuse": true,
+    "why": "Ava leads into her outburst; mouth is moving as the line starts"
+   },
+   {
+    "t0": 236.3,
+    "t1": 237.9,
+    "shot": 57,
+    "from": 197.28,
+    "to": 198.98,
+    "line": 70,
+    "reuse": false,
+    "why": "Ava asks 'how could you do this to me'"
+   },
+   {
+    "t0": 237.9,
+    "t1": 242.18,
+    "shot": 57,
+    "from": 198.98,
+    "to": 203.21,
+    "line": 71,
+    "reuse": false,
+    "why": "Ava speaks of the affair with her best friend"
+   },
+   {
+    "t0": 242.18,
+    "t1": 246.17,
+    "shot": 57,
+    "from": 203.21,
+    "to": 207.2,
+    "line": 72,
+    "reuse": false,
+    "why": "Ava says the marriage is a joke to him"
+   },
+   {
+    "t0": 246.17,
+    "t1": 247.84,
+    "shot": 58,
+    "from": 207.2,
+    "to": 208.88,
+    "line": 72,
+    "reuse": false,
+    "why": "Ava goes on about how it looks to others"
+   },
+   {
+    "t0": 247.84,
+    "t1": 250.5,
+    "shot": 58,
+    "from": 209.0,
+    "to": 211.82,
+    "line": 73,
+    "reuse": false,
+    "why": "Ava says her family was right about him"
+   },
+   {
+    "t0": 250.5,
+    "t1": 253.1,
+    "shot": 58,
+    "from": 211.82,
+    "to": 215.0,
+    "line": 74,
+    "reuse": false,
+    "why": "Ava calls the marriage a catastrophe; own footage trimmed to fit"
+   },
+   {
+    "t0": 253.1,
+    "t1": 255.15,
+    "shot": 22,
+    "from": 85.6,
+    "to": 87.65,
+    "line": 75,
+    "reuse": true,
+    "why": "Aiden stunned and silent before he laughs; mouth closed"
+   },
+   {
+    "t0": 255.15,
+    "t1": 257.43,
+    "shot": 59,
+    "from": 216.16,
+    "to": 218.0,
+    "line": 75,
+    "reuse": false,
+    "why": "Aiden laughs humorlessly, leading into his reply"
+   },
+   {
+    "t0": 257.43,
+    "t1": 263.71,
+    "shot": 59,
+    "from": 218.0,
+    "to": 224.32,
+    "line": 76,
+    "reuse": false,
+    "why": "Aiden's retort about vows and being tormented, carried through lines 76 and 77"
+   }
+  ],
+  "notes": "Line 75 laugh appears about 0.7 s after the narration begins, because the B-roll must last at least 2 s. Lines 76 and 77 are cut as one continuous piece."
+ },
+ "par|203.92-235.80|a0": {
+  "edl": [
+   {
+    "t0": 203.92,
+    "t1": 206.32,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.52,
+    "line": 61,
+    "reuse": false,
+    "why": "Ava stands and glares at him, shaken; mouth closed"
+   },
+   {
+    "t0": 206.32,
+    "t1": 208.34,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 61,
+    "reuse": false,
+    "why": "Close tense Ava, mouth still, leads into her outburst"
+   },
+   {
+    "t0": 208.34,
+    "t1": 211.86,
+    "shot": 50,
+    "from": 167.12,
+    "to": 170.4,
+    "line": 62,
+    "reuse": false,
+    "why": "Ava accuses them of going behind her back, mouth starts with voice"
+   },
+   {
+    "t0": 211.86,
+    "t1": 214.14,
+    "shot": 52,
+    "from": 171.92,
+    "to": 174.2,
+    "line": 63,
+    "reuse": false,
+    "why": "Ava keeps talking, upset, about what she saw"
+   },
+   {
+    "t0": 214.14,
+    "t1": 217.66,
+    "shot": 52,
+    "from": 176.5,
+    "to": 179.36,
+    "line": 64,
+    "reuse": false,
+    "why": "Near tears, Ava says she feels like an idiot"
+   },
+   {
+    "t0": 217.66,
+    "t1": 221.34,
+    "shot": 53,
+    "from": 180.4,
+    "to": 183.4,
+    "line": 65,
+    "reuse": false,
+    "why": "Aiden denies anything between them, mouth starts on cue"
+   },
+   {
+    "t0": 221.34,
+    "t1": 222.38,
+    "shot": 54,
+    "from": 185.48,
+    "to": 186.52,
+    "line": 65,
+    "reuse": false,
+    "why": "Ava listens, serious, before the hand-on-chest narration"
+   },
+   {
+    "t0": 222.38,
+    "t1": 223.78,
+    "shot": 53,
+    "from": 183.88,
+    "to": 185.28,
+    "line": 66,
+    "reuse": false,
+    "why": "Aiden puts his hand on his chest as narrated"
+   },
+   {
+    "t0": 223.78,
+    "t1": 224.95,
+    "shot": 44,
+    "from": 151.12,
+    "to": 152.28,
+    "line": 67,
+    "reuse": false,
+    "why": "Ava listens silently, leading into his oath"
+   },
+   {
+    "t0": 224.95,
+    "t1": 226.2,
+    "shot": 55,
+    "from": 187.44,
+    "to": 188.69,
+    "line": 67,
+    "reuse": false,
+    "why": "Aiden swears 'my word', hand on chest"
+   },
+   {
+    "t0": 226.2,
+    "t1": 227.75,
+    "shot": 25,
+    "from": 92.0,
+    "to": 93.55,
+    "line": 68,
+    "reuse": false,
+    "why": "Ava scoffs skeptically before answering"
+   },
+   {
+    "t0": 227.75,
+    "t1": 229.4,
+    "shot": 20,
+    "from": 76.24,
+    "to": 77.89,
+    "line": 68,
+    "reuse": false,
+    "why": "Ava says she doesn't believe him, mouth starts with voice"
+   },
+   {
+    "t0": 229.4,
+    "t1": 231.4,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.32,
+    "line": 69,
+    "reuse": false,
+    "why": "Aiden stands silent, mouth closed, while narration begins"
+   },
+   {
+    "t0": 231.4,
+    "t1": 235.8,
+    "shot": 56,
+    "from": 193.6,
+    "to": 197.28,
+    "line": 69,
+    "reuse": false,
+    "why": "Ava shakes her head, upset and tearful"
+   }
+  ],
+  "notes": "Line 69 group needed more than the 1.7 s of B-roll allowance; used a 2 s Aiden cutaway. Line 64 and the shot 56 piece run slower than 1.0 (about 0.8)."
+ },
+ "par|113.37-142.64|a1": {
+  "edl": [
+   {
+    "t0": 113.37,
+    "t1": 119.16,
+    "shot": 22,
+    "from": 85.0,
+    "to": 88.88,
+    "line": 33,
+    "reuse": false,
+    "why": "Aiden stunned and cornered, silent, own footage for both narration lines"
+   },
+   {
+    "t0": 119.16,
+    "t1": 122.0,
+    "shot": 23,
+    "from": 88.88,
+    "to": 91.04,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden's mouth moves as he asks why she doesn't trust him"
+   },
+   {
+    "t0": 122.0,
+    "t1": 123.0,
+    "shot": 24,
+    "from": 91.04,
+    "to": 92.0,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden hurt, waiting for her answer"
+   },
+   {
+    "t0": 123.0,
+    "t1": 123.88,
+    "shot": 25,
+    "from": 92.0,
+    "to": 92.9,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava scoffs, leading into her reply"
+   },
+   {
+    "t0": 123.88,
+    "t1": 126.6,
+    "shot": 26,
+    "from": 94.04,
+    "to": 95.8,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava's mouth starts with 'Why should I trust you?'"
+   },
+   {
+    "t0": 126.6,
+    "t1": 129.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 18.88,
+    "line": 36,
+    "reuse": true,
+    "why": "Aiden shocked, listening while she hisses back"
+   },
+   {
+    "t0": 129.0,
+    "t1": 133.56,
+    "shot": 26,
+    "from": 95.8,
+    "to": 98.96,
+    "line": 37,
+    "reuse": false,
+    "why": "Ava asks what reason he ever gave her to trust him"
+   },
+   {
+    "t0": 133.56,
+    "t1": 136.0,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 38,
+    "reuse": false,
+    "why": "Aiden with back turned begins pacing as Ava stands stern"
+   },
+   {
+    "t0": 136.0,
+    "t1": 138.0,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 38,
+    "reuse": true,
+    "why": "Ava watches him pacing behind his desk"
+   },
+   {
+    "t0": 138.0,
+    "t1": 142.64,
+    "shot": 28,
+    "from": 100.88,
+    "to": 104.24,
+    "line": 39,
+    "reuse": false,
+    "why": "His fingers slide along the wooden desk edge"
+   }
+  ],
+  "notes": "Lines 33-34 have only about 4 s of silent own footage for 5.8 s, so shot 22 plays at about 0.67x instead of using B-roll. Its first moments may show slight mouth movement."
+ },
+ "par|34.36-54.30|a1": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 39.0,
+    "shot": 7,
+    "from": 25.28,
+    "to": 29.04,
+    "line": 10,
+    "reuse": false,
+    "why": "Ava holds up the phone with the sharp photo; mouth-moving seconds skipped"
+   },
+   {
+    "t0": 39.0,
+    "t1": 43.04,
+    "shot": 3,
+    "from": 9.0,
+    "to": 12.96,
+    "line": 12,
+    "reuse": true,
+    "why": "Aiden stares in shock at the photo of the close faces, mouth closed"
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.2,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 13,
+    "reuse": true,
+    "why": "Ava stands with the phone as the kiss-like photo is described"
+   },
+   {
+    "t0": 45.2,
+    "t1": 46.28,
+    "shot": 6,
+    "from": 17.0,
+    "to": 18.08,
+    "line": 13,
+    "reuse": true,
+    "why": "Aiden's worried reaction leads into the flashback"
+   },
+   {
+    "t0": 46.28,
+    "t1": 50.9,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: the shot taken in the car, before any mouth movement"
+   },
+   {
+    "t0": 50.9,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares at him, hatred in her eyes, own footage slowed"
+   }
+  ],
+  "notes": "Shot 2 is unavailable, so Ava's phone thrust is not shown. Flashback shot 8 is not used for office lines 12-13 because of the location rule. Line 13 shows Ava only partly (shot 5, 2.2 s of its 2.2 s)."
+ },
+ "par|84.43-113.37|a1": {
+  "edl": [
+   {
+    "t0": 84.43,
+    "t1": 87.06,
+    "shot": 17,
+    "from": 64.0,
+    "to": 67.25,
+    "line": 26,
+    "reuse": false,
+    "why": "Aiden explains the gym visit, mouth moving with the voice"
+   },
+   {
+    "t0": 87.06,
+    "t1": 91.3,
+    "shot": 18,
+    "from": 68.32,
+    "to": 73.28,
+    "line": 27,
+    "reuse": false,
+    "why": "Aiden explains the bruises and 'that's all', carrying into line 28"
+   },
+   {
+    "t0": 91.3,
+    "t1": 92.65,
+    "shot": 19,
+    "from": 73.6,
+    "to": 75.2,
+    "line": 28,
+    "reuse": false,
+    "why": "Ava rolls her eyes in disbelief before she speaks"
+   },
+   {
+    "t0": 92.65,
+    "t1": 93.9,
+    "shot": 20,
+    "from": 76.3,
+    "to": 77.3,
+    "line": 29,
+    "reuse": false,
+    "why": "Ava says 'Oh bitte', mouth starts with the voice"
+   },
+   {
+    "t0": 93.9,
+    "t1": 97.28,
+    "shot": 20,
+    "from": 77.3,
+    "to": 79.5,
+    "line": 30,
+    "reuse": false,
+    "why": "Ava says she doesn't buy it, slowed own footage, no B-roll"
+   },
+   {
+    "t0": 97.28,
+    "t1": 99.68,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava glares, anger building, no mouth movement"
+   },
+   {
+    "t0": 99.68,
+    "t1": 101.68,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stern, searching for an outlet, Aiden's back in frame"
+   },
+   {
+    "t0": 101.68,
+    "t1": 103.7,
+    "shot": 54,
+    "from": 185.5,
+    "to": 187.44,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stands tense, about to explode"
+   },
+   {
+    "t0": 103.7,
+    "t1": 105.6,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava with phone, cold fury, mouth closed"
+   },
+   {
+    "t0": 105.6,
+    "t1": 107.6,
+    "shot": 25,
+    "from": 92.0,
+    "to": 94.0,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava scoffs and shuts her eyes, tension before the outburst"
+   },
+   {
+    "t0": 107.6,
+    "t1": 110.26,
+    "shot": 30,
+    "from": 111.84,
+    "to": 114.32,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava furious and annoyed; no cup shot exists"
+   },
+   {
+    "t0": 110.26,
+    "t1": 112.82,
+    "shot": 21,
+    "from": 79.92,
+    "to": 81.78,
+    "line": 32,
+    "reuse": false,
+    "why": "Ava calls him a pathetic liar, mouth starts with the voice"
+   },
+   {
+    "t0": 112.82,
+    "t1": 113.37,
+    "shot": 31,
+    "from": 114.4,
+    "to": 114.95,
+    "line": 32,
+    "reuse": false,
+    "why": "Aiden's serious face as a short reaction, mouth closed"
+   }
+  ],
+  "notes": "No cup shot exists; Ava's glare shots carry the outburst. Line 30's B-roll was removed; Ava's own footage plays slowed to about 0.65x instead."
+ },
+ "par|174.04-203.92|a0": {
+  "edl": [
+   {
+    "t0": 174.04,
+    "t1": 174.54,
+    "shot": 39,
+    "from": 138.2,
+    "to": 138.7,
+    "line": null,
+    "reuse": true,
+    "why": "Aiden listens, leading into Ava's accusation"
+   },
+   {
+    "t0": 174.54,
+    "t1": 178.86,
+    "shot": 40,
+    "from": 138.8,
+    "to": 143.12,
+    "line": 52,
+    "reuse": false,
+    "why": "Ava talking: humiliation and 'hanging out with her' (lines 52-53)"
+   },
+   {
+    "t0": 178.86,
+    "t1": 180.94,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.4,
+    "line": 53,
+    "reuse": true,
+    "why": "Aiden listens silently while Ava finishes accusing him"
+   },
+   {
+    "t0": 180.94,
+    "t1": 182.64,
+    "shot": 41,
+    "from": 143.5,
+    "to": 145.2,
+    "line": 54,
+    "reuse": false,
+    "why": "Aiden snaps 'What are you talking about?'"
+   },
+   {
+    "t0": 182.64,
+    "t1": 184.64,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 54,
+    "reuse": true,
+    "why": "Ava listens to him, silent, before the narration"
+   },
+   {
+    "t0": 184.64,
+    "t1": 187.91,
+    "shot": 42,
+    "from": 145.78,
+    "to": 147.92,
+    "line": 55,
+    "reuse": false,
+    "why": "Aiden tosses his head back in frustration, as narrated"
+   },
+   {
+    "t0": 187.91,
+    "t1": 190.89,
+    "shot": 43,
+    "from": 148.04,
+    "to": 151.04,
+    "line": 56,
+    "reuse": false,
+    "why": "Aiden: 'You were the one who said I should go out with Charlotte'"
+   },
+   {
+    "t0": 190.89,
+    "t1": 192.89,
+    "shot": 9,
+    "from": 35.4,
+    "to": 37.4,
+    "line": 56,
+    "reuse": true,
+    "why": "Ava glares at him after his line, mouth closed"
+   },
+   {
+    "t0": 192.89,
+    "t1": 194.24,
+    "shot": 48,
+    "from": 161.48,
+    "to": 162.56,
+    "line": 57,
+    "reuse": true,
+    "why": "Ava restless, pacing, as narrated"
+   },
+   {
+    "t0": 194.24,
+    "t1": 196.24,
+    "shot": 49,
+    "from": 164.44,
+    "to": 166.44,
+    "line": 57,
+    "reuse": true,
+    "why": "Aiden watches her pace, uneasy, before she answers"
+   },
+   {
+    "t0": 196.24,
+    "t1": 200.74,
+    "shot": 45,
+    "from": 152.48,
+    "to": 157.12,
+    "line": 58,
+    "reuse": false,
+    "why": "Ava upset: 'because I thought I could trust you, or at least her' (lines 58-59)"
+   },
+   {
+    "t0": 200.74,
+    "t1": 201.57,
+    "shot": 46,
+    "from": 157.2,
+    "to": 158.03,
+    "line": 60,
+    "reuse": true,
+    "why": "Aiden listens in silence before her next line"
+   },
+   {
+    "t0": 201.57,
+    "t1": 203.92,
+    "shot": 47,
+    "from": 158.24,
+    "to": 160.59,
+    "line": 60,
+    "reuse": false,
+    "why": "Ava: 'I've known Charlotte for years'"
+   }
+  ],
+  "notes": "Line 56's neutral Ava shot is a 2 s cutaway. Shot 40 runs continuously through the pause between lines 52 and 53, so Ava's mouth keeps moving about 0.4 s past her voice. Line 57's pacing footage is only 1.35 s of Ava, followed by Aiden watching."
+ },
+ "par|0.00-34.36|a1": {
+  "edl": [
+   {
+    "t0": 0.0,
+    "t1": 1.1,
+    "shot": 23,
+    "from": 88.88,
+    "to": 89.8,
+    "line": 0,
+    "reuse": false,
+    "why": "Aiden pleads aloud, mouth moving as the voice starts"
+   },
+   {
+    "t0": 1.1,
+    "t1": 3.08,
+    "shot": 29,
+    "from": 104.32,
+    "to": 106.3,
+    "line": 1,
+    "reuse": false,
+    "why": "Aiden talks in his office as he says it's not what it looks like"
+   },
+   {
+    "t0": 3.08,
+    "t1": 4.2,
+    "shot": 55,
+    "from": 187.44,
+    "to": 188.56,
+    "line": 2,
+    "reuse": false,
+    "why": "Aiden speaks, mouth moving as he asks to explain"
+   },
+   {
+    "t0": 4.2,
+    "t1": 5.6,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden shocked and uneasy before the narration"
+   },
+   {
+    "t0": 5.6,
+    "t1": 11.6,
+    "shot": 3,
+    "from": 8.56,
+    "to": 12.96,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden stares, taking her abuse"
+   },
+   {
+    "t0": 11.6,
+    "t1": 13.6,
+    "shot": 9,
+    "from": 35.2,
+    "to": 37.2,
+    "line": 3,
+    "reuse": false,
+    "why": "B-roll: Ava glares angrily, the yelling and insults"
+   },
+   {
+    "t0": 13.6,
+    "t1": 14.6,
+    "shot": 4,
+    "from": 12.96,
+    "to": 13.8,
+    "line": 4,
+    "reuse": false,
+    "why": "Aiden anxious as her rage builds"
+   },
+   {
+    "t0": 14.6,
+    "t1": 16.9,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 4,
+    "reuse": false,
+    "why": "Ava stands holding the phone, furious"
+   },
+   {
+    "t0": 16.9,
+    "t1": 19.9,
+    "shot": 2,
+    "from": 5.84,
+    "to": 7.92,
+    "line": 5,
+    "reuse": false,
+    "why": "Ava thrusts the phone toward his face when it is told"
+   },
+   {
+    "t0": 19.9,
+    "t1": 22.7,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.3,
+    "line": 5,
+    "reuse": false,
+    "why": "B-roll: Aiden stunned by the near head hit"
+   },
+   {
+    "t0": 22.7,
+    "t1": 27.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 19.44,
+    "line": 6,
+    "reuse": false,
+    "why": "Aiden stares, recognising it immediately"
+   },
+   {
+    "t0": 27.0,
+    "t1": 28.43,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 6,
+    "reuse": true,
+    "why": "Aiden's uneasy face before the photo is named"
+   },
+   {
+    "t0": 28.43,
+    "t1": 34.36,
+    "shot": 7,
+    "from": 19.44,
+    "to": 24.34,
+    "line": 7,
+    "reuse": false,
+    "why": "Phone showing the photo of Aiden and Charlotte in the parking lot"
+   }
+  ],
+  "notes": "Lines 0-2 now use Aiden speaker shots from his office (23, 29, 55) instead of hallway shots or the unavailable shot 11. Line 0 mouth starts about 0.28 s early. The rest is unchanged."
+ },
+ "par|142.64-174.04|a1": {
+  "edl": [
+   {
+    "t0": 142.64,
+    "t1": 144.4,
+    "shot": 29,
+    "from": 105.1,
+    "to": 107.13,
+    "line": 40,
+    "reuse": false,
+    "why": "Aiden pauses, then his mouth restarts at 143.16 with 'Ich verstehe es nicht'"
+   },
+   {
+    "t0": 144.4,
+    "t1": 147.75,
+    "shot": 29,
+    "from": 108.02,
+    "to": 110.25,
+    "line": 42,
+    "reuse": false,
+    "why": "Aiden asks who sent the photos (lines 41-42), slowed"
+   },
+   {
+    "t0": 147.75,
+    "t1": 149.02,
+    "shot": 29,
+    "from": 110.25,
+    "to": 111.48,
+    "line": 43,
+    "reuse": false,
+    "why": "Aiden asks whether she is having him followed"
+   },
+   {
+    "t0": 149.02,
+    "t1": 152.0,
+    "shot": 30,
+    "from": 111.84,
+    "to": 114.32,
+    "line": 44,
+    "reuse": false,
+    "why": "Ava huffs with arms crossed, sensing a diversion"
+   },
+   {
+    "t0": 152.0,
+    "t1": 153.71,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.0,
+    "line": 44,
+    "reuse": false,
+    "why": "Aiden stands silent, mouth closed, own footage of the line, before Ava speaks"
+   },
+   {
+    "t0": 153.71,
+    "t1": 155.38,
+    "shot": 32,
+    "from": 116.4,
+    "to": 118.07,
+    "line": 45,
+    "reuse": false,
+    "why": "Ava says 'Lenk nicht vom Thema ab', mouth starts with the voice"
+   },
+   {
+    "t0": 155.38,
+    "t1": 158.54,
+    "shot": 32,
+    "from": 118.68,
+    "to": 121.84,
+    "line": 46,
+    "reuse": false,
+    "why": "Ava demands the truth, fist pointed"
+   },
+   {
+    "t0": 158.54,
+    "t1": 160.34,
+    "shot": 33,
+    "from": 122.64,
+    "to": 124.08,
+    "line": 47,
+    "reuse": false,
+    "why": "Aiden protests 'Ich sage dir die Wahrheit'"
+   },
+   {
+    "t0": 160.34,
+    "t1": 164.28,
+    "shot": 35,
+    "from": 124.88,
+    "to": 128.08,
+    "line": 48,
+    "reuse": false,
+    "why": "Aiden continues, then says he must know who took the photos"
+   },
+   {
+    "t0": 164.28,
+    "t1": 164.89,
+    "shot": 34,
+    "from": 124.2,
+    "to": 124.76,
+    "line": null,
+    "reuse": false,
+    "why": "Ava listens silently before she screams"
+   },
+   {
+    "t0": 164.89,
+    "t1": 166.65,
+    "shot": 36,
+    "from": 128.08,
+    "to": 129.84,
+    "line": 49,
+    "reuse": false,
+    "why": "Ava screams 'Das spielt keine Rolle'"
+   },
+   {
+    "t0": 166.65,
+    "t1": 168.28,
+    "shot": 37,
+    "from": 129.84,
+    "to": 131.5,
+    "line": 49,
+    "reuse": false,
+    "why": "Ava keeps shouting at Aiden, phone in hand"
+   },
+   {
+    "t0": 168.28,
+    "t1": 171.4,
+    "shot": 37,
+    "from": 131.5,
+    "to": 134.56,
+    "line": 50,
+    "reuse": false,
+    "why": "Ava: 'Zum Glück habe ich sie', mouth restarts with the voice"
+   },
+   {
+    "t0": 171.4,
+    "t1": 174.04,
+    "shot": 38,
+    "from": 134.56,
+    "to": 137.12,
+    "line": 51,
+    "reuse": false,
+    "why": "Close-up Ava: she would never have found out about their dirty game"
+   }
+  ],
+  "notes": "The 0.52 s gap before line 40 is covered by line 40's own footage, starting in Aiden's speech pause, so no short B-roll is needed. Line 44 now uses only its own footage (shots 30 and 31)."
+ },
+ "par|84.43-113.37|a2": {
+  "edl": [
+   {
+    "t0": 84.43,
+    "t1": 87.06,
+    "shot": 17,
+    "from": 64.0,
+    "to": 67.25,
+    "line": 26,
+    "reuse": false,
+    "why": "Aiden explains the gym visit, mouth moving with the voice"
+   },
+   {
+    "t0": 87.06,
+    "t1": 91.3,
+    "shot": 18,
+    "from": 68.32,
+    "to": 73.28,
+    "line": 27,
+    "reuse": false,
+    "why": "Aiden explains the bruises and 'that's all', carrying into line 28"
+   },
+   {
+    "t0": 91.3,
+    "t1": 92.65,
+    "shot": 19,
+    "from": 73.6,
+    "to": 75.2,
+    "line": 28,
+    "reuse": false,
+    "why": "Ava rolls her eyes in disbelief before she speaks"
+   },
+   {
+    "t0": 92.65,
+    "t1": 93.9,
+    "shot": 20,
+    "from": 76.3,
+    "to": 77.3,
+    "line": 29,
+    "reuse": false,
+    "why": "Ava says 'Oh bitte', mouth starts with the voice"
+   },
+   {
+    "t0": 93.9,
+    "t1": 97.28,
+    "shot": 20,
+    "from": 77.3,
+    "to": 79.5,
+    "line": 30,
+    "reuse": false,
+    "why": "Ava says she doesn't buy it, slowed own footage, no B-roll"
+   },
+   {
+    "t0": 97.28,
+    "t1": 99.68,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava glares, anger building, no mouth movement"
+   },
+   {
+    "t0": 99.68,
+    "t1": 101.68,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stern, searching for an outlet, Aiden's back in frame"
+   },
+   {
+    "t0": 101.68,
+    "t1": 103.7,
+    "shot": 54,
+    "from": 185.5,
+    "to": 187.44,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava stands tense, about to explode"
+   },
+   {
+    "t0": 103.7,
+    "t1": 105.7,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.0,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava with phone, cold fury, mouth closed, now 2.0 s"
+   },
+   {
+    "t0": 105.7,
+    "t1": 107.7,
+    "shot": 25,
+    "from": 92.0,
+    "to": 94.0,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava scoffs and shuts her eyes, tension before the outburst"
+   },
+   {
+    "t0": 107.7,
+    "t1": 110.26,
+    "shot": 30,
+    "from": 111.84,
+    "to": 114.32,
+    "line": 31,
+    "reuse": false,
+    "why": "Ava furious and annoyed; no cup shot exists"
+   },
+   {
+    "t0": 110.26,
+    "t1": 112.82,
+    "shot": 21,
+    "from": 79.92,
+    "to": 81.78,
+    "line": 32,
+    "reuse": false,
+    "why": "Ava calls him a pathetic liar, mouth starts with the voice"
+   },
+   {
+    "t0": 112.82,
+    "t1": 113.37,
+    "shot": 31,
+    "from": 114.4,
+    "to": 114.95,
+    "line": 32,
+    "reuse": false,
+    "why": "Aiden's serious face as a short reaction, mouth closed"
+   }
+  ],
+  "notes": "No cup-smashing shot exists, so line 31 uses Ava's non-talking reaction shots. The 1.9 s B-roll piece is now 2.0 s, and the neighbouring piece was shifted to stay at 2.0 s."
+ },
+ "par|0.00-34.36|a2": {
+  "edl": [
+   {
+    "t0": 0.0,
+    "t1": 3.08,
+    "shot": 16,
+    "from": 59.12,
+    "to": 62.2,
+    "line": 0,
+    "reuse": false,
+    "why": "Aiden pleads, mouth moving through 'Anya, bitte' and 'not what it looks like'"
+   },
+   {
+    "t0": 3.08,
+    "t1": 4.2,
+    "shot": 55,
+    "from": 187.44,
+    "to": 188.56,
+    "line": 2,
+    "reuse": false,
+    "why": "Aiden speaks, mouth moving as he asks to explain"
+   },
+   {
+    "t0": 4.2,
+    "t1": 5.6,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden shocked and uneasy before the narration"
+   },
+   {
+    "t0": 5.6,
+    "t1": 11.6,
+    "shot": 3,
+    "from": 8.56,
+    "to": 12.96,
+    "line": 3,
+    "reuse": false,
+    "why": "Aiden stares, taking her abuse"
+   },
+   {
+    "t0": 11.6,
+    "t1": 13.6,
+    "shot": 9,
+    "from": 35.2,
+    "to": 37.2,
+    "line": 3,
+    "reuse": false,
+    "why": "B-roll: Ava glares angrily, the yelling and insults"
+   },
+   {
+    "t0": 13.6,
+    "t1": 14.6,
+    "shot": 4,
+    "from": 12.96,
+    "to": 13.8,
+    "line": 4,
+    "reuse": false,
+    "why": "Aiden anxious as her rage builds"
+   },
+   {
+    "t0": 14.6,
+    "t1": 16.9,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 4,
+    "reuse": false,
+    "why": "Ava stands holding the phone, furious"
+   },
+   {
+    "t0": 16.9,
+    "t1": 19.9,
+    "shot": 2,
+    "from": 5.84,
+    "to": 7.92,
+    "line": 5,
+    "reuse": false,
+    "why": "Ava thrusts the phone toward his face when it is told"
+   },
+   {
+    "t0": 19.9,
+    "t1": 22.7,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.3,
+    "line": 5,
+    "reuse": false,
+    "why": "B-roll: Aiden stunned by the near head hit"
+   },
+   {
+    "t0": 22.7,
+    "t1": 27.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 19.44,
+    "line": 6,
+    "reuse": false,
+    "why": "Aiden stares, recognising it immediately"
+   },
+   {
+    "t0": 27.0,
+    "t1": 28.43,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 6,
+    "reuse": true,
+    "why": "Aiden's uneasy face before the photo is named"
+   },
+   {
+    "t0": 28.43,
+    "t1": 34.36,
+    "shot": 7,
+    "from": 19.44,
+    "to": 24.34,
+    "line": 7,
+    "reuse": false,
+    "why": "Phone showing the photo of Aiden and Charlotte in the parking lot"
+   }
+  ],
+  "notes": "Lines 0 and 1 are covered by one continuous Aiden talking piece (shot 16) instead of two short ones. Line 1 has no separate piece."
+ },
+ "par|113.37-142.64|a2": {
+  "edl": [
+   {
+    "t0": 113.37,
+    "t1": 116.8,
+    "shot": 22,
+    "from": 85.44,
+    "to": 88.88,
+    "line": 33,
+    "reuse": false,
+    "why": "Aiden stunned, mouth closed, after Ava's insult; silent part of his shot"
+   },
+   {
+    "t0": 116.8,
+    "t1": 118.8,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.32,
+    "line": 34,
+    "reuse": true,
+    "why": "Aiden cornered, serious face, silent, leads into his question"
+   },
+   {
+    "t0": 118.8,
+    "t1": 121.3,
+    "shot": 23,
+    "from": 88.88,
+    "to": 91.04,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden's mouth moves as he asks why she doesn't trust him"
+   },
+   {
+    "t0": 121.3,
+    "t1": 122.4,
+    "shot": 24,
+    "from": 91.04,
+    "to": 92.0,
+    "line": 35,
+    "reuse": false,
+    "why": "Aiden hurt, waiting for her answer"
+   },
+   {
+    "t0": 122.4,
+    "t1": 123.88,
+    "shot": 25,
+    "from": 92.0,
+    "to": 93.7,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava scoffs, leading into her reply"
+   },
+   {
+    "t0": 123.88,
+    "t1": 126.6,
+    "shot": 26,
+    "from": 94.04,
+    "to": 95.8,
+    "line": 36,
+    "reuse": false,
+    "why": "Ava's mouth starts with 'Why should I trust you?'"
+   },
+   {
+    "t0": 126.6,
+    "t1": 129.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 18.88,
+    "line": 36,
+    "reuse": true,
+    "why": "Aiden shocked, listening while she hisses back"
+   },
+   {
+    "t0": 129.0,
+    "t1": 133.56,
+    "shot": 26,
+    "from": 95.8,
+    "to": 98.96,
+    "line": 37,
+    "reuse": false,
+    "why": "Ava asks what reason he ever gave her to trust him"
+   },
+   {
+    "t0": 133.56,
+    "t1": 136.0,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 38,
+    "reuse": false,
+    "why": "Aiden with back turned begins pacing as Ava stands stern"
+   },
+   {
+    "t0": 136.0,
+    "t1": 138.0,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 38,
+    "reuse": true,
+    "why": "Ava watches him pacing behind his desk"
+   },
+   {
+    "t0": 138.0,
+    "t1": 142.64,
+    "shot": 28,
+    "from": 100.88,
+    "to": 104.24,
+    "line": 39,
+    "reuse": false,
+    "why": "His fingers slide along the wooden desk edge"
+   }
+  ],
+  "notes": "Shot 22's first 1.2 s has a moving mouth, so it is skipped. A reused neutral Aiden shot (31) fills the gap to keep speeds within range. Some pieces still run a bit slow (0.65-0.86x)."
+ },
+ "par|34.36-54.30|a2": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 35.86,
+    "shot": 2,
+    "from": 6.52,
+    "to": 7.72,
+    "line": 10,
+    "reuse": false,
+    "why": "Ava thrusts the phone with the photo forward; mouth-free seconds only"
+   },
+   {
+    "t0": 35.86,
+    "t1": 38.02,
+    "shot": 7,
+    "from": 25.28,
+    "to": 27.01,
+    "line": 10,
+    "reuse": false,
+    "why": "Phone shows the sharp photo, no mouth moving"
+   },
+   {
+    "t0": 38.02,
+    "t1": 40.92,
+    "shot": 7,
+    "from": 27.01,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Own footage of the photo of Paul and Charlotte, slowed to 0.7x, no B-roll"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 12,
+    "reuse": true,
+    "why": "Ava holds the phone with the close-faces photo, mouth closed"
+   },
+   {
+    "t0": 43.04,
+    "t1": 46.28,
+    "shot": 3,
+    "from": 9.0,
+    "to": 12.24,
+    "line": 13,
+    "reuse": true,
+    "why": "Aiden stares at the kiss-like photo, mouth closed, leading to the flashback"
+   },
+   {
+    "t0": 46.28,
+    "t1": 50.9,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback of the photo being taken, before any mouth movement"
+   },
+   {
+    "t0": 50.9,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.5,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares with hatred, own footage slowed to 0.7x"
+   }
+  ],
+  "notes": "Shot 7 and shot 2 have too little mouth-free footage, so line 12 shows Ava via a reused reaction shot 5 holding the phone. Line 15 and line 16 stay slowed to 0.7x, within the allowed 0.65x."
+ },
+ "par|203.92-235.80|a1": {
+  "edl": [
+   {
+    "t0": 203.92,
+    "t1": 206.32,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.52,
+    "line": 61,
+    "reuse": false,
+    "why": "Ava stands and glares at him, shaken; mouth closed"
+   },
+   {
+    "t0": 206.32,
+    "t1": 208.34,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 61,
+    "reuse": false,
+    "why": "Close tense Ava, mouth still, leads into her outburst"
+   },
+   {
+    "t0": 208.34,
+    "t1": 211.86,
+    "shot": 50,
+    "from": 167.12,
+    "to": 170.4,
+    "line": 62,
+    "reuse": false,
+    "why": "Ava accuses them of going behind her back, mouth starts with voice"
+   },
+   {
+    "t0": 211.86,
+    "t1": 214.14,
+    "shot": 52,
+    "from": 171.92,
+    "to": 174.2,
+    "line": 63,
+    "reuse": false,
+    "why": "Ava keeps talking, upset, about what she saw"
+   },
+   {
+    "t0": 214.14,
+    "t1": 217.66,
+    "shot": 52,
+    "from": 176.5,
+    "to": 179.36,
+    "line": 64,
+    "reuse": false,
+    "why": "Near tears, Ava says she feels like an idiot"
+   },
+   {
+    "t0": 217.66,
+    "t1": 221.34,
+    "shot": 53,
+    "from": 180.4,
+    "to": 183.4,
+    "line": 65,
+    "reuse": false,
+    "why": "Aiden denies anything between them, mouth starts on cue"
+   },
+   {
+    "t0": 221.34,
+    "t1": 222.38,
+    "shot": 54,
+    "from": 185.48,
+    "to": 186.4,
+    "line": 65,
+    "reuse": false,
+    "why": "Ava listens, serious, before the hand-on-chest narration"
+   },
+   {
+    "t0": 222.38,
+    "t1": 223.78,
+    "shot": 53,
+    "from": 183.88,
+    "to": 185.28,
+    "line": 66,
+    "reuse": false,
+    "why": "Aiden puts his hand on his chest as narrated"
+   },
+   {
+    "t0": 223.78,
+    "t1": 224.95,
+    "shot": 54,
+    "from": 186.4,
+    "to": 187.44,
+    "line": 66,
+    "reuse": false,
+    "why": "Ava stands still, line 66's own footage, leading into his oath"
+   },
+   {
+    "t0": 224.95,
+    "t1": 227.75,
+    "shot": 55,
+    "from": 187.44,
+    "to": 189.8,
+    "line": 67,
+    "reuse": false,
+    "why": "Aiden swears 'my word', hand on chest, mouth starts with voice"
+   },
+   {
+    "t0": 227.75,
+    "t1": 229.75,
+    "shot": 20,
+    "from": 76.24,
+    "to": 78.24,
+    "line": 68,
+    "reuse": false,
+    "why": "Ava speaking, disbelieving; mouth starts with her voice"
+   },
+   {
+    "t0": 229.75,
+    "t1": 235.8,
+    "shot": 56,
+    "from": 192.32,
+    "to": 197.28,
+    "line": 69,
+    "reuse": false,
+    "why": "Ava shakes her head, upset and tearful, own footage slowed"
+   }
+  ],
+  "notes": "Shot 56 has Ava's mouth moving at the start, slowed to 0.82x so it fills the long gap without B-roll. Shot 55 plays at 0.84x so Aiden's oath fills the gap before line 68; his mouth runs past the voice."
+ },
+ "par|174.04-203.92|a1": {
+  "edl": [
+   {
+    "t0": 174.04,
+    "t1": 178.86,
+    "shot": 40,
+    "from": 138.8,
+    "to": 143.12,
+    "line": 52,
+    "reuse": false,
+    "why": "Ava accuses him, mouth moving as the voice starts (lines 52-53)"
+   },
+   {
+    "t0": 178.86,
+    "t1": 180.94,
+    "shot": 31,
+    "from": 114.32,
+    "to": 116.4,
+    "line": 53,
+    "reuse": true,
+    "why": "Aiden listens silently while Ava finishes her accusation"
+   },
+   {
+    "t0": 180.94,
+    "t1": 182.64,
+    "shot": 41,
+    "from": 143.5,
+    "to": 145.2,
+    "line": 54,
+    "reuse": false,
+    "why": "Aiden snaps 'What are you talking about?'"
+   },
+   {
+    "t0": 182.64,
+    "t1": 184.64,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 54,
+    "reuse": true,
+    "why": "Ava listens silently before the narration"
+   },
+   {
+    "t0": 184.64,
+    "t1": 187.91,
+    "shot": 42,
+    "from": 145.78,
+    "to": 147.92,
+    "line": 55,
+    "reuse": false,
+    "why": "Aiden tosses his head back in frustration, as narrated"
+   },
+   {
+    "t0": 187.91,
+    "t1": 190.89,
+    "shot": 43,
+    "from": 148.04,
+    "to": 151.04,
+    "line": 56,
+    "reuse": false,
+    "why": "Aiden: 'You were the one who said I should go out with Charlotte'"
+   },
+   {
+    "t0": 190.89,
+    "t1": 192.89,
+    "shot": 9,
+    "from": 35.4,
+    "to": 37.4,
+    "line": 56,
+    "reuse": true,
+    "why": "Ava glares at him after his line, mouth closed"
+   },
+   {
+    "t0": 192.89,
+    "t1": 194.34,
+    "shot": 48,
+    "from": 162.95,
+    "to": 164.24,
+    "line": 57,
+    "reuse": false,
+    "why": "Ava restless, pacing, own footage of the narration"
+   },
+   {
+    "t0": 194.34,
+    "t1": 196.24,
+    "shot": 49,
+    "from": 164.24,
+    "to": 166.5,
+    "line": 57,
+    "reuse": false,
+    "why": "Aiden uneasy as she paces, leading into her reply"
+   },
+   {
+    "t0": 196.24,
+    "t1": 201.57,
+    "shot": 45,
+    "from": 152.48,
+    "to": 157.12,
+    "line": 58,
+    "reuse": false,
+    "why": "Ava upset: 'I thought I could trust you, or at least her' (lines 58-59)"
+   },
+   {
+    "t0": 201.57,
+    "t1": 203.92,
+    "shot": 47,
+    "from": 158.24,
+    "to": 160.59,
+    "line": 60,
+    "reuse": false,
+    "why": "Ava: 'I've known Charlotte for years'"
+   }
+  ],
+  "notes": "Shot 40 starts at 174.04 because a 0.3 s lead-in piece would be under the 0.5 s minimum; Ava's mouth therefore starts about 0.3 s before the voice. Line 59 is covered by the long shot 45 piece instead of B-roll."
+ },
+ "par|263.71-297.68|a0": {
+  "edl": [
+   {
+    "t0": 263.71,
+    "t1": 264.21,
+    "shot": 60,
+    "from": 224.6,
+    "to": 225.1,
+    "line": 78,
+    "reuse": false,
+    "why": "Ava listening silently with her phone; leads into Aiden's outburst"
+   },
+   {
+    "t0": 264.21,
+    "t1": 270.56,
+    "shot": 61,
+    "from": 225.44,
+    "to": 230.9,
+    "line": 78,
+    "reuse": false,
+    "why": "Aiden's mouth starts with the voice, rants about the mother"
+   },
+   {
+    "t0": 270.56,
+    "t1": 273.4,
+    "shot": 61,
+    "from": 230.9,
+    "to": 233.74,
+    "line": 79,
+    "reuse": false,
+    "why": "Aiden keeps talking about the sanctity of marriage"
+   },
+   {
+    "t0": 273.4,
+    "t1": 275.4,
+    "shot": 30,
+    "from": 111.84,
+    "to": 113.84,
+    "line": 79,
+    "reuse": false,
+    "why": "Ava's arms-crossed reaction to the 'holiness of marriage' jab"
+   },
+   {
+    "t0": 275.4,
+    "t1": 276.18,
+    "shot": 61,
+    "from": 233.89,
+    "to": 234.64,
+    "line": 80,
+    "reuse": false,
+    "why": "Aiden's mouth moves on 'Dass ich nicht lache!'"
+   },
+   {
+    "t0": 276.18,
+    "t1": 278.36,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": null,
+    "reuse": false,
+    "why": "Silent beat: Ava stern, Aiden's back, no mouths"
+   },
+   {
+    "t0": 278.36,
+    "t1": 280.36,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava restless, pacing, as the voice says it"
+   },
+   {
+    "t0": 280.36,
+    "t1": 281.92,
+    "shot": 62,
+    "from": 234.64,
+    "to": 236.0,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava stops, sneering with arms crossed, before she speaks"
+   },
+   {
+    "t0": 281.92,
+    "t1": 287.38,
+    "shot": 63,
+    "from": 236.48,
+    "to": 241.94,
+    "line": 82,
+    "reuse": false,
+    "why": "Ava's mouth starts on 'Hör auf', demanding honesty about Charlotte"
+   },
+   {
+    "t0": 287.38,
+    "t1": 288.66,
+    "shot": 64,
+    "from": 246.1,
+    "to": 247.38,
+    "line": 84,
+    "reuse": false,
+    "why": "Aiden denies deflecting, mouth starts with voice"
+   },
+   {
+    "t0": 288.66,
+    "t1": 291.62,
+    "shot": 19,
+    "from": 73.28,
+    "to": 76.24,
+    "line": null,
+    "reuse": true,
+    "why": "Ava rolls her eyes in disbelief at his denial; silent beat"
+   },
+   {
+    "t0": 291.62,
+    "t1": 292.86,
+    "shot": 66,
+    "from": 252.1,
+    "to": 253.34,
+    "line": null,
+    "reuse": false,
+    "why": "Aiden thinking, touching his collar, leading into his line"
+   },
+   {
+    "t0": 292.86,
+    "t1": 294.56,
+    "shot": 73,
+    "from": 292.84,
+    "to": 294.54,
+    "line": 85,
+    "reuse": false,
+    "why": "Aiden's mouth starts moving exactly with the line"
+   },
+   {
+    "t0": 294.56,
+    "t1": 297.68,
+    "shot": 66,
+    "from": 253.6,
+    "to": 256.1,
+    "line": 85,
+    "reuse": false,
+    "why": "Aiden doubtful, touching chin: the sting of insincerity"
+   }
+  ],
+  "notes": "Line 85 reads like narration; I used a talking shot first, then the thinking shot. The 288.66-292.86 s dub gap is filled with Ava's reaction and Aiden thinking. One 2 s B-roll in the line 79-80 group slightly exceeds the 1.7 s allowance."
+ },
+ "par|263.71-297.68|a1": {
+  "edl": [
+   {
+    "t0": 263.71,
+    "t1": 264.49,
+    "shot": 60,
+    "from": 224.66,
+    "to": 225.44,
+    "line": 78,
+    "reuse": false,
+    "why": "Ava with phone; her mouth moves at 225.16 and leads into Aiden's outburst"
+   },
+   {
+    "t0": 264.49,
+    "t1": 270.56,
+    "shot": 61,
+    "from": 225.44,
+    "to": 231.25,
+    "line": 78,
+    "reuse": false,
+    "why": "Aiden rants about the mother, mouth moving with the voice"
+   },
+   {
+    "t0": 270.56,
+    "t1": 273.4,
+    "shot": 61,
+    "from": 231.25,
+    "to": 233.61,
+    "line": 79,
+    "reuse": false,
+    "why": "Aiden goes on about the sanctity of marriage"
+   },
+   {
+    "t0": 273.4,
+    "t1": 275.4,
+    "shot": 30,
+    "from": 111.84,
+    "to": 113.84,
+    "line": 79,
+    "reuse": false,
+    "why": "Ava arms crossed, silent reaction cutaway to the jab"
+   },
+   {
+    "t0": 275.4,
+    "t1": 276.18,
+    "shot": 61,
+    "from": 233.89,
+    "to": 234.64,
+    "line": 80,
+    "reuse": false,
+    "why": "Aiden's mouth moves on 'Dass ich nicht lache!'"
+   },
+   {
+    "t0": 276.18,
+    "t1": 278.36,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": null,
+    "reuse": false,
+    "why": "Silent beat: Ava stern, Aiden's back, no mouths"
+   },
+   {
+    "t0": 278.36,
+    "t1": 280.36,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava restless, as the voice says she paces"
+   },
+   {
+    "t0": 280.36,
+    "t1": 281.92,
+    "shot": 62,
+    "from": 234.64,
+    "to": 236.0,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava stops, arms crossed, before she speaks"
+   },
+   {
+    "t0": 281.92,
+    "t1": 287.38,
+    "shot": 63,
+    "from": 236.48,
+    "to": 241.94,
+    "line": 82,
+    "reuse": false,
+    "why": "Ava's mouth starts on 'Hör auf', demanding honesty about Charlotte"
+   },
+   {
+    "t0": 287.38,
+    "t1": 288.66,
+    "shot": 64,
+    "from": 246.5,
+    "to": 247.78,
+    "line": 84,
+    "reuse": false,
+    "why": "Aiden denies deflecting, mouth starts with the voice"
+   },
+   {
+    "t0": 288.66,
+    "t1": 291.62,
+    "shot": 19,
+    "from": 73.28,
+    "to": 76.24,
+    "line": null,
+    "reuse": true,
+    "why": "Ava rolls her eyes at his denial; silent beat"
+   },
+   {
+    "t0": 291.62,
+    "t1": 292.86,
+    "shot": 87,
+    "from": 349.04,
+    "to": 350.28,
+    "line": null,
+    "reuse": false,
+    "why": "Aiden closes his eyes, silent, leading into his line"
+   },
+   {
+    "t0": 292.86,
+    "t1": 295.68,
+    "shot": 66,
+    "from": 253.72,
+    "to": 256.4,
+    "line": 85,
+    "reuse": false,
+    "why": "Aiden touches his chin, doubtful: the sting of insincerity"
+   },
+   {
+    "t0": 295.68,
+    "t1": 297.68,
+    "shot": 25,
+    "from": 92.0,
+    "to": 94.0,
+    "line": 85,
+    "reuse": false,
+    "why": "Ava's silent skeptical reaction, B-roll with no mouth movement"
+   }
+  ],
+  "notes": "Line 85's own footage (shot 66) has no moving mouth, so Aiden's lips don't visibly start with the voice. Lines 79-80 need a 2 s B-roll to stay above 0.8x."
+ },
+ "par|263.71-297.68|a2": {
+  "edl": [
+   {
+    "t0": 263.71,
+    "t1": 264.49,
+    "shot": 60,
+    "from": 224.66,
+    "to": 225.44,
+    "line": 78,
+    "reuse": false,
+    "why": "Ava with phone, mouth moves at 225.16, leading into Aiden's outburst"
+   },
+   {
+    "t0": 264.49,
+    "t1": 270.56,
+    "shot": 61,
+    "from": 225.44,
+    "to": 231.25,
+    "line": 78,
+    "reuse": false,
+    "why": "Aiden rants about the mother, mouth moving with the voice"
+   },
+   {
+    "t0": 270.56,
+    "t1": 273.4,
+    "shot": 61,
+    "from": 231.25,
+    "to": 233.61,
+    "line": 79,
+    "reuse": false,
+    "why": "Aiden goes on about the sanctity of marriage"
+   },
+   {
+    "t0": 273.4,
+    "t1": 275.4,
+    "shot": 30,
+    "from": 111.84,
+    "to": 113.84,
+    "line": 79,
+    "reuse": false,
+    "why": "Ava arms crossed, silent reaction cutaway to the jab"
+   },
+   {
+    "t0": 275.4,
+    "t1": 276.18,
+    "shot": 61,
+    "from": 233.89,
+    "to": 234.64,
+    "line": 80,
+    "reuse": false,
+    "why": "Aiden's mouth moves on 'Dass ich nicht lache!'"
+   },
+   {
+    "t0": 276.18,
+    "t1": 278.36,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": null,
+    "reuse": false,
+    "why": "Silent beat: Ava stern, Aiden's back, no mouths"
+   },
+   {
+    "t0": 278.36,
+    "t1": 280.36,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava restless, as the voice says she paces"
+   },
+   {
+    "t0": 280.36,
+    "t1": 281.92,
+    "shot": 62,
+    "from": 234.64,
+    "to": 236.0,
+    "line": 81,
+    "reuse": false,
+    "why": "Ava stops, arms crossed, before she speaks"
+   },
+   {
+    "t0": 281.92,
+    "t1": 287.38,
+    "shot": 63,
+    "from": 236.48,
+    "to": 241.94,
+    "line": 82,
+    "reuse": false,
+    "why": "Ava's mouth starts on 'Hör auf', demanding honesty about Charlotte"
+   },
+   {
+    "t0": 287.38,
+    "t1": 288.66,
+    "shot": 64,
+    "from": 246.5,
+    "to": 247.78,
+    "line": 84,
+    "reuse": false,
+    "why": "Aiden denies deflecting, mouth starts with the voice"
+   },
+   {
+    "t0": 288.66,
+    "t1": 291.62,
+    "shot": 19,
+    "from": 73.28,
+    "to": 76.24,
+    "line": null,
+    "reuse": true,
+    "why": "Ava rolls her eyes at his denial; silent beat"
+   },
+   {
+    "t0": 291.62,
+    "t1": 292.86,
+    "shot": 87,
+    "from": 349.04,
+    "to": 350.28,
+    "line": null,
+    "reuse": false,
+    "why": "Aiden closes his eyes, silent, leading into his line"
+   },
+   {
+    "t0": 292.86,
+    "t1": 294.58,
+    "shot": 73,
+    "from": 292.84,
+    "to": 294.56,
+    "line": 85,
+    "reuse": false,
+    "why": "Aiden's mouth starts moving exactly as his line begins"
+   },
+   {
+    "t0": 294.58,
+    "t1": 297.68,
+    "shot": 74,
+    "from": 294.56,
+    "to": 297.66,
+    "line": 85,
+    "reuse": false,
+    "why": "Aiden keeps talking, gesturing, matching the voice"
+   }
+  ],
+  "notes": "Line 85's own footage (shot 66) has no talking mouth, so shots 73 and 74, where Aiden speaks, carry it. Shot 73's mouth starts at 292.84, matching the voice start."
+ },
+ "par|0.00-34.36|g0_0": {
+  "edl": [
+   {
+    "t0": 0.0,
+    "t1": 3.08,
+    "shot": 29,
+    "from": 104.24,
+    "to": 107.32,
+    "line": 0,
+    "why": "Aiden talks in his office, mouth moving from the voice start through lines 0-1"
+   },
+   {
+    "t0": 3.08,
+    "t1": 5.08,
+    "shot": 55,
+    "from": 187.44,
+    "to": 189.44,
+    "line": 2,
+    "why": "Aiden speaks, mouth moving as he asks to explain"
+   },
+   {
+    "t0": 5.08,
+    "t1": 5.6,
+    "shot": 1,
+    "from": 4.3,
+    "to": 4.95,
+    "line": 3,
+    "why": "Aiden shocked and uneasy before the narration"
+   },
+   {
+    "t0": 5.6,
+    "t1": 11.6,
+    "shot": 3,
+    "from": 8.56,
+    "to": 12.96,
+    "line": 3,
+    "why": "Aiden stares, taking her abuse"
+   },
+   {
+    "t0": 11.6,
+    "t1": 13.6,
+    "shot": 9,
+    "from": 35.2,
+    "to": 37.2,
+    "line": 3,
+    "why": "B-roll: Ava glares angrily, the yelling and insults"
+   },
+   {
+    "t0": 13.6,
+    "t1": 14.6,
+    "shot": 4,
+    "from": 12.96,
+    "to": 13.8,
+    "line": 4,
+    "why": "Aiden anxious as her rage builds"
+   },
+   {
+    "t0": 14.6,
+    "t1": 16.9,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 4,
+    "why": "Ava stands holding the phone, furious"
+   },
+   {
+    "t0": 16.9,
+    "t1": 19.9,
+    "shot": 2,
+    "from": 5.84,
+    "to": 7.92,
+    "line": 5,
+    "why": "Ava thrusts the phone toward his face when it is told"
+   },
+   {
+    "t0": 19.9,
+    "t1": 22.7,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.3,
+    "line": 5,
+    "why": "B-roll: Aiden stunned by the near head hit"
+   },
+   {
+    "t0": 22.7,
+    "t1": 27.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 19.44,
+    "line": 6,
+    "why": "Aiden stares, recognising it immediately"
+   },
+   {
+    "t0": 27.0,
+    "t1": 28.43,
+    "shot": 1,
+    "from": 4.3,
+    "to": 5.7,
+    "line": 6,
+    "why": "Aiden's uneasy face before the photo is named"
+   },
+   {
+    "t0": 28.43,
+    "t1": 34.36,
+    "shot": 7,
+    "from": 19.44,
+    "to": 24.34,
+    "line": 7,
+    "why": "Phone showing the photo of Aiden and Charlotte in the parking lot"
+   }
+  ],
+  "notes": "Piece 0 now uses shot 29, an Aiden speaker shot in his office, instead of the hallway shot 16. Everything else is unchanged."
+ },
+ "par|54.30-84.43|g0_0": {
+  "edl": [
+   {
+    "t0": 54.3,
+    "t1": 54.83,
+    "shot": 1,
+    "from": 4.5,
+    "to": 5.03,
+    "line": null,
+    "why": "Aiden listens uneasily before Ava's accusation (reaction reuse, mouth closed)",
+    "reuse": true
+   },
+   {
+    "t0": 54.83,
+    "t1": 59.72,
+    "shot": 10,
+    "from": 37.68,
+    "to": 42.06,
+    "line": 17,
+    "why": "Ava accuses them of kissing in public, mouth starts with voice",
+    "reuse": false
+   },
+   {
+    "t0": 59.72,
+    "t1": 60.72,
+    "shot": 10,
+    "from": 42.16,
+    "to": 43.04,
+    "line": 18,
+    "why": "Ava: 'Ihr seid das Letzte!'",
+    "reuse": false
+   },
+   {
+    "t0": 60.72,
+    "t1": 65.74,
+    "shot": 11,
+    "from": 44.32,
+    "to": 47.84,
+    "line": 19,
+    "why": "Aiden's thoughts racing, slowed own footage",
+    "reuse": false
+   },
+   {
+    "t0": 65.74,
+    "t1": 68.14,
+    "shot": 12,
+    "from": 47.84,
+    "to": 50.32,
+    "line": 20,
+    "why": "Gym day memory, Ava, story order",
+    "reuse": false
+   },
+   {
+    "t0": 68.14,
+    "t1": 71.45,
+    "shot": 13,
+    "from": 50.32,
+    "to": 53.56,
+    "line": 21,
+    "why": "Aiden recalls someone watching them, before he speaks",
+    "reuse": false
+   },
+   {
+    "t0": 71.45,
+    "t1": 73.0,
+    "shot": 14,
+    "from": 53.76,
+    "to": 55.36,
+    "line": 22,
+    "why": "Aiden says 'Lass es mich erklären', mouth on voice",
+    "reuse": false
+   },
+   {
+    "t0": 73.0,
+    "t1": 77.5,
+    "shot": 15,
+    "from": 55.44,
+    "to": 59.12,
+    "line": 23,
+    "why": "Aiden calm and tense, forcing a steady voice",
+    "reuse": false
+   },
+   {
+    "t0": 77.5,
+    "t1": 80.26,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.26,
+    "line": 23,
+    "why": "Aiden B-roll, mouth closed, inner turmoil",
+    "reuse": false
+   },
+   {
+    "t0": 80.26,
+    "t1": 84.43,
+    "shot": 16,
+    "from": 59.12,
+    "to": 63.32,
+    "line": 24,
+    "why": "Aiden pleads: not what it looks like, trust me",
+    "reuse": false
+   }
+  ],
+  "notes": "Opening 0.53 s now uses a reused Aiden reaction (shot 1) instead of shot 9, avoiding the jump cut and the repeat. Other pieces unchanged."
+ },
+ "par|235.80-263.71|g0_0": {
+  "edl": [
+   {
+    "t0": 235.8,
+    "t1": 236.3,
+    "shot": 77,
+    "from": 310.24,
+    "to": 310.74,
+    "line": null,
+    "why": "Ava listens, mouth closed, before her outburst; avoids repeating shot 56",
+    "reuse": false
+   },
+   {
+    "t0": 236.3,
+    "t1": 237.9,
+    "shot": 57,
+    "from": 197.38,
+    "to": 198.98,
+    "line": 70,
+    "why": "Ava asks 'how could you do this to me'; mouth starts with the voice",
+    "reuse": false
+   },
+   {
+    "t0": 237.9,
+    "t1": 242.18,
+    "shot": 57,
+    "from": 198.98,
+    "to": 203.21,
+    "line": 71,
+    "why": "Ava speaks of the affair with her best friend",
+    "reuse": false
+   },
+   {
+    "t0": 242.18,
+    "t1": 246.17,
+    "shot": 57,
+    "from": 203.21,
+    "to": 207.2,
+    "line": 72,
+    "why": "Ava says the marriage is a joke to him",
+    "reuse": false
+   },
+   {
+    "t0": 246.17,
+    "t1": 247.84,
+    "shot": 58,
+    "from": 207.2,
+    "to": 208.88,
+    "line": 72,
+    "why": "Ava goes on about how it looks to others",
+    "reuse": false
+   },
+   {
+    "t0": 247.84,
+    "t1": 250.5,
+    "shot": 58,
+    "from": 209.0,
+    "to": 211.82,
+    "line": 73,
+    "why": "Ava says her family was right about him",
+    "reuse": false
+   },
+   {
+    "t0": 250.5,
+    "t1": 253.1,
+    "shot": 58,
+    "from": 211.82,
+    "to": 215.0,
+    "line": 74,
+    "why": "Ava calls the marriage a catastrophe; own footage trimmed to fit",
+    "reuse": false
+   },
+   {
+    "t0": 253.1,
+    "t1": 255.15,
+    "shot": 22,
+    "from": 85.6,
+    "to": 87.65,
+    "line": 75,
+    "why": "Aiden stunned and silent before he laughs; mouth closed",
+    "reuse": true
+   },
+   {
+    "t0": 255.15,
+    "t1": 257.43,
+    "shot": 59,
+    "from": 216.16,
+    "to": 218.0,
+    "line": 75,
+    "why": "Aiden laughs humorlessly, leading into his reply",
+    "reuse": false
+   },
+   {
+    "t0": 257.43,
+    "t1": 263.71,
+    "shot": 59,
+    "from": 218.0,
+    "to": 224.32,
+    "line": 76,
+    "why": "Aiden's retort about vows and being tormented, carried through lines 76 and 77",
+    "reuse": false
+   }
+  ],
+  "notes": "Opened with a silent Ava reaction (shot 77) instead of shot 56 to avoid the repeat and the jump cut. Shot 22 is reused as a silent reaction."
+ },
+ "par|263.71-297.68|g0_0": {
+  "edl": [
+   {
+    "t0": 263.71,
+    "t1": 264.49,
+    "shot": 60,
+    "from": 224.66,
+    "to": 225.44,
+    "line": 78,
+    "why": "Ava with phone, mouth moves at 225.16, leading into Aiden's outburst",
+    "reuse": false
+   },
+   {
+    "t0": 264.49,
+    "t1": 270.56,
+    "shot": 61,
+    "from": 225.44,
+    "to": 231.25,
+    "line": 78,
+    "why": "Aiden rants about the mother, mouth moving with the voice",
+    "reuse": false
+   },
+   {
+    "t0": 270.56,
+    "t1": 273.4,
+    "shot": 61,
+    "from": 231.25,
+    "to": 233.61,
+    "line": 79,
+    "why": "Aiden goes on about the sanctity of marriage",
+    "reuse": false
+   },
+   {
+    "t0": 273.4,
+    "t1": 275.4,
+    "shot": 30,
+    "from": 111.84,
+    "to": 113.84,
+    "line": 79,
+    "why": "Ava arms crossed, silent reaction cutaway to the jab",
+    "reuse": false
+   },
+   {
+    "t0": 275.4,
+    "t1": 276.18,
+    "shot": 61,
+    "from": 233.89,
+    "to": 234.64,
+    "line": 80,
+    "why": "Aiden's mouth moves on 'Dass ich nicht lache!'",
+    "reuse": false
+   },
+   {
+    "t0": 276.18,
+    "t1": 278.36,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": null,
+    "why": "Silent beat: Ava stern, Aiden's back, no mouths",
+    "reuse": false
+   },
+   {
+    "t0": 278.36,
+    "t1": 280.36,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 81,
+    "why": "Ava restless, as the voice says she paces",
+    "reuse": false
+   },
+   {
+    "t0": 280.36,
+    "t1": 281.92,
+    "shot": 62,
+    "from": 234.64,
+    "to": 236.0,
+    "line": 81,
+    "why": "Ava stops, arms crossed, before she speaks",
+    "reuse": false
+   },
+   {
+    "t0": 281.92,
+    "t1": 287.38,
+    "shot": 63,
+    "from": 236.48,
+    "to": 241.94,
+    "line": 82,
+    "why": "Ava's mouth starts on 'Hör auf', demanding honesty about Charlotte",
+    "reuse": false
+   },
+   {
+    "t0": 287.38,
+    "t1": 288.66,
+    "shot": 64,
+    "from": 246.5,
+    "to": 247.78,
+    "line": 84,
+    "why": "Aiden denies deflecting, mouth starts with the voice",
+    "reuse": false
+   },
+   {
+    "t0": 288.66,
+    "t1": 290.86,
+    "shot": 19,
+    "from": 73.28,
+    "to": 75.48,
+    "line": null,
+    "why": "Ava rolls her eyes at his denial; silent beat",
+    "reuse": true
+   },
+   {
+    "t0": 290.86,
+    "t1": 292.86,
+    "shot": 87,
+    "from": 349.04,
+    "to": 350.96,
+    "line": null,
+    "why": "Aiden closes his eyes, silent, leading into his next line",
+    "reuse": false
+   },
+   {
+    "t0": 292.86,
+    "t1": 297.68,
+    "shot": 66,
+    "from": 253.72,
+    "to": 258.54,
+    "line": 85,
+    "why": "Aiden touches collar and chin, doubting himself, own footage matches the sting of insincerity",
+    "reuse": false
+   }
+  ],
+  "notes": "Gap 288.66-292.86 filled with two silent reaction shots of at least 2 s. Line 85 plays shot 66 longer than its own footage to avoid B-roll, with no mouth moving."
+ },
+ "par|113.37-142.64|g0_0": {
+  "edl": [
+   {
+    "t0": 113.37,
+    "t1": 117.67,
+    "shot": 22,
+    "from": 85.44,
+    "to": 88.88,
+    "line": 33,
+    "why": "Aiden stunned, mouth closed, at 0.8x; line 33-34 own footage"
+   },
+   {
+    "t0": 117.67,
+    "t1": 118.8,
+    "shot": 24,
+    "from": 91.04,
+    "to": 92.0,
+    "line": 34,
+    "why": "Aiden cornered, hurt look, silent, leads into his question"
+   },
+   {
+    "t0": 118.8,
+    "t1": 121.88,
+    "shot": 23,
+    "from": 88.88,
+    "to": 91.04,
+    "line": 35,
+    "why": "Aiden's mouth moves as he asks why she doesn't trust him"
+   },
+   {
+    "t0": 121.88,
+    "t1": 123.88,
+    "shot": 25,
+    "from": 92.0,
+    "to": 94.0,
+    "line": 36,
+    "why": "Ava scoffs, leading into her reply"
+   },
+   {
+    "t0": 123.88,
+    "t1": 126.6,
+    "shot": 26,
+    "from": 94.04,
+    "to": 95.8,
+    "line": 36,
+    "why": "Ava's mouth starts with 'Why should I trust you?'"
+   },
+   {
+    "t0": 126.6,
+    "t1": 129.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 18.88,
+    "line": 36,
+    "why": "Aiden shocked, listening while she hisses back"
+   },
+   {
+    "t0": 129.0,
+    "t1": 133.56,
+    "shot": 26,
+    "from": 95.8,
+    "to": 98.96,
+    "line": 37,
+    "why": "Ava asks what reason he ever gave her to trust him"
+   },
+   {
+    "t0": 133.56,
+    "t1": 136.0,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": 38,
+    "why": "Aiden with back turned begins pacing as Ava stands stern"
+   },
+   {
+    "t0": 136.0,
+    "t1": 138.0,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 38,
+    "why": "Ava watches him pacing behind his desk"
+   },
+   {
+    "t0": 138.0,
+    "t1": 142.64,
+    "shot": 28,
+    "from": 100.88,
+    "to": 104.24,
+    "line": 39,
+    "why": "His fingers slide along the wooden desk edge"
+   }
+  ],
+  "notes": "Lines 33-34 have no silent footage beyond shot 22 at 0.8x, so a short neighbouring reaction (shot 24) fills the remainder. Line 35 plays shot 23 at about 0.7x."
+ },
+ "par|54.30-84.43|g0_1": {
+  "edl": [
+   {
+    "t0": 54.3,
+    "t1": 54.83,
+    "shot": 77,
+    "from": 310.3,
+    "to": 310.83,
+    "line": null,
+    "why": "Ava listens sternly in the office just before her accusation (mouth closed)",
+    "reuse": false
+   },
+   {
+    "t0": 54.83,
+    "t1": 59.72,
+    "shot": 10,
+    "from": 37.68,
+    "to": 42.06,
+    "line": 17,
+    "why": "Ava accuses them of kissing in public, mouth starts with voice",
+    "reuse": false
+   },
+   {
+    "t0": 59.72,
+    "t1": 60.72,
+    "shot": 10,
+    "from": 42.16,
+    "to": 43.04,
+    "line": 18,
+    "why": "Ava: 'Ihr seid das Letzte!'",
+    "reuse": false
+   },
+   {
+    "t0": 60.72,
+    "t1": 65.74,
+    "shot": 11,
+    "from": 44.32,
+    "to": 47.84,
+    "line": 19,
+    "why": "Aiden's thoughts racing, own footage slowed",
+    "reuse": false
+   },
+   {
+    "t0": 65.74,
+    "t1": 68.14,
+    "shot": 12,
+    "from": 47.84,
+    "to": 50.32,
+    "line": 20,
+    "why": "Gym day memory, Ava, story order",
+    "reuse": false
+   },
+   {
+    "t0": 68.14,
+    "t1": 71.45,
+    "shot": 13,
+    "from": 50.32,
+    "to": 53.56,
+    "line": 21,
+    "why": "Aiden recalls someone watching them, before he speaks",
+    "reuse": false
+   },
+   {
+    "t0": 71.45,
+    "t1": 73.0,
+    "shot": 14,
+    "from": 53.76,
+    "to": 55.36,
+    "line": 22,
+    "why": "Aiden says 'Lass es mich erklären', mouth on voice",
+    "reuse": false
+   },
+   {
+    "t0": 73.0,
+    "t1": 77.5,
+    "shot": 15,
+    "from": 55.44,
+    "to": 59.12,
+    "line": 23,
+    "why": "Aiden calm and tense, forcing a steady voice",
+    "reuse": false
+   },
+   {
+    "t0": 77.5,
+    "t1": 80.26,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.26,
+    "line": 23,
+    "why": "Aiden B-roll, mouth closed, inner turmoil",
+    "reuse": false
+   },
+   {
+    "t0": 80.26,
+    "t1": 84.43,
+    "shot": 16,
+    "from": 59.12,
+    "to": 63.32,
+    "line": 24,
+    "why": "Aiden pleads: not what it looks like, trust me",
+    "reuse": false
+   }
+  ],
+  "notes": "The opening 0.53 s is a neutral Ava listening shot (77) because shot 9 can't continue past 37.68 and can't be repeated yet. Line 19 plays its own footage at about 0.70x, within the allowed slow range."
+ },
+ "par|235.80-263.71|g0_1": {
+  "edl": [
+   {
+    "t0": 235.8,
+    "t1": 237.9,
+    "shot": 57,
+    "from": 197.28,
+    "to": 198.98,
+    "line": 70,
+    "why": "Ava continues from the previous shot; her mouth starts about with the voice, 'how could you'",
+    "reuse": false
+   },
+   {
+    "t0": 237.9,
+    "t1": 242.18,
+    "shot": 57,
+    "from": 198.98,
+    "to": 203.21,
+    "line": 71,
+    "why": "Ava speaks of the affair with her best friend",
+    "reuse": false
+   },
+   {
+    "t0": 242.18,
+    "t1": 246.17,
+    "shot": 57,
+    "from": 203.21,
+    "to": 207.2,
+    "line": 72,
+    "why": "Ava says the marriage is a joke to him",
+    "reuse": false
+   },
+   {
+    "t0": 246.17,
+    "t1": 247.84,
+    "shot": 58,
+    "from": 207.2,
+    "to": 208.88,
+    "line": 72,
+    "why": "Ava goes on about how it looks to others",
+    "reuse": false
+   },
+   {
+    "t0": 247.84,
+    "t1": 250.5,
+    "shot": 58,
+    "from": 209.0,
+    "to": 211.82,
+    "line": 73,
+    "why": "Ava says her family was right about him",
+    "reuse": false
+   },
+   {
+    "t0": 250.5,
+    "t1": 253.1,
+    "shot": 58,
+    "from": 211.82,
+    "to": 215.0,
+    "line": 74,
+    "why": "Ava calls the marriage a catastrophe; own footage trimmed to fit",
+    "reuse": false
+   },
+   {
+    "t0": 253.1,
+    "t1": 255.15,
+    "shot": 22,
+    "from": 85.6,
+    "to": 87.65,
+    "line": 75,
+    "why": "Aiden stunned and silent before he laughs; mouth closed",
+    "reuse": true
+   },
+   {
+    "t0": 255.15,
+    "t1": 257.43,
+    "shot": 59,
+    "from": 216.16,
+    "to": 218.0,
+    "line": 75,
+    "why": "Aiden laughs humorlessly, leading into his reply",
+    "reuse": false
+   },
+   {
+    "t0": 257.43,
+    "t1": 263.71,
+    "shot": 59,
+    "from": 218.0,
+    "to": 224.32,
+    "line": 76,
+    "why": "Aiden's retort about vows and being tormented, carried through lines 76 and 77",
+    "reuse": false
+   }
+  ],
+  "notes": "The first piece is shot 57 slowed to 0.81x so it continues from source 197.28 without a jump cut, and Ava's mouth starts within 0.3 s of the voice. Lines 76 and 77 share one long Aiden piece."
+ },
+ "par|0.00-34.36|g0_1": {
+  "edl": [
+   {
+    "t0": 0.0,
+    "t1": 3.08,
+    "shot": 29,
+    "from": 104.24,
+    "to": 107.32,
+    "line": 0,
+    "why": "Aiden talks in his office, mouth moving from the voice start through lines 0-1",
+    "reuse": false
+   },
+   {
+    "t0": 3.08,
+    "t1": 5.08,
+    "shot": 55,
+    "from": 187.44,
+    "to": 189.44,
+    "line": 2,
+    "why": "Aiden speaks, mouth moving as he asks to explain",
+    "reuse": false
+   },
+   {
+    "t0": 5.08,
+    "t1": 5.6,
+    "shot": 1,
+    "from": 4.3,
+    "to": 4.95,
+    "line": 3,
+    "why": "Aiden shocked and uneasy before the narration",
+    "reuse": false
+   },
+   {
+    "t0": 5.6,
+    "t1": 11.6,
+    "shot": 3,
+    "from": 8.56,
+    "to": 12.96,
+    "line": 3,
+    "why": "Aiden stares, taking her abuse",
+    "reuse": false
+   },
+   {
+    "t0": 11.6,
+    "t1": 13.6,
+    "shot": 9,
+    "from": 35.2,
+    "to": 37.2,
+    "line": 3,
+    "why": "B-roll: Ava glares angrily, the yelling and insults",
+    "reuse": false
+   },
+   {
+    "t0": 13.6,
+    "t1": 14.6,
+    "shot": 4,
+    "from": 12.96,
+    "to": 13.8,
+    "line": 4,
+    "why": "Aiden anxious as her rage builds",
+    "reuse": false
+   },
+   {
+    "t0": 14.6,
+    "t1": 16.9,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 4,
+    "why": "Ava stands holding the phone, furious",
+    "reuse": false
+   },
+   {
+    "t0": 16.9,
+    "t1": 17.75,
+    "shot": 2,
+    "from": 5.84,
+    "to": 6.52,
+    "line": 5,
+    "why": "Ava thrusts the phone toward his face when it is told",
+    "reuse": false
+   },
+   {
+    "t0": 17.75,
+    "t1": 19.9,
+    "shot": 1,
+    "from": 4.0,
+    "to": 5.72,
+    "line": 5,
+    "why": "Aiden flinches at the waving phone, mouth closed",
+    "reuse": true
+   },
+   {
+    "t0": 19.9,
+    "t1": 22.7,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.3,
+    "line": 5,
+    "why": "B-roll: Aiden stunned by the near head hit",
+    "reuse": false
+   },
+   {
+    "t0": 22.7,
+    "t1": 27.0,
+    "shot": 6,
+    "from": 16.48,
+    "to": 19.44,
+    "line": 6,
+    "why": "Aiden stares, recognising it immediately",
+    "reuse": false
+   },
+   {
+    "t0": 27.0,
+    "t1": 28.43,
+    "shot": 5,
+    "from": 14.3,
+    "to": 15.95,
+    "line": 6,
+    "why": "Ava holds the phone, silent, before the photo is named",
+    "reuse": true
+   },
+   {
+    "t0": 28.43,
+    "t1": 34.36,
+    "shot": 7,
+    "from": 19.44,
+    "to": 24.34,
+    "line": 7,
+    "why": "Phone showing the photo of Aiden and Charlotte in the parking lot",
+    "reuse": false
+   }
+  ],
+  "notes": "Only 5.84-6.52 of shot 2 is used, because 6.52-7.72 is shown by another stretch. Some shared reaction shots repeat. Shot 6 plays slow (about 0.69x)."
+ },
+ "par|263.71-297.68|g0_1": {
+  "edl": [
+   {
+    "t0": 263.71,
+    "t1": 264.49,
+    "shot": 60,
+    "from": 224.66,
+    "to": 225.44,
+    "line": 78,
+    "why": "Ava with phone, mouth moves at 225.16, leading into Aiden's outburst",
+    "reuse": false
+   },
+   {
+    "t0": 264.49,
+    "t1": 270.56,
+    "shot": 61,
+    "from": 225.44,
+    "to": 231.25,
+    "line": 78,
+    "why": "Aiden rants about the mother, mouth moving with the voice",
+    "reuse": false
+   },
+   {
+    "t0": 270.56,
+    "t1": 273.4,
+    "shot": 61,
+    "from": 231.25,
+    "to": 233.61,
+    "line": 79,
+    "why": "Aiden goes on about the sanctity of marriage",
+    "reuse": false
+   },
+   {
+    "t0": 273.4,
+    "t1": 275.4,
+    "shot": 30,
+    "from": 111.84,
+    "to": 113.84,
+    "line": 79,
+    "why": "Ava arms crossed, silent reaction cutaway to the jab",
+    "reuse": false
+   },
+   {
+    "t0": 275.4,
+    "t1": 276.18,
+    "shot": 61,
+    "from": 233.89,
+    "to": 234.64,
+    "line": 80,
+    "why": "Aiden's mouth moves on 'Dass ich nicht lache!'",
+    "reuse": false
+   },
+   {
+    "t0": 276.18,
+    "t1": 278.36,
+    "shot": 27,
+    "from": 98.96,
+    "to": 100.88,
+    "line": null,
+    "why": "Silent beat: Ava stern, Aiden's back, no mouths",
+    "reuse": false
+   },
+   {
+    "t0": 278.36,
+    "t1": 280.36,
+    "shot": 48,
+    "from": 161.48,
+    "to": 163.16,
+    "line": 81,
+    "why": "Ava restless, as the voice says she paces",
+    "reuse": false
+   },
+   {
+    "t0": 280.36,
+    "t1": 281.92,
+    "shot": 62,
+    "from": 234.64,
+    "to": 236.0,
+    "line": 81,
+    "why": "Ava stops, arms crossed, before she speaks",
+    "reuse": false
+   },
+   {
+    "t0": 281.92,
+    "t1": 287.38,
+    "shot": 63,
+    "from": 236.48,
+    "to": 241.94,
+    "line": 82,
+    "why": "Ava's mouth starts on 'Hör auf', demanding honesty about Charlotte",
+    "reuse": false
+   },
+   {
+    "t0": 287.38,
+    "t1": 288.66,
+    "shot": 64,
+    "from": 246.5,
+    "to": 247.78,
+    "line": 84,
+    "why": "Aiden denies deflecting, mouth starts with the voice",
+    "reuse": false
+   },
+   {
+    "t0": 288.66,
+    "t1": 290.86,
+    "shot": 19,
+    "from": 73.28,
+    "to": 75.48,
+    "line": null,
+    "why": "Ava rolls her eyes at his denial; silent beat",
+    "reuse": true
+   },
+   {
+    "t0": 290.86,
+    "t1": 292.86,
+    "shot": 87,
+    "from": 349.04,
+    "to": 350.96,
+    "line": null,
+    "why": "Aiden closes his eyes, silent, leading into his next line",
+    "reuse": false
+   },
+   {
+    "t0": 292.86,
+    "t1": 297.68,
+    "shot": 66,
+    "from": 251.84,
+    "to": 256.66,
+    "line": 85,
+    "why": "Aiden's mouth starts as his line begins, then touches collar doubting himself",
+    "reuse": false
+   }
+  ],
+  "notes": "Line 85's own footage (shot 66 from 253.72) has no mouth movement. Starting at 251.84, where Aiden's mouth moves, aligns the start with the voice and plays at 1.0x."
+ },
+ "par|54.30-84.43|g0_2": {
+  "edl": [
+   {
+    "t0": 54.3,
+    "t1": 59.72,
+    "shot": 10,
+    "from": 37.68,
+    "to": 42.06,
+    "line": 17,
+    "reuse": false,
+    "why": "Ava accuses them of kissing in public; own footage slowed to 0.81x, no jump cut"
+   },
+   {
+    "t0": 59.72,
+    "t1": 60.72,
+    "shot": 10,
+    "from": 42.16,
+    "to": 43.04,
+    "line": 18,
+    "reuse": false,
+    "why": "Ava: 'Ihr seid das Letzte!'"
+   },
+   {
+    "t0": 60.72,
+    "t1": 65.74,
+    "shot": 11,
+    "from": 44.32,
+    "to": 47.84,
+    "line": 19,
+    "reuse": false,
+    "why": "Aiden's thoughts racing, own footage slowed"
+   },
+   {
+    "t0": 65.74,
+    "t1": 68.14,
+    "shot": 12,
+    "from": 47.84,
+    "to": 50.32,
+    "line": 20,
+    "reuse": false,
+    "why": "Gym day memory, Ava, story order"
+   },
+   {
+    "t0": 68.14,
+    "t1": 71.45,
+    "shot": 13,
+    "from": 50.32,
+    "to": 53.56,
+    "line": 21,
+    "reuse": false,
+    "why": "Aiden recalls someone watching them, before he speaks"
+   },
+   {
+    "t0": 71.45,
+    "t1": 73.0,
+    "shot": 14,
+    "from": 53.76,
+    "to": 55.36,
+    "line": 22,
+    "reuse": false,
+    "why": "Aiden says 'Lass es mich erklären', mouth on voice"
+   },
+   {
+    "t0": 73.0,
+    "t1": 77.5,
+    "shot": 15,
+    "from": 55.44,
+    "to": 59.12,
+    "line": 23,
+    "reuse": false,
+    "why": "Aiden calm and tense, forcing a steady voice"
+   },
+   {
+    "t0": 77.5,
+    "t1": 80.26,
+    "shot": 22,
+    "from": 85.5,
+    "to": 88.26,
+    "line": 23,
+    "reuse": false,
+    "why": "Aiden B-roll, mouth closed, inner turmoil"
+   },
+   {
+    "t0": 80.26,
+    "t1": 84.43,
+    "shot": 16,
+    "from": 59.12,
+    "to": 63.32,
+    "line": 24,
+    "reuse": false,
+    "why": "Aiden pleads: not what it looks like, trust me"
+   }
+  ],
+  "notes": "The 0.53 s gap before line 17 cannot hold a 2 s B-roll without delaying her voice. Line 17's footage starts at 54.3, so her mouth opens about 0.5 s before the voice; the previous shot 9 has no usable footage left to fill the gap."
+ },
+ "par|34.36-54.30|g0_0": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 36.02,
+    "shot": 7,
+    "from": 25.28,
+    "to": 27.01,
+    "line": 10,
+    "reuse": false,
+    "why": "Phone with the sharp photo, no mouth moving, continuing from the previous shot 7."
+   },
+   {
+    "t0": 36.02,
+    "t1": 38.02,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 10,
+    "reuse": true,
+    "why": "Ava holding the phone, mouth closed; a 2 s neutral cutaway."
+   },
+   {
+    "t0": 38.02,
+    "t1": 40.56,
+    "shot": 7,
+    "from": 27.01,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Own footage of the photo of the two close together, slowed to 0.8x."
+   },
+   {
+    "t0": 40.56,
+    "t1": 43.04,
+    "shot": 6,
+    "from": 16.48,
+    "to": 18.96,
+    "line": 12,
+    "reuse": true,
+    "why": "Aiden stares at the photo while the faces close together are told."
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.04,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 13,
+    "reuse": true,
+    "why": "Ava looks toward Aiden, on screen for the almost-kiss line, mouth closed."
+   },
+   {
+    "t0": 45.04,
+    "t1": 49.45,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: woman leans toward Aiden, the spy's photo moment, before any mouth movement."
+   },
+   {
+    "t0": 49.45,
+    "t1": 51.4,
+    "shot": 8,
+    "from": 33.56,
+    "to": 35.12,
+    "line": 15,
+    "reuse": false,
+    "why": "The flashback continues after the mouth-moving seconds, covering the shutter line."
+   },
+   {
+    "t0": 51.4,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.15,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares with hatred, slowed to 0.7x, ending before the next stretch's shot 9."
+   }
+  ],
+  "notes": "The photo-phone shot 7 has little usable footage, so lines 11-13 use own footage plus Aiden and Ava reaction cutaways. Shot 2 is skipped because it was used elsewhere. Line 13 shows Ava through the shot 54 reaction."
+ },
+ "par|34.36-54.30|g0_1": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 36.4,
+    "shot": 5,
+    "from": 14.2,
+    "to": 16.04,
+    "line": 10,
+    "reuse": true,
+    "why": "Ava holds up the phone, mouth closed; neutral 2 s lead-in to the photo"
+   },
+   {
+    "t0": 36.4,
+    "t1": 40.92,
+    "shot": 7,
+    "from": 25.28,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Phone shows the sharp photo of the pair in the car, no mouth moving"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.2,
+    "line": 12,
+    "reuse": true,
+    "why": "Ava looks at him in the office while the close faces are told"
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.2,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 13,
+    "reuse": true,
+    "why": "Ava looks toward Aiden, mouth closed, as the almost-kiss is told"
+   },
+   {
+    "t0": 45.2,
+    "t1": 49.57,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: she leans toward Aiden, before any mouth movement"
+   },
+   {
+    "t0": 49.57,
+    "t1": 51.4,
+    "shot": 8,
+    "from": 33.56,
+    "to": 35.12,
+    "line": 15,
+    "reuse": false,
+    "why": "Flashback continues after the mouth-moving seconds, covering the shutter line"
+   },
+   {
+    "t0": 51.4,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.15,
+    "line": 16,
+    "reuse": true,
+    "why": "Ava glares with hatred in the office, own footage slowed to 0.7x"
+   }
+  ],
+  "notes": "Shot 7 only has 24.34-29.04 available and its mouth moves until 25.28, so the cut starts on shot 5 to avoid a jump cut and a moving mouth. No Ava action shot was usable for lines 12 and 13, so reaction shots of Ava stand in."
+ },
+ "par|34.36-54.30|g1_0": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 36.4,
+    "shot": 1,
+    "from": 4.0,
+    "to": 5.72,
+    "line": 10,
+    "reuse": true,
+    "why": "Aiden, uneasy and mouth closed, reacts in the office before the photo is shown; not shown within 8 s"
+   },
+   {
+    "t0": 36.4,
+    "t1": 40.92,
+    "shot": 7,
+    "from": 25.28,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Phone shows the sharp photo of the pair in the car, no mouth moving"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.2,
+    "line": 12,
+    "reuse": false,
+    "why": "Ava looks at him in the office while the close faces are told"
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.2,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 13,
+    "reuse": false,
+    "why": "Ava looks toward Aiden, mouth closed, as the almost-kiss is told"
+   },
+   {
+    "t0": 45.2,
+    "t1": 49.57,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: she leans toward Aiden, before any mouth movement"
+   },
+   {
+    "t0": 49.57,
+    "t1": 51.57,
+    "shot": 8,
+    "from": 33.415,
+    "to": 35.12,
+    "line": 15,
+    "reuse": false,
+    "why": "Flashback continues after the mouth-moving seconds, covering the shutter line"
+   },
+   {
+    "t0": 51.57,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.15,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares with hatred in the office, own footage slowed to 0.74x"
+   }
+  ],
+  "notes": "Replaced the first piece (shot 5 repeat) with a shot 1 Aiden reaction. Line 11 still uses shot 7 slowed, because the 2 s B-roll rule leaves too little footage for it."
+ },
+ "par|34.36-54.30|g1_1": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 36.98,
+    "shot": 7,
+    "from": 25.28,
+    "to": 27.4,
+    "line": 10,
+    "reuse": false,
+    "why": "Ava holds up the phone with the sharp photo, mouth closed, as line 10 tells it"
+   },
+   {
+    "t0": 36.98,
+    "t1": 38.92,
+    "shot": 7,
+    "from": 27.4,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Phone photo of Paul and Charlotte close together in the car"
+   },
+   {
+    "t0": 38.92,
+    "t1": 40.92,
+    "shot": 6,
+    "from": 17.0,
+    "to": 19.0,
+    "line": 11,
+    "reuse": true,
+    "why": "Aiden stares in shock in the office, mouth closed, as a reaction cutaway"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.2,
+    "line": 12,
+    "reuse": false,
+    "why": "Ava looks at him in the office while the close faces are told"
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.2,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 13,
+    "reuse": false,
+    "why": "Ava looks toward Aiden, mouth closed, as the almost-kiss is told"
+   },
+   {
+    "t0": 45.2,
+    "t1": 49.57,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: she leans toward Aiden, before any mouth movement"
+   },
+   {
+    "t0": 49.57,
+    "t1": 51.57,
+    "shot": 8,
+    "from": 33.415,
+    "to": 35.12,
+    "line": 15,
+    "reuse": false,
+    "why": "Flashback continues after the mouth-moving seconds, covering the shutter line"
+   },
+   {
+    "t0": 51.57,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.15,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares with hatred in the office, own footage slowed to 0.74x"
+   }
+  ],
+  "notes": "Line 10 now shows Ava with the phone for its whole duration. Shot 2 was skipped because only about 1.2 s of it is free and mouth-free. Line 11 has a 2 s Aiden reaction cutaway (shot 6, reuse)."
+ },
+ "par|34.36-54.30|g1_2": {
+  "edl": [
+   {
+    "t0": 34.36,
+    "t1": 35.56,
+    "shot": 2,
+    "from": 6.52,
+    "to": 7.72,
+    "line": 10,
+    "reuse": false,
+    "why": "Ava thrusts the phone with the photo forward, mouth closed; avoids the jump cut from shot 7"
+   },
+   {
+    "t0": 35.56,
+    "t1": 38.92,
+    "shot": 7,
+    "from": 25.28,
+    "to": 29.04,
+    "line": 11,
+    "reuse": false,
+    "why": "Phone shows the sharp photo of the pair close together in the car"
+   },
+   {
+    "t0": 38.92,
+    "t1": 40.92,
+    "shot": 6,
+    "from": 17.0,
+    "to": 19.0,
+    "line": 11,
+    "reuse": true,
+    "why": "Aiden stares in shock in the office, mouth closed, as a reaction cutaway"
+   },
+   {
+    "t0": 40.92,
+    "t1": 43.04,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.2,
+    "line": 12,
+    "reuse": false,
+    "why": "Ava looks at him in the office while the close faces are told"
+   },
+   {
+    "t0": 43.04,
+    "t1": 45.2,
+    "shot": 54,
+    "from": 185.48,
+    "to": 187.44,
+    "line": 13,
+    "reuse": false,
+    "why": "Ava looks toward Aiden, mouth closed, as the almost-kiss is told"
+   },
+   {
+    "t0": 45.2,
+    "t1": 49.57,
+    "shot": 8,
+    "from": 29.04,
+    "to": 32.76,
+    "line": 14,
+    "reuse": false,
+    "why": "Car flashback: she leans toward Aiden, before any mouth movement"
+   },
+   {
+    "t0": 49.57,
+    "t1": 51.57,
+    "shot": 8,
+    "from": 33.415,
+    "to": 35.12,
+    "line": 15,
+    "reuse": false,
+    "why": "Flashback continues after the mouth-moving seconds, covering the shutter line"
+   },
+   {
+    "t0": 51.57,
+    "t1": 54.3,
+    "shot": 9,
+    "from": 35.12,
+    "to": 37.15,
+    "line": 16,
+    "reuse": false,
+    "why": "Ava glares with hatred in the office, own footage slowed to 0.74x"
+   }
+  ],
+  "notes": "Opened with shot 2's silent seconds instead of shot 5 or shot 7 at 24.34, because shot 7's mouth moves until 25.28 and shot 5 would repeat too soon."
+ }
+}

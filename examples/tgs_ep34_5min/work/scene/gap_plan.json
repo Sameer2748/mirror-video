@@ -1,0 +1,114 @@
+{
+ "key": "v1|201|146|0,10,12,13,14,15,31,61,104,124,167",
+ "lines": {
+  "0": {
+   "show": "talking",
+   "who": "Aiden",
+   "shots": [
+    11,
+    23,
+    3,
+    1
+   ],
+   "why": "Aiden pleads aloud; his lip clip in the office, with shocked reactions as backup."
+  },
+  "10": {
+   "show": "action",
+   "who": "Ava",
+   "shots": [
+    7,
+    2
+   ],
+   "why": "The phone showing the sharp photo."
+  },
+  "12": {
+   "show": "action",
+   "who": "Ava",
+   "shots": [
+    7,
+    2,
+    8
+   ],
+   "why": "The photo with the two faces close together."
+  },
+  "13": {
+   "show": "action",
+   "who": "Ava",
+   "shots": [
+    7,
+    8,
+    2
+   ],
+   "why": "Photo that looks like a kiss; the car flashback supports it."
+  },
+  "14": {
+   "show": "action",
+   "who": "Aiden",
+   "shots": [
+    8
+   ],
+   "why": "Flashback in the gym parking lot car."
+  },
+  "15": {
+   "show": "action",
+   "who": "Aiden",
+   "shots": [
+    8
+   ],
+   "why": "The shot was taken in the car; the flashback shows it."
+  },
+  "31": {
+   "show": "action",
+   "who": "Ava",
+   "shots": [
+    9,
+    32,
+    58,
+    26
+   ],
+   "why": "No cup shot exists; Ava's furious glare carries the outburst."
+  },
+  "61": {
+   "show": "reaction",
+   "who": "Ava",
+   "shots": [
+    48,
+    54,
+    44
+   ],
+   "why": "Ava stands still and stares, shaken and tense."
+  },
+  "104": {
+   "show": "reaction",
+   "who": "Aiden",
+   "shots": [
+    66,
+    49,
+    28,
+    42
+   ],
+   "why": "Aiden's inner thought; he looks thinking and tense."
+  },
+  "124": {
+   "show": "neutral",
+   "who": "Ava",
+   "shots": [
+    86,
+    87,
+    27
+   ],
+   "why": "Silent pause between the two; stillness fits the quiet."
+  },
+  "167": {
+   "show": "talking",
+   "who": "Charlotte",
+   "shots": [
+    114,
+    103,
+    109,
+    101
+   ],
+   "why": "Charlotte says it on the phone, shaken and worried."
+  }
+ }
+}

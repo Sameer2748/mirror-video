@@ -1,0 +1,746 @@
+SOURCE SRT OFFSET: +0.000s (none needed); source subtitle times are moved by +0.000s
+TIMING CHECK DUB: subtitles vs speech in Episode 24 - Emma Ha Tirato Qualche Filo.mp3: +0.01s (match 0.25 vs 0.06); last subtitle ends 613.9s, media is 614.1s
+TIMING CHECK SRC: subtitles vs speech in TOLR_EP_24.mp4: -0.10s (match 0.19 vs 0.05); last subtitle ends 738.5s, media is 741.1s
+DUB: using word-timed sentences from sentences_dub.json (179 sentences, times from the audio)
+DUB: raw cues=164 (0ms in raw file=0) -> sentences=179 (0ms after overlap resolution=34) -> dropped single-word 0ms=0 -> re-timed multi-word 0ms=0 -> rows=179
+SRC: using word-timed sentences from sentences_src.json (174 sentences, times from the audio)
+SRC: raw cues=195 (0ms in raw file=0) -> sentences=174 (0ms after overlap resolution=25) -> dropped single-word 0ms=0 -> re-timed multi-word 0ms=0 -> rows=174
+
+==== ALL 179 DUB ROWS (automatic result) ====
+DUB#  0 [00:00.030-00:01.720] "Lorenzo osservava Emma dall'auto."
+        -> SRC#0 [00:01.090] 'Ethan beobachtete Emily vom Auto aus.'  (DP match 0.704)
+DUB#  1 [00:02.050-00:06.310] 'La guardò attraversare la strada con passo deciso, chiedendosi dove fosse diretta.'
+        -> SRC#1 [00:04.100] 'Als sie zielstrebig die Straße überquerte, fragte er sich wo sie denn wohl hinwollte.'  (DP match 0.902)
+DUB#  2 [00:07.270-00:10.977] 'Quando la vide puntare dritta verso una macelleria, il suo sguardo si addolcì.'
+        -> SRC#40 [03:16.330] 'Sie sah ihn mit großen Augen an.'  (Case A reuse 0.667)
+DUB#  3 [00:11.660-00:15.340] 'Un sorriso gli spuntò sulle labbra, prima ancora di riuscire a reprimerlo.'
+        -> SRC#2 [00:09.700] 'Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.'  (DP match 0.776)
+DUB#  4 [00:16.150-00:17.220] 'Arrosto di vitello.'
+        -> SRC#3 [00:20.980] 'Schweinebraten.'  (DP match 0.761)
+DUB#  5 [00:17.700-00:22.360] 'Aveva davvero scoperto il suo piatto preferito, senza che lui le avesse mai detto nulla?'
+        -> SRC#4 [00:22.930] 'Hatte sie wirklich sein Lieblingsgericht herausgefunden, obwohl er bisher nie ein Wort darüber verloren hatte?'  (DP match 0.752)
+DUB#  6 [00:23.860-00:24.420] 'Sospirò.'
+        -> SRC#5 [00:30.450] 'Er seufzte kurz.'  (DP match 0.371)
+DUB#  7 [00:25.220-00:28.660] 'Se lei faceva un passo verso di lui, lui poteva ricambiare.'
+        -> SRC#6 [00:32.700] 'Wenn sie etwas für ihn tat, konnte er ja auch mal etwas für sie tun.'  (DP match 0.748)
+DUB#  8 [00:29.800-00:35.280] 'La seguì con lo sguardo finché non sparì nel negozio, poi tirò fuori il cellulare e chiamò Daniele.'
+        -> SRC#7 [00:38.230] 'Er schaut ihr noch kurz nach und kaum war sie im Laden verschwunden, zog er sein Handy heraus und wählte Daniels Nummer.'  (DP match 0.826)
+DUB#  9 [00:36.440-00:41.380] "«Daniele, devi muovere qualche filo per me», disse Lorenzo appena l'altro rispose."
+        -> SRC#8 [00:45.800] '„Hey Daniel, du musst ein paar Fäden für mich ziehen", sagte Ethan, als Daniel das Gespräch annahm.'  (DP match 0.617)
+DUB# 10 [00:42.180-00:47.180] "«Fai entrare la ICM Design nella gara d'appalto per il Polo dell'Innovazione Lombardo.»"
+        -> SRC#9 [00:53.660] '„Bring ICM Design ins Rennen um das Projekt für die Umgestaltung des California Culture and Technology Centers."'  (DP match 0.701)
+DUB# 11 [00:48.620-00:50.340] "Dall'altra parte cadde il silenzio."
+        -> SRC#10 [01:01.770] 'Am anderen Ende herrschte kurzes Schweigen.'  (DP match 0.894)
+DUB# 12 [00:51.500-00:52.760] '«La ICM Design?»'
+        -> SRC#11 [01:06.220] '„ICM Design?“'  (DP match 0.955)
+DUB# 13 [00:53.450-00:54.300] 'Daniele sbuffò.'
+        -> SRC#12 [01:08.710] 'Daniel schnaubte ungläubig.'  (DP match 0.897)
+DUB# 14 [00:55.050-00:55.880] '«Quella aziendina?'
+        -> SRC#13 [01:11.180] '„Diese kleine Klitsche?'  (DP match 0.689)
+DUB# 15 [00:55.880-00:58.380] 'È un progetto fuori dalla loro portata.»'
+        -> SRC#14 [01:13.140] 'Das ist doch drei Nummern zu groß für die.”'  (DP match 0.341)
+DUB# 16 [00:59.990-01:03.160] 'Si fermò un istante, intuendo dove volesse arrivare.'
+        -> SRC#15 [01:16.230] 'Er hielt kurz inne, dann dämmerte ihm, worauf Ethan hinaus wollte.'  (DP match 0.589)
+DUB# 17 [01:04.070-01:06.040] 'La sua voce si caricò di incredulità.'
+        -> SRC#16 [01:20.640] 'Ungläubigkeit sprach aus ihm, als er fortfuhr: "Kann es sein, dass du Emily Kaiser hilfst?'  (DP match 0.524)
+DUB# 18 [01:07.220-01:09.400] '«Non dirmi che stai aiutando Emma Reali.'
+        -> SRC#91 [07:07.110] '„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.'  (Case A reuse 0.546)
+DUB# 19 [01:09.990-01:10.860] 'Questo non è da te.»'
+        -> SRC#17 [01:27.500] 'Mein Lieber, das ist ja nicht gerade … typisch für dich."'  (DP match 0.735)
+DUB# 20 [01:12.030-01:12.440] '«Ah sì?'
+        -> SRC#165 [11:47.860] 'Na und?'  (Case A reuse 0.778)
+DUB# 21 [01:13.240-01:14.240] 'E cosa sarebbe da me?»'
+        -> SRC#18 [01:32.070] '„Ach ja, was ist denn typisch für mich?"'  (DP match 0.664)
+DUB# 22 [01:15.420-01:16.960] 'Il tono di Lorenzo si abbassò.'
+        -> SRC#19 [01:35.890] 'Ethans Stimme wurde um eine Nuance kälter.'  (DP match 0.432)
+DUB# 23 [01:17.920-01:25.760] 'Daniele scelse saggiamente di tacere, anche se lconosceva benissimo la risposta: Essere freddo e calcolatore.'
+        -> SRC#20 [01:39.740] 'Daniel entschied sich klugerweise für Schweigen, obwohl in seinem Kopf die offensichtliche Antwort widerhallte: Kalt.'  (DP match 0.887)
+DUB# 24 [01:27.220-01:30.280] 'Si schiarì la voce, tornando professionale.'
+        -> SRC#93 [07:15.210] 'Seine Stimme schwoll vor Stolz an.'  (Case A reuse 0.573)
+DUB# 25 [01:31.520-01:33.760] '«Va bene, conosco qualcuno ai vertici.'
+        -> SRC#23 [01:50.750] 'Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.'  (DP match 0.628)
+DUB# 26 [01:34.390-01:35.840] "Devo fargli vincere l'appalto?"
+        -> ** UNMATCHED **  top: SRC#76 0.43 'Dachte er etwa an … mehr?' | SRC#132 0.40 '„Darf ich etwas vorschlagen?' | SRC#145 0.39 '„Was soll das heißen?", fuhr er sie an.'
+DUB# 27 [01:36.780-01:40.220] 'Guarda che partecipa anche il Gruppo Reali insieme ad altri colossi.'
+        -> SRC#106 [08:10.460] '„Der Kaiser Konzern nimmt übrigens auch teil.'  (Case A reuse 0.614)
+DUB# 28 [01:40.670-01:41.740] 'Sarà un massacro.»'
+        -> SRC#25 [02:02.250] 'Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf."'  (DP match 0.567)
+DUB# 29 [01:42.410-01:45.700] 'La risposta di Lorenzo lo spiazzò: «Non serve.'
+        -> SRC#26 [02:10.290] 'Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.'  (DP match 0.642)
+DUB# 30 [01:46.040-01:47.840] 'Farla partecipare è sufficiente.»'
+        -> SRC#27 [02:18.820] 'Dass sie mitmachen kann, muss reichen."'  (DP match 0.841)
+DUB# 31 [01:48.960-01:49.800] 'Fece una pausa.'
+        -> SRC#36 [02:53.880] '„Ist erledigt.'  (Case A reuse 0.581)
+DUB# 32 [01:50.940-01:54.140] '«Se non sa vincere con le sue forze, non se lo merita.»'
+        -> SRC#28 [02:21.690] 'Er hielt kurz inne und fuhr dann fort: "Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient."'  (DP match 0.750)
+DUB# 33 [01:55.260-01:57.180] 'Daniele emise un fischio sommesso.'
+        -> SRC#29 [02:29.240] 'Daniel stieß einen leisen Pfiff aus.'  (DP match 0.766)
+DUB# 34 [01:58.110-01:58.820] 'Spietato.'
+        -> SRC#30 [02:32.040] 'Gnadenlos.'  (DP match 0.598)
+DUB# 35 [01:59.210-02:00.500] 'Persino con sua moglie.'
+        -> SRC#31 [02:33.340] 'Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.'  (DP match 0.641)
+DUB# 36 [02:01.560-02:03.380] 'Avrebbe voluto dirlo ad alta voce.'
+        -> SRC#70 [05:12.920] '„Vielleicht würde ich ja am liebsten … dich essen."'  (Case A reuse 0.633)
+DUB# 37 [02:04.250-02:08.280] 'Invece, si limitò a rispondere formale: «Ricevuto.'
+        -> SRC#32 [02:37.390] 'Tatsächlich antwortete er aber nur geschäftig: „Verstanden.'  (DP match 0.835)
+DUB# 38 [02:08.620-02:09.510] 'Me ne occupo io.»'
+        -> SRC#33 [02:41.880] 'Ich kümmere mich darum".'  (DP match 0.972)
+DUB# 39 [02:10.520-02:12.700] 'Ma la mossa di Lorenzo lo aveva sorpreso.'
+        -> SRC#34 [02:43.600] 'Dennoch hatte Ethans Aktion Eindruck bei ihm hinterlassen..'  (DP match 0.569)
+DUB# 40 [02:13.770-02:19.480] 'Pochi minuti dopo Emma tornò, stringendo un sacchetto con la migliore carne di vitello della macelleria.'
+        -> SRC#35 [02:47.570] 'Wenige Minuten später kehrte Emily zurück, eine Tüte mit bestem Schweinefleisch in der Hand.'  (DP match 0.834)
+DUB# 41 [02:20.570-02:20.900] '«Fatto.'
+        -> SRC#36 [02:53.880] '„Ist erledigt.'  (DP match 0.722)
+DUB# 42 [02:21.380-02:26.960] 'La tua azienda è dentro», disse Lorenzo con disinvoltura, mettendo via il cellulare.'
+        -> SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'  (DP match 0.708)
+DUB# 43 [02:27.910-02:31.880] 'Come se non avesse appena stravolto la carriera di lei con una singola chiamata.'
+        -> SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'  (Case A reuse 0.638)
+DUB# 44 [02:33.020-02:34.320] 'Lei sbatté le palpebre.'
+        -> SRC#78 [05:49.760] 'So aufgeschlossen war sie nun auch wieder nicht.'  (Case A reuse 0.766)
+DUB# 45 [02:35.260-02:39.840] "«Vuoi dire che la ICM Design può partecipare alla gara per il Polo dell'Innovazione?"
+        -> SRC#38 [03:05.750] 'Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?'  (DP match 0.725)
+DUB# 46 [02:40.700-02:41.740] 'Così, dal nulla?»'
+        -> SRC#39 [03:14.920] 'Einfach so?"'  (DP match 0.743)
+DUB# 47 [02:42.810-02:43.360] 'Lo fissò.'
+        -> SRC#60 [04:25.890] 'Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.'  (Case A reuse 0.607)
+DUB# 48 [02:44.250-02:48.160] "Quell'uomo aveva tra le mani un potere che lei non aveva nemmeno immaginato ."
+        -> SRC#41 [03:18.750] 'Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte.'  (DP match 0.727)
+DUB# 49 [02:49.310-02:50.460] 'Lui fece spallucce.'
+        -> SRC#42 [03:23.560] 'Er zuckte nur mit den Schultern.'  (DP match 0.545)
+DUB# 50 [02:51.540-02:53.780] '«Grazie», disse lei, sincera.'
+        -> SRC#43 [03:26.450] '„Danke", sagte sie aufrichtig.'  (DP match 0.879)
+DUB# 51 [02:54.920-02:56.570] 'Lorenzo trattenne un sorriso.'
+        -> SRC#44 [03:29.600] 'Seine Mundwinkel kräuselten sich zu einem schwachen Lächeln.'  (DP match 0.381)
+DUB# 52 [02:57.530-02:58.260] '«Andiamo a casa.'
+        -> SRC#45 [03:33.680] '„Lass uns nach Hause fahren.'  (DP match 0.986)
+DUB# 53 [02:58.630-03:00.280] 'Voglio il mio arrosto di vitello.»'
+        -> SRC#46 [03:35.350] 'Ich freue mich schon auf den Schweinebraten."'  (DP match 0.661)
+DUB# 54 [03:01.260-03:02.640] 'Emma lo guardò interdetta.'
+        -> SRC#47 [03:37.790] 'Ein gespielt überraschter Ausdruck huschte über ihr Gesicht.'  (DP match 0.404)
+DUB# 55 [03:03.740-03:05.960] "«Oh, ma io non volevo fare l'arrosto..."
+        -> SRC#48 [03:41.780] '„Oh, das hatte ich gar nicht vor…'  (DP match 0.812)
+DUB# 56 [03:06.540-03:08.320] 'Pensavo a uno stufato con le patate.»'
+        -> SRC#49 [03:44.540] 'Ich dachte eher an Schweinefleisch-Kartoffel-Eintopf."'  (DP match 0.817)
+DUB# 57 [03:09.550-03:13.700] 'Lorenzo rimase incredulo e confuso, quasi offeso da quelle parole.'
+        -> SRC#51 [03:51.480] 'Eine ganze Bandbreite von Emotionen durchlief sein Gesicht – Ungläubigkeit, Verwirrung und leichter Verrat.'  (DP match 0.557)
+DUB# 58 [03:15.990-03:17.060] 'Emma scoppiò a ridere.'
+        -> SRC#52 [03:58.260] '„Haha" Emily konnte ihr Lachen nicht zurückhalten.'  (DP match 0.777)
+DUB# 59 [03:17.690-03:18.840] '«Ti sto prendendo in giro.'
+        -> SRC#53 [04:03.660] '„Ich veräppel dich doch nur.'  (DP match 0.824)
+DUB# 60 [03:19.200-03:20.460] "Certo che faccio l'arrosto.»"
+        -> SRC#54 [04:05.440] 'Natürlich mache ich Schweinebraten."'  (DP match 0.817)
+DUB# 61 [03:21.320-03:22.220] '«Emma Reali.»'
+        -> SRC#55 [04:08.020] '„Emily Kaiser."'  (DP match 0.542)
+DUB# 62 [03:22.800-03:23.780] 'Scandì il suo nome.'
+        -> SRC#56 [04:10.400] 'Er sprach ihren Namen laut aus und sah sie mit verengten Augen an.'  (DP match 0.511)
+DUB# 63 [03:24.590-03:25.540] 'Questa donna...'
+        -> SRC#57 [04:15.860] 'Diese Frau!'  (DP match 0.935)
+DUB# 64 [03:25.950-03:29.360] 'Come osa prendermi in giro, proprio ora che le ho fatto un favore?'
+        -> SRC#58 [04:17.350] 'Wie konnte sie es wagen, ihn zu necken, nachdem er einen Hauch von Freundlichkeit gezeigt hatte?'  (DP match 0.550)
+DUB# 65 [03:30.490-03:32.000] 'Emma intuì il cambio di umore.'
+        -> SRC#59 [04:23.500] 'Emily spürte, dass er ernster wurde.'  (DP match 0.590)
+DUB# 66 [03:32.510-03:37.320] 'Gli fece una linguaccia per smorzare la tensione: «Tranquillo, avrai il tuo arrosto.'
+        -> SRC#60 [04:25.890] 'Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.'  (DP match 0.717)
+DUB# 67 [03:37.920-03:39.800] 'Tutti hanno diritto a un peccato di gola.»'
+        -> SRC#61 [04:34.880] 'Muss doch jeder sein kleines Guilty Pleasure haben.”'  (DP match 0.628)
+DUB# 68 [03:41.280-03:44.840] 'Lorenzo sbuffò, accendendo il motore con finta indifferenza.'
+        -> SRC#62 [04:37.920] 'Er schnaubte nur und ließ vermeintlich gleichgültig den Motor an.'  (DP match 0.776)
+DUB# 69 [03:45.910-03:50.880] "Guidarono in silenzio per un po', finché Emma non inclinò la testa con un sorriso malizioso."
+        -> SRC#63 [04:43.230] 'Sie fuhren eine Weile, dann legte Emily den Kopf schief und grinste verschmitzt.'  (DP match 0.634)
+DUB# 70 [03:51.960-03:53.440] '«Sai cosa piace mangiare a me?»'
+        -> SRC#64 [04:48.570] '„Weißt du eigentlich, was ich gerne esse?"'  (DP match 0.936)
+DUB# 71 [03:54.530-03:57.180] "«Cibo spazzatura», rispose lui all'istante."
+        -> SRC#65 [04:51.900] '„Junkfood", antwortete er, ohne zu zögern.'  (DP match 0.416)
+DUB# 72 [03:58.280-03:59.460] 'Lei rimase ammutolita.'
+        -> SRC#66 [04:55.840] 'Sie starrte ihn mit offenem Mund an, für einen Moment sprachlos.'  (DP match 0.579)
+DUB# 73 [04:00.290-04:01.640] 'E questo che diavolo significa?'
+        -> SRC#67 [05:00.410] 'Was soll das denn jetzt?'  (DP match 0.543)
+DUB# 74 [04:03.140-04:06.380] 'Ma si riprese in fretta, decidendo di alzare la posta.'
+        -> SRC#68 [05:02.430] 'Aber sie fing sich schnell wieder, und sie beschloss, sich noch ein bisschen weiter vorzuwagen.'  (DP match 0.569)
+DUB# 75 [04:07.260-04:10.620] '«Forse la cosa che mi piacerebbe di più mangiare... sei tu.»'
+        -> SRC#70 [05:12.920] '„Vielleicht würde ich ja am liebsten … dich essen."'  (DP match 0.896)
+DUB# 76 [04:11.610-04:15.280] "Gli fece l'occhiolino, caricando la voce di esagerata dolcezza."
+        -> SRC#71 [05:18.060] 'Sie zwinkerte, ihre Stimme triefte vor gespielter Süße.'  (DP match 0.689)
+DUB# 77 [04:16.480-04:18.800] "Lorenzo le lanciò un'occhiata imperscrutabile."
+        -> SRC#72 [05:22.890] 'Ethan warf ihr einen Seitenblick zu, sein Gesichtsausdruck undurchdringlich.'  (DP match 0.673)
+DUB# 78 [04:19.460-04:22.720] '«Nessuno ti ha mai detto che non si flirta con un uomo mentre guida?»'
+        -> SRC#73 [05:28.260] '„Hat dich niemand davor gewarnt, mit einem Mann im Auto zu flirten?"'  (DP match 0.939)
+DUB# 79 [04:24.000-04:25.760] 'Il cuore di Emma perse un colpo.'
+        -> SRC#74 [05:32.910] 'Emilys Herz setzte einen Schlag aus.'  (DP match 0.732)
+DUB# 80 [04:26.290-04:28.160] 'Qual era il problema di flirtare in auto?'
+        -> SRC#75 [05:36.330] 'Was war denn mit Flirten im Auto?'  (DP match 0.940)
+DUB# 81 [04:29.280-04:33.760] 'A meno che lui non stesse pensando a... qualcosa di più spinto lì dentro?'
+        -> SRC#76 [05:39.300] 'Dachte er etwa an … mehr?'  (DP match 0.839)
+DUB# 82 [04:35.060-04:36.320] 'Arrossì visibilmente.'
+        -> SRC#136 [10:02.020] 'Sein Kiefer spannte sich an.'  (Case A reuse 0.669)
+DUB# 83 [04:36.810-04:40.580] 'La sua mente evocò immagini che non avrebbe mai ammesso ad alta voce.'
+        -> SRC#77 [05:43.230] 'Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.'  (DP match 0.647)
+DUB# 84 [04:41.300-04:42.720] 'Non era così disinibita.'
+        -> SRC#78 [05:49.760] 'So aufgeschlossen war sie nun auch wieder nicht.'  (DP match 0.831)
+DUB# 85 [04:43.860-04:46.680] '«Provoca incidenti mortali», la rimproverò lui.'
+        -> SRC#79 [05:52.890] '„Das führt zu einem Überschlagsunfall", sagte er ausdruckslos, seine Stimme kalt wie Stahl.'  (DP match 0.565)
+DUB# 86 [04:47.980-04:50.800] "Emma si zittì, sprofondando nell'imbarazzo."
+        -> SRC#80 [05:59.890] 'Sie erstarrte, durch und durch beschämt.'  (DP match 0.619)
+DUB# 87 [04:51.570-04:54.780] 'Lorenzo sorrise impercettibilmente davanti a quella reazione.'
+        -> SRC#81 [06:03.430] 'Seine Lippen verzogen sich beim Anblick ihres beschämten Gesichtsausdrucks zu einem kaum wahrnehmbaren Lächeln.'  (DP match 0.508)
+DUB# 88 [04:55.730-04:57.540] '«Rilassati, siamo arrivati.»'
+        -> SRC#82 [06:10.270] '„Entspann dich, wir sind da."'  (DP match 0.963)
+DUB# 89 [04:58.970-05:03.900] 'A casa, Emma preparò un pranzo eccellente, consumato in un silenzio confortevole.'
+        -> SRC#83 [06:14.200] 'Zu Hause bereitete Emily ein köstliches Mittagessen zu, das beide ohne viele Worte genossen.'  (DP match 0.815)
+DUB# 90 [05:04.490-05:08.360] 'Più tardi, Lorenzo tornò in azienda sazio e di ottimo umore.'
+        -> SRC#84 [06:20.360] 'Anschließend fuhr Ethan satt und wesentlich besser gelaunt zurück in seine Firma.'  (DP match 0.538)
+DUB# 91 [05:09.100-05:15.680] "Anche Emma rientrò al lavoro: la notizia della gara d'appalto era già esplosa tra i corridoi della ICM Design."
+        -> SRC#85 [06:25.420] 'Und Emily ebenfalls, denn inzwischen war die Nachricht, dass sie an der Ausschreibung teilnehmen konnten, bei der ICM Design angekommen.'  (DP match 0.694)
+DUB# 92 [05:17.060-05:24.520] 'Nella sala riunioni della ICM Design, il capo, Nicola Berlandi, faceva avanti e indietro, febbricitante.'
+        -> SRC#86 [06:36.090] 'Im Besprechungsraum von ICM Design lief ihr Chef Nick Sterling deshalb auch aufgeregt hin und her.'  (DP match 0.555)
+DUB# 93 [05:25.370-05:29.920] "Il Polo dell'Innovazione Lombardo era il biglietto vincente che poteva cambiare tutto."
+        -> SRC#87 [06:43.320] 'Die Teilnahme an dem California Culture and Technology Center Projekt konnte alles verändern.'  (DP match 0.512)
+DUB# 94 [05:31.110-05:33.340] "Aveva convocato un vertice d'urgenza."
+        -> SRC#88 [06:50.060] 'Er hatte dringende Besprechung angeordnet an.'  (DP match 0.756)
+DUB# 95 [05:34.040-05:39.860] 'Attorno al tavolo sedevano Emma, il suo collega Fabio Guida e il project manager Marco Romano.'
+        -> SRC#89 [06:52.850] 'Um den großen Konferenztisch saßen Emily, ihr unmittelbarer Kollege Jason Adler und der Projektmanager des Unternehmens, Mark Henderson.'  (DP match 0.498)
+DUB# 96 [05:41.120-05:44.540] "Nicola si schiarì la voce, gli occhi accesi dall'entusiasmo."
+        -> SRC#90 [07:02.260] 'Sterling räusperte sich, seine Augen glänzten vor Enthusiasmus.'  (DP match 0.647)
+DUB# 97 [05:45.690-05:50.480] '«Emma, non avrei mai creduto che una ragazza giovane come te avesse questi agganci.'
+        -> SRC#91 [07:07.110] '„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.'  (DP match 0.821)
+DUB# 98 [05:51.280-05:52.580] 'Ci hai fatto entrare in gara!»'
+        -> SRC#92 [07:12.130] 'Du hast uns einen Platz in der Ausschreibung gesichert!"'  (DP match 0.718)
+DUB# 99 [05:53.540-05:55.160] "La sua voce tremava d'orgoglio."
+        -> SRC#93 [07:15.210] 'Seine Stimme schwoll vor Stolz an.'  (DP match 0.907)
+DUB#100 [05:56.300-05:58.760] '«Questo progetto bolle in pentola da cinque anni.'
+        -> SRC#94 [07:17.920] '„Dieses Projekt ist seit fünf Jahren in Entwicklung.'  (DP match 0.829)
+DUB#101 [05:59.380-06:02.100] 'Diventerà uno dei simboli più iconici di Milano .»'
+        -> SRC#95 [07:21.770] 'Es wird eines der ikonischsten Wahrzeichen Kaliforniens werden."'  (DP match 0.481)
+DUB#102 [06:02.860-06:04.380] 'Le sorrise, radioso.'
+        -> SRC#96 [07:26.040] 'Er strahlte sie an.'  (DP match 0.582)
+DUB#103 [06:05.590-06:10.460] "«Anche se perdiamo, il solo fatto di essere al tavolo è un'opportunità gigantesca.»"
+        -> SRC#97 [07:27.980] '„Selbst wenn wir nicht gewinnen, ist allein die Einladung zur Teilnahme eine enorme Chance für unser Unternehmen."'  (DP match 0.718)
+DUB#104 [06:11.870-06:16.000] "«Nicola, io credo davvero che possiamo vincerla, con l'idea giusta.»"
+        -> SRC#98 [07:34.580] '„Nick, ich bin sogar zuversichtlich, dass wir diese Ausschreibung mit dem richtigen Konzept gewinnen können."'  (DP match 0.817)
+DUB#105 [06:17.190-06:20.980] 'Emma si sporse in avanti, la voce ferma ma carica di passione.'
+        -> SRC#99 [07:41.540] 'Emily lehnte sich vor, ihre Stimme ruhig, aber leidenschaftlich.'  (DP match 0.688)
+DUB#106 [06:22.080-06:26.420] '«Siamo piccoli, è vero, ma possiamo appoggiarci a specialisti esterni.'
+        -> SRC#100 [07:46.740] '„Auch wenn wir eine kleine Firma sind, können wir bei Bedarf Spezialisten als Subunternehmer einsetzen.'  (DP match 0.696)
+DUB#107 [06:27.060-06:29.980] 'Non sarà una passeggiata... ma possiamo farcela.»'
+        -> SRC#101 [07:52.410] 'Das ist keine Kleinigkeit… aber wir können es schaffen."'  (DP match 0.769)
+DUB#108 [06:31.070-06:34.080] 'Marco, il project manager, aggrottò la fronte.'
+        -> SRC#102 [07:55.070] 'Der Projektmanager Mark runzelte skeptisch die Stirn.'  (DP match 0.603)
+DUB#109 [06:35.050-06:36.200] '«Non è così semplice.'
+        -> SRC#103 [07:59.770] '„So einfach ist das nicht.'  (DP match 0.977)
+DUB#110 [06:36.900-06:39.040] 'Gareggiamo contro squali quotati in borsa.'
+        -> ** UNMATCHED **  top: SRC#3 0.46 'Schweinebraten.' | SRC#46 0.43 'Ich freue mich schon auf den Schweinebra' | SRC#113 0.40 "Da hapert's bei denen."
+DUB#111 [06:39.680-06:42.520] 'Gente con decenni di esperienza e filiali ovunque.»'
+        -> SRC#104 [08:01.320] 'Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen."'  (DP match 0.431)
+DUB#112 [06:43.610-06:45.580] 'Fece una pausa carica di tensione .'
+        -> SRC#136 [10:02.020] 'Sein Kiefer spannte sich an.'  (Case A reuse 0.616)
+DUB#113 [06:46.530-06:48.940] "«A proposito, c'è dentro anche il Gruppo Reali."
+        -> SRC#106 [08:10.460] '„Der Kaiser Konzern nimmt übrigens auch teil.'  (DP match 0.596)
+DUB#114 [06:49.740-06:52.960] "Si sono appena espansi nel design e nell'architettura d'interni.»"
+        -> SRC#107 [08:13.490] 'Sie haben kürzlich ins Design- und Innenarchitektur-Geschäft expandiert."'  (DP match 0.912)
+DUB#115 [06:53.990-06:59.600] 'Lo stomaco di Emma si chiuse a sentire il nome della sua famiglia, ma il suo viso rimase imperturbabile .'
+        -> SRC#108 [08:17.570] 'Emilys Brust zog sich bei der Erwähnung der Firma ihrer Familie zusammen, obwohl sie ihre Miene neutral hielt.'  (DP match 0.658)
+DUB#116 [07:00.880-07:02.080] 'Perché proprio adesso?'
+        -> SRC#109 [08:25.360] 'Warum denn ausgerechnet jetzt?'  (DP match 0.964)
+DUB#117 [07:03.390-07:07.580] "Si sforzò di mantenere il sangue freddo mentre rifletteva su quell'informazione."
+        -> SRC#110 [08:28.200] 'Sie zwang sich, sich zu konzentrieren.'  (DP match 0.374)
+DUB#118 [07:08.740-07:10.480] "Avranno anche i soldi e l'esperienza."
+        -> SRC#111 [08:31.040] 'Kann ja sein, dass die Erfahrung im Designbereich haben.'  (DP match 0.349)
+DUB#119 [07:10.920-07:11.740] 'Ma la creatività?'
+        -> SRC#112 [08:34.320] 'Aber Kreativität?'  (DP match 0.987)
+DUB#120 [07:12.090-07:13.000] 'Lì sono morti.'
+        -> SRC#113 [08:36.060] "Da hapert's bei denen."  (DP match 0.397)
+DUB#121 [07:14.500-07:17.800] 'Dopo un istante, Emma piantò gli occhi in quelli di Nicola.'
+        -> SRC#114 [08:38.150] 'Nach einer nachdenklichen Pause begegnete Emily Sterlings Blick.'  (DP match 0.512)
+DUB#122 [07:18.830-07:20.920] '«Non facciamoci schiacciare dalla concorrenza.»'
+        -> SRC#115 [08:42.890] '„Wir sollten uns nicht wegen der Konkurrenz verrückt machen."'  (DP match 0.908)
+DUB#123 [07:22.010-07:23.640] 'Il suo tono si fece più fermo.'
+        -> SRC#116 [08:48.580] 'Ihre Stimme gewann an Intensität.'  (DP match 0.531)
+DUB#124 [07:24.710-07:28.400] '«Il Polo sarà aperto al pubblico, è un progetto proiettato nel futuro.'
+        -> SRC#117 [08:49.040] '„Das Culture and Technology Center wird für die Öffentlichkeit zugänglich sein – ein wahres Zukunftsprojekt.'  (DP match 0.619)
+DUB#125 [07:28.930-07:32.700] "Dobbiamo fondere il patrimonio culturale italiano con l'alta tecnologia."
+        -> SRC#118 [08:56.210] 'Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können."'  (Case A reuse 0.539)
+DUB#126 [07:33.440-07:36.700] 'Creare un design che risucchi i visitatori in questi due mondi.»'
+        -> SRC#118 [08:56.210] 'Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können."'  (DP match 0.677)
+DUB#127 [07:37.460-07:38.960] 'Nicola annuì lentamente.'
+        -> SRC#119 [09:07.300] 'Nick Sterling nickte langsam.'  (DP match 0.654)
+DUB#128 [07:39.930-07:40.860] "«L'idea funziona.»"
+        -> SRC#120 [09:09.830] '„Gute Idee."'  (DP match 0.733)
+DUB#129 [07:41.980-07:43.520] 'Spostò lo sguardo su Fabio.'
+        -> SRC#121 [09:11.700] 'Sein Blick wanderte zu Jason.'  (DP match 0.415)
+DUB#130 [07:44.510-07:46.280] '«Tu ed Emma ci lavorerete insieme.'
+        -> SRC#122 [09:14.140] '„Du und Emily, ihr arbeitet bei diesem Projekt zusammen.'  (DP match 0.744)
+DUB#131 [07:46.780-07:48.080] 'Abbiamo quindici giorni.'
+        -> SRC#123 [09:17.660] 'Wir haben fünfzehn Tage bis zur Abgabefrist.'  (DP match 0.907)
+DUB#132 [07:48.730-07:51.260] 'Mollate tutto il resto e pensate solo a questo.»'
+        -> SRC#124 [09:20.360] 'Lasst alles andere liegen und konzentriert euch nur darauf."'  (DP match 0.804)
+DUB#133 [07:52.190-07:53.117] 'Emma si irrigidì.'
+        -> SRC#125 [09:24.390] 'Emilys Magen zog sich zusammen.'  (DP match 0.674)
+DUB#134 [07:54.320-07:55.040] 'Fabio Guida?'
+        -> SRC#126 [09:26.740] 'Jason Adler?'  (DP match 0.443)
+DUB#135 [07:56.120-07:58.920] 'Non aveva mai lavorato con lui , ma le voci giravano.'
+        -> SRC#127 [09:28.390] 'Sie hatten bisher noch nicht zusammengearbeitet, aber sie hatte genug von ihm mitbekommen.'  (DP match 0.486)
+DUB#136 [07:59.700-08:01.260] 'Talentuoso ma arrogante.'
+        -> SRC#128 [09:34.020] 'Talentiert, ja – aber impulsiv.'  (DP match 0.743)
+DUB#137 [08:01.970-08:09.600] 'Bocciava le idee altrui senza pensarci e, peggio ancora, aveva il vizio di riciclare progetti scialbi o palesemente copiati.'
+        -> SRC#130 [09:41.690] 'Und das Schlimmste: Er griff gern auf uninspirierte, abgekupferte Entwürfe zurück.'  (DP match 0.731)
+DUB#138 [08:10.820-08:13.100] 'Eppure, mantenne un atteggiamento calmo.'
+        -> SRC#131 [09:47.760] 'Trotzdem blieb ihre Stimme höflich.'  (DP match 0.583)
+DUB#139 [08:13.850-08:14.940] '«Posso fare una proposta?'
+        -> SRC#132 [09:50.520] '„Darf ich etwas vorschlagen?'  (DP match 0.890)
+DUB#140 [08:15.580-08:18.700] 'Io e Fabio potremmo sviluppare due progetti indipendenti.»'
+        -> SRC#133 [09:52.650] 'Jason und ich könnten unabhängig voneinander einen eigenen Entwurf entwickeln."'  (DP match 0.616)
+DUB#141 [08:19.430-08:22.300] 'Fabio si sistemò a sedere , palesemente irritato.'
+        -> SRC#136 [10:02.020] 'Sein Kiefer spannte sich an.'  (DP match 0.533)
+DUB#142 [08:23.240-08:25.140] 'Emma proseguì, imperturbabile.'
+        -> SRC#137 [10:04.480] 'Sie sprach ruhig weiter.'  (DP match 0.547)
+DUB#143 [08:25.720-08:27.580] '«Ogni designer ha la sua visione.'
+        -> SRC#138 [10:06.840] '„Jeder Designer macht seinen eigenen Ansatz.'  (DP match 0.683)
+DUB#144 [08:28.140-08:31.140] 'Una competizione interna tirerebbe fuori idee più fresche.'
+        -> SRC#139 [10:09.550] 'Ein freundschaftlicher Wettbewerb könnte frische Ideen hervorbringen.'  (DP match 0.863)
+DUB#145 [08:31.960-08:34.940] 'È la nostra occasione migliore per presentare qualcosa di unico.»'
+        -> SRC#140 [10:13.320] 'Das wäre vielleicht unsere beste Chance, etwas wirklich Außergewöhnliches zu schaffen."'  (DP match 0.766)
+DUB#146 [08:35.740-08:39.580] "Nicola tacque, soppesando la proposta con un'espressione indecifrabile."
+        -> SRC#142 [10:20.540] 'Seine Stirn legte sich in nachdenkliche Falten.'  (DP match 0.540)
+DUB#147 [08:40.520-08:43.600] "Fabio, al contrario, andò su tutte le furie per l'affronto."
+        -> SRC#144 [10:26.390] 'Sein Gesicht verfinsterte sich vor Empörung.'  (DP match 0.489)
+DUB#148 [08:44.060-08:47.957] '«Che vorresti dire, hai paura che possa rallentarti?» la aggredì.'
+        -> SRC#145 [10:29.640] '„Was soll das heißen?", fuhr er sie an.'  (DP match 0.588)
+DUB#149 [08:48.540-08:49.980] 'La sua voce squarciò la stanza.'
+        -> SRC#146 [10:32.420] 'Seine Stimme durchbrach die Stille.'  (DP match 0.444)
+DUB#150 [08:50.750-08:52.200] '«Credi di essere migliore di me?»'
+        -> SRC#147 [10:34.520] '„Du denkst wohl, du bist besser als ich ?"'  (DP match 0.958)
+DUB#151 [08:52.820-08:54.600] '«No», ribatté Emma, gelida.'
+        -> SRC#148 [10:36.550] '„Nein", erwiderte Emily ruhig.'  (DP match 0.726)
+DUB#152 [08:55.570-08:56.760] '«Propongo una gara leale.'
+        -> SRC#149 [10:39.430] '„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn."'  (Case A reuse 0.525)
+DUB#153 [08:57.300-08:59.000] 'Penso solo al bene della ICM.»'
+        -> SRC#149 [10:39.430] '„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn."'  (DP match 0.633)
+DUB#154 [09:00.040-09:01.780] 'Fabio sbuffò, sprezzante.'
+        -> SRC#150 [10:45.570] 'Jason schnaubte verächtlich.'  (DP match 0.419)
+DUB#155 [09:02.750-09:03.860] "«Sei l'ultima arrivata."
+        -> SRC#151 [10:47.990] '„Du bist jünger und hast gerade erst angefangen.'  (DP match 0.372)
+DUB#156 [09:04.340-09:07.438] 'Invece di abbassare la testa e imparare, ti credi chissà chi.»'
+        -> SRC#152 [10:50.350] 'Anstatt von uns hier lernen zu wollen, überschätzt du dich maßlos."'  (DP match 0.547)
+DUB#157 [09:08.420-09:10.200] 'Il suo tono si fece provocatorio .'
+        -> SRC#169 [12:04.540] 'Er verschränkte selbstgefällig die Arme.'  (Case A reuse 0.551)
+DUB#158 [09:10.200-09:13.700] '«Quindici giorni sono pochissimi per un lavoro del genere.'
+        -> SRC#153 [10:54.920] 'Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.'  (DP match 0.609)
+DUB#159 [09:14.180-09:17.100] 'E tu rifiuti di fare squadra solo per fare la prima donna.'
+        -> SRC#154 [10:59.680] 'Und du willst nicht mal im Team mit mir arbeiten – nur damit du die Star-Designerin spielen kannst.'  (DP match 0.481)
+DUB#160 [09:17.610-09:20.480] "Ti interessa più metterti in mostra che far vincere l'azienda?»"
+        -> SRC#155 [11:05.590] 'Ist es dir wichtiger, dich in Szene zu setzen, als dass das Unternehmen Erfolg hat?"'  (DP match 0.917)
+DUB#161 [09:21.550-09:23.280] 'Emma si impose di non esplodere.'
+        -> SRC#157 [11:13.680] 'Sie zwang sich, ruhig zu bleiben.'  (DP match 0.575)
+DUB#162 [09:24.060-09:29.460] "L'espressione di Nicola si fece diffidente, come se stesse riconsiderando l'intera faccenda."
+        -> SRC#159 [11:19.320] 'Sein nachdenklicher Blick wirkte nun reserviert, als würde er seine Einschätzung von ihr überdenken.'  (DP match 0.671)
+DUB#163 [09:30.590-09:34.140] 'Emma prese un respiro profondo e sostenne lo sguardo di Fabio.'
+        -> SRC#160 [11:26.070] 'Emily holte tief Luft und begegnete Jasons wütendem Blick direkt.'  (DP match 0.569)
+DUB#164 [09:35.480-09:36.900] '«Sono giovane, è vero.'
+        -> SRC#161 [11:31.910] '„Es stimmt, dass ich jung bin.'  (DP match 0.983)
+DUB#165 [09:37.500-09:39.800] 'Ma ho già lavorato a progetti di questa portata.'
+        -> SRC#162 [11:34.080] 'Aber ich habe bereits an mehreren großen Projekten wie diesem mitgearbeitet.'  (DP match 0.923)
+DUB#166 [09:40.410-09:42.180] "Senza contare i miei studi all'estero...»"
+        -> SRC#164 [11:46.190] '„Im Ausland studiert?'  (Case A reuse 0.770)
+DUB#167 [09:43.230-09:45.160] 'Fabio scoppiò in una risata di scherno.'
+        -> SRC#163 [11:38.820] 'Ganz zu schweigen davon, dass ich im Ausland studiert habe—" Jason stieß ein kaltes, spöttisches Lachen aus.'  (DP match 0.495)
+DUB#168 [09:46.060-09:47.080] "«Studiato all'estero?"
+        -> SRC#164 [11:46.190] '„Im Ausland studiert?'  (DP match 0.957)
+DUB#169 [09:47.420-09:47.860] 'E quindi?'
+        -> SRC#165 [11:47.860] 'Na und?'  (DP match 0.961)
+DUB#170 [09:48.520-09:51.980] "Spiccicare due parole in croce in un'altra lingua ti rende speciale?»"
+        -> SRC#166 [11:49.000] 'Macht dich das Sprechen einer anderen Sprache zu etwas Besonderem?"'  (DP match 0.832)
+DUB#171 [09:52.880-09:54.280] 'La ridicolizzò spietato.'
+        -> SRC#167 [11:53.640] 'Seine Lippen verzogen sich zu einem verächtlichen Grinsen.'  (DP match 0.344)
+DUB#172 [09:55.390-09:58.840] '«Se fossi il fenomeno che dici di essere, non saresti finita qui.»'
+        -> SRC#168 [11:57.410] '„Wenn du so fähig wärst, wie du behauptest, würdest du nicht in unserer kleinen Firma arbeiten."'  (DP match 0.664)
+DUB#173 [09:59.640-10:01.440] 'Incrociò le braccia, arrogante.'
+        -> SRC#169 [12:04.540] 'Er verschränkte selbstgefällig die Arme.'  (DP match 0.786)
+DUB#174 [10:02.380-10:02.940] '«Ma va bene.'
+        -> SRC#170 [12:08.040] '„Aber gut.'  (DP match 0.917)
+DUB#175 [10:03.480-10:05.500] 'Dimostralo, invece di fare la gradassa.'
+        -> SRC#171 [12:09.390] 'Warum beweist du nicht deine Fähigkeiten, anstatt zu prahlen?'  (DP match 0.496)
+DUB#176 [10:06.120-10:07.900] 'A chiacchiere siamo tutti fenomeni.»'
+        -> SRC#172 [12:13.340] 'Behaupten kann man ja vieles."'  (DP match 0.516)
+DUB#177 [10:08.930-10:11.580] "L'atmosfera nella stanza cambiò improvvisamente."
+        -> SRC#173 [12:16.330] 'Die Spannung im Raum war greifbar. \ufeff'  (DP match 0.668)
+DUB#178 [10:12.580-10:13.820] "C'era aria di tempesta."
+        -> ** UNMATCHED **  top: SRC#79 0.49 '„Das führt zu einem Überschlagsunfall", ' | SRC#142 0.36 'Seine Stirn legte sich in nachdenkliche ' | SRC#136 0.36 'Sein Kiefer spannte sich an.'
+
+DP matched 160/179 dub rows (89%)
+
+==== DUPLICATE CHECK: source lines claimed by more than one dub row ====
+SRC#36 [02:53.880] '„Ist erledigt.'
+     DUB#31 'Fece una pausa.'  (Case A reuse 0.581)
+     DUB#41 '«Fatto.'  (DP match 0.722)
+SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'
+     DUB#42 'La tua azienda è dentro», disse Lorenzo con disinvoltura, mettendo via il cellulare.'  (DP match 0.708)
+     DUB#43 'Come se non avesse appena stravolto la carriera di lei con una singola chiamata.'  (Case A reuse 0.638)
+SRC#60 [04:25.890] 'Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.'
+     DUB#47 'Lo fissò.'  (Case A reuse 0.607)
+     DUB#66 'Gli fece una linguaccia per smorzare la tensione: «Tranquillo, avrai il tuo arrosto.'  (DP match 0.717)
+SRC#70 [05:12.920] '„Vielleicht würde ich ja am liebsten … dich essen."'
+     DUB#36 'Avrebbe voluto dirlo ad alta voce.'  (Case A reuse 0.633)
+     DUB#75 '«Forse la cosa che mi piacerebbe di più mangiare... sei tu.»'  (DP match 0.896)
+SRC#78 [05:49.760] 'So aufgeschlossen war sie nun auch wieder nicht.'
+     DUB#44 'Lei sbatté le palpebre.'  (Case A reuse 0.766)
+     DUB#84 'Non era così disinibita.'  (DP match 0.831)
+SRC#91 [07:07.110] '„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.'
+     DUB#18 '«Non dirmi che stai aiutando Emma Reali.'  (Case A reuse 0.546)
+     DUB#97 '«Emma, non avrei mai creduto che una ragazza giovane come te avesse questi agganci.'  (DP match 0.821)
+SRC#93 [07:15.210] 'Seine Stimme schwoll vor Stolz an.'
+     DUB#24 'Si schiarì la voce, tornando professionale.'  (Case A reuse 0.573)
+     DUB#99 "La sua voce tremava d'orgoglio."  (DP match 0.907)
+SRC#106 [08:10.460] '„Der Kaiser Konzern nimmt übrigens auch teil.'
+     DUB#27 'Guarda che partecipa anche il Gruppo Reali insieme ad altri colossi.'  (Case A reuse 0.614)
+     DUB#113 "«A proposito, c'è dentro anche il Gruppo Reali."  (DP match 0.596)
+SRC#118 [08:56.210] 'Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können."'
+     DUB#125 "Dobbiamo fondere il patrimonio culturale italiano con l'alta tecnologia."  (Case A reuse 0.539)
+     DUB#126 'Creare un design che risucchi i visitatori in questi due mondi.»'  (DP match 0.677)
+SRC#136 [10:02.020] 'Sein Kiefer spannte sich an.'
+     DUB#82 'Arrossì visibilmente.'  (Case A reuse 0.669)
+     DUB#112 'Fece una pausa carica di tensione .'  (Case A reuse 0.616)
+     DUB#141 'Fabio si sistemò a sedere , palesemente irritato.'  (DP match 0.533)
+SRC#149 [10:39.430] '„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn."'
+     DUB#152 '«Propongo una gara leale.'  (Case A reuse 0.525)
+     DUB#153 'Penso solo al bene della ICM.»'  (DP match 0.633)
+SRC#164 [11:46.190] '„Im Ausland studiert?'
+     DUB#166 "Senza contare i miei studi all'estero...»"  (Case A reuse 0.770)
+     DUB#168 "«Studiato all'estero?"  (DP match 0.957)
+SRC#165 [11:47.860] 'Na und?'
+     DUB#20 '«Ah sì?'  (Case A reuse 0.778)
+     DUB#169 'E quindi?'  (DP match 0.961)
+SRC#169 [12:04.540] 'Er verschränkte selbstgefällig die Arme.'
+     DUB#157 'Il suo tono si fece provocatorio .'  (Case A reuse 0.551)
+     DUB#173 'Incrociò le braccia, arrogante.'  (DP match 0.786)
+
+==== ROWS YOU MUST READ (unmatched or Case A) with their neighbours ====
+-- DUB#2 'Quando la vide puntare dritta verso una macelleria, il suo sguardo si addolcì.'
+     n-2 DUB#0 "Lorenzo osservava Emma dall'auto." -> SRC#0 [00:01.090] 'Ethan beobachtete Emily vom Auto aus.'
+     n-1 DUB#1 'La guardò attraversare la strada con passo deciso, chiedendo' -> SRC#1 [00:04.100] 'Als sie zielstrebig die Straße überquerte, fragte er sich wo sie denn wohl hinwollte.'
+     n+1 DUB#3 'Un sorriso gli spuntò sulle labbra, prima ancora di riuscire' -> SRC#2 [00:09.700] 'Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.'
+     n+2 DUB#4 'Arrosto di vitello.' -> SRC#3 [00:20.980] 'Schweinebraten.'
+-- DUB#18 '«Non dirmi che stai aiutando Emma Reali.'
+     n-2 DUB#16 'Si fermò un istante, intuendo dove volesse arrivare.' -> SRC#15 [01:16.230] 'Er hielt kurz inne, dann dämmerte ihm, worauf Ethan hinaus wollte.'
+     n-1 DUB#17 'La sua voce si caricò di incredulità.' -> SRC#16 [01:20.640] 'Ungläubigkeit sprach aus ihm, als er fortfuhr: "Kann es sein, dass du Emily Kaiser hilfst?'
+     n+1 DUB#19 'Questo non è da te.»' -> SRC#17 [01:27.500] 'Mein Lieber, das ist ja nicht gerade … typisch für dich."'
+     n+2 DUB#20 '«Ah sì?' -> SRC#165 [11:47.860] 'Na und?'
+-- DUB#20 '«Ah sì?'
+     n-2 DUB#18 '«Non dirmi che stai aiutando Emma Reali.' -> SRC#91 [07:07.110] '„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.'
+     n-1 DUB#19 'Questo non è da te.»' -> SRC#17 [01:27.500] 'Mein Lieber, das ist ja nicht gerade … typisch für dich."'
+     n+1 DUB#21 'E cosa sarebbe da me?»' -> SRC#18 [01:32.070] '„Ach ja, was ist denn typisch für mich?"'
+     n+2 DUB#22 'Il tono di Lorenzo si abbassò.' -> SRC#19 [01:35.890] 'Ethans Stimme wurde um eine Nuance kälter.'
+-- DUB#24 'Si schiarì la voce, tornando professionale.'
+     n-2 DUB#22 'Il tono di Lorenzo si abbassò.' -> SRC#19 [01:35.890] 'Ethans Stimme wurde um eine Nuance kälter.'
+     n-1 DUB#23 'Daniele scelse saggiamente di tacere, anche se lconosceva be' -> SRC#20 [01:39.740] 'Daniel entschied sich klugerweise für Schweigen, obwohl in seinem Kopf die offensichtliche Antwort widerhallte: Kalt.'
+     n+1 DUB#25 '«Va bene, conosco qualcuno ai vertici.' -> SRC#23 [01:50.750] 'Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.'
+     n+2 DUB#26 "Devo fargli vincere l'appalto?" -> (unmatched)
+-- DUB#26 "Devo fargli vincere l'appalto?"
+     n-2 DUB#24 'Si schiarì la voce, tornando professionale.' -> SRC#93 [07:15.210] 'Seine Stimme schwoll vor Stolz an.'
+     n-1 DUB#25 '«Va bene, conosco qualcuno ai vertici.' -> SRC#23 [01:50.750] 'Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.'
+     n+1 DUB#27 'Guarda che partecipa anche il Gruppo Reali insieme ad altri ' -> SRC#106 [08:10.460] '„Der Kaiser Konzern nimmt übrigens auch teil.'
+     n+2 DUB#28 'Sarà un massacro.»' -> SRC#25 [02:02.250] 'Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf."'
+-- DUB#27 'Guarda che partecipa anche il Gruppo Reali insieme ad altri colossi.'
+     n-2 DUB#25 '«Va bene, conosco qualcuno ai vertici.' -> SRC#23 [01:50.750] 'Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.'
+     n-1 DUB#26 "Devo fargli vincere l'appalto?" -> (unmatched)
+     n+1 DUB#28 'Sarà un massacro.»' -> SRC#25 [02:02.250] 'Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf."'
+     n+2 DUB#29 'La risposta di Lorenzo lo spiazzò: «Non serve.' -> SRC#26 [02:10.290] 'Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.'
+-- DUB#31 'Fece una pausa.'
+     n-2 DUB#29 'La risposta di Lorenzo lo spiazzò: «Non serve.' -> SRC#26 [02:10.290] 'Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.'
+     n-1 DUB#30 'Farla partecipare è sufficiente.»' -> SRC#27 [02:18.820] 'Dass sie mitmachen kann, muss reichen."'
+     n+1 DUB#32 '«Se non sa vincere con le sue forze, non se lo merita.»' -> SRC#28 [02:21.690] 'Er hielt kurz inne und fuhr dann fort: "Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient."'
+     n+2 DUB#33 'Daniele emise un fischio sommesso.' -> SRC#29 [02:29.240] 'Daniel stieß einen leisen Pfiff aus.'
+-- DUB#36 'Avrebbe voluto dirlo ad alta voce.'
+     n-2 DUB#34 'Spietato.' -> SRC#30 [02:32.040] 'Gnadenlos.'
+     n-1 DUB#35 'Persino con sua moglie.' -> SRC#31 [02:33.340] 'Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.'
+     n+1 DUB#37 'Invece, si limitò a rispondere formale: «Ricevuto.' -> SRC#32 [02:37.390] 'Tatsächlich antwortete er aber nur geschäftig: „Verstanden.'
+     n+2 DUB#38 'Me ne occupo io.»' -> SRC#33 [02:41.880] 'Ich kümmere mich darum".'
+-- DUB#43 'Come se non avesse appena stravolto la carriera di lei con una singola chiamata.'
+     n-2 DUB#41 '«Fatto.' -> SRC#36 [02:53.880] '„Ist erledigt.'
+     n-1 DUB#42 'La tua azienda è dentro», disse Lorenzo con disinvoltura, me' -> SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'
+     n+1 DUB#44 'Lei sbatté le palpebre.' -> SRC#78 [05:49.760] 'So aufgeschlossen war sie nun auch wieder nicht.'
+     n+2 DUB#45 '«Vuoi dire che la ICM Design può partecipare alla gara per i' -> SRC#38 [03:05.750] 'Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?'
+-- DUB#44 'Lei sbatté le palpebre.'
+     n-2 DUB#42 'La tua azienda è dentro», disse Lorenzo con disinvoltura, me' -> SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'
+     n-1 DUB#43 'Come se non avesse appena stravolto la carriera di lei con u' -> SRC#37 [02:54.980] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'
+     n+1 DUB#45 '«Vuoi dire che la ICM Design può partecipare alla gara per i' -> SRC#38 [03:05.750] 'Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?'
+     n+2 DUB#46 'Così, dal nulla?»' -> SRC#39 [03:14.920] 'Einfach so?"'
+-- DUB#47 'Lo fissò.'
+     n-2 DUB#45 '«Vuoi dire che la ICM Design può partecipare alla gara per i' -> SRC#38 [03:05.750] 'Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?'
+     n-1 DUB#46 'Così, dal nulla?»' -> SRC#39 [03:14.920] 'Einfach so?"'
+     n+1 DUB#48 "Quell'uomo aveva tra le mani un potere che lei non aveva nem" -> SRC#41 [03:18.750] 'Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte.'
+     n+2 DUB#49 'Lui fece spallucce.' -> SRC#42 [03:23.560] 'Er zuckte nur mit den Schultern.'
+-- DUB#82 'Arrossì visibilmente.'
+     n-2 DUB#80 'Qual era il problema di flirtare in auto?' -> SRC#75 [05:36.330] 'Was war denn mit Flirten im Auto?'
+     n-1 DUB#81 'A meno che lui non stesse pensando a... qualcosa di più spin' -> SRC#76 [05:39.300] 'Dachte er etwa an … mehr?'
+     n+1 DUB#83 'La sua mente evocò immagini che non avrebbe mai ammesso ad a' -> SRC#77 [05:43.230] 'Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.'
+     n+2 DUB#84 'Non era così disinibita.' -> SRC#78 [05:49.760] 'So aufgeschlossen war sie nun auch wieder nicht.'
+-- DUB#110 'Gareggiamo contro squali quotati in borsa.'
+     n-2 DUB#108 'Marco, il project manager, aggrottò la fronte.' -> SRC#102 [07:55.070] 'Der Projektmanager Mark runzelte skeptisch die Stirn.'
+     n-1 DUB#109 '«Non è così semplice.' -> SRC#103 [07:59.770] '„So einfach ist das nicht.'
+     n+1 DUB#111 'Gente con decenni di esperienza e filiali ovunque.»' -> SRC#104 [08:01.320] 'Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen."'
+     n+2 DUB#112 'Fece una pausa carica di tensione .' -> SRC#136 [10:02.020] 'Sein Kiefer spannte sich an.'
+-- DUB#112 'Fece una pausa carica di tensione .'
+     n-2 DUB#110 'Gareggiamo contro squali quotati in borsa.' -> (unmatched)
+     n-1 DUB#111 'Gente con decenni di esperienza e filiali ovunque.»' -> SRC#104 [08:01.320] 'Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen."'
+     n+1 DUB#113 "«A proposito, c'è dentro anche il Gruppo Reali." -> SRC#106 [08:10.460] '„Der Kaiser Konzern nimmt übrigens auch teil.'
+     n+2 DUB#114 "Si sono appena espansi nel design e nell'architettura d'inte" -> SRC#107 [08:13.490] 'Sie haben kürzlich ins Design- und Innenarchitektur-Geschäft expandiert."'
+-- DUB#125 "Dobbiamo fondere il patrimonio culturale italiano con l'alta tecnologia."
+     n-2 DUB#123 'Il suo tono si fece più fermo.' -> SRC#116 [08:48.580] 'Ihre Stimme gewann an Intensität.'
+     n-1 DUB#124 '«Il Polo sarà aperto al pubblico, è un progetto proiettato n' -> SRC#117 [08:49.040] '„Das Culture and Technology Center wird für die Öffentlichkeit zugänglich sein – ein wahres Zukunftsprojekt.'
+     n+1 DUB#126 'Creare un design che risucchi i visitatori in questi due mon' -> SRC#118 [08:56.210] 'Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können."'
+     n+2 DUB#127 'Nicola annuì lentamente.' -> SRC#119 [09:07.300] 'Nick Sterling nickte langsam.'
+-- DUB#152 '«Propongo una gara leale.'
+     n-2 DUB#150 '«Credi di essere migliore di me?»' -> SRC#147 [10:34.520] '„Du denkst wohl, du bist besser als ich ?"'
+     n-1 DUB#151 '«No», ribatté Emma, gelida.' -> SRC#148 [10:36.550] '„Nein", erwiderte Emily ruhig.'
+     n+1 DUB#153 'Penso solo al bene della ICM.»' -> SRC#149 [10:39.430] '„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn."'
+     n+2 DUB#154 'Fabio sbuffò, sprezzante.' -> SRC#150 [10:45.570] 'Jason schnaubte verächtlich.'
+-- DUB#157 'Il suo tono si fece provocatorio .'
+     n-2 DUB#155 "«Sei l'ultima arrivata." -> SRC#151 [10:47.990] '„Du bist jünger und hast gerade erst angefangen.'
+     n-1 DUB#156 'Invece di abbassare la testa e imparare, ti credi chissà chi' -> SRC#152 [10:50.350] 'Anstatt von uns hier lernen zu wollen, überschätzt du dich maßlos."'
+     n+1 DUB#158 '«Quindici giorni sono pochissimi per un lavoro del genere.' -> SRC#153 [10:54.920] 'Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.'
+     n+2 DUB#159 'E tu rifiuti di fare squadra solo per fare la prima donna.' -> SRC#154 [10:59.680] 'Und du willst nicht mal im Team mit mir arbeiten – nur damit du die Star-Designerin spielen kannst.'
+-- DUB#166 "Senza contare i miei studi all'estero...»"
+     n-2 DUB#164 '«Sono giovane, è vero.' -> SRC#161 [11:31.910] '„Es stimmt, dass ich jung bin.'
+     n-1 DUB#165 'Ma ho già lavorato a progetti di questa portata.' -> SRC#162 [11:34.080] 'Aber ich habe bereits an mehreren großen Projekten wie diesem mitgearbeitet.'
+     n+1 DUB#167 'Fabio scoppiò in una risata di scherno.' -> SRC#163 [11:38.820] 'Ganz zu schweigen davon, dass ich im Ausland studiert habe—" Jason stieß ein kaltes, spöttisches Lachen aus.'
+     n+2 DUB#168 "«Studiato all'estero?" -> SRC#164 [11:46.190] '„Im Ausland studiert?'
+-- DUB#178 "C'era aria di tempesta."
+     n-2 DUB#176 'A chiacchiere siamo tutti fenomeni.»' -> SRC#172 [12:13.340] 'Behaupten kann man ja vieles."'
+     n-1 DUB#177 "L'atmosfera nella stanza cambiò improvvisamente." -> SRC#173 [12:16.330] 'Die Spannung im Raum war greifbar. \ufeff'
+
+==== DP MATCHES WORTH A SECOND LOOK (speed would be >1.6x slow or >2x fast, or a neighbouring source line is unused) ====
+   DUB#3 'Un sorriso gli spuntò sulle labbra, prima ancora d' -> SRC#2 'Doch als er sah, dass sie auf eine Metzgerei '  (speed 0.39)
+   DUB#17 'La sua voce si caricò di incredulità.' -> SRC#16 'Ungläubigkeit sprach aus ihm, als er fortfuhr'  (speed 0.32)
+   DUB#19 'Questo non è da te.»' -> SRC#17 'Mein Lieber, das ist ja nicht gerade … typisc'  (speed 0.28)
+   DUB#21 'E cosa sarebbe da me?»' -> SRC#18 '„Ach ja, was ist denn typisch für mich?"'  (speed 0.37)
+   DUB#23 'Daniele scelse saggiamente di tacere, anche se lco' -> SRC#20 'Daniel entschied sich klugerweise für Schweig'  (unused neighbour SRC#[21])
+   DUB#25 '«Va bene, conosco qualcuno ai vertici.' -> SRC#23 'Stattdessen räusperte er sich und fragte jetz'  (speed 0.27 unused neighbour SRC#[22, 24])
+   DUB#28 'Sarà un massacro.»' -> SRC#25 'Allerdings bieten der Kaiser Konzern und mehr'  (speed 0.15 unused neighbour SRC#[24])
+   DUB#29 'La risposta di Lorenzo lo spiazzò: «Non serve.' -> SRC#26 'Ethans Antwort kam knapp und überraschend für'  (speed 0.42)
+   DUB#32 '«Se non sa vincere con le sue forze, non se lo mer' -> SRC#28 'Er hielt kurz inne und fuhr dann fort: "Wenn '  (speed 0.47)
+   DUB#35 'Persino con sua moglie.' -> SRC#31 'Sogar mit seiner eigenen Frau. hätte er am li'  (speed 0.38)
+   DUB#41 '«Fatto.' -> SRC#36 '„Ist erledigt.'  (speed 0.46)
+   DUB#54 'Emma lo guardò interdetta.' -> SRC#47 'Ein gespielt überraschter Ausdruck huschte üb'  (speed 0.47)
+   DUB#56 'Pensavo a uno stufato con le patate.»' -> SRC#49 'Ich dachte eher an Schweinefleisch-Kartoffel-'  (unused neighbour SRC#[50])
+   DUB#57 'Lorenzo rimase incredulo e confuso, quasi offeso d' -> SRC#51 'Eine ganze Bandbreite von Emotionen durchlief'  (unused neighbour SRC#[50])
+   DUB#58 'Emma scoppiò a ridere.' -> SRC#52 '„Haha" Emily konnte ihr Lachen nicht zurückha'  (speed 0.22)
+   DUB#62 'Scandì il suo nome.' -> SRC#56 'Er sprach ihren Namen laut aus und sah sie mi'  (speed 0.26)
+   DUB#72 'Lei rimase ammutolita.' -> SRC#66 'Sie starrte ihn mit offenem Mund an, für eine'  (speed 0.34)
+   DUB#74 'Ma si riprese in fretta, decidendo di alzare la po' -> SRC#68 'Aber sie fing sich schnell wieder, und sie be'  (unused neighbour SRC#[69])
+   DUB#75 '«Forse la cosa che mi piacerebbe di più mangiare..' -> SRC#70 '„Vielleicht würde ich ja am liebsten … dich e'  (unused neighbour SRC#[69])
+   DUB#81 'A meno che lui non stesse pensando a... qualcosa d' -> SRC#76 'Dachte er etwa an … mehr?'  (speed 2.02)
+   DUB#85 '«Provoca incidenti mortali», la rimproverò lui.' -> SRC#79 '„Das führt zu einem Überschlagsunfall", sagte'  (speed 0.47)
+   DUB#102 'Le sorrise, radioso.' -> SRC#96 'Er strahlte sie an.'  (speed 1.65)
+   DUB#111 'Gente con decenni di esperienza e filiali ovunque.' -> SRC#104 'Wir treten gegen börsennotierte Konzerne an –'  (speed 0.46 unused neighbour SRC#[105])
+   DUB#113 "«A proposito, c'è dentro anche il Gruppo Reali." -> SRC#106 '„Der Kaiser Konzern nimmt übrigens auch teil.'  (unused neighbour SRC#[105])
+   DUB#117 'Si sforzò di mantenere il sangue freddo mentre rif' -> SRC#110 'Sie zwang sich, sich zu konzentrieren.'  (speed 2.35)
+   DUB#122 '«Non facciamoci schiacciare dalla concorrenza.»' -> SRC#115 '„Wir sollten uns nicht wegen der Konkurrenz v'  (speed 0.50)
+   DUB#123 'Il suo tono si fece più fermo.' -> SRC#116 'Ihre Stimme gewann an Intensität.'  (speed 3.54)
+   DUB#126 'Creare un design che risucchi i visitatori in ques' -> SRC#118 'Wir sollten kulturelles amerikanisches Erbe m'  (speed 0.33)
+   DUB#136 'Talentuoso ma arrogante.' -> SRC#128 'Talentiert, ja – aber impulsiv.'  (unused neighbour SRC#[129])
+   DUB#137 'Bocciava le idee altrui senza pensarci e, peggio a' -> SRC#130 'Und das Schlimmste: Er griff gern auf uninspi'  (unused neighbour SRC#[129])
+   DUB#140 'Io e Fabio potremmo sviluppare due progetti indipe' -> SRC#133 'Jason und ich könnten unabhängig voneinander '  (unused neighbour SRC#[134])
+   DUB#141 'Fabio si sistemò a sedere , palesemente irritato.' -> SRC#136 'Sein Kiefer spannte sich an.'  (speed 2.11 unused neighbour SRC#[135])
+   DUB#145 'È la nostra occasione migliore per presentare qual' -> SRC#140 'Das wäre vielleicht unsere beste Chance, etwa'  (unused neighbour SRC#[141])
+   DUB#146 "Nicola tacque, soppesando la proposta con un'espre" -> SRC#142 'Seine Stirn legte sich in nachdenkliche Falte'  (unused neighbour SRC#[141, 143])
+   DUB#147 "Fabio, al contrario, andò su tutte le furie per l'" -> SRC#144 'Sein Gesicht verfinsterte sich vor Empörung.'  (unused neighbour SRC#[143])
+   DUB#148 '«Che vorresti dire, hai paura che possa rallentart' -> SRC#145 '„Was soll das heißen?", fuhr er sie an.'  (speed 1.97)
+   DUB#153 'Penso solo al bene della ICM.»' -> SRC#149 '„Ich schlage einen fairen Wettbewerb vor und '  (speed 0.36)
+   DUB#160 'Ti interessa più metterti in mostra che far vincer' -> SRC#155 'Ist es dir wichtiger, dich in Szene zu setzen'  (unused neighbour SRC#[156])
+   DUB#161 'Emma si impose di non esplodere.' -> SRC#157 'Sie zwang sich, ruhig zu bleiben.'  (unused neighbour SRC#[156, 158])
+   DUB#162 "L'espressione di Nicola si fece diffidente, come s" -> SRC#159 'Sein nachdenklicher Blick wirkte nun reservie'  (unused neighbour SRC#[158])
+   DUB#167 'Fabio scoppiò in una risata di scherno.' -> SRC#163 'Ganz zu schweigen davon, dass ich im Ausland '  (speed 0.29)
+   DUB#171 'La ridicolizzò spietato.' -> SRC#167 'Seine Lippen verzogen sich zu einem verächtli'  (speed 0.49)
+
+==== source lines no dub row uses yet ====
+SRC#21 [01:47.680] 'Berechnend.'
+SRC#22 [01:48.680] 'Gnadenlos.'
+SRC#24 [01:59.600] 'Soll ich das Projekt für sie festzurren?'
+SRC#50 [03:48.600] 'Ethan hatte seine Mimik nicht mehr im Griff.'
+SRC#69 [05:08.290] 'Ihre Lippen verzogen sich zu einem schelmischen Schmollmund.'
+SRC#105 [08:08.420] 'Er hielt bedeutungsvoll inne.'
+SRC#129 [09:37.180] 'Viel zu schnell mit seinen Urteilen, viel zu ungeduldig mit anderen Ideen.'
+SRC#134 [09:57.850] 'Jasons Kopf fuhr herum.'
+SRC#135 [09:59.850] 'Das gefiel ihm offensichtlich nicht.'
+SRC#141 [10:19.240] 'Sterling schwieg.'
+SRC#143 [10:24.100] 'Jason hingegen sträubte sich.'
+SRC#156 [11:11.130] 'Emily ballte unter dem Tisch die Fäuste.'
+SRC#158 [11:16.350] 'Sterlings Gesichtsausdruck veränderte sich.'
+
+==== possible repeated passages in the dub (>=4-word sentences, similarity >= 0.8) ====
+
+==== SOURCE TIMELINE ====
+SRC#  0 [00:01.090-00:03.380] 'Ethan beobachtete Emily vom Auto aus.'
+SRC#  1 [00:04.100-00:08.620] 'Als sie zielstrebig die Straße überquerte, fragte er sich wo sie denn wohl hinwollte.'
+SRC#  2 [00:09.700-00:19.200] 'Doch als er sah, dass sie auf eine Metzgerei zusteuerte, wurde sein starrer Blick kurz weich und ein Lächeln stahl sich auf seine Lippen, bevor er es unterdrücken konnte.'
+SRC#  3 [00:20.980-00:22.060] 'Schweinebraten.'
+SRC#  4 [00:22.930-00:28.840] 'Hatte sie wirklich sein Lieblingsgericht herausgefunden, obwohl er bisher nie ein Wort darüber verloren hatte?'
+SRC#  5 [00:30.450-00:31.500] 'Er seufzte kurz.'
+SRC#  6 [00:32.700-00:36.720] 'Wenn sie etwas für ihn tat, konnte er ja auch mal etwas für sie tun.'
+SRC#  7 [00:38.230-00:44.420] 'Er schaut ihr noch kurz nach und kaum war sie im Laden verschwunden, zog er sein Handy heraus und wählte Daniels Nummer.'
+SRC#  8 [00:45.800-00:52.230] '„Hey Daniel, du musst ein paar Fäden für mich ziehen", sagte Ethan, als Daniel das Gespräch annahm.'
+SRC#  9 [00:53.660-01:00.220] '„Bring ICM Design ins Rennen um das Projekt für die Umgestaltung des California Culture and Technology Centers."'
+SRC# 10 [01:01.770-01:03.940] 'Am anderen Ende herrschte kurzes Schweigen.'
+SRC# 11 [01:06.220-01:07.420] '„ICM Design?“'
+SRC# 12 [01:08.710-01:10.340] 'Daniel schnaubte ungläubig.'
+SRC# 13 [01:11.180-01:12.440] '„Diese kleine Klitsche?'
+SRC# 14 [01:13.140-01:15.080] 'Das ist doch drei Nummern zu groß für die.”'
+SRC# 15 [01:16.230-01:19.880] 'Er hielt kurz inne, dann dämmerte ihm, worauf Ethan hinaus wollte.'
+SRC# 16 [01:20.640-01:26.720] 'Ungläubigkeit sprach aus ihm, als er fortfuhr: "Kann es sein, dass du Emily Kaiser hilfst?'
+SRC# 17 [01:27.500-01:30.600] 'Mein Lieber, das ist ja nicht gerade … typisch für dich."'
+SRC# 18 [01:32.070-01:34.800] '„Ach ja, was ist denn typisch für mich?"'
+SRC# 19 [01:35.890-01:38.440] 'Ethans Stimme wurde um eine Nuance kälter.'
+SRC# 20 [01:39.740-01:47.180] 'Daniel entschied sich klugerweise für Schweigen, obwohl in seinem Kopf die offensichtliche Antwort widerhallte: Kalt.'
+SRC# 21 [01:47.680-01:48.260] 'Berechnend.'
+SRC# 22 [01:48.680-01:49.220] 'Gnadenlos.'
+SRC# 23 [01:50.750-01:59.060] 'Stattdessen räusperte er sich und fragte jetzt schon wesentlich OK, ich kenne tatsächlich jemanden ganz oben im Technology Center.'
+SRC# 24 [01:59.600-02:01.280] 'Soll ich das Projekt für sie festzurren?'
+SRC# 25 [02:02.250-02:09.500] 'Allerdings bieten der Kaiser Konzern und mehrere andere Giganten auch mit – das wird ein auf jeden Fall brutaler Kampf."'
+SRC# 26 [02:10.290-02:18.080] 'Ethans Antwort kam knapp und überraschend für Daniel, aber immer noch genauso eisig wie vorher:„Das ist nicht nötig.'
+SRC# 27 [02:18.820-02:20.440] 'Dass sie mitmachen kann, muss reichen."'
+SRC# 28 [02:21.690-02:28.480] 'Er hielt kurz inne und fuhr dann fort: "Wenn sie es nicht aus eigener Kraft gewinnen kann, hat sie es nicht verdient."'
+SRC# 29 [02:29.240-02:31.240] 'Daniel stieß einen leisen Pfiff aus.'
+SRC# 30 [02:32.040-02:32.720] 'Gnadenlos.'
+SRC# 31 [02:33.340-02:36.740] 'Sogar mit seiner eigenen Frau. hätte er am liebsten gesagt.'
+SRC# 32 [02:37.390-02:41.300] 'Tatsächlich antwortete er aber nur geschäftig: „Verstanden.'
+SRC# 33 [02:41.880-02:42.740] 'Ich kümmere mich darum".'
+SRC# 34 [02:43.600-02:46.560] 'Dennoch hatte Ethans Aktion Eindruck bei ihm hinterlassen..'
+SRC# 35 [02:47.570-02:52.800] 'Wenige Minuten später kehrte Emily zurück, eine Tüte mit bestem Schweinefleisch in der Hand.'
+SRC# 36 [02:53.880-02:54.600] '„Ist erledigt.'
+SRC# 37 [02:54.980-03:04.560] 'Deine Firma ist dabei", sagte Ethan beiläufig und legte sein Handy zur Seite, als hätte er nicht gerade mit einem einzigen Anruf den Verlauf ihrer Karriere verändert.'
+SRC# 38 [03:05.750-03:14.240] 'Sie blinzelte überrascht. “Du meinst, ICM Design kann an der Ausschreibung für das California Culture and Technology Center teilnehmen?'
+SRC# 39 [03:14.920-03:15.640] 'Einfach so?"'
+SRC# 40 [03:16.330-03:17.920] 'Sie sah ihn mit großen Augen an.'
+SRC# 41 [03:18.750-03:22.440] 'Dieser Mann war offenbar weitaus mächtiger, als sie sich vorgestellt hatte.'
+SRC# 42 [03:23.560-03:24.960] 'Er zuckte nur mit den Schultern.'
+SRC# 43 [03:26.450-03:28.800] '„Danke", sagte sie aufrichtig.'
+SRC# 44 [03:29.600-03:32.600] 'Seine Mundwinkel kräuselten sich zu einem schwachen Lächeln.'
+SRC# 45 [03:33.680-03:34.860] '„Lass uns nach Hause fahren.'
+SRC# 46 [03:35.350-03:37.000] 'Ich freue mich schon auf den Schweinebraten."'
+SRC# 47 [03:37.790-03:40.700] 'Ein gespielt überraschter Ausdruck huschte über ihr Gesicht.'
+SRC# 48 [03:41.780-03:43.860] '„Oh, das hatte ich gar nicht vor…'
+SRC# 49 [03:44.540-03:47.240] 'Ich dachte eher an Schweinefleisch-Kartoffel-Eintopf."'
+SRC# 50 [03:48.600-03:50.620] 'Ethan hatte seine Mimik nicht mehr im Griff.'
+SRC# 51 [03:51.480-03:58.260] 'Eine ganze Bandbreite von Emotionen durchlief sein Gesicht – Ungläubigkeit, Verwirrung und leichter Verrat.'
+SRC# 52 [03:58.260-04:03.060] '„Haha" Emily konnte ihr Lachen nicht zurückhalten.'
+SRC# 53 [04:03.660-04:04.860] '„Ich veräppel dich doch nur.'
+SRC# 54 [04:05.440-04:07.180] 'Natürlich mache ich Schweinebraten."'
+SRC# 55 [04:08.020-04:09.040] '„Emily Kaiser."'
+SRC# 56 [04:10.400-04:14.180] 'Er sprach ihren Namen laut aus und sah sie mit verengten Augen an.'
+SRC# 57 [04:15.860-04:16.660] 'Diese Frau!'
+SRC# 58 [04:17.350-04:22.120] 'Wie konnte sie es wagen, ihn zu necken, nachdem er einen Hauch von Freundlichkeit gezeigt hatte?'
+SRC# 59 [04:23.500-04:25.220] 'Emily spürte, dass er ernster wurde.'
+SRC# 60 [04:25.890-04:33.840] 'Deshalb streckte sie schnell die Zunge raus, um die Situation aufzulockern: “Bleib cool, natürlich bekommst du deinen Schweinebraten.'
+SRC# 61 [04:34.880-04:37.140] 'Muss doch jeder sein kleines Guilty Pleasure haben.”'
+SRC# 62 [04:37.920-04:41.400] 'Er schnaubte nur und ließ vermeintlich gleichgültig den Motor an.'
+SRC# 63 [04:43.230-04:47.330] 'Sie fuhren eine Weile, dann legte Emily den Kopf schief und grinste verschmitzt.'
+SRC# 64 [04:48.570-04:50.800] '„Weißt du eigentlich, was ich gerne esse?"'
+SRC# 65 [04:51.900-04:54.860] '„Junkfood", antwortete er, ohne zu zögern.'
+SRC# 66 [04:55.840-04:59.280] 'Sie starrte ihn mit offenem Mund an, für einen Moment sprachlos.'
+SRC# 67 [05:00.410-05:01.500] 'Was soll das denn jetzt?'
+SRC# 68 [05:02.430-05:07.080] 'Aber sie fing sich schnell wieder, und sie beschloss, sich noch ein bisschen weiter vorzuwagen.'
+SRC# 69 [05:08.290-05:11.362] 'Ihre Lippen verzogen sich zu einem schelmischen Schmollmund.'
+SRC# 70 [05:12.920-05:16.780] '„Vielleicht würde ich ja am liebsten … dich essen."'
+SRC# 71 [05:18.060-05:21.720] 'Sie zwinkerte, ihre Stimme triefte vor gespielter Süße.'
+SRC# 72 [05:22.890-05:27.100] 'Ethan warf ihr einen Seitenblick zu, sein Gesichtsausdruck undurchdringlich.'
+SRC# 73 [05:28.260-05:31.740] '„Hat dich niemand davor gewarnt, mit einem Mann im Auto zu flirten?"'
+SRC# 74 [05:32.910-05:34.940] 'Emilys Herz setzte einen Schlag aus.'
+SRC# 75 [05:36.330-05:38.060] 'Was war denn mit Flirten im Auto?'
+SRC# 76 [05:39.300-05:41.520] 'Dachte er etwa an … mehr?'
+SRC# 77 [05:43.230-05:48.760] 'Hitze schoss ihr in die Wangen, während ihr Kopf Szenarien heraufbeschwor, die sie niemals laut zugeben würde.'
+SRC# 78 [05:49.760-05:51.760] 'So aufgeschlossen war sie nun auch wieder nicht.'
+SRC# 79 [05:52.890-05:58.900] '„Das führt zu einem Überschlagsunfall", sagte er ausdruckslos, seine Stimme kalt wie Stahl.'
+SRC# 80 [05:59.890-06:02.410] 'Sie erstarrte, durch und durch beschämt.'
+SRC# 81 [06:03.430-06:09.080] 'Seine Lippen verzogen sich beim Anblick ihres beschämten Gesichtsausdrucks zu einem kaum wahrnehmbaren Lächeln.'
+SRC# 82 [06:10.270-06:11.940] '„Entspann dich, wir sind da."'
+SRC# 83 [06:14.200-06:19.620] 'Zu Hause bereitete Emily ein köstliches Mittagessen zu, das beide ohne viele Worte genossen.'
+SRC# 84 [06:20.360-06:24.700] 'Anschließend fuhr Ethan satt und wesentlich besser gelaunt zurück in seine Firma.'
+SRC# 85 [06:25.420-06:33.200] 'Und Emily ebenfalls, denn inzwischen war die Nachricht, dass sie an der Ausschreibung teilnehmen konnten, bei der ICM Design angekommen.'
+SRC# 86 [06:36.090-06:42.540] 'Im Besprechungsraum von ICM Design lief ihr Chef Nick Sterling deshalb auch aufgeregt hin und her.'
+SRC# 87 [06:43.320-06:48.920] 'Die Teilnahme an dem California Culture and Technology Center Projekt konnte alles verändern.'
+SRC# 88 [06:50.060-06:52.850] 'Er hatte dringende Besprechung angeordnet an.'
+SRC# 89 [06:52.850-07:00.900] 'Um den großen Konferenztisch saßen Emily, ihr unmittelbarer Kollege Jason Adler und der Projektmanager des Unternehmens, Mark Henderson.'
+SRC# 90 [07:02.260-07:05.780] 'Sterling räusperte sich, seine Augen glänzten vor Enthusiasmus.'
+SRC# 91 [07:07.110-07:11.500] '„Emily, ich hätte nicht gedacht, dass eine junge Frau wie du so fähig sein könnte.'
+SRC# 92 [07:12.130-07:14.480] 'Du hast uns einen Platz in der Ausschreibung gesichert!"'
+SRC# 93 [07:15.210-07:17.320] 'Seine Stimme schwoll vor Stolz an.'
+SRC# 94 [07:17.920-07:20.960] '„Dieses Projekt ist seit fünf Jahren in Entwicklung.'
+SRC# 95 [07:21.770-07:24.920] 'Es wird eines der ikonischsten Wahrzeichen Kaliforniens werden."'
+SRC# 96 [07:26.040-07:26.960] 'Er strahlte sie an.'
+SRC# 97 [07:27.980-07:33.480] '„Selbst wenn wir nicht gewinnen, ist allein die Einladung zur Teilnahme eine enorme Chance für unser Unternehmen."'
+SRC# 98 [07:34.580-07:40.360] '„Nick, ich bin sogar zuversichtlich, dass wir diese Ausschreibung mit dem richtigen Konzept gewinnen können."'
+SRC# 99 [07:41.540-07:45.640] 'Emily lehnte sich vor, ihre Stimme ruhig, aber leidenschaftlich.'
+SRC#100 [07:46.740-07:51.890] '„Auch wenn wir eine kleine Firma sind, können wir bei Bedarf Spezialisten als Subunternehmer einsetzen.'
+SRC#101 [07:52.410-07:55.060] 'Das ist keine Kleinigkeit… aber wir können es schaffen."'
+SRC#102 [07:55.070-07:59.020] 'Der Projektmanager Mark runzelte skeptisch die Stirn.'
+SRC#103 [07:59.770-08:00.720] '„So einfach ist das nicht.'
+SRC#104 [08:01.320-08:07.560] 'Wir treten gegen börsennotierte Konzerne an – Unternehmen mit jahrzehntelanger Erfahrung und landesweiten Niederlassungen."'
+SRC#105 [08:08.420-08:09.740] 'Er hielt bedeutungsvoll inne.'
+SRC#106 [08:10.460-08:12.880] '„Der Kaiser Konzern nimmt übrigens auch teil.'
+SRC#107 [08:13.490-08:16.940] 'Sie haben kürzlich ins Design- und Innenarchitektur-Geschäft expandiert."'
+SRC#108 [08:17.570-08:24.160] 'Emilys Brust zog sich bei der Erwähnung der Firma ihrer Familie zusammen, obwohl sie ihre Miene neutral hielt.'
+SRC#109 [08:25.360-08:26.960] 'Warum denn ausgerechnet jetzt?'
+SRC#110 [08:28.200-08:29.980] 'Sie zwang sich, sich zu konzentrieren.'
+SRC#111 [08:31.040-08:33.820] 'Kann ja sein, dass die Erfahrung im Designbereich haben.'
+SRC#112 [08:34.320-08:35.480] 'Aber Kreativität?'
+SRC#113 [08:36.060-08:37.140] "Da hapert's bei denen."
+SRC#114 [08:38.150-08:41.520] 'Nach einer nachdenklichen Pause begegnete Emily Sterlings Blick.'
+SRC#115 [08:42.890-08:47.080] '„Wir sollten uns nicht wegen der Konkurrenz verrückt machen."'
+SRC#116 [08:48.580-08:49.040] 'Ihre Stimme gewann an Intensität.'
+SRC#117 [08:49.040-08:55.320] '„Das Culture and Technology Center wird für die Öffentlichkeit zugänglich sein – ein wahres Zukunftsprojekt.'
+SRC#118 [08:56.210-09:06.000] 'Wir sollten kulturelles amerikanisches Erbe mit modernster Technologie verschmelzen und ein Design schaffen, in dem die Besucher direkt in diese beiden Welten eintauchen können."'
+SRC#119 [09:07.300-09:08.900] 'Nick Sterling nickte langsam.'
+SRC#120 [09:09.830-09:10.560] '„Gute Idee."'
+SRC#121 [09:11.700-09:13.200] 'Sein Blick wanderte zu Jason.'
+SRC#122 [09:14.140-09:17.120] '„Du und Emily, ihr arbeitet bei diesem Projekt zusammen.'
+SRC#123 [09:17.660-09:19.780] 'Wir haben fünfzehn Tage bis zur Abgabefrist.'
+SRC#124 [09:20.360-09:23.420] 'Lasst alles andere liegen und konzentriert euch nur darauf."'
+SRC#125 [09:24.390-09:26.040] 'Emilys Magen zog sich zusammen.'
+SRC#126 [09:26.740-09:27.740] 'Jason Adler?'
+SRC#127 [09:28.390-09:32.920] 'Sie hatten bisher noch nicht zusammengearbeitet, aber sie hatte genug von ihm mitbekommen.'
+SRC#128 [09:34.020-09:36.740] 'Talentiert, ja – aber impulsiv.'
+SRC#129 [09:37.180-09:41.100] 'Viel zu schnell mit seinen Urteilen, viel zu ungeduldig mit anderen Ideen.'
+SRC#130 [09:41.690-09:46.760] 'Und das Schlimmste: Er griff gern auf uninspirierte, abgekupferte Entwürfe zurück.'
+SRC#131 [09:47.760-09:49.540] 'Trotzdem blieb ihre Stimme höflich.'
+SRC#132 [09:50.520-09:51.680] '„Darf ich etwas vorschlagen?'
+SRC#133 [09:52.650-09:56.740] 'Jason und ich könnten unabhängig voneinander einen eigenen Entwurf entwickeln."'
+SRC#134 [09:57.850-09:59.180] 'Jasons Kopf fuhr herum.'
+SRC#135 [09:59.850-10:01.300] 'Das gefiel ihm offensichtlich nicht.'
+SRC#136 [10:02.020-10:03.380] 'Sein Kiefer spannte sich an.'
+SRC#137 [10:04.480-10:05.680] 'Sie sprach ruhig weiter.'
+SRC#138 [10:06.840-10:08.970] '„Jeder Designer macht seinen eigenen Ansatz.'
+SRC#139 [10:09.550-10:12.820] 'Ein freundschaftlicher Wettbewerb könnte frische Ideen hervorbringen.'
+SRC#140 [10:13.320-10:17.440] 'Das wäre vielleicht unsere beste Chance, etwas wirklich Außergewöhnliches zu schaffen."'
+SRC#141 [10:19.240-10:20.220] 'Sterling schwieg.'
+SRC#142 [10:20.540-10:22.940] 'Seine Stirn legte sich in nachdenkliche Falten.'
+SRC#143 [10:24.100-10:25.760] 'Jason hingegen sträubte sich.'
+SRC#144 [10:26.390-10:28.480] 'Sein Gesicht verfinsterte sich vor Empörung.'
+SRC#145 [10:29.640-10:31.620] '„Was soll das heißen?", fuhr er sie an.'
+SRC#146 [10:32.420-10:33.960] 'Seine Stimme durchbrach die Stille.'
+SRC#147 [10:34.520-10:36.100] '„Du denkst wohl, du bist besser als ich ?"'
+SRC#148 [10:36.550-10:38.660] '„Nein", erwiderte Emily ruhig.'
+SRC#149 [10:39.430-10:44.100] '„Ich schlage einen fairen Wettbewerb vor und habe nur das Beste für ICM Design im Sinn."'
+SRC#150 [10:45.570-10:47.080] 'Jason schnaubte verächtlich.'
+SRC#151 [10:47.990-10:50.060] '„Du bist jünger und hast gerade erst angefangen.'
+SRC#152 [10:50.350-10:53.900] 'Anstatt von uns hier lernen zu wollen, überschätzt du dich maßlos."'
+SRC#153 [10:54.920-10:59.100] 'Sein Ton wurde 15 Tage reichen für so ein Projekt nicht aus.'
+SRC#154 [10:59.680-11:04.480] 'Und du willst nicht mal im Team mit mir arbeiten – nur damit du die Star-Designerin spielen kannst.'
+SRC#155 [11:05.590-11:09.700] 'Ist es dir wichtiger, dich in Szene zu setzen, als dass das Unternehmen Erfolg hat?"'
+SRC#156 [11:11.130-11:13.020] 'Emily ballte unter dem Tisch die Fäuste.'
+SRC#157 [11:13.680-11:15.200] 'Sie zwang sich, ruhig zu bleiben.'
+SRC#158 [11:16.350-11:18.600] 'Sterlings Gesichtsausdruck veränderte sich.'
+SRC#159 [11:19.320-11:24.760] 'Sein nachdenklicher Blick wirkte nun reserviert, als würde er seine Einschätzung von ihr überdenken.'
+SRC#160 [11:26.070-11:30.400] 'Emily holte tief Luft und begegnete Jasons wütendem Blick direkt.'
+SRC#161 [11:31.910-11:33.280] '„Es stimmt, dass ich jung bin.'
+SRC#162 [11:34.080-11:38.120] 'Aber ich habe bereits an mehreren großen Projekten wie diesem mitgearbeitet.'
+SRC#163 [11:38.820-11:45.480] 'Ganz zu schweigen davon, dass ich im Ausland studiert habe—" Jason stieß ein kaltes, spöttisches Lachen aus.'
+SRC#164 [11:46.190-11:47.460] '„Im Ausland studiert?'
+SRC#165 [11:47.860-11:48.320] 'Na und?'
+SRC#166 [11:49.000-11:52.293] 'Macht dich das Sprechen einer anderen Sprache zu etwas Besonderem?"'
+SRC#167 [11:53.640-11:56.500] 'Seine Lippen verzogen sich zu einem verächtlichen Grinsen.'
+SRC#168 [11:57.410-12:02.900] '„Wenn du so fähig wärst, wie du behauptest, würdest du nicht in unserer kleinen Firma arbeiten."'
+SRC#169 [12:04.540-12:06.620] 'Er verschränkte selbstgefällig die Arme.'
+SRC#170 [12:08.040-12:08.560] '„Aber gut.'
+SRC#171 [12:09.390-12:12.540] 'Warum beweist du nicht deine Fähigkeiten, anstatt zu prahlen?'
+SRC#172 [12:13.340-12:15.040] 'Behaupten kann man ja vieles."'
+SRC#173 [12:16.330-12:18.440] 'Die Spannung im Raum war greifbar. \ufeff'

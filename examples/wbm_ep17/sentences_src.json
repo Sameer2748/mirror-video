@@ -1,0 +1,9598 @@
+{
+ "srt": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/eps/wbm17/WBM_EP17_EN_clauses.srt",
+ "media": "/sessions/rcw-01uuibjxtnqjwz4zofupadhu/mnt/WBM US-IT/US/WBM Ep - 17.mp4",
+ "lang": "en",
+ "model": "small",
+ "sentences": [
+  {
+   "idx": 0,
+   "text": "They were almost at the track field for practice when someone's loud comment caught their attention.",
+   "start_ms": 1730,
+   "end_ms": 6800,
+   "srt_start_ms": 1730,
+   "srt_end_ms": 6800,
+   "words": 16,
+   "same": 16,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 1,
+   "text": "But practice is going to be brutal.",
+   "start_ms": 8160,
+   "end_ms": 9820,
+   "srt_start_ms": 8160,
+   "srt_end_ms": 9820,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 2,
+   "text": "Can't wait to see these humans totally wipe out.",
+   "start_ms": 10410,
+   "end_ms": 12960,
+   "srt_start_ms": 10410,
+   "srt_end_ms": 12960,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 3,
+   "text": "Weaklings that they are.",
+   "start_ms": 13600,
+   "end_ms": 14650,
+   "srt_start_ms": 13600,
+   "srt_end_ms": 14650,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 4,
+   "text": "Violet's head whipped around to face the jerk who'd just spoken.",
+   "start_ms": 16880,
+   "end_ms": 20040,
+   "srt_start_ms": 16880,
+   "srt_end_ms": 20040,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 5,
+   "text": "Even without Alice,",
+   "start_ms": 20760,
+   "end_ms": 22140,
+   "srt_start_ms": 20760,
+   "srt_end_ms": 22006,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 6,
+   "text": "her walking encyclopedia,",
+   "start_ms": 22600,
+   "end_ms": 23880,
+   "srt_start_ms": 22006,
+   "srt_end_ms": 23645,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 7,
+   "text": "she could tell from his words that he was a werewolf.",
+   "start_ms": 24560,
+   "end_ms": 27120,
+   "srt_start_ms": 23645,
+   "srt_end_ms": 27120,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 8,
+   "text": "Only those arrogant werewolves got a kick out of human suffering.",
+   "start_ms": 27700,
+   "end_ms": 31120,
+   "srt_start_ms": 27700,
+   "srt_end_ms": 31120,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 9,
+   "text": "Maybe she was prejudiced,",
+   "start_ms": 31920,
+   "end_ms": 33520,
+   "srt_start_ms": 31920,
+   "srt_end_ms": 33313,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 10,
+   "text": "because the violets still couldn't wrap her head around humans and werewolves peacefully coexisting at school.",
+   "start_ms": 33780,
+   "end_ms": 39440,
+   "srt_start_ms": 33313,
+   "srt_end_ms": 39440,
+   "words": 16,
+   "same": 16,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 11,
+   "text": "It was a ticking time bomb.",
+   "start_ms": 40260,
+   "end_ms": 41760,
+   "srt_start_ms": 40260,
+   "srt_end_ms": 41760,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 12,
+   "text": "The werewolf must have felt her glare because he turned,",
+   "start_ms": 42880,
+   "end_ms": 45660,
+   "srt_start_ms": 42880,
+   "srt_end_ms": 45970,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 13,
+   "text": "his eyes locking with hers.",
+   "start_ms": 46160,
+   "end_ms": 47460,
+   "srt_start_ms": 45970,
+   "srt_end_ms": 47460,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 14,
+   "text": "He looked momentarily surprised.",
+   "start_ms": 48280,
+   "end_ms": 49940,
+   "srt_start_ms": 48280,
+   "srt_end_ms": 49940,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 15,
+   "text": "Then his eyes narrowed and he growled.",
+   "start_ms": 51180,
+   "end_ms": 53280,
+   "srt_start_ms": 51180,
+   "srt_end_ms": 53280,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 16,
+   "text": "What are you staring at, Prey?",
+   "start_ms": 53880,
+   "end_ms": 56000,
+   "srt_start_ms": 53880,
+   "srt_end_ms": 56000,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 17,
+   "text": "Violet raised an eyebrow.",
+   "start_ms": 57340,
+   "end_ms": 58420,
+   "srt_start_ms": 57340,
+   "srt_end_ms": 58420,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 18,
+   "text": "Oh, so that's how he wanted to play it?",
+   "start_ms": 59160,
+   "end_ms": 61280,
+   "srt_start_ms": 59160,
+   "srt_end_ms": 61280,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 19,
+   "text": "Unfortunately for him,",
+   "start_ms": 62440,
+   "end_ms": 63780,
+   "srt_start_ms": 62440,
+   "srt_end_ms": 63798,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 20,
+   "text": "she had a smart mouth that usually got her into trouble,",
+   "start_ms": 64360,
+   "end_ms": 66760,
+   "srt_start_ms": 63798,
+   "srt_end_ms": 67255,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 21,
+   "text": "not out of it.",
+   "start_ms": 67120,
+   "end_ms": 68120,
+   "srt_start_ms": 67255,
+   "srt_end_ms": 68120,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 22,
+   "text": "She licked her lips,",
+   "start_ms": 68880,
+   "end_ms": 69800,
+   "srt_start_ms": 68880,
+   "srt_end_ms": 69955,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 23,
+   "text": "ready for a coming showdown.",
+   "start_ms": 70150,
+   "end_ms": 71460,
+   "srt_start_ms": 69955,
+   "srt_end_ms": 71460,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 24,
+   "text": "Alice seemed to sense her intentions.",
+   "start_ms": 72260,
+   "end_ms": 74100,
+   "srt_start_ms": 72260,
+   "srt_end_ms": 74100,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 25,
+   "text": "Her eyes widened,",
+   "start_ms": 74900,
+   "end_ms": 76060,
+   "srt_start_ms": 74900,
+   "srt_end_ms": 76050,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 26,
+   "text": "and she shook her head,",
+   "start_ms": 76340,
+   "end_ms": 77340,
+   "srt_start_ms": 76050,
+   "srt_end_ms": 77606,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 27,
+   "text": "silently warning her to back off.",
+   "start_ms": 77960,
+   "end_ms": 79840,
+   "srt_start_ms": 77606,
+   "srt_end_ms": 79840,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 28,
+   "text": "Too late.",
+   "start_ms": 80680,
+   "end_ms": 81300,
+   "srt_start_ms": 80680,
+   "srt_end_ms": 81300,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 29,
+   "text": "Oh, I'm sorry.\"",
+   "start_ms": 81300,
+   "end_ms": 84300,
+   "srt_start_ms": 81300,
+   "srt_end_ms": 84300,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 1.0,
+   "text_type": "speech"
+  },
+  {
+   "idx": 30,
+   "text": "Violet shot back.",
+   "start_ms": 84300,
+   "end_ms": 85300,
+   "srt_start_ms": 84300,
+   "srt_end_ms": 85300,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 31,
+   "text": "Are you, like,",
+   "start_ms": 85640,
+   "end_ms": 86270,
+   "srt_start_ms": 85640,
+   "srt_end_ms": 86633,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 32,
+   "text": "dying for my attention, dog?",
+   "start_ms": 86750,
+   "end_ms": 88620,
+   "srt_start_ms": 86633,
+   "srt_end_ms": 88620,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 33,
+   "text": "And there it was.",
+   "start_ms": 89060,
+   "end_ms": 91460,
+   "srt_start_ms": 89060,
+   "srt_end_ms": 91460,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 34,
+   "text": "Alice gasped.",
+   "start_ms": 92150,
+   "end_ms": 93120,
+   "srt_start_ms": 92150,
+   "srt_end_ms": 93120,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 35,
+   "text": "Pretty much everyone nearby did, too.",
+   "start_ms": 93640,
+   "end_ms": 95610,
+   "srt_start_ms": 93640,
+   "srt_end_ms": 95610,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 36,
+   "text": "Oh, no, she didn't.",
+   "start_ms": 96940,
+   "end_ms": 98040,
+   "srt_start_ms": 96940,
+   "srt_end_ms": 98040,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 37,
+   "text": "But Violet did.",
+   "start_ms": 98720,
+   "end_ms": 99560,
+   "srt_start_ms": 98720,
+   "srt_end_ms": 99560,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 38,
+   "text": "Everyone with an earshot froze like Violet had just committed a major crime.",
+   "start_ms": 100160,
+   "end_ms": 104400,
+   "srt_start_ms": 100160,
+   "srt_end_ms": 104400,
+   "words": 13,
+   "same": 13,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 39,
+   "text": "Seconds later, whispers started. and Violet caught snippets like,",
+   "start_ms": 105320,
+   "end_ms": 108940,
+   "srt_start_ms": 105320,
+   "srt_end_ms": 109720,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 40,
+   "text": "she's so dead and Grant's gonna rip her apart.",
+   "start_ms": 109220,
+   "end_ms": 113860,
+   "srt_start_ms": 109720,
+   "srt_end_ms": 113860,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 41,
+   "text": "Despite the ominous whispers,",
+   "start_ms": 115370,
+   "end_ms": 116740,
+   "srt_start_ms": 115370,
+   "srt_end_ms": 116953,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 42,
+   "text": "Violet felt strangely confident.",
+   "start_ms": 117160,
+   "end_ms": 118700,
+   "srt_start_ms": 116953,
+   "srt_end_ms": 118700,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 43,
+   "text": "She refused to back down from bullies.",
+   "start_ms": 119540,
+   "end_ms": 121120,
+   "srt_start_ms": 119540,
+   "srt_end_ms": 121120,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 44,
+   "text": "Well, kind of.",
+   "start_ms": 121960,
+   "end_ms": 122890,
+   "srt_start_ms": 121960,
+   "srt_end_ms": 122890,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 45,
+   "text": "What?",
+   "start_ms": 124130,
+   "end_ms": 124420,
+   "srt_start_ms": 124130,
+   "srt_end_ms": 124420,
+   "words": 1,
+   "same": 1,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 46,
+   "text": "Did you just call me?",
+   "start_ms": 124950,
+   "end_ms": 125900,
+   "srt_start_ms": 124950,
+   "srt_end_ms": 125900,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 47,
+   "text": "The werewolf grant growled,",
+   "start_ms": 126820,
+   "end_ms": 128330,
+   "srt_start_ms": 126820,
+   "srt_end_ms": 128659,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 48,
+   "text": "his nostrils flaring as his wolf started to emerge,",
+   "start_ms": 128960,
+   "end_ms": 132140,
+   "srt_start_ms": 128659,
+   "srt_end_ms": 132133,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 49,
+   "text": "triggered by her words.",
+   "start_ms": 132560,
+   "end_ms": 133700,
+   "srt_start_ms": 132133,
+   "srt_end_ms": 133700,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 50,
+   "text": "You mean the same way you called me prey?",
+   "start_ms": 134670,
+   "end_ms": 136960,
+   "srt_start_ms": 134670,
+   "srt_end_ms": 136960,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 51,
+   "text": "Or can't you take a joke, dog?",
+   "start_ms": 137700,
+   "end_ms": 139600,
+   "srt_start_ms": 137700,
+   "srt_end_ms": 139600,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 52,
+   "text": "She sassed back. back.",
+   "start_ms": 140480,
+   "end_ms": 141520,
+   "srt_start_ms": 140480,
+   "srt_end_ms": 141650,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 53,
+   "text": "Violet!",
+   "start_ms": 142100,
+   "end_ms": 142740,
+   "srt_start_ms": 142100,
+   "srt_end_ms": 142740,
+   "words": 1,
+   "same": 1,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 54,
+   "text": "Alice cried, desperately trying to pull her away.",
+   "start_ms": 143780,
+   "end_ms": 146660,
+   "srt_start_ms": 143780,
+   "srt_end_ms": 146660,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 55,
+   "text": "But Violet wouldn't budge.",
+   "start_ms": 147220,
+   "end_ms": 148660,
+   "srt_start_ms": 147220,
+   "srt_end_ms": 148660,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 56,
+   "text": "She was bigger than Alice,",
+   "start_ms": 149080,
+   "end_ms": 150260,
+   "srt_start_ms": 149080,
+   "srt_end_ms": 150512,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 57,
+   "text": "and the smaller girl couldn't move her an itch.",
+   "start_ms": 150640,
+   "end_ms": 153100,
+   "srt_start_ms": 150512,
+   "srt_end_ms": 153100,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 58,
+   "text": "Violet saw the moment Grant's eyes flashed amber,",
+   "start_ms": 153840,
+   "end_ms": 156460,
+   "srt_start_ms": 153840,
+   "srt_end_ms": 156766,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 59,
+   "text": "his wolf taking over.",
+   "start_ms": 156960,
+   "end_ms": 158020,
+   "srt_start_ms": 156766,
+   "srt_end_ms": 158020,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 60,
+   "text": "While she might be impulsive and hot -headed,",
+   "start_ms": 159880,
+   "end_ms": 162420,
+   "srt_start_ms": 159880,
+   "srt_end_ms": 162720,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 61,
+   "text": "Violet wasn't completely stupid.",
+   "start_ms": 163020,
+   "end_ms": 164740,
+   "srt_start_ms": 162720,
+   "srt_end_ms": 164740,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 62,
+   "text": "She started mentally calculating how many steps it would take to reach the exit where help would surely come.",
+   "start_ms": 165400,
+   "end_ms": 171400,
+   "srt_start_ms": 165400,
+   "srt_end_ms": 171400,
+   "words": 19,
+   "same": 19,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 63,
+   "text": "She was positive it would.",
+   "start_ms": 172180,
+   "end_ms": 173380,
+   "srt_start_ms": 172180,
+   "srt_end_ms": 173380,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 64,
+   "text": "I'll teach you a lesson today.",
+   "start_ms": 174500,
+   "end_ms": 176660,
+   "srt_start_ms": 174500,
+   "srt_end_ms": 176660,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 65,
+   "text": "Grant growled, a mix of man and wolf,",
+   "start_ms": 177690,
+   "end_ms": 180160,
+   "srt_start_ms": 177690,
+   "srt_end_ms": 180050,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 66,
+   "text": "as he lunged toward her.",
+   "start_ms": 180560,
+   "end_ms": 181580,
+   "srt_start_ms": 180050,
+   "srt_end_ms": 181580,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 67,
+   "text": "Violet braced herself to run when,",
+   "start_ms": 183520,
+   "end_ms": 185580,
+   "srt_start_ms": 183520,
+   "srt_end_ms": 185625,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 68,
+   "text": "suddenly, someone stepped in.",
+   "start_ms": 185940,
+   "end_ms": 187420,
+   "srt_start_ms": 185625,
+   "srt_end_ms": 187420,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 69,
+   "text": "A strong hand grabbed Grant's arm and,",
+   "start_ms": 187860,
+   "end_ms": 190500,
+   "srt_start_ms": 187860,
+   "srt_end_ms": 190307,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 70,
+   "text": "in front of everyone's shocked eyes, polled.",
+   "start_ms": 190890,
+   "end_ms": 193140,
+   "srt_start_ms": 190307,
+   "srt_end_ms": 193140,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 71,
+   "text": "The sound was sickening,",
+   "start_ms": 194040,
+   "end_ms": 195080,
+   "srt_start_ms": 194040,
+   "srt_end_ms": 195433,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 72,
+   "text": "a wet, cracking noise of shattering bones filled the hall.",
+   "start_ms": 195620,
+   "end_ms": 198800,
+   "srt_start_ms": 195433,
+   "srt_end_ms": 198800,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 73,
+   "text": "Oh god!",
+   "start_ms": 199660,
+   "end_ms": 200320,
+   "srt_start_ms": 199660,
+   "srt_end_ms": 200320,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 74,
+   "text": "Someone gasped behind her,",
+   "start_ms": 201330,
+   "end_ms": 202440,
+   "srt_start_ms": 201330,
+   "srt_end_ms": 202613,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 75,
+   "text": "followed by the sound of vomiting.",
+   "start_ms": 202960,
+   "end_ms": 204290,
+   "srt_start_ms": 202613,
+   "srt_end_ms": 204290,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 76,
+   "text": "Thankfully, it wasn't Alice,",
+   "start_ms": 205560,
+   "end_ms": 206880,
+   "srt_start_ms": 205560,
+   "srt_end_ms": 207059,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 77,
+   "text": "or she would have been splattered.",
+   "start_ms": 207320,
+   "end_ms": 208880,
+   "srt_start_ms": 207059,
+   "srt_end_ms": 208880,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 78,
+   "text": "Violet froze, eyes wide with shock as Asher nightshade took over.",
+   "start_ms": 210320,
+   "end_ms": 214580,
+   "srt_start_ms": 210320,
+   "srt_end_ms": 214580,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 79,
+   "text": "He wasn't some fairytale prince swooping in to save the day.",
+   "start_ms": 215380,
+   "end_ms": 218390,
+   "srt_start_ms": 215380,
+   "srt_end_ms": 218390,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 80,
+   "text": "No knight in shining armor here,",
+   "start_ms": 219220,
+   "end_ms": 220920,
+   "srt_start_ms": 219220,
+   "srt_end_ms": 221383,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 81,
+   "text": "just a dark knight,",
+   "start_ms": 221380,
+   "end_ms": 222460,
+   "srt_start_ms": 221383,
+   "srt_end_ms": 222668,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 82,
+   "text": "rescuing her with an aura of pure menace.",
+   "start_ms": 222860,
+   "end_ms": 225440,
+   "srt_start_ms": 222668,
+   "srt_end_ms": 225440,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 83,
+   "text": "Hello, Grant.",
+   "start_ms": 226980,
+   "end_ms": 228160,
+   "srt_start_ms": 226980,
+   "srt_end_ms": 228160,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 84,
+   "text": "Asher drawed, his voice dripping with possessiveness as he crushed the werewolf's arm like a plastic toy.",
+   "start_ms": 228950,
+   "end_ms": 235560,
+   "srt_start_ms": 228950,
+   "srt_end_ms": 235560,
+   "words": 17,
+   "same": 17,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 85,
+   "text": "Did I just hear you call my violet your prey?",
+   "start_ms": 236380,
+   "end_ms": 240140,
+   "srt_start_ms": 236380,
+   "srt_end_ms": 240140,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 86,
+   "text": "Hasn't anyone told you that I,",
+   "start_ms": 242280,
+   "end_ms": 244440,
+   "srt_start_ms": 242280,
+   "srt_end_ms": 245216,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 87,
+   "text": "and only I,",
+   "start_ms": 245040,
+   "end_ms": 246160,
+   "srt_start_ms": 245216,
+   "srt_end_ms": 246292,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 88,
+   "text": "hunt her alone?",
+   "start_ms": 246710,
+   "end_ms": 247760,
+   "srt_start_ms": 246292,
+   "srt_end_ms": 247760,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 89,
+   "text": "Normally Violet would have rolled her eyes at his words and argued,",
+   "start_ms": 249140,
+   "end_ms": 252240,
+   "srt_start_ms": 249140,
+   "srt_end_ms": 252924,
+   "words": 12,
+   "same": 12,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 90,
+   "text": "but she was too horrified to speak.",
+   "start_ms": 252910,
+   "end_ms": 254900,
+   "srt_start_ms": 252924,
+   "srt_end_ms": 254900,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 91,
+   "text": "She could only stand there,",
+   "start_ms": 255670,
+   "end_ms": 256990,
+   "srt_start_ms": 255670,
+   "srt_end_ms": 257120,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 92,
+   "text": "dumbfounded by Asher's brutal display of dominance.",
+   "start_ms": 257260,
+   "end_ms": 259860,
+   "srt_start_ms": 257120,
+   "srt_end_ms": 259860,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 93,
+   "text": "I'm s -s -s -sorry, Elva.\"",
+   "start_ms": 259860,
+   "end_ms": 264230,
+   "srt_start_ms": 259860,
+   "srt_end_ms": 264230,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 1.0,
+   "text_type": "speech"
+  },
+  {
+   "idx": 94,
+   "text": "Grant moaned.",
+   "start_ms": 264340,
+   "end_ms": 265580,
+   "srt_start_ms": 264340,
+   "srt_end_ms": 265580,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 95,
+   "text": "His earlier bravado replaced by desperate pleas.",
+   "start_ms": 265920,
+   "end_ms": 268760,
+   "srt_start_ms": 265920,
+   "srt_end_ms": 268760,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 96,
+   "text": "Asher remained unmoved.",
+   "start_ms": 269900,
+   "end_ms": 271440,
+   "srt_start_ms": 269900,
+   "srt_end_ms": 271440,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 97,
+   "text": "Really?",
+   "start_ms": 271880,
+   "end_ms": 272460,
+   "srt_start_ms": 271880,
+   "srt_end_ms": 272460,
+   "words": 1,
+   "same": 1,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 98,
+   "text": "Are you?",
+   "start_ms": 273000,
+   "end_ms": 273620,
+   "srt_start_ms": 273000,
+   "srt_end_ms": 273620,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 99,
+   "text": "His voice was ice -cold as he twisted the arm further.",
+   "start_ms": 274680,
+   "end_ms": 277680,
+   "srt_start_ms": 274680,
+   "srt_end_ms": 277680,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 100,
+   "text": "Heck, I am!",
+   "start_ms": 278740,
+   "end_ms": 279880,
+   "srt_start_ms": 278740,
+   "srt_end_ms": 279880,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 101,
+   "text": "I seriously am, dad!",
+   "start_ms": 280330,
+   "end_ms": 282400,
+   "srt_start_ms": 280330,
+   "srt_end_ms": 282400,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 102,
+   "text": "Grant cried out like a child as Asher applied even more pressure.",
+   "start_ms": 283360,
+   "end_ms": 287560,
+   "srt_start_ms": 283360,
+   "srt_end_ms": 287560,
+   "words": 12,
+   "same": 12,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 103,
+   "text": "Noddy, Grant, now,",
+   "start_ms": 288620,
+   "end_ms": 290700,
+   "srt_start_ms": 288620,
+   "srt_end_ms": 290586,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 104,
+   "text": "what do you do when you're sorry?\"",
+   "start_ms": 291190,
+   "end_ms": 294300,
+   "srt_start_ms": 290586,
+   "srt_end_ms": 294300,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 1.0,
+   "text_type": "speech"
+  },
+  {
+   "idx": 105,
+   "text": "Asher teased, glancing at Violet.",
+   "start_ms": 294300,
+   "end_ms": 296600,
+   "srt_start_ms": 294300,
+   "srt_end_ms": 296600,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 106,
+   "text": "Grant followed his gaze and seemed to get the message.",
+   "start_ms": 297240,
+   "end_ms": 299700,
+   "srt_start_ms": 297240,
+   "srt_end_ms": 299700,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 107,
+   "text": "He instantly bowed his head,",
+   "start_ms": 300500,
+   "end_ms": 301940,
+   "srt_start_ms": 300500,
+   "srt_end_ms": 302438,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 108,
+   "text": "stiffly and stammered.",
+   "start_ms": 302440,
+   "end_ms": 303960,
+   "srt_start_ms": 302438,
+   "srt_end_ms": 303960,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 109,
+   "text": "I'm so sorry, Miss Violet.",
+   "start_ms": 304600,
+   "end_ms": 306820,
+   "srt_start_ms": 304600,
+   "srt_end_ms": 306820,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 110,
+   "text": "What are you sorry for, dog?\"",
+   "start_ms": 308080,
+   "end_ms": 311380,
+   "srt_start_ms": 308080,
+   "srt_end_ms": 311380,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 1.0,
+   "text_type": "speech"
+  },
+  {
+   "idx": 111,
+   "text": "Asher taunted, chuckling like he was enjoying the whole thing.",
+   "start_ms": 311380,
+   "end_ms": 314620,
+   "srt_start_ms": 311380,
+   "srt_end_ms": 314620,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 112,
+   "text": "That psycho.",
+   "start_ms": 315360,
+   "end_ms": 315940,
+   "srt_start_ms": 315360,
+   "srt_end_ms": 315940,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 113,
+   "text": "For trying to hurt you,",
+   "start_ms": 317040,
+   "end_ms": 318660,
+   "srt_start_ms": 317040,
+   "srt_end_ms": 318402,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 114,
+   "text": "it will never happen again.",
+   "start_ms": 318960,
+   "end_ms": 320000,
+   "srt_start_ms": 318402,
+   "srt_end_ms": 320000,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 115,
+   "text": "Grant apologized, his tone sincere now,",
+   "start_ms": 321180,
+   "end_ms": 323700,
+   "srt_start_ms": 321180,
+   "srt_end_ms": 323780,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 116,
+   "text": "realizing Asher wasn't in the mood for games.",
+   "start_ms": 324420,
+   "end_ms": 326780,
+   "srt_start_ms": 323780,
+   "srt_end_ms": 326780,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 117,
+   "text": "There you go.",
+   "start_ms": 328090,
+   "end_ms": 329280,
+   "srt_start_ms": 328090,
+   "srt_end_ms": 329280,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 118,
+   "text": "Asher finally let go,",
+   "start_ms": 330500,
+   "end_ms": 331740,
+   "srt_start_ms": 330500,
+   "srt_end_ms": 331848,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 119,
+   "text": "and Grant gasped like a drowning man surfacing for air.",
+   "start_ms": 332370,
+   "end_ms": 335380,
+   "srt_start_ms": 331848,
+   "srt_end_ms": 335380,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 120,
+   "text": "The move had looked simple,",
+   "start_ms": 336370,
+   "end_ms": 337740,
+   "srt_start_ms": 336370,
+   "srt_end_ms": 338187,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 121,
+   "text": "but Asher had not only broken bones,",
+   "start_ms": 338440,
+   "end_ms": 340620,
+   "srt_start_ms": 338187,
+   "srt_end_ms": 340610,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 122,
+   "text": "but also dislocated Grant's shoulder.",
+   "start_ms": 341240,
+   "end_ms": 343100,
+   "srt_start_ms": 340610,
+   "srt_end_ms": 343100,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 123,
+   "text": "It had been pure hell.",
+   "start_ms": 344020,
+   "end_ms": 345240,
+   "srt_start_ms": 344020,
+   "srt_end_ms": 345240,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 124,
+   "text": "Now, move along, doggie.",
+   "start_ms": 346570,
+   "end_ms": 348180,
+   "srt_start_ms": 346570,
+   "srt_end_ms": 348180,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 125,
+   "text": "Go find the school nurse and have her deal with that nasty injury.",
+   "start_ms": 348900,
+   "end_ms": 351900,
+   "srt_start_ms": 348900,
+   "srt_end_ms": 351900,
+   "words": 13,
+   "same": 13,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 126,
+   "text": "Asher dismissed him with a wave,",
+   "start_ms": 353100,
+   "end_ms": 354860,
+   "srt_start_ms": 353100,
+   "srt_end_ms": 355367,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 127,
+   "text": "and Grant shuffled away,",
+   "start_ms": 355330,
+   "end_ms": 356440,
+   "srt_start_ms": 355367,
+   "srt_end_ms": 357068,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 128,
+   "text": "head hung low.",
+   "start_ms": 357080,
+   "end_ms": 358060,
+   "srt_start_ms": 357068,
+   "srt_end_ms": 358060,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 129,
+   "text": "The crowd partying to let him leave.",
+   "start_ms": 359080,
+   "end_ms": 360700,
+   "srt_start_ms": 359080,
+   "srt_end_ms": 360700,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 130,
+   "text": "With Grant gone,",
+   "start_ms": 361760,
+   "end_ms": 362760,
+   "srt_start_ms": 361760,
+   "srt_end_ms": 362696,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 131,
+   "text": "Asher turned his attention to Violet.",
+   "start_ms": 363220,
+   "end_ms": 364860,
+   "srt_start_ms": 362696,
+   "srt_end_ms": 364860,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 132,
+   "text": "The look on his face told her he intended to.",
+   "start_ms": 365520,
+   "end_ms": 367980,
+   "srt_start_ms": 365520,
+   "srt_end_ms": 367980,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 133,
+   "text": "Well, she wasn't sure,",
+   "start_ms": 368610,
+   "end_ms": 370290,
+   "srt_start_ms": 368610,
+   "srt_end_ms": 370311,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 134,
+   "text": "but it wasn't good.",
+   "start_ms": 371180,
+   "end_ms": 371780,
+   "srt_start_ms": 370311,
+   "srt_end_ms": 371780,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 135,
+   "text": "Oh no.",
+   "start_ms": 372990,
+   "end_ms": 373520,
+   "srt_start_ms": 372990,
+   "srt_end_ms": 373520,
+   "words": 2,
+   "same": 2,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 136,
+   "text": "Standing up to Grant hadn't scared her,",
+   "start_ms": 375340,
+   "end_ms": 377480,
+   "srt_start_ms": 375340,
+   "srt_end_ms": 377899,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 137,
+   "text": "but the dark,",
+   "start_ms": 377780,
+   "end_ms": 378760,
+   "srt_start_ms": 377899,
+   "srt_end_ms": 378752,
+   "words": 3,
+   "same": 3,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 138,
+   "text": "unsettling smile on Asher's face Scent shivers down her spine.",
+   "start_ms": 378920,
+   "end_ms": 382820,
+   "srt_start_ms": 378752,
+   "srt_end_ms": 382820,
+   "words": 10,
+   "same": 10,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 139,
+   "text": "Nope, not doing this.",
+   "start_ms": 383770,
+   "end_ms": 385260,
+   "srt_start_ms": 383770,
+   "srt_end_ms": 385260,
+   "words": 4,
+   "same": 4,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 140,
+   "text": "Violet spun around to run,",
+   "start_ms": 386160,
+   "end_ms": 387580,
+   "srt_start_ms": 386160,
+   "srt_end_ms": 387851,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 141,
+   "text": "but Asher moved just as fast,",
+   "start_ms": 388280,
+   "end_ms": 390100,
+   "srt_start_ms": 387851,
+   "srt_end_ms": 389737,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 142,
+   "text": "grabbing her around the waist as if he'd predicted her move.",
+   "start_ms": 390740,
+   "end_ms": 393640,
+   "srt_start_ms": 389737,
+   "srt_end_ms": 393640,
+   "words": 11,
+   "same": 11,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 143,
+   "text": "Put me down, you jerk!",
+   "start_ms": 394690,
+   "end_ms": 396060,
+   "srt_start_ms": 394690,
+   "srt_end_ms": 396060,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 144,
+   "text": "She yelled, struggling as he effortlessly tossed her over his shoulder. her weight seemed like nothing to him.",
+   "start_ms": 397590,
+   "end_ms": 404040,
+   "srt_start_ms": 397590,
+   "srt_end_ms": 404040,
+   "words": 18,
+   "same": 18,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 145,
+   "text": "That is how you thank your savior, my violet.",
+   "start_ms": 406920,
+   "end_ms": 410920,
+   "srt_start_ms": 406920,
+   "srt_end_ms": 410920,
+   "words": 9,
+   "same": 9,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 146,
+   "text": "He laughed, continuing to walk,",
+   "start_ms": 411970,
+   "end_ms": 414150,
+   "srt_start_ms": 411970,
+   "srt_end_ms": 414201,
+   "words": 5,
+   "same": 5,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 147,
+   "text": "unfazed by her punches to his back.",
+   "start_ms": 415150,
+   "end_ms": 416720,
+   "srt_start_ms": 414201,
+   "srt_end_ms": 416720,
+   "words": 7,
+   "same": 7,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 148,
+   "text": "When his teasing became too overwhelming,",
+   "start_ms": 417980,
+   "end_ms": 419740,
+   "srt_start_ms": 417980,
+   "srt_end_ms": 420533,
+   "words": 6,
+   "same": 6,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 149,
+   "text": "he swatted her butt and Violet instantly froze.",
+   "start_ms": 420520,
+   "end_ms": 423460,
+   "srt_start_ms": 420533,
+   "srt_end_ms": 423460,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  },
+  {
+   "idx": 150,
+   "text": "This has to be a nightmare, she thought.",
+   "start_ms": 424240,
+   "end_ms": 427480,
+   "srt_start_ms": 424240,
+   "srt_end_ms": 427480,
+   "words": 8,
+   "same": 8,
+   "differently": 0,
+   "not_heard": 0,
+   "quote_share": 0.0,
+   "text_type": "narration"
+  }
+ ],
+ "words": [
+  {
+   "sent": 0,
+   "word": "They",
+   "start": 1.73,
+   "end": 1.86,
+   "heard_as": "They",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "were",
+   "start": 1.86,
+   "end": 2.06,
+   "heard_as": "were",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "almost",
+   "start": 2.06,
+   "end": 2.48,
+   "heard_as": "almost",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "at",
+   "start": 2.57,
+   "end": 2.65,
+   "heard_as": "at",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "the",
+   "start": 2.71,
+   "end": 2.77,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "track",
+   "start": 2.8,
+   "end": 3.01,
+   "heard_as": "track",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "field",
+   "start": 3.14,
+   "end": 3.3,
+   "heard_as": "field",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "for",
+   "start": 3.3,
+   "end": 3.48,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "practice",
+   "start": 3.56,
+   "end": 3.7,
+   "heard_as": "practice",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "when",
+   "start": 4.24,
+   "end": 4.4,
+   "heard_as": "when",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "someone's",
+   "start": 4.66,
+   "end": 5.0,
+   "heard_as": "someone's",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "loud",
+   "start": 5.0,
+   "end": 5.28,
+   "heard_as": "loud",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "comment",
+   "start": 5.28,
+   "end": 5.74,
+   "heard_as": "comment",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "caught",
+   "start": 6.03,
+   "end": 6.14,
+   "heard_as": "caught",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "their",
+   "start": 6.14,
+   "end": 6.34,
+   "heard_as": "their",
+   "status": "same"
+  },
+  {
+   "sent": 0,
+   "word": "attention.",
+   "start": 6.34,
+   "end": 6.8,
+   "heard_as": "attention.",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "But",
+   "start": 8.16,
+   "end": 8.3,
+   "heard_as": "But",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "practice",
+   "start": 8.3,
+   "end": 8.78,
+   "heard_as": "practice",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "is",
+   "start": 8.78,
+   "end": 9.01,
+   "heard_as": "is",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "going",
+   "start": 9.08,
+   "end": 9.18,
+   "heard_as": "going",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "to",
+   "start": 9.18,
+   "end": 9.26,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "be",
+   "start": 9.28,
+   "end": 9.36,
+   "heard_as": "be",
+   "status": "same"
+  },
+  {
+   "sent": 1,
+   "word": "brutal.",
+   "start": 9.5,
+   "end": 9.82,
+   "heard_as": "brutal.",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "Can't",
+   "start": 10.41,
+   "end": 10.64,
+   "heard_as": "Can't",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "wait",
+   "start": 10.64,
+   "end": 10.72,
+   "heard_as": "wait",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "to",
+   "start": 10.72,
+   "end": 10.87,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "see",
+   "start": 10.99,
+   "end": 11.08,
+   "heard_as": "see",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "these",
+   "start": 11.08,
+   "end": 11.26,
+   "heard_as": "these",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "humans",
+   "start": 11.34,
+   "end": 11.68,
+   "heard_as": "humans",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "totally",
+   "start": 11.68,
+   "end": 12.32,
+   "heard_as": "totally",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "wipe",
+   "start": 12.32,
+   "end": 12.64,
+   "heard_as": "wipe",
+   "status": "same"
+  },
+  {
+   "sent": 2,
+   "word": "out.",
+   "start": 12.71,
+   "end": 12.96,
+   "heard_as": "out.",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "Weaklings",
+   "start": 13.6,
+   "end": 14.0,
+   "heard_as": "Weaklings",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "that",
+   "start": 14.0,
+   "end": 14.2,
+   "heard_as": "that",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "they",
+   "start": 14.28,
+   "end": 14.42,
+   "heard_as": "they",
+   "status": "same"
+  },
+  {
+   "sent": 3,
+   "word": "are.",
+   "start": 14.42,
+   "end": 14.65,
+   "heard_as": "are.",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "Violet's",
+   "start": 16.88,
+   "end": 17.5,
+   "heard_as": "Violet's",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "head",
+   "start": 17.5,
+   "end": 17.66,
+   "heard_as": "head",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "whipped",
+   "start": 17.66,
+   "end": 17.98,
+   "heard_as": "whipped",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "around",
+   "start": 17.98,
+   "end": 18.34,
+   "heard_as": "around",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "to",
+   "start": 18.34,
+   "end": 18.54,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "face",
+   "start": 18.54,
+   "end": 18.72,
+   "heard_as": "face",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "the",
+   "start": 18.72,
+   "end": 18.94,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "jerk",
+   "start": 18.94,
+   "end": 19.14,
+   "heard_as": "jerk",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "who'd",
+   "start": 19.14,
+   "end": 19.45,
+   "heard_as": "who'd",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "just",
+   "start": 19.46,
+   "end": 19.64,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 4,
+   "word": "spoken.",
+   "start": 19.65,
+   "end": 20.04,
+   "heard_as": "spoken.",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "Even",
+   "start": 20.76,
+   "end": 21.38,
+   "heard_as": "Even",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "without",
+   "start": 21.38,
+   "end": 21.7,
+   "heard_as": "without",
+   "status": "same"
+  },
+  {
+   "sent": 5,
+   "word": "Alice,",
+   "start": 21.7,
+   "end": 22.14,
+   "heard_as": "Alice,",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "her",
+   "start": 22.6,
+   "end": 22.72,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "walking",
+   "start": 22.72,
+   "end": 23.1,
+   "heard_as": "walking",
+   "status": "same"
+  },
+  {
+   "sent": 6,
+   "word": "encyclopedia,",
+   "start": 23.1,
+   "end": 23.88,
+   "heard_as": "encyclopedia,",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "she",
+   "start": 24.56,
+   "end": 24.78,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "could",
+   "start": 24.78,
+   "end": 24.92,
+   "heard_as": "could",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "tell",
+   "start": 24.92,
+   "end": 25.18,
+   "heard_as": "tell",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "from",
+   "start": 25.18,
+   "end": 25.38,
+   "heard_as": "from",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "his",
+   "start": 25.38,
+   "end": 25.6,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "words",
+   "start": 25.6,
+   "end": 25.98,
+   "heard_as": "words",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "that",
+   "start": 25.98,
+   "end": 26.26,
+   "heard_as": "that",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "he",
+   "start": 26.26,
+   "end": 26.4,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "was",
+   "start": 26.4,
+   "end": 26.53,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "a",
+   "start": 26.55,
+   "end": 26.68,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 7,
+   "word": "werewolf.",
+   "start": 26.68,
+   "end": 27.12,
+   "heard_as": "werewolf.",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "Only",
+   "start": 27.7,
+   "end": 28.26,
+   "heard_as": "Only",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "those",
+   "start": 28.26,
+   "end": 28.52,
+   "heard_as": "those",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "arrogant",
+   "start": 28.52,
+   "end": 29.04,
+   "heard_as": "arrogant",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "werewolves",
+   "start": 29.04,
+   "end": 29.64,
+   "heard_as": "werewolves",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "got",
+   "start": 29.64,
+   "end": 29.88,
+   "heard_as": "got",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "a",
+   "start": 29.88,
+   "end": 30.02,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "kick",
+   "start": 30.02,
+   "end": 30.15,
+   "heard_as": "kick",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "out",
+   "start": 30.16,
+   "end": 30.32,
+   "heard_as": "out",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "of",
+   "start": 30.32,
+   "end": 30.46,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "human",
+   "start": 30.46,
+   "end": 30.7,
+   "heard_as": "human",
+   "status": "same"
+  },
+  {
+   "sent": 8,
+   "word": "suffering.",
+   "start": 30.7,
+   "end": 31.12,
+   "heard_as": "suffering.",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "Maybe",
+   "start": 31.92,
+   "end": 32.48,
+   "heard_as": "Maybe",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "she",
+   "start": 32.48,
+   "end": 32.78,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "was",
+   "start": 32.78,
+   "end": 32.94,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 9,
+   "word": "prejudiced,",
+   "start": 32.94,
+   "end": 33.52,
+   "heard_as": "prejudiced,",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "because",
+   "start": 33.78,
+   "end": 34.06,
+   "heard_as": "because",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "the",
+   "start": 34.06,
+   "end": 34.3,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "violets",
+   "start": 34.3,
+   "end": 34.64,
+   "heard_as": "violets",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "still",
+   "start": 34.64,
+   "end": 34.94,
+   "heard_as": "still",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "couldn't",
+   "start": 34.94,
+   "end": 35.2,
+   "heard_as": "couldn't",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "wrap",
+   "start": 35.2,
+   "end": 35.42,
+   "heard_as": "wrap",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "her",
+   "start": 35.42,
+   "end": 35.6,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "head",
+   "start": 35.6,
+   "end": 35.76,
+   "heard_as": "head",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "around",
+   "start": 35.76,
+   "end": 36.02,
+   "heard_as": "around",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "humans",
+   "start": 36.02,
+   "end": 36.58,
+   "heard_as": "humans",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "and",
+   "start": 36.58,
+   "end": 36.9,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "werewolves",
+   "start": 36.9,
+   "end": 37.44,
+   "heard_as": "werewolves",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "peacefully",
+   "start": 37.44,
+   "end": 38.1,
+   "heard_as": "peacefully",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "coexisting",
+   "start": 38.1,
+   "end": 38.86,
+   "heard_as": "coexisting",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "at",
+   "start": 38.86,
+   "end": 39.16,
+   "heard_as": "at",
+   "status": "same"
+  },
+  {
+   "sent": 10,
+   "word": "school.",
+   "start": 39.16,
+   "end": 39.44,
+   "heard_as": "school.",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "It",
+   "start": 40.26,
+   "end": 40.48,
+   "heard_as": "It",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "was",
+   "start": 40.48,
+   "end": 40.64,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "a",
+   "start": 40.64,
+   "end": 40.78,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "ticking",
+   "start": 40.78,
+   "end": 41.16,
+   "heard_as": "ticking",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "time",
+   "start": 41.16,
+   "end": 41.52,
+   "heard_as": "time",
+   "status": "same"
+  },
+  {
+   "sent": 11,
+   "word": "bomb.",
+   "start": 41.52,
+   "end": 41.76,
+   "heard_as": "bomb.",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "The",
+   "start": 42.88,
+   "end": 43.04,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "werewolf",
+   "start": 43.04,
+   "end": 43.44,
+   "heard_as": "werewolf",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "must",
+   "start": 43.44,
+   "end": 43.74,
+   "heard_as": "must",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "have",
+   "start": 43.74,
+   "end": 43.91,
+   "heard_as": "have",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "felt",
+   "start": 43.96,
+   "end": 44.14,
+   "heard_as": "felt",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "her",
+   "start": 44.14,
+   "end": 44.36,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "glare",
+   "start": 44.36,
+   "end": 44.64,
+   "heard_as": "glare",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "because",
+   "start": 44.64,
+   "end": 45.08,
+   "heard_as": "because",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "he",
+   "start": 45.08,
+   "end": 45.3,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 12,
+   "word": "turned,",
+   "start": 45.3,
+   "end": 45.66,
+   "heard_as": "turned,",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "his",
+   "start": 46.16,
+   "end": 46.3,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "eyes",
+   "start": 46.3,
+   "end": 46.54,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "locking",
+   "start": 46.54,
+   "end": 46.96,
+   "heard_as": "locking",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "with",
+   "start": 46.96,
+   "end": 47.26,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 13,
+   "word": "hers.",
+   "start": 47.26,
+   "end": 47.46,
+   "heard_as": "hers.",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "He",
+   "start": 48.28,
+   "end": 48.56,
+   "heard_as": "He",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "looked",
+   "start": 48.56,
+   "end": 48.78,
+   "heard_as": "looked",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "momentarily",
+   "start": 48.78,
+   "end": 49.48,
+   "heard_as": "momentarily",
+   "status": "same"
+  },
+  {
+   "sent": 14,
+   "word": "surprised.",
+   "start": 49.48,
+   "end": 49.94,
+   "heard_as": "surprised.",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "Then",
+   "start": 51.18,
+   "end": 51.62,
+   "heard_as": "Then",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "his",
+   "start": 51.62,
+   "end": 51.9,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "eyes",
+   "start": 51.9,
+   "end": 52.12,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "narrowed",
+   "start": 52.12,
+   "end": 52.66,
+   "heard_as": "narrowed",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "and",
+   "start": 52.66,
+   "end": 52.76,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "he",
+   "start": 52.76,
+   "end": 52.83,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 15,
+   "word": "growled.",
+   "start": 52.85,
+   "end": 53.28,
+   "heard_as": "growled.",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "What",
+   "start": 53.88,
+   "end": 54.32,
+   "heard_as": "What",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "are",
+   "start": 54.32,
+   "end": 54.44,
+   "heard_as": "are",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "you",
+   "start": 54.44,
+   "end": 54.66,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "staring",
+   "start": 54.66,
+   "end": 55.08,
+   "heard_as": "staring",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "at,",
+   "start": 55.08,
+   "end": 55.36,
+   "heard_as": "at,",
+   "status": "same"
+  },
+  {
+   "sent": 16,
+   "word": "Prey?",
+   "start": 55.54,
+   "end": 56.0,
+   "heard_as": "Prey?",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "Violet",
+   "start": 57.34,
+   "end": 57.77,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "raised",
+   "start": 57.78,
+   "end": 58.02,
+   "heard_as": "raised",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "an",
+   "start": 58.02,
+   "end": 58.2,
+   "heard_as": "an",
+   "status": "same"
+  },
+  {
+   "sent": 17,
+   "word": "eyebrow.",
+   "start": 58.2,
+   "end": 58.42,
+   "heard_as": "eyebrow.",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "Oh,",
+   "start": 59.16,
+   "end": 59.46,
+   "heard_as": "Oh,",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "so",
+   "start": 59.66,
+   "end": 59.84,
+   "heard_as": "so",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "that's",
+   "start": 59.84,
+   "end": 60.34,
+   "heard_as": "that's",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "how",
+   "start": 60.34,
+   "end": 60.44,
+   "heard_as": "how",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "he",
+   "start": 60.44,
+   "end": 60.62,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "wanted",
+   "start": 60.62,
+   "end": 60.8,
+   "heard_as": "wanted",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "to",
+   "start": 60.8,
+   "end": 60.93,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "play",
+   "start": 61.0,
+   "end": 61.14,
+   "heard_as": "play",
+   "status": "same"
+  },
+  {
+   "sent": 18,
+   "word": "it?",
+   "start": 61.14,
+   "end": 61.28,
+   "heard_as": "it?",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "Unfortunately",
+   "start": 62.44,
+   "end": 62.96,
+   "heard_as": "Unfortunately",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "for",
+   "start": 62.96,
+   "end": 63.52,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 19,
+   "word": "him,",
+   "start": 63.52,
+   "end": 63.78,
+   "heard_as": "him,",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "she",
+   "start": 64.36,
+   "end": 64.5,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "had",
+   "start": 64.5,
+   "end": 64.62,
+   "heard_as": "had",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "a",
+   "start": 64.62,
+   "end": 64.7,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "smart",
+   "start": 64.71,
+   "end": 64.99,
+   "heard_as": "smart",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "mouth",
+   "start": 65.02,
+   "end": 65.3,
+   "heard_as": "mouth",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "that",
+   "start": 65.3,
+   "end": 65.5,
+   "heard_as": "that",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "usually",
+   "start": 65.5,
+   "end": 65.82,
+   "heard_as": "usually",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "got",
+   "start": 65.82,
+   "end": 66.08,
+   "heard_as": "got",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "her",
+   "start": 66.08,
+   "end": 66.24,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "into",
+   "start": 66.24,
+   "end": 66.42,
+   "heard_as": "into",
+   "status": "same"
+  },
+  {
+   "sent": 20,
+   "word": "trouble,",
+   "start": 66.42,
+   "end": 66.76,
+   "heard_as": "trouble,",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "not",
+   "start": 67.12,
+   "end": 67.38,
+   "heard_as": "not",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "out",
+   "start": 67.38,
+   "end": 67.83,
+   "heard_as": "out",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "of",
+   "start": 67.84,
+   "end": 68.0,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 21,
+   "word": "it.",
+   "start": 68.0,
+   "end": 68.12,
+   "heard_as": "it.",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "She",
+   "start": 68.88,
+   "end": 69.14,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "licked",
+   "start": 69.14,
+   "end": 69.36,
+   "heard_as": "licked",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "her",
+   "start": 69.36,
+   "end": 69.54,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 22,
+   "word": "lips,",
+   "start": 69.54,
+   "end": 69.8,
+   "heard_as": "lips,",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "ready",
+   "start": 70.15,
+   "end": 70.38,
+   "heard_as": "ready",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "for",
+   "start": 70.38,
+   "end": 70.62,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "a",
+   "start": 70.62,
+   "end": 70.8,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "coming",
+   "start": 70.8,
+   "end": 71.0,
+   "heard_as": "coming",
+   "status": "same"
+  },
+  {
+   "sent": 23,
+   "word": "showdown.",
+   "start": 71.0,
+   "end": 71.46,
+   "heard_as": "showdown.",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "Alice",
+   "start": 72.26,
+   "end": 72.6,
+   "heard_as": "Alice",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "seemed",
+   "start": 72.6,
+   "end": 73.0,
+   "heard_as": "seemed",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "to",
+   "start": 73.0,
+   "end": 73.2,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "sense",
+   "start": 73.2,
+   "end": 73.5,
+   "heard_as": "sense",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "her",
+   "start": 73.5,
+   "end": 73.74,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 24,
+   "word": "intentions.",
+   "start": 73.74,
+   "end": 74.1,
+   "heard_as": "intentions.",
+   "status": "same"
+  },
+  {
+   "sent": 25,
+   "word": "Her",
+   "start": 74.9,
+   "end": 75.02,
+   "heard_as": "Her",
+   "status": "same"
+  },
+  {
+   "sent": 25,
+   "word": "eyes",
+   "start": 75.02,
+   "end": 75.36,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 25,
+   "word": "widened,",
+   "start": 75.36,
+   "end": 76.06,
+   "heard_as": "widened,",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "and",
+   "start": 76.34,
+   "end": 76.5,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "she",
+   "start": 76.5,
+   "end": 76.68,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "shook",
+   "start": 76.68,
+   "end": 76.9,
+   "heard_as": "shook",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "her",
+   "start": 76.92,
+   "end": 77.08,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 26,
+   "word": "head,",
+   "start": 77.08,
+   "end": 77.34,
+   "heard_as": "head,",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "silently",
+   "start": 77.96,
+   "end": 78.4,
+   "heard_as": "silently",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "warning",
+   "start": 78.4,
+   "end": 78.94,
+   "heard_as": "warning",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "her",
+   "start": 78.94,
+   "end": 79.2,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "to",
+   "start": 79.2,
+   "end": 79.3,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "back",
+   "start": 79.3,
+   "end": 79.46,
+   "heard_as": "back",
+   "status": "same"
+  },
+  {
+   "sent": 27,
+   "word": "off.",
+   "start": 79.46,
+   "end": 79.84,
+   "heard_as": "off.",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "Too",
+   "start": 80.68,
+   "end": 81.02,
+   "heard_as": "Too",
+   "status": "same"
+  },
+  {
+   "sent": 28,
+   "word": "late.",
+   "start": 81.02,
+   "end": 81.3,
+   "heard_as": "late.",
+   "status": "same"
+  },
+  {
+   "sent": 29,
+   "word": "Oh,",
+   "start": 81.3,
+   "end": 82.62,
+   "heard_as": "Oh,",
+   "status": "same"
+  },
+  {
+   "sent": 29,
+   "word": "I'm",
+   "start": 82.76,
+   "end": 83.0,
+   "heard_as": "I'm",
+   "status": "same"
+  },
+  {
+   "sent": 29,
+   "word": "sorry.\"",
+   "start": 83.0,
+   "end": 84.3,
+   "heard_as": "sorry.\"",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "Violet",
+   "start": 84.3,
+   "end": 84.8,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "shot",
+   "start": 84.8,
+   "end": 85.04,
+   "heard_as": "shot",
+   "status": "same"
+  },
+  {
+   "sent": 30,
+   "word": "back.",
+   "start": 85.04,
+   "end": 85.3,
+   "heard_as": "back.",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "Are",
+   "start": 85.64,
+   "end": 85.78,
+   "heard_as": "Are",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "you,",
+   "start": 85.78,
+   "end": 86.02,
+   "heard_as": "you,",
+   "status": "same"
+  },
+  {
+   "sent": 31,
+   "word": "like,",
+   "start": 86.06,
+   "end": 86.27,
+   "heard_as": "like,",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "dying",
+   "start": 86.75,
+   "end": 87.16,
+   "heard_as": "dying",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "for",
+   "start": 87.16,
+   "end": 87.5,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "my",
+   "start": 87.5,
+   "end": 87.72,
+   "heard_as": "my",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "attention,",
+   "start": 87.72,
+   "end": 88.14,
+   "heard_as": "attention,",
+   "status": "same"
+  },
+  {
+   "sent": 32,
+   "word": "dog?",
+   "start": 88.38,
+   "end": 88.62,
+   "heard_as": "dog?",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "And",
+   "start": 89.06,
+   "end": 89.52,
+   "heard_as": "And",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "there",
+   "start": 89.52,
+   "end": 91.16,
+   "heard_as": "there",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "it",
+   "start": 91.16,
+   "end": 91.28,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 33,
+   "word": "was.",
+   "start": 91.28,
+   "end": 91.46,
+   "heard_as": "was.",
+   "status": "same"
+  },
+  {
+   "sent": 34,
+   "word": "Alice",
+   "start": 92.15,
+   "end": 92.48,
+   "heard_as": "Alice",
+   "status": "same"
+  },
+  {
+   "sent": 34,
+   "word": "gasped.",
+   "start": 92.48,
+   "end": 93.12,
+   "heard_as": "gasped.",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "Pretty",
+   "start": 93.64,
+   "end": 93.82,
+   "heard_as": "Pretty",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "much",
+   "start": 93.82,
+   "end": 94.14,
+   "heard_as": "much",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "everyone",
+   "start": 94.14,
+   "end": 94.62,
+   "heard_as": "everyone",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "nearby",
+   "start": 94.62,
+   "end": 95.1,
+   "heard_as": "nearby",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "did,",
+   "start": 95.1,
+   "end": 95.36,
+   "heard_as": "did,",
+   "status": "same"
+  },
+  {
+   "sent": 35,
+   "word": "too.",
+   "start": 95.48,
+   "end": 95.61,
+   "heard_as": "too.",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "Oh,",
+   "start": 96.94,
+   "end": 97.24,
+   "heard_as": "Oh,",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "no,",
+   "start": 97.24,
+   "end": 97.44,
+   "heard_as": "no,",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "she",
+   "start": 97.56,
+   "end": 97.68,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 36,
+   "word": "didn't.",
+   "start": 97.68,
+   "end": 98.04,
+   "heard_as": "didn't.",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "But",
+   "start": 98.72,
+   "end": 98.96,
+   "heard_as": "But",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "Violet",
+   "start": 98.99,
+   "end": 99.34,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 37,
+   "word": "did.",
+   "start": 99.34,
+   "end": 99.56,
+   "heard_as": "did.",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "Everyone",
+   "start": 100.16,
+   "end": 100.6,
+   "heard_as": "Everyone",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "with",
+   "start": 100.6,
+   "end": 100.96,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "an",
+   "start": 100.96,
+   "end": 101.1,
+   "heard_as": "an",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "earshot",
+   "start": 101.1,
+   "end": 101.56,
+   "heard_as": "earshot",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "froze",
+   "start": 101.56,
+   "end": 101.9,
+   "heard_as": "froze",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "like",
+   "start": 101.9,
+   "end": 102.2,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "Violet",
+   "start": 102.2,
+   "end": 102.64,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "had",
+   "start": 102.64,
+   "end": 102.8,
+   "heard_as": "had",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "just",
+   "start": 102.8,
+   "end": 103.06,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "committed",
+   "start": 103.06,
+   "end": 103.44,
+   "heard_as": "committed",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "a",
+   "start": 103.44,
+   "end": 103.7,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "major",
+   "start": 103.7,
+   "end": 103.96,
+   "heard_as": "major",
+   "status": "same"
+  },
+  {
+   "sent": 38,
+   "word": "crime.",
+   "start": 103.96,
+   "end": 104.4,
+   "heard_as": "crime.",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "Seconds",
+   "start": 105.32,
+   "end": 105.56,
+   "heard_as": "Seconds",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "later,",
+   "start": 105.66,
+   "end": 105.86,
+   "heard_as": "later,",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "whispers",
+   "start": 106.2,
+   "end": 106.34,
+   "heard_as": "whispers",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "started.",
+   "start": 106.34,
+   "end": 106.84,
+   "heard_as": "started.",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "and",
+   "start": 106.84,
+   "end": 107.66,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "Violet",
+   "start": 107.66,
+   "end": 108.0,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "caught",
+   "start": 108.0,
+   "end": 108.2,
+   "heard_as": "caught",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "snippets",
+   "start": 108.2,
+   "end": 108.72,
+   "heard_as": "snippets",
+   "status": "same"
+  },
+  {
+   "sent": 39,
+   "word": "like,",
+   "start": 108.72,
+   "end": 108.94,
+   "heard_as": "like,",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "she's",
+   "start": 109.22,
+   "end": 110.3,
+   "heard_as": "she's",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "so",
+   "start": 110.3,
+   "end": 110.58,
+   "heard_as": "so",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "dead",
+   "start": 110.58,
+   "end": 111.02,
+   "heard_as": "dead",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "and",
+   "start": 111.02,
+   "end": 111.9,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "Grant's",
+   "start": 111.9,
+   "end": 112.9,
+   "heard_as": "Grant's",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "gonna",
+   "start": 112.9,
+   "end": 113.02,
+   "heard_as": "gonna",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "rip",
+   "start": 113.02,
+   "end": 113.23,
+   "heard_as": "rip",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "her",
+   "start": 113.31,
+   "end": 113.44,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 40,
+   "word": "apart.",
+   "start": 113.66,
+   "end": 113.86,
+   "heard_as": "apart.",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "Despite",
+   "start": 115.37,
+   "end": 115.46,
+   "heard_as": "Despite",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "the",
+   "start": 115.64,
+   "end": 115.91,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "ominous",
+   "start": 115.96,
+   "end": 116.34,
+   "heard_as": "ominous",
+   "status": "same"
+  },
+  {
+   "sent": 41,
+   "word": "whispers,",
+   "start": 116.45,
+   "end": 116.74,
+   "heard_as": "whispers,",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "Violet",
+   "start": 117.16,
+   "end": 117.5,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "felt",
+   "start": 117.62,
+   "end": 117.72,
+   "heard_as": "felt",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "strangely",
+   "start": 117.86,
+   "end": 118.18,
+   "heard_as": "strangely",
+   "status": "same"
+  },
+  {
+   "sent": 42,
+   "word": "confident.",
+   "start": 118.45,
+   "end": 118.7,
+   "heard_as": "confident.",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "She",
+   "start": 119.54,
+   "end": 119.66,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "refused",
+   "start": 119.66,
+   "end": 119.84,
+   "heard_as": "refused",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "to",
+   "start": 119.96,
+   "end": 120.06,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "back",
+   "start": 120.29,
+   "end": 120.4,
+   "heard_as": "back",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "down",
+   "start": 120.54,
+   "end": 120.68,
+   "heard_as": "down",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "from",
+   "start": 120.68,
+   "end": 120.88,
+   "heard_as": "from",
+   "status": "same"
+  },
+  {
+   "sent": 43,
+   "word": "bullies.",
+   "start": 120.88,
+   "end": 121.12,
+   "heard_as": "bullies.",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "Well,",
+   "start": 121.96,
+   "end": 122.18,
+   "heard_as": "Well,",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "kind",
+   "start": 122.62,
+   "end": 122.78,
+   "heard_as": "kind",
+   "status": "same"
+  },
+  {
+   "sent": 44,
+   "word": "of.",
+   "start": 122.78,
+   "end": 122.89,
+   "heard_as": "of.",
+   "status": "same"
+  },
+  {
+   "sent": 45,
+   "word": "What?",
+   "start": 124.13,
+   "end": 124.42,
+   "heard_as": "What?",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "Did",
+   "start": 124.95,
+   "end": 125.06,
+   "heard_as": "Did",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "you",
+   "start": 125.06,
+   "end": 125.26,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "just",
+   "start": 125.26,
+   "end": 125.39,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "call",
+   "start": 125.52,
+   "end": 125.72,
+   "heard_as": "call",
+   "status": "same"
+  },
+  {
+   "sent": 46,
+   "word": "me?",
+   "start": 125.72,
+   "end": 125.9,
+   "heard_as": "me?",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "The",
+   "start": 126.82,
+   "end": 126.96,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "werewolf",
+   "start": 126.96,
+   "end": 127.34,
+   "heard_as": "werewolf",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "grant",
+   "start": 127.53,
+   "end": 127.74,
+   "heard_as": "grant",
+   "status": "same"
+  },
+  {
+   "sent": 47,
+   "word": "growled,",
+   "start": 127.74,
+   "end": 128.33,
+   "heard_as": "growled,",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "his",
+   "start": 128.96,
+   "end": 129.12,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "nostrils",
+   "start": 129.2,
+   "end": 129.64,
+   "heard_as": "nostrils",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "flaring",
+   "start": 129.87,
+   "end": 130.18,
+   "heard_as": "flaring",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "as",
+   "start": 130.18,
+   "end": 130.74,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "his",
+   "start": 130.74,
+   "end": 130.92,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "wolf",
+   "start": 130.92,
+   "end": 131.2,
+   "heard_as": "wolf",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "started",
+   "start": 131.2,
+   "end": 131.66,
+   "heard_as": "started",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "to",
+   "start": 131.66,
+   "end": 131.86,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 48,
+   "word": "emerge,",
+   "start": 131.86,
+   "end": 132.14,
+   "heard_as": "emerge,",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "triggered",
+   "start": 132.56,
+   "end": 132.79,
+   "heard_as": "triggered",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "by",
+   "start": 132.84,
+   "end": 133.12,
+   "heard_as": "by",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "her",
+   "start": 133.12,
+   "end": 133.32,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 49,
+   "word": "words.",
+   "start": 133.32,
+   "end": 133.7,
+   "heard_as": "words.",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "You",
+   "start": 134.67,
+   "end": 135.1,
+   "heard_as": "You",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "mean",
+   "start": 135.1,
+   "end": 135.3,
+   "heard_as": "mean",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "the",
+   "start": 135.3,
+   "end": 135.48,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "same",
+   "start": 135.48,
+   "end": 135.84,
+   "heard_as": "same",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "way",
+   "start": 135.84,
+   "end": 136.06,
+   "heard_as": "way",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "you",
+   "start": 136.06,
+   "end": 136.26,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "called",
+   "start": 136.26,
+   "end": 136.48,
+   "heard_as": "called",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "me",
+   "start": 136.48,
+   "end": 136.66,
+   "heard_as": "me",
+   "status": "same"
+  },
+  {
+   "sent": 50,
+   "word": "prey?",
+   "start": 136.66,
+   "end": 136.96,
+   "heard_as": "prey?",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "Or",
+   "start": 137.7,
+   "end": 138.12,
+   "heard_as": "Or",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "can't",
+   "start": 138.12,
+   "end": 138.5,
+   "heard_as": "can't",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "you",
+   "start": 138.5,
+   "end": 138.6,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "take",
+   "start": 138.6,
+   "end": 138.74,
+   "heard_as": "take",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "a",
+   "start": 138.76,
+   "end": 138.86,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "joke,",
+   "start": 138.86,
+   "end": 139.12,
+   "heard_as": "joke,",
+   "status": "same"
+  },
+  {
+   "sent": 51,
+   "word": "dog?",
+   "start": 139.4,
+   "end": 139.6,
+   "heard_as": "dog?",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "She",
+   "start": 140.48,
+   "end": 140.84,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "sassed",
+   "start": 140.84,
+   "end": 141.16,
+   "heard_as": "sassed",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "back.",
+   "start": 141.16,
+   "end": 141.44,
+   "heard_as": "back.",
+   "status": "same"
+  },
+  {
+   "sent": 52,
+   "word": "back.",
+   "start": 141.45,
+   "end": 141.52,
+   "heard_as": "back.",
+   "status": "same"
+  },
+  {
+   "sent": 53,
+   "word": "Violet!",
+   "start": 142.1,
+   "end": 142.74,
+   "heard_as": "Violet!",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "Alice",
+   "start": 143.78,
+   "end": 144.42,
+   "heard_as": "Alice",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "cried,",
+   "start": 144.42,
+   "end": 144.84,
+   "heard_as": "cried,",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "desperately",
+   "start": 145.16,
+   "end": 145.48,
+   "heard_as": "desperately",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "trying",
+   "start": 145.48,
+   "end": 145.88,
+   "heard_as": "trying",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "to",
+   "start": 145.88,
+   "end": 145.97,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "pull",
+   "start": 146.02,
+   "end": 146.16,
+   "heard_as": "pull",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "her",
+   "start": 146.16,
+   "end": 146.36,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 54,
+   "word": "away.",
+   "start": 146.36,
+   "end": 146.66,
+   "heard_as": "away.",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "But",
+   "start": 147.22,
+   "end": 147.56,
+   "heard_as": "But",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "Violet",
+   "start": 147.56,
+   "end": 147.98,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "wouldn't",
+   "start": 147.98,
+   "end": 148.26,
+   "heard_as": "wouldn't",
+   "status": "same"
+  },
+  {
+   "sent": 55,
+   "word": "budge.",
+   "start": 148.26,
+   "end": 148.66,
+   "heard_as": "budge.",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "She",
+   "start": 149.08,
+   "end": 149.34,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "was",
+   "start": 149.34,
+   "end": 149.5,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "bigger",
+   "start": 149.5,
+   "end": 149.76,
+   "heard_as": "bigger",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "than",
+   "start": 149.76,
+   "end": 150.0,
+   "heard_as": "than",
+   "status": "same"
+  },
+  {
+   "sent": 56,
+   "word": "Alice,",
+   "start": 150.0,
+   "end": 150.26,
+   "heard_as": "Alice,",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "and",
+   "start": 150.64,
+   "end": 151.0,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "the",
+   "start": 151.0,
+   "end": 151.14,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "smaller",
+   "start": 151.14,
+   "end": 151.42,
+   "heard_as": "smaller",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "girl",
+   "start": 151.42,
+   "end": 151.8,
+   "heard_as": "girl",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "couldn't",
+   "start": 151.8,
+   "end": 152.28,
+   "heard_as": "couldn't",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "move",
+   "start": 152.28,
+   "end": 152.48,
+   "heard_as": "move",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "her",
+   "start": 152.48,
+   "end": 152.68,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "an",
+   "start": 152.68,
+   "end": 152.82,
+   "heard_as": "an",
+   "status": "same"
+  },
+  {
+   "sent": 57,
+   "word": "itch.",
+   "start": 152.82,
+   "end": 153.1,
+   "heard_as": "itch.",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "Violet",
+   "start": 153.84,
+   "end": 154.4,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "saw",
+   "start": 154.4,
+   "end": 154.64,
+   "heard_as": "saw",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "the",
+   "start": 154.64,
+   "end": 154.8,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "moment",
+   "start": 154.8,
+   "end": 155.04,
+   "heard_as": "moment",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "Grant's",
+   "start": 155.04,
+   "end": 155.54,
+   "heard_as": "Grant's",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "eyes",
+   "start": 155.54,
+   "end": 155.7,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "flashed",
+   "start": 155.7,
+   "end": 156.24,
+   "heard_as": "flashed",
+   "status": "same"
+  },
+  {
+   "sent": 58,
+   "word": "amber,",
+   "start": 156.24,
+   "end": 156.46,
+   "heard_as": "amber,",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "his",
+   "start": 156.96,
+   "end": 157.11,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "wolf",
+   "start": 157.12,
+   "end": 157.4,
+   "heard_as": "wolf",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "taking",
+   "start": 157.4,
+   "end": 157.72,
+   "heard_as": "taking",
+   "status": "same"
+  },
+  {
+   "sent": 59,
+   "word": "over.",
+   "start": 157.72,
+   "end": 158.02,
+   "heard_as": "over.",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "While",
+   "start": 159.88,
+   "end": 160.52,
+   "heard_as": "While",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "she",
+   "start": 160.52,
+   "end": 160.8,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "might",
+   "start": 160.8,
+   "end": 161.0,
+   "heard_as": "might",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "be",
+   "start": 161.0,
+   "end": 161.18,
+   "heard_as": "be",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "impulsive",
+   "start": 161.18,
+   "end": 161.72,
+   "heard_as": "impulsive",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "and",
+   "start": 161.72,
+   "end": 161.92,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "hot",
+   "start": 161.92,
+   "end": 162.16,
+   "heard_as": "hot",
+   "status": "same"
+  },
+  {
+   "sent": 60,
+   "word": "-headed,",
+   "start": 162.16,
+   "end": 162.42,
+   "heard_as": "-headed,",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "Violet",
+   "start": 163.02,
+   "end": 163.44,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "wasn't",
+   "start": 163.44,
+   "end": 163.88,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "completely",
+   "start": 163.88,
+   "end": 164.26,
+   "heard_as": "completely",
+   "status": "same"
+  },
+  {
+   "sent": 61,
+   "word": "stupid.",
+   "start": 164.26,
+   "end": 164.74,
+   "heard_as": "stupid.",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "She",
+   "start": 165.4,
+   "end": 165.68,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "started",
+   "start": 165.68,
+   "end": 166.02,
+   "heard_as": "started",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "mentally",
+   "start": 166.02,
+   "end": 166.44,
+   "heard_as": "mentally",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "calculating",
+   "start": 166.44,
+   "end": 166.94,
+   "heard_as": "calculating",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "how",
+   "start": 166.94,
+   "end": 167.36,
+   "heard_as": "how",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "many",
+   "start": 167.36,
+   "end": 167.54,
+   "heard_as": "many",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "steps",
+   "start": 167.54,
+   "end": 167.94,
+   "heard_as": "steps",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "it",
+   "start": 167.94,
+   "end": 168.52,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "would",
+   "start": 168.52,
+   "end": 168.64,
+   "heard_as": "would",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "take",
+   "start": 168.65,
+   "end": 168.84,
+   "heard_as": "take",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "to",
+   "start": 168.84,
+   "end": 169.06,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "reach",
+   "start": 169.06,
+   "end": 169.24,
+   "heard_as": "reach",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "the",
+   "start": 169.24,
+   "end": 169.42,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "exit",
+   "start": 169.42,
+   "end": 169.84,
+   "heard_as": "exit",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "where",
+   "start": 169.84,
+   "end": 170.24,
+   "heard_as": "where",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "help",
+   "start": 170.24,
+   "end": 170.54,
+   "heard_as": "help",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "would",
+   "start": 170.54,
+   "end": 170.74,
+   "heard_as": "would",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "surely",
+   "start": 170.74,
+   "end": 171.02,
+   "heard_as": "surely",
+   "status": "same"
+  },
+  {
+   "sent": 62,
+   "word": "come.",
+   "start": 171.02,
+   "end": 171.4,
+   "heard_as": "come.",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "She",
+   "start": 172.18,
+   "end": 172.26,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "was",
+   "start": 172.26,
+   "end": 172.4,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "positive",
+   "start": 172.4,
+   "end": 172.88,
+   "heard_as": "positive",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "it",
+   "start": 172.88,
+   "end": 173.14,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 63,
+   "word": "would.",
+   "start": 173.14,
+   "end": 173.38,
+   "heard_as": "would.",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "I'll",
+   "start": 174.5,
+   "end": 174.92,
+   "heard_as": "I'll",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "teach",
+   "start": 174.92,
+   "end": 175.3,
+   "heard_as": "teach",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "you",
+   "start": 175.3,
+   "end": 175.6,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "a",
+   "start": 175.6,
+   "end": 175.84,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "lesson",
+   "start": 175.84,
+   "end": 176.22,
+   "heard_as": "lesson",
+   "status": "same"
+  },
+  {
+   "sent": 64,
+   "word": "today.",
+   "start": 176.22,
+   "end": 176.66,
+   "heard_as": "today.",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "Grant",
+   "start": 177.69,
+   "end": 177.88,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "growled,",
+   "start": 177.88,
+   "end": 178.41,
+   "heard_as": "growled,",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "a",
+   "start": 178.78,
+   "end": 178.88,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "mix",
+   "start": 178.88,
+   "end": 179.01,
+   "heard_as": "mix",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "of",
+   "start": 179.13,
+   "end": 179.23,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "man",
+   "start": 179.26,
+   "end": 179.54,
+   "heard_as": "man",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "and",
+   "start": 179.54,
+   "end": 179.84,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 65,
+   "word": "wolf,",
+   "start": 179.84,
+   "end": 180.16,
+   "heard_as": "wolf,",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "as",
+   "start": 180.56,
+   "end": 180.74,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "he",
+   "start": 180.74,
+   "end": 180.84,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "lunged",
+   "start": 180.84,
+   "end": 181.22,
+   "heard_as": "lunged",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "toward",
+   "start": 181.25,
+   "end": 181.44,
+   "heard_as": "toward",
+   "status": "same"
+  },
+  {
+   "sent": 66,
+   "word": "her.",
+   "start": 181.44,
+   "end": 181.58,
+   "heard_as": "her.",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "Violet",
+   "start": 183.52,
+   "end": 184.12,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "braced",
+   "start": 184.14,
+   "end": 184.42,
+   "heard_as": "braced",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "herself",
+   "start": 184.43,
+   "end": 184.7,
+   "heard_as": "herself",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "to",
+   "start": 184.7,
+   "end": 184.96,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "run",
+   "start": 184.96,
+   "end": 185.24,
+   "heard_as": "run",
+   "status": "same"
+  },
+  {
+   "sent": 67,
+   "word": "when,",
+   "start": 185.24,
+   "end": 185.58,
+   "heard_as": "when,",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "suddenly,",
+   "start": 185.94,
+   "end": 186.16,
+   "heard_as": "suddenly,",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "someone",
+   "start": 186.66,
+   "end": 186.84,
+   "heard_as": "someone",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "stepped",
+   "start": 186.84,
+   "end": 187.12,
+   "heard_as": "stepped",
+   "status": "same"
+  },
+  {
+   "sent": 68,
+   "word": "in.",
+   "start": 187.21,
+   "end": 187.42,
+   "heard_as": "in.",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "A",
+   "start": 187.86,
+   "end": 188.23,
+   "heard_as": "A",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "strong",
+   "start": 188.3,
+   "end": 188.6,
+   "heard_as": "strong",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "hand",
+   "start": 188.6,
+   "end": 189.04,
+   "heard_as": "hand",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "grabbed",
+   "start": 189.04,
+   "end": 189.4,
+   "heard_as": "grabbed",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "Grant's",
+   "start": 189.4,
+   "end": 189.9,
+   "heard_as": "Grant's",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "arm",
+   "start": 189.9,
+   "end": 190.14,
+   "heard_as": "arm",
+   "status": "same"
+  },
+  {
+   "sent": 69,
+   "word": "and,",
+   "start": 190.3,
+   "end": 190.5,
+   "heard_as": "and,",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "in",
+   "start": 190.89,
+   "end": 191.0,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "front",
+   "start": 191.0,
+   "end": 191.2,
+   "heard_as": "front",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "of",
+   "start": 191.2,
+   "end": 191.3,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "everyone's",
+   "start": 191.34,
+   "end": 192.0,
+   "heard_as": "everyone's",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "shocked",
+   "start": 192.0,
+   "end": 192.24,
+   "heard_as": "shocked",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "eyes,",
+   "start": 192.33,
+   "end": 192.6,
+   "heard_as": "eyes,",
+   "status": "same"
+  },
+  {
+   "sent": 70,
+   "word": "polled.",
+   "start": 192.9,
+   "end": 193.14,
+   "heard_as": "polled.",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "The",
+   "start": 194.04,
+   "end": 194.14,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "sound",
+   "start": 194.14,
+   "end": 194.42,
+   "heard_as": "sound",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "was",
+   "start": 194.42,
+   "end": 194.58,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 71,
+   "word": "sickening,",
+   "start": 194.58,
+   "end": 195.08,
+   "heard_as": "sickening,",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "a",
+   "start": 195.62,
+   "end": 195.78,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "wet,",
+   "start": 195.78,
+   "end": 196.0,
+   "heard_as": "wet,",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "cracking",
+   "start": 196.24,
+   "end": 196.62,
+   "heard_as": "cracking",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "noise",
+   "start": 196.66,
+   "end": 197.02,
+   "heard_as": "noise",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "of",
+   "start": 197.02,
+   "end": 197.26,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "shattering",
+   "start": 197.26,
+   "end": 197.64,
+   "heard_as": "shattering",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "bones",
+   "start": 197.64,
+   "end": 198.08,
+   "heard_as": "bones",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "filled",
+   "start": 198.08,
+   "end": 198.36,
+   "heard_as": "filled",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "the",
+   "start": 198.36,
+   "end": 198.56,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 72,
+   "word": "hall.",
+   "start": 198.58,
+   "end": 198.8,
+   "heard_as": "hall.",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "Oh",
+   "start": 199.66,
+   "end": 199.88,
+   "heard_as": "Oh",
+   "status": "same"
+  },
+  {
+   "sent": 73,
+   "word": "god!",
+   "start": 200.06,
+   "end": 200.32,
+   "heard_as": "god!",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "Someone",
+   "start": 201.33,
+   "end": 201.52,
+   "heard_as": "Someone",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "gasped",
+   "start": 201.52,
+   "end": 201.94,
+   "heard_as": "gasped",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "behind",
+   "start": 201.94,
+   "end": 202.2,
+   "heard_as": "behind",
+   "status": "same"
+  },
+  {
+   "sent": 74,
+   "word": "her,",
+   "start": 202.2,
+   "end": 202.44,
+   "heard_as": "her,",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "followed",
+   "start": 202.96,
+   "end": 203.18,
+   "heard_as": "followed",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "by",
+   "start": 203.18,
+   "end": 203.4,
+   "heard_as": "by",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "the",
+   "start": 203.4,
+   "end": 203.52,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "sound",
+   "start": 203.6,
+   "end": 203.8,
+   "heard_as": "sound",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "of",
+   "start": 203.8,
+   "end": 203.96,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 75,
+   "word": "vomiting.",
+   "start": 203.96,
+   "end": 204.29,
+   "heard_as": "vomiting.",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "Thankfully,",
+   "start": 205.56,
+   "end": 205.84,
+   "heard_as": "Thankfully,",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "it",
+   "start": 206.18,
+   "end": 206.26,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "wasn't",
+   "start": 206.26,
+   "end": 206.6,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 76,
+   "word": "Alice,",
+   "start": 206.6,
+   "end": 206.88,
+   "heard_as": "Alice,",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "or",
+   "start": 207.32,
+   "end": 207.74,
+   "heard_as": "or",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "she",
+   "start": 207.74,
+   "end": 208.02,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "would",
+   "start": 208.02,
+   "end": 208.16,
+   "heard_as": "would",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "have",
+   "start": 208.16,
+   "end": 208.25,
+   "heard_as": "have",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "been",
+   "start": 208.29,
+   "end": 208.42,
+   "heard_as": "been",
+   "status": "same"
+  },
+  {
+   "sent": 77,
+   "word": "splattered.",
+   "start": 208.42,
+   "end": 208.88,
+   "heard_as": "splattered.",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "Violet",
+   "start": 210.32,
+   "end": 210.61,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "froze,",
+   "start": 210.68,
+   "end": 210.92,
+   "heard_as": "froze,",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "eyes",
+   "start": 211.44,
+   "end": 211.7,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "wide",
+   "start": 211.7,
+   "end": 212.06,
+   "heard_as": "wide",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "with",
+   "start": 212.06,
+   "end": 212.26,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "shock",
+   "start": 212.26,
+   "end": 212.56,
+   "heard_as": "shock",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "as",
+   "start": 212.56,
+   "end": 212.94,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "Asher",
+   "start": 212.98,
+   "end": 213.4,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "nightshade",
+   "start": 213.4,
+   "end": 214.04,
+   "heard_as": "nightshade",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "took",
+   "start": 214.04,
+   "end": 214.24,
+   "heard_as": "took",
+   "status": "same"
+  },
+  {
+   "sent": 78,
+   "word": "over.",
+   "start": 214.29,
+   "end": 214.58,
+   "heard_as": "over.",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "He",
+   "start": 215.38,
+   "end": 215.54,
+   "heard_as": "He",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "wasn't",
+   "start": 215.54,
+   "end": 215.88,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "some",
+   "start": 215.88,
+   "end": 216.08,
+   "heard_as": "some",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "fairytale",
+   "start": 216.08,
+   "end": 216.62,
+   "heard_as": "fairytale",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "prince",
+   "start": 216.62,
+   "end": 216.98,
+   "heard_as": "prince",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "swooping",
+   "start": 216.98,
+   "end": 217.44,
+   "heard_as": "swooping",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "in",
+   "start": 217.44,
+   "end": 217.66,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "to",
+   "start": 217.66,
+   "end": 217.86,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "save",
+   "start": 217.86,
+   "end": 218.02,
+   "heard_as": "save",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "the",
+   "start": 218.02,
+   "end": 218.16,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 79,
+   "word": "day.",
+   "start": 218.16,
+   "end": 218.39,
+   "heard_as": "day.",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "No",
+   "start": 219.22,
+   "end": 219.46,
+   "heard_as": "No",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "knight",
+   "start": 219.46,
+   "end": 219.78,
+   "heard_as": "knight",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "in",
+   "start": 219.78,
+   "end": 219.98,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "shining",
+   "start": 219.98,
+   "end": 220.26,
+   "heard_as": "shining",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "armor",
+   "start": 220.26,
+   "end": 220.58,
+   "heard_as": "armor",
+   "status": "same"
+  },
+  {
+   "sent": 80,
+   "word": "here,",
+   "start": 220.58,
+   "end": 220.92,
+   "heard_as": "here,",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "just",
+   "start": 221.38,
+   "end": 221.56,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "a",
+   "start": 221.62,
+   "end": 221.76,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "dark",
+   "start": 221.76,
+   "end": 222.15,
+   "heard_as": "dark",
+   "status": "same"
+  },
+  {
+   "sent": 81,
+   "word": "knight,",
+   "start": 222.17,
+   "end": 222.46,
+   "heard_as": "knight,",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "rescuing",
+   "start": 222.86,
+   "end": 223.4,
+   "heard_as": "rescuing",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "her",
+   "start": 223.4,
+   "end": 223.64,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "with",
+   "start": 223.64,
+   "end": 223.9,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "an",
+   "start": 223.9,
+   "end": 224.02,
+   "heard_as": "an",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "aura",
+   "start": 224.02,
+   "end": 224.32,
+   "heard_as": "aura",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "of",
+   "start": 224.32,
+   "end": 224.56,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "pure",
+   "start": 224.64,
+   "end": 224.9,
+   "heard_as": "pure",
+   "status": "same"
+  },
+  {
+   "sent": 82,
+   "word": "menace.",
+   "start": 224.9,
+   "end": 225.44,
+   "heard_as": "menace.",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "Hello,",
+   "start": 226.98,
+   "end": 227.62,
+   "heard_as": "Hello,",
+   "status": "same"
+  },
+  {
+   "sent": 83,
+   "word": "Grant.",
+   "start": 227.91,
+   "end": 228.16,
+   "heard_as": "Grant.",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "Asher",
+   "start": 228.95,
+   "end": 229.68,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "drawed,",
+   "start": 229.68,
+   "end": 230.16,
+   "heard_as": "drawed,",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "his",
+   "start": 230.52,
+   "end": 230.64,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "voice",
+   "start": 230.64,
+   "end": 230.88,
+   "heard_as": "voice",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "dripping",
+   "start": 230.88,
+   "end": 231.28,
+   "heard_as": "dripping",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "with",
+   "start": 231.28,
+   "end": 231.56,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "possessiveness",
+   "start": 231.56,
+   "end": 232.26,
+   "heard_as": "possessiveness",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "as",
+   "start": 232.26,
+   "end": 232.64,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "he",
+   "start": 233.0,
+   "end": 233.1,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "crushed",
+   "start": 233.1,
+   "end": 233.44,
+   "heard_as": "crushed",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "the",
+   "start": 233.44,
+   "end": 233.7,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "werewolf's",
+   "start": 233.7,
+   "end": 234.26,
+   "heard_as": "werewolf's",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "arm",
+   "start": 234.26,
+   "end": 234.5,
+   "heard_as": "arm",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "like",
+   "start": 234.5,
+   "end": 234.71,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "a",
+   "start": 234.72,
+   "end": 234.8,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "plastic",
+   "start": 234.8,
+   "end": 235.18,
+   "heard_as": "plastic",
+   "status": "same"
+  },
+  {
+   "sent": 84,
+   "word": "toy.",
+   "start": 235.18,
+   "end": 235.56,
+   "heard_as": "toy.",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "Did",
+   "start": 236.38,
+   "end": 236.82,
+   "heard_as": "Did",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "I",
+   "start": 236.82,
+   "end": 237.18,
+   "heard_as": "I",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "just",
+   "start": 237.18,
+   "end": 237.56,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "hear",
+   "start": 237.56,
+   "end": 237.9,
+   "heard_as": "hear",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "you",
+   "start": 237.9,
+   "end": 238.12,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "call",
+   "start": 238.12,
+   "end": 238.44,
+   "heard_as": "call",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "my",
+   "start": 238.44,
+   "end": 238.8,
+   "heard_as": "my",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "violet",
+   "start": 238.8,
+   "end": 239.24,
+   "heard_as": "violet",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "your",
+   "start": 239.24,
+   "end": 239.66,
+   "heard_as": "your",
+   "status": "same"
+  },
+  {
+   "sent": 85,
+   "word": "prey?",
+   "start": 239.66,
+   "end": 240.14,
+   "heard_as": "prey?",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "Hasn't",
+   "start": 242.28,
+   "end": 242.55,
+   "heard_as": "Hasn't",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "anyone",
+   "start": 242.75,
+   "end": 243.12,
+   "heard_as": "anyone",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "told",
+   "start": 243.12,
+   "end": 243.54,
+   "heard_as": "told",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "you",
+   "start": 243.54,
+   "end": 243.82,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "that",
+   "start": 243.82,
+   "end": 244.02,
+   "heard_as": "that",
+   "status": "same"
+  },
+  {
+   "sent": 86,
+   "word": "I,",
+   "start": 244.02,
+   "end": 244.44,
+   "heard_as": "I,",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "and",
+   "start": 245.04,
+   "end": 245.2,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "only",
+   "start": 245.33,
+   "end": 245.74,
+   "heard_as": "only",
+   "status": "same"
+  },
+  {
+   "sent": 87,
+   "word": "I,",
+   "start": 245.74,
+   "end": 246.16,
+   "heard_as": "I,",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "hunt",
+   "start": 246.71,
+   "end": 246.97,
+   "heard_as": "hunt",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "her",
+   "start": 247.05,
+   "end": 247.24,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 88,
+   "word": "alone?",
+   "start": 247.24,
+   "end": 247.76,
+   "heard_as": "alone?",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "Normally",
+   "start": 249.14,
+   "end": 249.42,
+   "heard_as": "Normally",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "Violet",
+   "start": 249.42,
+   "end": 249.92,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "would",
+   "start": 249.92,
+   "end": 250.1,
+   "heard_as": "would",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "have",
+   "start": 250.1,
+   "end": 250.24,
+   "heard_as": "have",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "rolled",
+   "start": 250.24,
+   "end": 250.44,
+   "heard_as": "rolled",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "her",
+   "start": 250.44,
+   "end": 250.61,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "eyes",
+   "start": 250.71,
+   "end": 250.94,
+   "heard_as": "eyes",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "at",
+   "start": 250.94,
+   "end": 251.16,
+   "heard_as": "at",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "his",
+   "start": 251.16,
+   "end": 251.33,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "words",
+   "start": 251.34,
+   "end": 251.64,
+   "heard_as": "words",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "and",
+   "start": 251.64,
+   "end": 251.9,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 89,
+   "word": "argued,",
+   "start": 251.9,
+   "end": 252.24,
+   "heard_as": "argued,",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "but",
+   "start": 252.91,
+   "end": 253.12,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "she",
+   "start": 253.12,
+   "end": 253.3,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "was",
+   "start": 253.3,
+   "end": 253.48,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "too",
+   "start": 253.48,
+   "end": 253.76,
+   "heard_as": "too",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "horrified",
+   "start": 253.76,
+   "end": 254.4,
+   "heard_as": "horrified",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "to",
+   "start": 254.4,
+   "end": 254.66,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 90,
+   "word": "speak.",
+   "start": 254.66,
+   "end": 254.9,
+   "heard_as": "speak.",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "She",
+   "start": 255.67,
+   "end": 255.88,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "could",
+   "start": 255.88,
+   "end": 256.04,
+   "heard_as": "could",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "only",
+   "start": 256.04,
+   "end": 256.28,
+   "heard_as": "only",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "stand",
+   "start": 256.28,
+   "end": 256.66,
+   "heard_as": "stand",
+   "status": "same"
+  },
+  {
+   "sent": 91,
+   "word": "there,",
+   "start": 256.66,
+   "end": 256.99,
+   "heard_as": "there,",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "dumbfounded",
+   "start": 257.26,
+   "end": 257.76,
+   "heard_as": "dumbfounded",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "by",
+   "start": 257.76,
+   "end": 258.08,
+   "heard_as": "by",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "Asher's",
+   "start": 258.08,
+   "end": 258.58,
+   "heard_as": "Asher's",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "brutal",
+   "start": 258.58,
+   "end": 258.88,
+   "heard_as": "brutal",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "display",
+   "start": 258.88,
+   "end": 259.38,
+   "heard_as": "display",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "of",
+   "start": 259.38,
+   "end": 259.54,
+   "heard_as": "of",
+   "status": "same"
+  },
+  {
+   "sent": 92,
+   "word": "dominance.",
+   "start": 259.55,
+   "end": 259.86,
+   "heard_as": "dominance.",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "I'm",
+   "start": 259.86,
+   "end": 261.38,
+   "heard_as": "I'm",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "s",
+   "start": 261.38,
+   "end": 261.58,
+   "heard_as": "s",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "-s",
+   "start": 261.58,
+   "end": 261.8,
+   "heard_as": "-s",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "-s",
+   "start": 261.82,
+   "end": 261.98,
+   "heard_as": "-s",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "-sorry,",
+   "start": 261.98,
+   "end": 262.52,
+   "heard_as": "-sorry,",
+   "status": "same"
+  },
+  {
+   "sent": 93,
+   "word": "Elva.\"",
+   "start": 262.78,
+   "end": 264.23,
+   "heard_as": "Elva.\"",
+   "status": "same"
+  },
+  {
+   "sent": 94,
+   "word": "Grant",
+   "start": 264.34,
+   "end": 265.04,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 94,
+   "word": "moaned.",
+   "start": 265.04,
+   "end": 265.58,
+   "heard_as": "moaned.",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "His",
+   "start": 265.92,
+   "end": 266.08,
+   "heard_as": "His",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "earlier",
+   "start": 266.08,
+   "end": 266.52,
+   "heard_as": "earlier",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "bravado",
+   "start": 266.52,
+   "end": 267.04,
+   "heard_as": "bravado",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "replaced",
+   "start": 267.04,
+   "end": 267.44,
+   "heard_as": "replaced",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "by",
+   "start": 267.44,
+   "end": 267.8,
+   "heard_as": "by",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "desperate",
+   "start": 267.8,
+   "end": 268.3,
+   "heard_as": "desperate",
+   "status": "same"
+  },
+  {
+   "sent": 95,
+   "word": "pleas.",
+   "start": 268.3,
+   "end": 268.76,
+   "heard_as": "pleas.",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "Asher",
+   "start": 269.9,
+   "end": 270.32,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "remained",
+   "start": 270.32,
+   "end": 270.72,
+   "heard_as": "remained",
+   "status": "same"
+  },
+  {
+   "sent": 96,
+   "word": "unmoved.",
+   "start": 270.72,
+   "end": 271.44,
+   "heard_as": "unmoved.",
+   "status": "same"
+  },
+  {
+   "sent": 97,
+   "word": "Really?",
+   "start": 271.88,
+   "end": 272.46,
+   "heard_as": "Really?",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "Are",
+   "start": 273.0,
+   "end": 273.3,
+   "heard_as": "Are",
+   "status": "same"
+  },
+  {
+   "sent": 98,
+   "word": "you?",
+   "start": 273.3,
+   "end": 273.62,
+   "heard_as": "you?",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "His",
+   "start": 274.68,
+   "end": 275.06,
+   "heard_as": "His",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "voice",
+   "start": 275.06,
+   "end": 275.34,
+   "heard_as": "voice",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "was",
+   "start": 275.34,
+   "end": 275.56,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "ice",
+   "start": 275.56,
+   "end": 275.9,
+   "heard_as": "ice",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "-cold",
+   "start": 275.9,
+   "end": 276.32,
+   "heard_as": "-cold",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "as",
+   "start": 276.33,
+   "end": 276.48,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "he",
+   "start": 276.48,
+   "end": 276.58,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "twisted",
+   "start": 276.58,
+   "end": 276.78,
+   "heard_as": "twisted",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "the",
+   "start": 276.88,
+   "end": 277.1,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "arm",
+   "start": 277.1,
+   "end": 277.34,
+   "heard_as": "arm",
+   "status": "same"
+  },
+  {
+   "sent": 99,
+   "word": "further.",
+   "start": 277.34,
+   "end": 277.68,
+   "heard_as": "further.",
+   "status": "same"
+  },
+  {
+   "sent": 100,
+   "word": "Heck,",
+   "start": 278.74,
+   "end": 279.35,
+   "heard_as": "Heck,",
+   "status": "same"
+  },
+  {
+   "sent": 100,
+   "word": "I",
+   "start": 279.46,
+   "end": 279.62,
+   "heard_as": "I",
+   "status": "same"
+  },
+  {
+   "sent": 100,
+   "word": "am!",
+   "start": 279.62,
+   "end": 279.88,
+   "heard_as": "am!",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "I",
+   "start": 280.33,
+   "end": 280.46,
+   "heard_as": "I",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "seriously",
+   "start": 280.46,
+   "end": 280.92,
+   "heard_as": "seriously",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "am,",
+   "start": 281.05,
+   "end": 281.6,
+   "heard_as": "am,",
+   "status": "same"
+  },
+  {
+   "sent": 101,
+   "word": "dad!",
+   "start": 282.11,
+   "end": 282.4,
+   "heard_as": "dad!",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "Grant",
+   "start": 283.36,
+   "end": 284.02,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "cried",
+   "start": 284.02,
+   "end": 284.32,
+   "heard_as": "cried",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "out",
+   "start": 284.32,
+   "end": 284.58,
+   "heard_as": "out",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "like",
+   "start": 284.58,
+   "end": 284.78,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "a",
+   "start": 284.78,
+   "end": 284.88,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "child",
+   "start": 284.88,
+   "end": 285.32,
+   "heard_as": "child",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "as",
+   "start": 285.32,
+   "end": 285.65,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "Asher",
+   "start": 285.68,
+   "end": 286.12,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "applied",
+   "start": 286.12,
+   "end": 286.52,
+   "heard_as": "applied",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "even",
+   "start": 286.52,
+   "end": 286.94,
+   "heard_as": "even",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "more",
+   "start": 286.94,
+   "end": 287.2,
+   "heard_as": "more",
+   "status": "same"
+  },
+  {
+   "sent": 102,
+   "word": "pressure.",
+   "start": 287.2,
+   "end": 287.56,
+   "heard_as": "pressure.",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "Noddy,",
+   "start": 288.62,
+   "end": 289.21,
+   "heard_as": "Noddy,",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "Grant,",
+   "start": 289.38,
+   "end": 289.6,
+   "heard_as": "Grant,",
+   "status": "same"
+  },
+  {
+   "sent": 103,
+   "word": "now,",
+   "start": 290.38,
+   "end": 290.7,
+   "heard_as": "now,",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "what",
+   "start": 291.19,
+   "end": 291.52,
+   "heard_as": "what",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "do",
+   "start": 291.52,
+   "end": 291.64,
+   "heard_as": "do",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "you",
+   "start": 291.64,
+   "end": 291.74,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "do",
+   "start": 291.74,
+   "end": 292.06,
+   "heard_as": "do",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "when",
+   "start": 292.06,
+   "end": 292.4,
+   "heard_as": "when",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "you're",
+   "start": 292.4,
+   "end": 292.67,
+   "heard_as": "you're",
+   "status": "same"
+  },
+  {
+   "sent": 104,
+   "word": "sorry?\"",
+   "start": 292.68,
+   "end": 294.3,
+   "heard_as": "sorry?\"",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "Asher",
+   "start": 294.3,
+   "end": 294.78,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "teased,",
+   "start": 294.78,
+   "end": 295.24,
+   "heard_as": "teased,",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "glancing",
+   "start": 295.58,
+   "end": 295.8,
+   "heard_as": "glancing",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "at",
+   "start": 295.84,
+   "end": 296.15,
+   "heard_as": "at",
+   "status": "same"
+  },
+  {
+   "sent": 105,
+   "word": "Violet.",
+   "start": 296.19,
+   "end": 296.6,
+   "heard_as": "Violet.",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "Grant",
+   "start": 297.24,
+   "end": 297.54,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "followed",
+   "start": 297.54,
+   "end": 297.94,
+   "heard_as": "followed",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "his",
+   "start": 297.94,
+   "end": 298.14,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "gaze",
+   "start": 298.17,
+   "end": 298.44,
+   "heard_as": "gaze",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "and",
+   "start": 298.44,
+   "end": 298.72,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "seemed",
+   "start": 298.72,
+   "end": 298.96,
+   "heard_as": "seemed",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "to",
+   "start": 298.96,
+   "end": 299.14,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "get",
+   "start": 299.14,
+   "end": 299.26,
+   "heard_as": "get",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "the",
+   "start": 299.3,
+   "end": 299.38,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 106,
+   "word": "message.",
+   "start": 299.38,
+   "end": 299.7,
+   "heard_as": "message.",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "He",
+   "start": 300.5,
+   "end": 300.62,
+   "heard_as": "He",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "instantly",
+   "start": 300.62,
+   "end": 301.14,
+   "heard_as": "instantly",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "bowed",
+   "start": 301.14,
+   "end": 301.56,
+   "heard_as": "bowed",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "his",
+   "start": 301.56,
+   "end": 301.68,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 107,
+   "word": "head,",
+   "start": 301.68,
+   "end": 301.94,
+   "heard_as": "head,",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "stiffly",
+   "start": 302.44,
+   "end": 302.96,
+   "heard_as": "stiffly",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "and",
+   "start": 302.96,
+   "end": 303.4,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 108,
+   "word": "stammered.",
+   "start": 303.4,
+   "end": 303.96,
+   "heard_as": "stammered.",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "I'm",
+   "start": 304.6,
+   "end": 304.92,
+   "heard_as": "I'm",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "so",
+   "start": 304.92,
+   "end": 305.3,
+   "heard_as": "so",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "sorry,",
+   "start": 305.3,
+   "end": 305.9,
+   "heard_as": "sorry,",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "Miss",
+   "start": 306.18,
+   "end": 306.32,
+   "heard_as": "Miss",
+   "status": "same"
+  },
+  {
+   "sent": 109,
+   "word": "Violet.",
+   "start": 306.32,
+   "end": 306.82,
+   "heard_as": "Violet.",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "What",
+   "start": 308.08,
+   "end": 308.36,
+   "heard_as": "What",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "are",
+   "start": 308.36,
+   "end": 308.56,
+   "heard_as": "are",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "you",
+   "start": 308.56,
+   "end": 308.7,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "sorry",
+   "start": 308.7,
+   "end": 309.1,
+   "heard_as": "sorry",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "for,",
+   "start": 309.1,
+   "end": 309.44,
+   "heard_as": "for,",
+   "status": "same"
+  },
+  {
+   "sent": 110,
+   "word": "dog?\"",
+   "start": 309.88,
+   "end": 311.38,
+   "heard_as": "dog?\"",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "Asher",
+   "start": 311.38,
+   "end": 311.84,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "taunted,",
+   "start": 311.84,
+   "end": 312.22,
+   "heard_as": "taunted,",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "chuckling",
+   "start": 312.74,
+   "end": 313.02,
+   "heard_as": "chuckling",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "like",
+   "start": 313.02,
+   "end": 313.42,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "he",
+   "start": 313.44,
+   "end": 313.58,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "was",
+   "start": 313.58,
+   "end": 313.7,
+   "heard_as": "was",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "enjoying",
+   "start": 313.7,
+   "end": 314.04,
+   "heard_as": "enjoying",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "the",
+   "start": 314.04,
+   "end": 314.22,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "whole",
+   "start": 314.22,
+   "end": 314.36,
+   "heard_as": "whole",
+   "status": "same"
+  },
+  {
+   "sent": 111,
+   "word": "thing.",
+   "start": 314.36,
+   "end": 314.62,
+   "heard_as": "thing.",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "That",
+   "start": 315.36,
+   "end": 315.54,
+   "heard_as": "That",
+   "status": "same"
+  },
+  {
+   "sent": 112,
+   "word": "psycho.",
+   "start": 315.69,
+   "end": 315.94,
+   "heard_as": "psycho.",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "For",
+   "start": 317.04,
+   "end": 317.46,
+   "heard_as": "For",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "trying",
+   "start": 317.46,
+   "end": 317.96,
+   "heard_as": "trying",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "to",
+   "start": 317.96,
+   "end": 318.14,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "hurt",
+   "start": 318.14,
+   "end": 318.44,
+   "heard_as": "hurt",
+   "status": "same"
+  },
+  {
+   "sent": 113,
+   "word": "you,",
+   "start": 318.44,
+   "end": 318.66,
+   "heard_as": "you,",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "it",
+   "start": 318.96,
+   "end": 319.04,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "will",
+   "start": 319.04,
+   "end": 319.14,
+   "heard_as": "will",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "never",
+   "start": 319.14,
+   "end": 319.44,
+   "heard_as": "never",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "happen",
+   "start": 319.44,
+   "end": 319.72,
+   "heard_as": "happen",
+   "status": "same"
+  },
+  {
+   "sent": 114,
+   "word": "again.",
+   "start": 319.72,
+   "end": 320.0,
+   "heard_as": "again.",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "Grant",
+   "start": 321.18,
+   "end": 321.5,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "apologized,",
+   "start": 321.5,
+   "end": 322.0,
+   "heard_as": "apologized,",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "his",
+   "start": 322.57,
+   "end": 322.7,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "tone",
+   "start": 322.75,
+   "end": 322.94,
+   "heard_as": "tone",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "sincere",
+   "start": 322.94,
+   "end": 323.3,
+   "heard_as": "sincere",
+   "status": "same"
+  },
+  {
+   "sent": 115,
+   "word": "now,",
+   "start": 323.3,
+   "end": 323.7,
+   "heard_as": "now,",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "realizing",
+   "start": 324.42,
+   "end": 324.78,
+   "heard_as": "realizing",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "Asher",
+   "start": 324.78,
+   "end": 325.44,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "wasn't",
+   "start": 325.44,
+   "end": 325.86,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "in",
+   "start": 325.86,
+   "end": 326.02,
+   "heard_as": "in",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "the",
+   "start": 326.02,
+   "end": 326.12,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "mood",
+   "start": 326.12,
+   "end": 326.32,
+   "heard_as": "mood",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "for",
+   "start": 326.32,
+   "end": 326.46,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 116,
+   "word": "games.",
+   "start": 326.46,
+   "end": 326.78,
+   "heard_as": "games.",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "There",
+   "start": 328.09,
+   "end": 328.66,
+   "heard_as": "There",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "you",
+   "start": 328.66,
+   "end": 328.94,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 117,
+   "word": "go.",
+   "start": 328.94,
+   "end": 329.28,
+   "heard_as": "go.",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "Asher",
+   "start": 330.5,
+   "end": 330.74,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "finally",
+   "start": 330.74,
+   "end": 331.14,
+   "heard_as": "finally",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "let",
+   "start": 331.14,
+   "end": 331.44,
+   "heard_as": "let",
+   "status": "same"
+  },
+  {
+   "sent": 118,
+   "word": "go,",
+   "start": 331.53,
+   "end": 331.74,
+   "heard_as": "go,",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "and",
+   "start": 332.37,
+   "end": 332.52,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "Grant",
+   "start": 332.52,
+   "end": 332.78,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "gasped",
+   "start": 332.78,
+   "end": 333.13,
+   "heard_as": "gasped",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "like",
+   "start": 333.28,
+   "end": 333.42,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "a",
+   "start": 333.43,
+   "end": 333.58,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "drowning",
+   "start": 333.58,
+   "end": 333.96,
+   "heard_as": "drowning",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "man",
+   "start": 333.96,
+   "end": 334.28,
+   "heard_as": "man",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "surfacing",
+   "start": 334.28,
+   "end": 334.69,
+   "heard_as": "surfacing",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "for",
+   "start": 334.82,
+   "end": 335.04,
+   "heard_as": "for",
+   "status": "same"
+  },
+  {
+   "sent": 119,
+   "word": "air.",
+   "start": 335.04,
+   "end": 335.38,
+   "heard_as": "air.",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "The",
+   "start": 336.37,
+   "end": 336.62,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "move",
+   "start": 336.62,
+   "end": 336.86,
+   "heard_as": "move",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "had",
+   "start": 336.86,
+   "end": 337.12,
+   "heard_as": "had",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "looked",
+   "start": 337.12,
+   "end": 337.28,
+   "heard_as": "looked",
+   "status": "same"
+  },
+  {
+   "sent": 120,
+   "word": "simple,",
+   "start": 337.5,
+   "end": 337.74,
+   "heard_as": "simple,",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "but",
+   "start": 338.44,
+   "end": 338.54,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "Asher",
+   "start": 338.54,
+   "end": 339.02,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "had",
+   "start": 339.02,
+   "end": 339.34,
+   "heard_as": "had",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "not",
+   "start": 339.34,
+   "end": 339.62,
+   "heard_as": "not",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "only",
+   "start": 339.62,
+   "end": 339.9,
+   "heard_as": "only",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "broken",
+   "start": 339.9,
+   "end": 340.2,
+   "heard_as": "broken",
+   "status": "same"
+  },
+  {
+   "sent": 121,
+   "word": "bones,",
+   "start": 340.23,
+   "end": 340.62,
+   "heard_as": "bones,",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "but",
+   "start": 341.24,
+   "end": 341.34,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "also",
+   "start": 341.34,
+   "end": 341.61,
+   "heard_as": "also",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "dislocated",
+   "start": 341.62,
+   "end": 342.4,
+   "heard_as": "dislocated",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "Grant's",
+   "start": 342.4,
+   "end": 342.84,
+   "heard_as": "Grant's",
+   "status": "same"
+  },
+  {
+   "sent": 122,
+   "word": "shoulder.",
+   "start": 342.84,
+   "end": 343.1,
+   "heard_as": "shoulder.",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "It",
+   "start": 344.02,
+   "end": 344.18,
+   "heard_as": "It",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "had",
+   "start": 344.18,
+   "end": 344.34,
+   "heard_as": "had",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "been",
+   "start": 344.34,
+   "end": 344.6,
+   "heard_as": "been",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "pure",
+   "start": 344.81,
+   "end": 344.94,
+   "heard_as": "pure",
+   "status": "same"
+  },
+  {
+   "sent": 123,
+   "word": "hell.",
+   "start": 344.94,
+   "end": 345.24,
+   "heard_as": "hell.",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "Now,",
+   "start": 346.57,
+   "end": 346.86,
+   "heard_as": "Now,",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "move",
+   "start": 347.12,
+   "end": 347.24,
+   "heard_as": "move",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "along,",
+   "start": 347.24,
+   "end": 347.62,
+   "heard_as": "along,",
+   "status": "same"
+  },
+  {
+   "sent": 124,
+   "word": "doggie.",
+   "start": 347.82,
+   "end": 348.18,
+   "heard_as": "doggie.",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "Go",
+   "start": 348.9,
+   "end": 349.06,
+   "heard_as": "Go",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "find",
+   "start": 349.06,
+   "end": 349.28,
+   "heard_as": "find",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "the",
+   "start": 349.28,
+   "end": 349.42,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "school",
+   "start": 349.46,
+   "end": 349.62,
+   "heard_as": "school",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "nurse",
+   "start": 349.62,
+   "end": 349.86,
+   "heard_as": "nurse",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "and",
+   "start": 349.86,
+   "end": 350.12,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "have",
+   "start": 350.12,
+   "end": 350.26,
+   "heard_as": "have",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "her",
+   "start": 350.26,
+   "end": 350.38,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "deal",
+   "start": 350.38,
+   "end": 350.58,
+   "heard_as": "deal",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "with",
+   "start": 350.58,
+   "end": 350.79,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "that",
+   "start": 350.82,
+   "end": 350.96,
+   "heard_as": "that",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "nasty",
+   "start": 350.96,
+   "end": 351.42,
+   "heard_as": "nasty",
+   "status": "same"
+  },
+  {
+   "sent": 125,
+   "word": "injury.",
+   "start": 351.42,
+   "end": 351.9,
+   "heard_as": "injury.",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "Asher",
+   "start": 353.1,
+   "end": 353.74,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "dismissed",
+   "start": 353.74,
+   "end": 354.08,
+   "heard_as": "dismissed",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "him",
+   "start": 354.08,
+   "end": 354.34,
+   "heard_as": "him",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "with",
+   "start": 354.34,
+   "end": 354.5,
+   "heard_as": "with",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "a",
+   "start": 354.5,
+   "end": 354.6,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 126,
+   "word": "wave,",
+   "start": 354.6,
+   "end": 354.86,
+   "heard_as": "wave,",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "and",
+   "start": 355.33,
+   "end": 355.48,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "Grant",
+   "start": 355.48,
+   "end": 355.7,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "shuffled",
+   "start": 355.7,
+   "end": 356.12,
+   "heard_as": "shuffled",
+   "status": "same"
+  },
+  {
+   "sent": 127,
+   "word": "away,",
+   "start": 356.12,
+   "end": 356.44,
+   "heard_as": "away,",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "head",
+   "start": 357.08,
+   "end": 357.42,
+   "heard_as": "head",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "hung",
+   "start": 357.42,
+   "end": 357.74,
+   "heard_as": "hung",
+   "status": "same"
+  },
+  {
+   "sent": 128,
+   "word": "low.",
+   "start": 357.74,
+   "end": 358.06,
+   "heard_as": "low.",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "The",
+   "start": 359.08,
+   "end": 359.18,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "crowd",
+   "start": 359.18,
+   "end": 359.48,
+   "heard_as": "crowd",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "partying",
+   "start": 359.48,
+   "end": 359.96,
+   "heard_as": "partying",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "to",
+   "start": 359.96,
+   "end": 360.12,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "let",
+   "start": 360.12,
+   "end": 360.28,
+   "heard_as": "let",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "him",
+   "start": 360.28,
+   "end": 360.42,
+   "heard_as": "him",
+   "status": "same"
+  },
+  {
+   "sent": 129,
+   "word": "leave.",
+   "start": 360.42,
+   "end": 360.7,
+   "heard_as": "leave.",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "With",
+   "start": 361.76,
+   "end": 362.12,
+   "heard_as": "With",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "Grant",
+   "start": 362.12,
+   "end": 362.38,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 130,
+   "word": "gone,",
+   "start": 362.38,
+   "end": 362.76,
+   "heard_as": "gone,",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Asher",
+   "start": 363.22,
+   "end": 363.4,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "turned",
+   "start": 363.4,
+   "end": 363.68,
+   "heard_as": "turned",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "his",
+   "start": 363.68,
+   "end": 363.9,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "attention",
+   "start": 363.9,
+   "end": 364.3,
+   "heard_as": "attention",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "to",
+   "start": 364.3,
+   "end": 364.52,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 131,
+   "word": "Violet.",
+   "start": 364.52,
+   "end": 364.86,
+   "heard_as": "Violet.",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "The",
+   "start": 365.52,
+   "end": 365.98,
+   "heard_as": "The",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "look",
+   "start": 365.98,
+   "end": 366.14,
+   "heard_as": "look",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "on",
+   "start": 366.19,
+   "end": 366.34,
+   "heard_as": "on",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "his",
+   "start": 366.34,
+   "end": 366.5,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "face",
+   "start": 366.5,
+   "end": 366.72,
+   "heard_as": "face",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "told",
+   "start": 366.72,
+   "end": 366.98,
+   "heard_as": "told",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "her",
+   "start": 366.98,
+   "end": 367.14,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "he",
+   "start": 367.14,
+   "end": 367.32,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "intended",
+   "start": 367.32,
+   "end": 367.7,
+   "heard_as": "intended",
+   "status": "same"
+  },
+  {
+   "sent": 132,
+   "word": "to.",
+   "start": 367.7,
+   "end": 367.98,
+   "heard_as": "to.",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "Well,",
+   "start": 368.61,
+   "end": 368.84,
+   "heard_as": "Well,",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "she",
+   "start": 369.61,
+   "end": 369.72,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "wasn't",
+   "start": 369.72,
+   "end": 369.98,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 133,
+   "word": "sure,",
+   "start": 369.98,
+   "end": 370.29,
+   "heard_as": "sure,",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "but",
+   "start": 371.18,
+   "end": 371.24,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "it",
+   "start": 371.24,
+   "end": 371.34,
+   "heard_as": "it",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "wasn't",
+   "start": 371.34,
+   "end": 371.62,
+   "heard_as": "wasn't",
+   "status": "same"
+  },
+  {
+   "sent": 134,
+   "word": "good.",
+   "start": 371.62,
+   "end": 371.78,
+   "heard_as": "good.",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "Oh",
+   "start": 372.99,
+   "end": 373.22,
+   "heard_as": "Oh",
+   "status": "same"
+  },
+  {
+   "sent": 135,
+   "word": "no.",
+   "start": 373.22,
+   "end": 373.52,
+   "heard_as": "no.",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "Standing",
+   "start": 375.34,
+   "end": 375.82,
+   "heard_as": "Standing",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "up",
+   "start": 375.82,
+   "end": 376.08,
+   "heard_as": "up",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "to",
+   "start": 376.15,
+   "end": 376.24,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "Grant",
+   "start": 376.24,
+   "end": 376.54,
+   "heard_as": "Grant",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "hadn't",
+   "start": 376.7,
+   "end": 377.02,
+   "heard_as": "hadn't",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "scared",
+   "start": 377.14,
+   "end": 377.24,
+   "heard_as": "scared",
+   "status": "same"
+  },
+  {
+   "sent": 136,
+   "word": "her,",
+   "start": 377.24,
+   "end": 377.48,
+   "heard_as": "her,",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "but",
+   "start": 377.78,
+   "end": 378.03,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "the",
+   "start": 378.31,
+   "end": 378.38,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 137,
+   "word": "dark,",
+   "start": 378.38,
+   "end": 378.76,
+   "heard_as": "dark,",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "unsettling",
+   "start": 378.92,
+   "end": 379.56,
+   "heard_as": "unsettling",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "smile",
+   "start": 379.56,
+   "end": 379.98,
+   "heard_as": "smile",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "on",
+   "start": 379.98,
+   "end": 380.3,
+   "heard_as": "on",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "Asher's",
+   "start": 380.3,
+   "end": 380.79,
+   "heard_as": "Asher's",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "face",
+   "start": 380.86,
+   "end": 381.03,
+   "heard_as": "face",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "Scent",
+   "start": 381.5,
+   "end": 381.7,
+   "heard_as": "Scent",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "shivers",
+   "start": 381.7,
+   "end": 382.12,
+   "heard_as": "shivers",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "down",
+   "start": 382.12,
+   "end": 382.4,
+   "heard_as": "down",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "her",
+   "start": 382.4,
+   "end": 382.56,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 138,
+   "word": "spine.",
+   "start": 382.56,
+   "end": 382.82,
+   "heard_as": "spine.",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "Nope,",
+   "start": 383.77,
+   "end": 383.95,
+   "heard_as": "Nope,",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "not",
+   "start": 384.54,
+   "end": 384.74,
+   "heard_as": "not",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "doing",
+   "start": 384.74,
+   "end": 384.98,
+   "heard_as": "doing",
+   "status": "same"
+  },
+  {
+   "sent": 139,
+   "word": "this.",
+   "start": 384.98,
+   "end": 385.26,
+   "heard_as": "this.",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "Violet",
+   "start": 386.16,
+   "end": 386.43,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "spun",
+   "start": 386.45,
+   "end": 386.68,
+   "heard_as": "spun",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "around",
+   "start": 386.68,
+   "end": 387.04,
+   "heard_as": "around",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "to",
+   "start": 387.04,
+   "end": 387.28,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 140,
+   "word": "run,",
+   "start": 387.28,
+   "end": 387.58,
+   "heard_as": "run,",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "but",
+   "start": 388.28,
+   "end": 388.48,
+   "heard_as": "but",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "Asher",
+   "start": 388.48,
+   "end": 388.82,
+   "heard_as": "Asher",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "moved",
+   "start": 388.82,
+   "end": 389.08,
+   "heard_as": "moved",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "just",
+   "start": 389.08,
+   "end": 389.5,
+   "heard_as": "just",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "as",
+   "start": 389.5,
+   "end": 389.74,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 141,
+   "word": "fast,",
+   "start": 389.74,
+   "end": 390.1,
+   "heard_as": "fast,",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "grabbing",
+   "start": 390.74,
+   "end": 391.02,
+   "heard_as": "grabbing",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "her",
+   "start": 391.02,
+   "end": 391.3,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "around",
+   "start": 391.3,
+   "end": 391.56,
+   "heard_as": "around",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "the",
+   "start": 391.56,
+   "end": 391.68,
+   "heard_as": "the",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "waist",
+   "start": 391.68,
+   "end": 392.0,
+   "heard_as": "waist",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "as",
+   "start": 392.0,
+   "end": 392.28,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "if",
+   "start": 392.28,
+   "end": 392.46,
+   "heard_as": "if",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "he'd",
+   "start": 392.46,
+   "end": 392.71,
+   "heard_as": "he'd",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "predicted",
+   "start": 392.79,
+   "end": 393.12,
+   "heard_as": "predicted",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "her",
+   "start": 393.12,
+   "end": 393.36,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 142,
+   "word": "move.",
+   "start": 393.36,
+   "end": 393.64,
+   "heard_as": "move.",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "Put",
+   "start": 394.69,
+   "end": 394.8,
+   "heard_as": "Put",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "me",
+   "start": 394.8,
+   "end": 394.94,
+   "heard_as": "me",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "down,",
+   "start": 394.94,
+   "end": 395.38,
+   "heard_as": "down,",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "you",
+   "start": 395.68,
+   "end": 395.8,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 143,
+   "word": "jerk!",
+   "start": 395.8,
+   "end": 396.06,
+   "heard_as": "jerk!",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "She",
+   "start": 397.59,
+   "end": 397.78,
+   "heard_as": "She",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "yelled,",
+   "start": 397.78,
+   "end": 398.08,
+   "heard_as": "yelled,",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "struggling",
+   "start": 398.44,
+   "end": 398.8,
+   "heard_as": "struggling",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "as",
+   "start": 398.8,
+   "end": 399.34,
+   "heard_as": "as",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "he",
+   "start": 399.34,
+   "end": 399.46,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "effortlessly",
+   "start": 399.46,
+   "end": 400.12,
+   "heard_as": "effortlessly",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "tossed",
+   "start": 400.12,
+   "end": 400.5,
+   "heard_as": "tossed",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "her",
+   "start": 400.5,
+   "end": 400.74,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "over",
+   "start": 400.74,
+   "end": 400.96,
+   "heard_as": "over",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "his",
+   "start": 400.96,
+   "end": 401.16,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "shoulder.",
+   "start": 401.16,
+   "end": 401.4,
+   "heard_as": "shoulder.",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "her",
+   "start": 401.4,
+   "end": 401.68,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "weight",
+   "start": 402.06,
+   "end": 402.66,
+   "heard_as": "weight",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "seemed",
+   "start": 402.66,
+   "end": 403.04,
+   "heard_as": "seemed",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "like",
+   "start": 403.04,
+   "end": 403.33,
+   "heard_as": "like",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "nothing",
+   "start": 403.43,
+   "end": 403.64,
+   "heard_as": "nothing",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "to",
+   "start": 403.64,
+   "end": 403.88,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 144,
+   "word": "him.",
+   "start": 403.88,
+   "end": 404.04,
+   "heard_as": "him.",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "That",
+   "start": 406.92,
+   "end": 407.56,
+   "heard_as": "That",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "is",
+   "start": 407.56,
+   "end": 407.84,
+   "heard_as": "is",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "how",
+   "start": 407.84,
+   "end": 408.04,
+   "heard_as": "how",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "you",
+   "start": 408.04,
+   "end": 408.24,
+   "heard_as": "you",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "thank",
+   "start": 408.24,
+   "end": 408.6,
+   "heard_as": "thank",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "your",
+   "start": 408.6,
+   "end": 408.84,
+   "heard_as": "your",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "savior,",
+   "start": 408.84,
+   "end": 409.38,
+   "heard_as": "savior,",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "my",
+   "start": 410.04,
+   "end": 410.44,
+   "heard_as": "my",
+   "status": "same"
+  },
+  {
+   "sent": 145,
+   "word": "violet.",
+   "start": 410.44,
+   "end": 410.92,
+   "heard_as": "violet.",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "He",
+   "start": 411.97,
+   "end": 412.46,
+   "heard_as": "He",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "laughed,",
+   "start": 412.46,
+   "end": 412.84,
+   "heard_as": "laughed,",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "continuing",
+   "start": 413.18,
+   "end": 413.6,
+   "heard_as": "continuing",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "to",
+   "start": 413.6,
+   "end": 413.86,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 146,
+   "word": "walk,",
+   "start": 413.86,
+   "end": 414.15,
+   "heard_as": "walk,",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "unfazed",
+   "start": 415.15,
+   "end": 415.34,
+   "heard_as": "unfazed",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "by",
+   "start": 415.34,
+   "end": 415.58,
+   "heard_as": "by",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "her",
+   "start": 415.58,
+   "end": 415.72,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "punches",
+   "start": 415.72,
+   "end": 416.04,
+   "heard_as": "punches",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "to",
+   "start": 416.04,
+   "end": 416.34,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "his",
+   "start": 416.34,
+   "end": 416.42,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 147,
+   "word": "back.",
+   "start": 416.52,
+   "end": 416.72,
+   "heard_as": "back.",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "When",
+   "start": 417.98,
+   "end": 418.1,
+   "heard_as": "When",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "his",
+   "start": 418.1,
+   "end": 418.26,
+   "heard_as": "his",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "teasing",
+   "start": 418.26,
+   "end": 418.6,
+   "heard_as": "teasing",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "became",
+   "start": 418.6,
+   "end": 418.98,
+   "heard_as": "became",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "too",
+   "start": 418.98,
+   "end": 419.26,
+   "heard_as": "too",
+   "status": "same"
+  },
+  {
+   "sent": 148,
+   "word": "overwhelming,",
+   "start": 419.26,
+   "end": 419.74,
+   "heard_as": "overwhelming,",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "he",
+   "start": 420.52,
+   "end": 420.6,
+   "heard_as": "he",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "swatted",
+   "start": 420.6,
+   "end": 420.92,
+   "heard_as": "swatted",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "her",
+   "start": 420.92,
+   "end": 421.16,
+   "heard_as": "her",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "butt",
+   "start": 421.16,
+   "end": 421.44,
+   "heard_as": "butt",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "and",
+   "start": 421.44,
+   "end": 422.26,
+   "heard_as": "and",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "Violet",
+   "start": 422.26,
+   "end": 422.64,
+   "heard_as": "Violet",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "instantly",
+   "start": 422.64,
+   "end": 423.1,
+   "heard_as": "instantly",
+   "status": "same"
+  },
+  {
+   "sent": 149,
+   "word": "froze.",
+   "start": 423.1,
+   "end": 423.46,
+   "heard_as": "froze.",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "This",
+   "start": 424.24,
+   "end": 424.62,
+   "heard_as": "This",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "has",
+   "start": 424.62,
+   "end": 425.12,
+   "heard_as": "has",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "to",
+   "start": 425.19,
+   "end": 425.38,
+   "heard_as": "to",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "be",
+   "start": 425.38,
+   "end": 425.6,
+   "heard_as": "be",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "a",
+   "start": 425.6,
+   "end": 425.78,
+   "heard_as": "a",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "nightmare,",
+   "start": 425.78,
+   "end": 426.22,
+   "heard_as": "nightmare,",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "she",
+   "start": 427.04,
+   "end": 427.24,
+   "heard_as": "she",
+   "status": "same"
+  },
+  {
+   "sent": 150,
+   "word": "thought.",
+   "start": 427.24,
+   "end": 427.48,
+   "heard_as": "thought.",
+   "status": "same"
+  }
+ ],
+ "heard_not_in_srt": [],
+ "first": null
+}

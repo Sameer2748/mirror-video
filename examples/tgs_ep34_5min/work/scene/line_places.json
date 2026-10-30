@@ -1,0 +1,809 @@
+{
+ "key": "201|146|Lounge with the blond man|Die Akte gehörte zu Ginos Firm",
+ "lines": {
+  "0": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "1": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "2": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "3": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "4": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "5": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "6": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "7": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "8": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "9": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "10": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "11": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "12": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "13": {
+   "scene": "Ava confronts Aiden with the photo",
+   "loc": "Aiden's office"
+  },
+  "14": {
+   "scene": "Flashback in the gym parking lot car",
+   "loc": "gym parking lot car"
+  },
+  "15": {
+   "scene": "Flashback in the gym parking lot car",
+   "loc": "gym parking lot car"
+  },
+  "16": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "17": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "18": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "19": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "20": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "21": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "22": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "23": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "24": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "25": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "26": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "27": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "28": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "29": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "30": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "31": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "32": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "33": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "34": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "35": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "36": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "37": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "38": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "39": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "40": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "41": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "42": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "43": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "44": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "45": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "46": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "47": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "48": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "49": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "50": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "51": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "52": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "53": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "54": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "55": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "56": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "57": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "58": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "59": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "60": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "61": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "62": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "63": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "64": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "65": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "66": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "67": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "68": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "69": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "70": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "71": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "72": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "73": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "74": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "75": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "76": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "77": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "78": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "79": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "80": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "81": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "82": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "83": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "84": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "85": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "86": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "87": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "88": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "89": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "90": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "91": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "92": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "93": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "94": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "95": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "96": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "97": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "98": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "99": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "100": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "101": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "102": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "103": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "104": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "105": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "106": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "107": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "108": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "109": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "110": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "111": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "112": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "113": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "114": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "115": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "116": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "117": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "118": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "119": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "120": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "121": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "122": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "123": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "124": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "125": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "126": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "127": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "128": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "129": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "130": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "Aiden's office"
+  },
+  "131": {
+   "scene": "Argument between Ava and Aiden in his office",
+   "loc": "office hallway"
+  },
+  "132": {
+   "scene": "Aiden alone, picks up the phone",
+   "loc": "Aiden's office"
+  },
+  "133": {
+   "scene": "Aiden alone, picks up the phone",
+   "loc": "Aiden's office"
+  },
+  "134": {
+   "scene": "Aiden alone, picks up the phone",
+   "loc": "Aiden's office"
+  },
+  "135": {
+   "scene": "Aiden alone, picks up the phone",
+   "loc": "Aiden's office"
+  },
+  "136": {
+   "scene": "Aiden alone, picks up the phone",
+   "loc": "Aiden's office"
+  },
+  "137": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "138": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "139": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "140": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "141": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "142": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "143": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "144": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "145": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "146": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "147": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "148": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "149": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "150": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "151": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "152": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "153": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "154": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "155": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "156": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "157": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "158": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "159": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "160": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "161": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "162": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "163": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "164": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "165": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "166": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "167": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "168": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "169": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "170": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "171": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "172": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "173": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "174": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "175": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "176": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "177": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "178": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Charlotte's office"
+  },
+  "179": {
+   "scene": "Phone call between Aiden and Charlotte",
+   "loc": "Aiden's office"
+  },
+  "180": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "181": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "182": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "183": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "184": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "185": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "186": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "187": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "188": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "189": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "190": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "191": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "192": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "193": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "194": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "195": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "196": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "197": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "198": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "199": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  },
+  "200": {
+   "scene": "Aiden searches the briefcase and documents",
+   "loc": "Aiden's office"
+  }
+ }
+}
