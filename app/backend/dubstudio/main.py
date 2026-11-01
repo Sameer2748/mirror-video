@@ -2,7 +2,7 @@
 import asyncio, json, os, re, shutil, threading, time
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Body, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from .config import cfg, ROOT
 from .db import DB, now
@@ -1414,29 +1414,53 @@ def proxy_make(eid: int):
     return tlm.proxy_state(e["work_dir"])
 
 
+PLAY = {"Cache-Control": "private, max-age=3600"}
+
+
+def _serve_media(show, ep, rel, local, media_type):
+    """Hand the editor one media file. On this Mac it is on disk, and a copy goes to R2 so another machine can serve
+    it; on a deployed box there is no disk copy, so the browser is sent straight to R2 (which does the range
+    requests -- scrubbing works and the API passes no bytes)."""
+    if local and Path(local).exists():
+        storage.mirror(show, ep, rel)
+        return FileResponse(local, media_type=media_type, headers=PLAY)
+    url = storage.media_link(show, ep, rel)
+    if url:
+        return RedirectResponse(url, status_code=307, headers=PLAY)
+    return None
+
+
 @app.get("/api/episodes/{eid}/media/{kind}")
 def media(eid: int, kind: str):
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
     if kind == "src_proxy":
-        p = tlm.proxy_path(_get("episodes", eid)["work_dir"])
-        if not p:
+        r = _serve_media(show, e, tlm.PROXY, tlm.proxy_path(e["work_dir"]), "video/mp4")
+        if not r:
             raise HTTPException(404, "the preview copy is not made yet")
-        return FileResponse(p, media_type="video/mp4", headers={"Cache-Control": "private, max-age=3600"})
+        return r
     if kind == "dub_preview":                     # what the editor plays (exact AAC copy; see timeline.dub_preview)
-        e = _get("episodes", eid)
         a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (eid,))
-        if not a or not Path(a["path"]).exists():
+        p = None
+        if a and Path(a["path"]).exists():
+            try:
+                p = tlm.dub_preview(e["work_dir"], a["path"])
+            except RuntimeError as ex:
+                raise HTTPException(500, str(ex))
+        r = _serve_media(show, e, tlm.DUB_PREVIEW, p, "audio/mp4")
+        if not r:
             raise HTTPException(404, "no dub_audio")
-        try:
-            p = tlm.dub_preview(e["work_dir"], a["path"])
-        except RuntimeError as ex:
-            raise HTTPException(500, str(ex))
-        return FileResponse(p, media_type="audio/mp4", headers={"Cache-Control": "private, max-age=3600"})
+        return r
     if kind not in ("src_video", "dub_audio"):
         raise HTTPException(404, "unknown media")
-    a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
-    if not a or not Path(a["path"]).exists():
+    a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+    if not a:
         raise HTTPException(404, f"no {kind}")
-    return FileResponse(a["path"], headers={"Cache-Control": "private, max-age=3600"})
+    if Path(a["path"]).exists():
+        return FileResponse(a["path"], headers=PLAY)
+    if a.get("r2_key") and storage.head(a["r2_key"]):       # uploaded episode, scratch already cleaned
+        return RedirectResponse(storage.presign(a["r2_key"], 10800), status_code=307, headers=PLAY)
+    raise HTTPException(404, f"no {kind}")
 
 
 # ---------------- the project bin: imported clips + the episode's files ----------------
@@ -1697,13 +1721,23 @@ def gen_file(eid: int, tid: int, path: str):
     return FileResponse(p, headers={"Cache-Control": "private, max-age=3600"})
 
 
+def _frames_from(eid):
+    """The file thumbnails are cut from: the preview copy if there is one (here or in R2), else the source video."""
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    p = tlm.proxy_path(e["work_dir"]) or storage.ensure_local(show, e, tlm.PROXY)
+    if p:
+        return e, p
+    a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    return e, (a["path"] if a and Path(a["path"]).exists() else None)
+
+
 @app.get("/api/episodes/{eid}/thumb")
 def thumb(eid: int, ms: float, h: int = 120):
-    e = _get("episodes", eid)
-    a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
-    if not a:
+    e, src = _frames_from(eid)
+    if not src:
         raise HTTPException(404, "no source video")
-    p = tlm.thumb(e["work_dir"], str(tlm.proxy_path(e["work_dir"]) or a["path"]), ms, max(60, min(h, 360)))
+    p = tlm.thumb(e["work_dir"], str(src), ms, max(60, min(h, 360)))
     if not p:
         raise HTTPException(404, "no frame")
     return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
@@ -1712,10 +1746,22 @@ def thumb(eid: int, ms: float, h: int = 120):
 @app.get("/api/episodes/{eid}/waveform")
 def wave(eid: int):
     e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    cache = f"waveform_{50}.json"
     a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (eid,))
-    if not a:
+    if a and Path(a["path"]).exists():
+        res = tlm.waveform(e["work_dir"], a["path"])
+        storage.mirror(show, e, cache)              # tiny; saves the deployed box re-reading the audio
+        return res
+    got = storage.ensure_local(show, e, cache)      # measured once, then it travels with the episode
+    if got:
+        return json.loads(got.read_text())
+    p = storage.ensure_local(show, e, tlm.DUB_PREVIEW)
+    if not p:
         raise HTTPException(404, "no dub audio")
-    return tlm.waveform(e["work_dir"], a["path"])
+    res = tlm.waveform(e["work_dir"], str(p))
+    storage.mirror(show, e, cache)
+    return res
 
 
 # ---------------- settings (milestone 7) ----------------

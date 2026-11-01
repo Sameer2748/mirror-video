@@ -73,32 +73,37 @@ def health():
     return _call("/health", timeout=30)
 
 
-def wait(job_ids, on_progress=None, timeout=3600, poll=10):
-    """Wait for every job. -> {job id: status dict}. Raises when one fails, with the worker's own traceback."""
-    out, start = {}, time.time()
-    while len(out) < len(job_ids):
+def wait(job_ids, on_progress=None, timeout=7200, poll=10):
+    """Wait for every job. -> ({job id: status}, [failed job ids with their reason]).
+    A rented machine can be slow or taken away mid-job, so a failure is reported, not raised: the caller decides
+    what to send again. The pieces that finished are kept."""
+    done, failed, start = {}, {}, time.time()
+    while len(done) + len(failed) < len(job_ids):
         if time.time() - start > timeout:
-            raise RuntimeError(f"the cloud took longer than {timeout} s: {len(out)} of {len(job_ids)} pieces done")
+            for jid in job_ids:
+                if jid not in done and jid not in failed:
+                    failed[jid] = f"still running after {timeout} s"
+            break
         for jid in job_ids:
-            if jid in out:
+            if jid in done or jid in failed:
                 continue
             try:
                 st = status(jid)
             except (urllib.error.URLError, TimeoutError):
                 continue
             if st.get("status") == "COMPLETED":
-                out[jid] = st
-            elif st.get("status") == "FAILED":
-                raise RuntimeError(f"a cloud job failed: {str(st.get('error') or st.get('output'))[:600]}")
+                done[jid] = st
+            elif st.get("status") in ("FAILED", "CANCELLED", "TIMED_OUT"):
+                failed[jid] = str(st.get("error") or st.get("output") or st.get("status"))[:300]
         if on_progress:
             try:
                 h = health().get("workers", {})
             except Exception:
                 h = {}
-            on_progress(len(out), len(job_ids), h)
-        if len(out) < len(job_ids):
+            on_progress(len(done), len(job_ids), h)
+        if len(done) + len(failed) < len(job_ids):
             time.sleep(poll)
-    return out
+    return done, failed
 
 
 # ---------------- the lip scan, split into pieces ----------------
@@ -116,40 +121,58 @@ def ensure_input_in_cloud(db, show, ep, kind="src_video"):
     return key
 
 
-def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None):
-    """Scan the whole source video on rented machines, in pieces, and write `<work>/lips_nets` exactly as the local
-    step would. -> {pieces, seconds, worker_seconds}."""
+def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3):
+    """Scan the whole source video on rented machines and write `<work>/lips_nets` exactly as the local step would.
+
+    The episode is cut into the pipeline's own pieces and shared between machines. A share that fails (a slow or
+    reclaimed worker) is simply sent again -- the shares that finished are kept, so one bad machine costs one
+    share, not the episode. -> {pieces, files, seconds, worker_seconds, retries}."""
     n = n_pieces or pieces()
     key = ensure_input_in_cloud(db, show, ep)
-    video = storage.presign(key, 10800)
     # the SAME pieces the local step would cut (lipgpu --piece 15), only shared out between machines, so the range
     # files come back identical to a scan done here -- not merely equivalent
     cuts = [[round(x * PIECE_SECONDS, 2), round(min((x + 1) * PIECE_SECONDS, duration_s), 2)]
             for x in range(int((duration_s + PIECE_SECONDS - 1) // PIECE_SECONDS))]
-    share = [cuts[i::n] for i in range(n)]                     # round-robin: every machine gets a fair mix
-    jobs, out_keys = [], []
-    for i, mine in enumerate(share):
-        if not mine:
-            continue
-        ok = storage.work_key(show, ep, f"lips_cloud/piece_{i:02d}.tar.gz")
-        out_keys.append(ok)
-        jobs.append(submit({"step": "lip_scan", "inputs": {"video": video},
-                            "args": {"ranges": mine, "device": "cpu"},
-                            "outputs": {"result": storage.presign(ok, 10800, method="PUT")}}))
-    log(f"{len(cuts)} pieces of {PIECE_SECONDS:.0f} s across {len(jobs)} machines ({duration_s:.0f} s of video)")
-    t0 = time.time()
-    done = wait(jobs, on_progress=on_progress)
+    shares = [c for c in (cuts[i::n] for i in range(n)) if c]          # round-robin: a fair mix for every machine
+    log(f"{len(cuts)} pieces of {PIECE_SECONDS:.0f} s across {len(shares)} machines ({duration_s:.0f} s of video)")
+
+    t0, worker_s, retries = time.time(), 0.0, 0
     nets = Path(ep["work_dir"]) / "lips_nets"
     nets.mkdir(parents=True, exist_ok=True)
-    files = 0
-    for i, ok in enumerate(out_keys):
-        tar = nets.parent / f"_piece_{i:02d}.tar.gz"
-        storage.download(ok, tar)
-        with tarfile.open(tar) as t:
-            t.extractall(nets.parent / "_piece")
-        for f in (nets.parent / "_piece" / "lips_nets").glob("range_*.json"):
-            f.replace(nets / f.name); files += 1
-        tar.unlink(missing_ok=True)
-    worker_s = sum(s.get("executionTime", 0) for s in done.values()) / 1000
-    log(f"{files} range files from {n} pieces in {time.time() - t0:.0f} s (workers used {worker_s:.0f} s)")
-    return {"pieces": n, "files": files, "seconds": round(time.time() - t0, 1), "worker_seconds": round(worker_s, 1)}
+    todo = list(enumerate(shares))
+    for attempt in range(tries):
+        if not todo:
+            break
+        video = storage.presign(key, 10800)                            # fresh links for each attempt
+        jobs = {}
+        for i, mine in todo:
+            ok = storage.work_key(show, ep, f"lips_cloud/piece_{i:02d}.tar.gz")
+            jid = submit({"step": "lip_scan", "inputs": {"video": video},
+                          "args": {"ranges": mine, "device": "cpu"},
+                          "outputs": {"result": storage.presign(ok, 10800, method="PUT")}})
+            jobs[jid] = (i, mine, ok)
+        done, failed = wait(list(jobs), on_progress=on_progress)
+        for jid, st in done.items():
+            i, mine, ok = jobs[jid]
+            worker_s += st.get("executionTime", 0) / 1000
+            tar = nets.parent / f"_piece_{i:02d}.tar.gz"
+            storage.download(ok, tar)
+            with tarfile.open(tar) as tf:
+                tf.extractall(nets.parent / "_piece")
+            for f in (nets.parent / "_piece" / "lips_nets").glob("range_*.json"):
+                f.replace(nets / f.name)
+            tar.unlink(missing_ok=True)
+        todo = [jobs[jid][:2] for jid in failed]
+        if todo:
+            retries += len(todo)
+            log(f"attempt {attempt + 1}: {len(failed)} share(s) failed ({list(failed.values())[0][:80]}); sending them again")
+    if todo:
+        raise RuntimeError(f"{len(todo)} share(s) still failing after {tries} tries: pieces "
+                           f"{[c for _, mine in todo for c in mine][:6]}…")
+    files = len(list(nets.glob("range_*.json")))
+    want = len(cuts)
+    if files < want:
+        raise RuntimeError(f"the cloud returned {files} of {want} range files")
+    log(f"{files} range files in {time.time() - t0:.0f} s (workers used {worker_s:.0f} s, {retries} retries)")
+    return {"pieces": len(shares), "files": files, "seconds": round(time.time() - t0, 1),
+            "worker_seconds": round(worker_s, 1), "retries": retries}

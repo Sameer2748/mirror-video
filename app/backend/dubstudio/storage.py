@@ -379,6 +379,64 @@ def cache_path(ep, kind, filename):
     return str(Path(ep["work_dir"]) / "input" / kind / safe_name(filename))
 
 
+# ---------------- the editor's own media (proxy copy, dub preview, waveform, thumbs) ----------------
+# These are made by ffmpeg from the episode's big files, so on a deployed API box -- which has neither the show
+# folder nor the originals -- they have to come from R2. Mirrored once when they are made, then either handed to the
+# browser as a signed link (playback: R2 serves the range requests, the API box passes no bytes) or pulled down to
+# the work folder when something here needs a real file (a thumbnail, the waveform).
+_mirrored = set()
+
+
+def mirror(show, ep, rel, background=True):
+    """Copy `<work>/rel` to R2 once, so another machine can serve it. Quiet: a failure never breaks the editor."""
+    p = Path(ep["work_dir"]) / rel
+    key = work_key(show, ep, rel)
+    if not configured() or not p.exists() or key in _mirrored:
+        return None
+    def go():
+        try:
+            if not head(key):
+                (put_big_file if p.stat().st_size >= MULTIPART_FROM else put_file)(p, key)
+            _mirrored.add(key)
+        except Exception:
+            pass
+    if background:
+        threading.Thread(target=go, daemon=True).start()
+    else:
+        go()
+    return key
+
+
+def media_link(show, ep, rel, seconds=10800):
+    """A signed link to `<work>/rel` in R2, or None if it is not there."""
+    if not configured():
+        return None
+    key = work_key(show, ep, rel)
+    return presign(key, seconds) if head(key) else None
+
+
+def ensure_local(show, ep, rel):
+    """A real file at `<work>/rel`: the one here, or the copy from R2. -> Path or None."""
+    p = Path(ep["work_dir"]) / rel
+    if p.exists():
+        return p
+    if not configured():
+        return None
+    key = work_key(show, ep, rel)
+    if not head(key):
+        return None
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".part")
+    try:
+        download(key, tmp)
+        tmp.replace(p)
+        _mirrored.add(key)
+        return p
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        return None
+
+
 def upload_mode():
     """'proxy' (the API passes the bytes through, works everywhere) or 'direct' (the browser PUTs straight to R2,
     needs a CORS rule on the bucket -- see docs/09 §3)."""

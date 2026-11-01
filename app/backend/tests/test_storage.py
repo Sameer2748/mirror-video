@@ -324,6 +324,56 @@ def test_auto_upload_can_be_switched_off(r2, monkeypatch):
     assert c.get(f"/api/episodes/{ep['id']}/uploads").json()["uploads"] == []
 
 
+# ---------------- the editor's media on a machine that has no files (docs/09 §4) ----------------
+def test_the_preview_copy_is_mirrored_and_then_served_from_the_cloud(r2):
+    """On this Mac the proxy copy is on disk and a copy goes up; take the disk copy away (a deployed box, or after
+    the scratch clean) and the editor is sent to R2 instead of getting a 404."""
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 21}).json()
+    import httpx
+    import dubstudio.main as main, dubstudio.timeline as tlm
+    from dubstudio import storage
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    proxy = Path(e["work_dir"]) / tlm.PROXY
+    proxy.parent.mkdir(parents=True, exist_ok=True)
+    proxy.write_bytes(b"proxy-bytes")
+
+    r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy")
+    assert r.status_code == 200 and r.content == b"proxy-bytes"          # served from disk
+    key = storage.work_key(s, e, tlm.PROXY)
+    wait_for(lambda: r2["objects"].get(key), 10)                         # and mirrored in the background
+    assert r2["objects"][key] == b"proxy-bytes"
+
+    proxy.unlink()                                                       # now this machine has nothing
+    r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy", follow_redirects=False)
+    assert r.status_code == 307 and "X-Amz-Signature=" in r.headers["location"]
+    assert httpx.get(r.headers["location"]).content == b"proxy-bytes"     # the browser streams it straight from R2
+
+
+def test_a_media_file_that_is_nowhere_is_still_a_404(r2):
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 22}).json()
+    assert c.get(f"/api/episodes/{ep['id']}/media/src_proxy").status_code == 404
+
+
+def test_the_waveform_travels_with_the_episode(r2):
+    """Measured once from the audio, kept in R2: a box without the audio file still draws the track."""
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 23}).json()
+    import dubstudio.main as main
+    from dubstudio import storage
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    cache = Path(e["work_dir"]) / "waveform_50.json"
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text('{"per_s": 50, "peaks": [1, 2, 3]}')
+    storage.put_file(cache, storage.work_key(s, e, cache.name))
+    cache.unlink()
+    assert c.get(f"/api/episodes/{ep['id']}/waveform").json()["peaks"] == [1, 2, 3]
+
+
 def test_the_owner_can_save_the_keys_from_the_settings_page(r2, monkeypatch):
     """PUT /api/settings/storage writes app/.env; the keys are never sent back."""
     c = r2["client"]

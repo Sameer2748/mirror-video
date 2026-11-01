@@ -116,8 +116,16 @@ Uploads happen in one of two ways (`UPLOAD_MODE` in `app/.env`; **direct** since
       multi-GB source video works and a dropped line costs one part instead of the whole file.
 - [x] **Postgres and Redis** (local Docker, `app/docker-compose.yml`): the whole suite passes on SQLite *and* on
       Postgres; with `REDIS_URL` the live events go through Redis so several replicas share them.
-- [ ] RunPod GPU worker image (lip scan, Whisper, face map) pulling from the same queue; per-**step** storage sync
-      instead of per-episode (the code is ready for it: `storage.fetch_inputs(kinds=…)`).
+- [x] **Rented workers** (`dubstudio/cloud.py`, RunPod serverless): the image `sameer27488/dubstudio-worker:cpu`
+      carries the pipeline scripts **and the model weights**, so a job downloads nothing while it runs (five bare-pod
+      failures taught us that). `CLOUD_STEPS=lip_gpu` sends the lip scan there: the episode is cut into the
+      pipeline's own 15 s pieces, shared round-robin between `CLOUD_PIECES` machines, and the range files come back
+      **byte-identical to a scan done here**. The endpoint keeps 0 workers when the queue is empty, so idle time is
+      free. A share that fails (a slow or reclaimed machine) is sent again on its own — the shares that finished are
+      kept, so one bad machine costs one share, not the episode.
+- [x] **The editor's media from R2** (see §7): a machine that never had the big files can still play the episode.
+- [ ] Worker images for the other steps (render, transitions, subtitles) and a CUDA image for the face map;
+      per-**step** storage sync instead of per-episode (the code is ready for it: `storage.fetch_inputs(kinds=…)`).
 - [x] **CORS on the bucket** (owner, 2026-10-31) → `UPLOAD_MODE=direct` is on: a 120 MB file from a real
       browser went to R2 in two parts without touching the API.
 
@@ -142,3 +150,20 @@ today**; the list below is what each next step needs.
 | `REDIS_URL` | works (local Docker Redis on 6380) | live events shared between API replicas and workers |
 | RunPod endpoint for **our** GPU image | not set (`RUNPOD_*` in the owner's file belongs to his other app) | the GPU worker phase (lip scan, Whisper, face map) |
 | `PUBLIC_WEB_ORIGIN`, `AUTH_COOKIE_SECURE=true` | not set | when the app is served over https on Render |
+
+## 7. Playing an episode on a machine that has none of the files (2026-11-01)
+
+The editor needs four things to play an episode: the **540-px preview copy**, the **dub preview** (the exact AAC copy
+— browsers run ahead on some MP3s, see `timeline.dub_preview`), the **waveform** and the **thumbnails**. All four are
+made by ffmpeg from the originals, which a deployed API box does not have. So:
+
+- When they are made here, a copy goes to R2 under `…/ep<N>/work/` (`storage.mirror`, also on first serve, so
+  episodes made before today are covered the first time anyone opens them).
+- **Playback** (`GET /api/episodes/{id}/media/{src_proxy,dub_preview,src_video,dub_audio}`): if the file is on this
+  machine it is served from disk; if not, the browser is sent a **307 to a signed R2 link** that lasts 3 hours. R2
+  answers the range requests, so scrubbing works and the API box carries no video bytes.
+- **Thumbnails and the waveform** need a real file, so those pull the small preview copy down to the work folder once
+  (`storage.ensure_local`) and work from it. The waveform is a few kB of JSON and travels with the episode.
+- Nothing anywhere? Still a plain 404, as before.
+
+This is also what makes `cleanup` safe: after the big local files are deleted, the episode still plays.

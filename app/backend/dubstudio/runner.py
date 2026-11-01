@@ -593,6 +593,10 @@ class Runner:
             d = self.db.one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (j["episode_id"],))
             if d:                                          # the editor's exact copy of the dub audio
                 timeline.dub_preview(work, d["path"], log=lambda m: f.write(m + "\n"))
+        if storage.configured():                           # so an editor on another machine can play this episode
+            show, ep, _ = self.episode_context(j["episode_id"])
+            storage.mirror(show, ep, timeline.PROXY, background=False)
+            storage.mirror(show, ep, timeline.DUB_PREVIEW, background=False)
         self._set(j, status="done", progress=1, finished=now(), message=f"{p.name} ready")
 
     def _fn_sharpness(self, j):
