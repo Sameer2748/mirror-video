@@ -1,0 +1,53 @@
+# Dub Studio on Render (docs/09). Two services and a database; the heavy steps run on RunPod workers and the files
+# live in Cloudflare R2, so nothing big is stored or computed here.
+#
+#   dubstudio-api   the FastAPI backend, which also serves the built screens (one origin: no CORS, cookies just work)
+#   dubstudio-db    Postgres (the whole test suite passes on it)
+#
+# The secrets are NOT in this file. Set them once in the Render dashboard (or `render env`):
+#   OPENROUTER_API_KEY, R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PREFIX,
+#   RUNPOD_API_KEY, RUNPOD_CPU_ENDPOINT, ADMIN_USERNAME, ADMIN_PASSWORD
+services:
+  - type: web
+    name: dubstudio-api
+    runtime: docker
+    plan: standard                       # 2 CPU / 8 GB, the size already in use
+    region: oregon
+    branch: main
+    dockerfilePath: ./app/backend/Dockerfile
+    dockerContext: ./app/backend
+    healthCheckPath: /api/info
+    autoDeploy: true
+    disk:
+      name: work                         # scratch for an episode being prepared; the real files are in R2
+      mountPath: /data
+      sizeGB: 50
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dubstudio-db
+          property: connectionString
+      - key: AUTH_REQUIRED
+        value: "true"
+      - key: AUTH_COOKIE_SECURE          # https on Render: the session cookie must be secure
+        value: "true"
+      - key: AI_PROVIDER                 # OpenRouter works from a server; the Pocket FM gateway is VPN-only
+        value: openrouter
+      - key: AI_CACHE
+        value: "true"
+      - key: CLOUD_STEPS                 # which steps go to the RunPod workers instead of this box
+        value: lip_gpu
+      - key: CLOUD_PIECES
+        value: "8"
+      - key: UPLOAD_MODE                 # the browser PUTs straight to R2 (add this service's URL to the bucket's CORS)
+        value: direct
+      - key: MAX_ACTIVE_EPISODES
+        value: "2"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+databases:
+  - name: dubstudio-db
+    plan: basic-256mb
+    region: oregon
+    postgresMajorVersion: "16"
