@@ -6,7 +6,10 @@ export type Show = {
   id: number; name: string; code: string; folder: string; preset: string | null; profile: Profile;
   episode_counts?: Record<string, number>;
 };
-export type Asset = { id: number; kind: string; path: string; size?: number; probe?: any; role: string };
+export type Asset = {
+  id: number; kind: string; path: string; size?: number; probe?: any; role: string;
+  r2_key?: string | null; origin?: string;          // 'r2' = uploaded in the browser, 'local' = a file on this Mac
+};
 export type Job = {
   id: number; step: string; label: string; ord: number; status: string; progress: number; item?: string;
   message?: string; resource?: string; attempt?: number; started?: number; finished?: number; eta?: number;
@@ -15,8 +18,13 @@ export type Job = {
 export type Episode = {
   id: number; show_id: number; number: number; status: string; work_dir: string; output_dir: string;
   updated?: number; progress?: number; assets: Asset[]; jobs: Job[]; run?: number; show: Show;
-  output_existing: string[]; candidates?: Record<string, string[]>;
+  output_existing: string[]; candidates?: Record<string, string[]>; queue_position?: number;
 };
+export type QueueItem = {
+  id: number; number: number; status: string; code: string; name: string; working: boolean;
+  step?: string | null; step_label?: string | null; steps_done: number; steps: number; progress: number; position?: number;
+};
+export type QueueView = { max_active: number; working: QueueItem[]; waiting: QueueItem[] };
 export type FlaggedRow = {
   idx: number; text: string; kind: string; suggested: string | null; suggested_src: number | null;
   score: number | null; start_ms?: number; end_ms?: number;
@@ -37,8 +45,22 @@ export type Rows = {
   alts?: Record<string, [number, number][]>;   // flagged row -> the 5 closest source sentences [index, score]
 };
 
+export type User = {
+  id: number | null; username: string; name?: string; email?: string | null; role: string; active?: number;
+  created?: number; last_login?: number; shows?: number;
+};
+export type Upload = {
+  id: number; episode_id: number; kind: string; name: string; path: string; key: string; size: number; sent: number;
+  status: string; error?: string | null; created?: number; finished?: number;
+};
+
+// The session cookie can run out while a page is open: the app then shows the sign-in screen again instead of
+// filling the screen with errors.
+let signedOut: (() => void) | null = null;
+export function onSignedOut(fn: (() => void) | null) { signedOut = fn; }
+
 async function call<T>(method: string, url: string, body?: any): Promise<T> {
-  const init: RequestInit = { method, headers: {} };
+  const init: RequestInit = { method, headers: {}, credentials: "same-origin" };
   if (body instanceof FormData) init.body = body;
   else if (body !== undefined) {
     init.body = JSON.stringify(body);
@@ -48,6 +70,7 @@ async function call<T>(method: string, url: string, body?: any): Promise<T> {
   const text = await r.text();
   let data: any = null;
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (r.status === 401 && !url.startsWith("/api/auth/")) signedOut?.();
   if (!r.ok) {
     const d = data && data.detail;
     throw new Error(typeof d === "string" ? d : d ? JSON.stringify(d) : `${r.status} ${r.statusText}`);
@@ -90,3 +113,12 @@ export function useLive(fn: Listener) {
 }
 
 export const reveal = (path: string) => api.post("/api/reveal", { path });
+
+// ---------------- accounts ----------------
+export type Me = { user: User | null; required: boolean; ttl_seconds?: number };
+export const auth = {
+  me: () => api.get<Me>("/api/auth/me"),
+  login: (username: string, password: string) => api.post<{ user: User }>("/api/auth/login", { username, password }),
+  logout: () => api.post("/api/auth/logout"),
+  password: (current: string, password: string) => api.post<{ user: User }>("/api/auth/password", { current, password }),
+};

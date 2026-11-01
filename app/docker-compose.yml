@@ -1,0 +1,34 @@
+# The two managed services the deployed platform needs, for local work and tests (docs/09 §1).
+#   cd app && docker compose up -d        # start Postgres + Redis
+#   docker compose down                   # stop them (add -v to drop the data)
+# Then put these in app/.env (or export them):
+#   DATABASE_URL=postgresql://dubstudio:dubstudio@127.0.0.1:5433/dubstudio
+#   REDIS_URL=redis://127.0.0.1:6380/0
+# Without DATABASE_URL the app keeps using SQLite in the library folder, exactly as before.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dubstudio-postgres
+    environment:
+      POSTGRES_USER: dubstudio
+      POSTGRES_PASSWORD: dubstudio
+      POSTGRES_DB: dubstudio
+    ports: ["5433:5432"]                 # 5433 on the Mac, so a Postgres already installed here is not disturbed
+    volumes: ["dubstudio-pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dubstudio"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    container_name: dubstudio-redis
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["6380:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  dubstudio-pgdata:

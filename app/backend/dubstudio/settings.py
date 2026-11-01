@@ -21,7 +21,7 @@ def ai_settings():
     s = ai.settings()
     return {"base": s.get("AI_BASE", ""), "email": s.get("AI_EMAIL", ""), "key_set": bool(s.get("AI_KEY")),
             "model": s.get("AI_MODEL"), "model_fast": s.get("AI_MODEL_FAST"), "configured": ai.available(),
-            "fal_set": bool(gen.fal_key())}
+            "provider": s.get("AI_PROVIDER"), "fal_set": bool(gen.fal_key())}
 
 
 def write_ai(values, remove_key=False):
@@ -147,7 +147,20 @@ def health(cfg, db_path):
     add("Google Chrome (playback check)", chrome.exists(), str(chrome) if chrome.exists() else "optional: only for scripts/playback_check.py")
     du = shutil.disk_usage(cfg.library if cfg.library.exists() else HOME)
     add("Free disk space", du.free > 20e9, f"{du.free / 1e9:.0f} GB free on the library's disk" + ("" if du.free > 20e9 else " — an episode needs ~10 GB"))
-    add("AI gateway", ai.available(), "configured" if ai.available() else "off: matching by hand (Settings → AI)")
+    where = "OpenRouter" if ai.provider() == "openrouter" else "the gateway (VPN)"
+    add(f"Claude ({where})", ai.available(), f"{ai.settings().get('AI_MODEL')}" if ai.available()
+        else "off: matching by hand (Settings → AI)")
+    from . import storage                                 # cloud storage: set up at all, and does the bucket answer
+    if storage.configured():
+        key = ("r2", storage.settings()["bucket"])
+        if key not in _health_cache or time.time() - _health_cache[key][0] > 60:
+            st = storage.status()
+            _health_cache[key] = (time.time(), st.get("ok"), f"bucket {st.get('bucket')}" if st.get("ok") else
+                                  f"bucket {st.get('bucket')}: {st.get('error', 'no answer')} (keys? internet?)")
+        _, ok, detail = _health_cache[key]
+        add("Cloud storage (R2)", ok, detail)
+    else:
+        add("Cloud storage (R2)", True, "off: the finished files stay on this Mac (Settings → Cloud storage)")
     b = latest_backup(cfg.library)
     add("Database backup", b is not None, f"{b.name}" if b else "none yet")
     add("Kept awake while working", sys.platform != "darwin" or shutil.which("caffeinate"), "caffeinate" if shutil.which("caffeinate") else "not available")
@@ -166,7 +179,10 @@ def latest_backup(library):
 
 
 def daily_backup(conn, library, keep=10):
-    """One copy of the database per day (SQLite's online backup: safe while the app writes); keeps the newest 10."""
+    """One copy of the database per day (SQLite's online backup: safe while the app writes); keeps the newest 10.
+    On Postgres the database is the managed service's job (point-in-time restore), so this does nothing."""
+    if not isinstance(conn, sqlite3.Connection):
+        return None
     d = backup_dir(library); d.mkdir(parents=True, exist_ok=True)
     target = d / f"dubstudio-{date.today().isoformat()}.db"
     if not target.exists():

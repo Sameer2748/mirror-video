@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Profile, Show } from "../api";
-import { ErrorBox, Picker } from "../ui";
+import { ErrorBox, Picker, uploadFile } from "../ui";
 
 // The profile fields the editor sets here; everything else keeps the preset's value. Sentences, groups, max drift,
 // subtitle rows and the ending are the same for every show (owner, 2026-10-20) and are not set here.
@@ -24,6 +24,9 @@ export default function NewShow() {
   const [prof, setProf] = useState<Profile>({});
   const [picking, setPicking] = useState(false);
   const [err, setErr] = useState<string | null>(null); const [busy, setBusy] = useState(false);
+  const [where, setWhere] = useState<"upload" | "folder">("upload");     // files uploaded here, or read from a Mac folder
+  const [sheet, setSheet] = useState<File | null>(null);
+  const [sheetUp, setSheetUp] = useState(0);
 
   useEffect(() => { api.get<Record<string, Profile>>("/api/presets").then(setPresets).catch((e) => setErr(e.message)); }, []);
 
@@ -36,7 +39,8 @@ export default function NewShow() {
   async function save() {
     setBusy(true); setErr(null);
     try {
-      const s = await api.post<Show>("/api/shows", { name, code, folder, preset, profile: prof });
+      const s = await api.post<Show>("/api/shows", { name, code, folder: where === "folder" ? folder : "", preset, profile: prof });
+      if (sheet) await uploadFile(`/api/shows/${s.id}/sheet`, sheet, (f) => setSheetUp(f));
       nav(`/shows/${s.id}`);
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
@@ -58,17 +62,35 @@ export default function NewShow() {
       </div>
       {preset && (
         <>
-          <h3>2. Name and folder</h3>
+          <h3>2. Name and files</h3>
           <div className="form">
             <label>Name<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Wolves of Blood Moon" /></label>
             <label>Code<input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="WBM" />
               <span className="hint">used in output file names: {code || "CODE"}_EP17_…</span></label>
-            <label>Show folder
+            <label>Where the episode files come from
+              <select value={where} onChange={(e) => setWhere(e.target.value as any)}>
+                <option value="upload">Uploaded here (kept in cloud storage)</option>
+                <option value="folder">A folder on this Mac</option>
+              </select>
+              <span className="hint">{where === "upload"
+                ? "For each episode you upload the source video, the dub audio and the script. They go to R2 and the workers take them from there."
+                : "The app only reads the inputs in that folder; outputs go to the output folder below."}</span>
+            </label>
+            {where === "folder" && (
+              <label>Show folder
+                <div className="row">
+                  <input value={folder} onChange={(e) => setFolder(e.target.value)} placeholder="/Users/…/WBM US-IT" />
+                  <button onClick={() => setPicking(true)}>Browse…</button>
+                </div>
+              </label>
+            )}
+            <label>Localisation sheet{where === "folder" ? " (optional)" : ""}
               <div className="row">
-                <input value={folder} onChange={(e) => setFolder(e.target.value)} placeholder="/Users/…/WBM US-IT" />
-                <button onClick={() => setPicking(true)}>Browse…</button>
+                <input type="file" accept=".csv,.xlsx,.xls" onChange={(e) => setSheet(e.target.files?.[0] || null)} />
+                {sheet && sheetUp > 0 && sheetUp < 1 && <span className="muted small-text">{Math.round(sheetUp * 100)}%</span>}
               </div>
-              <span className="hint">The app only reads the inputs here; outputs go to the output folder below.</span>
+              <span className="hint">Two columns: source name | target name. Sent to Claude with every episode's matching.
+                {where === "folder" ? " Found in the show folder when you leave this empty." : ""}</span>
             </label>
           </div>
           <h3>3. Profile</h3>
@@ -100,7 +122,9 @@ export default function NewShow() {
           </div>
           <ErrorBox error={err} />
           <div className="actions">
-            <button className="primary" disabled={busy || !name || !code || !folder} onClick={save}>Create show</button>
+            <button className="primary" disabled={busy || !name || !code || (where === "folder" && !folder)} onClick={save}>
+              {busy ? "Creating…" : "Create show"}
+            </button>
           </div>
         </>
       )}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { api, Episode, reveal, useLive } from "../api";
-import { base, Chip, ErrorBox, fmtDur, fmtSize, Picker } from "../ui";
+import { api, Episode, reveal, Upload, useLive } from "../api";
+import { base, Chip, ErrorBox, fmtDur, fmtSize, Picker, uploadEpisodeFile } from "../ui";
 import Processing from "./Processing";
 import Matching from "./Matching";
 import { RenderRow } from "./Renders";
@@ -48,6 +48,13 @@ export default function EpisodePage() {
       <div className="page-head">
         <h1>{ep.show.name} <span className="muted" style={{ fontWeight: 500 }}>Episode {ep.number}</span> <Chip status={ep.status} extra={ep.status === "processing" ? `${Math.round(prog * 100)}%` : undefined} /></h1>
       </div>
+      {ep.status === "queued" && (
+        <div className="callout">
+          <div className="grow"><b>In the queue{ep.queue_position && ep.queue_position > 1 ? ` · ${ep.queue_position - 1} episode(s) ahead` : " · next"}.</b>{" "}
+            <span className="muted">The machine is working on another episode. This one starts by itself, nothing else to do.</span></div>
+          <Link to="/renders" className="button small">See the queue</Link>
+        </div>
+      )}
       {ep.status === "review" && (
         <div className="callout">
           <div className="grow"><b>Ready for review.</b> <span className="muted">Every clip is on the timeline. Check it, fix what needs fixing, then press Render in the editor.</span></div>
@@ -62,7 +69,9 @@ export default function EpisodePage() {
         ))}
         {canEdit && <button className="tab editor-tab" onClick={() => nav(`/episodes/${eid}/editor`)}>Editor ↗</button>}
       </div>
-      {cur === "files" && <Files ep={ep} reload={load} onStarted={() => go("processing")} />}
+      {cur === "files" && (ep.show.profile.uploads
+        ? <UploadFiles ep={ep} reload={load} onStarted={() => go("processing")} />
+        : <Files ep={ep} reload={load} onStarted={() => go("processing")} />)}
       {cur === "processing" && <Processing ep={ep} reload={load} goMatching={() => go("matching")} />}
       {cur === "matching" && <Matching ep={ep} onImported={() => { load(); go("processing"); }} />}
       {cur === "outputs" && <Outputs ep={ep} />}
@@ -91,6 +100,79 @@ function describe(kind: string, info: any) {
   if (kind.endsWith("_srt")) return `${info.cues} cues · ends ${fmtDur(info.last_end_s)}${info.language ? ` · looks ${info.language}` : ""}`;
   if (kind.endsWith("_script")) return `${info.chars} characters${info.language ? ` · looks ${info.language}` : ""}`;
   return "";
+}
+
+/** Upload mode (a show whose files are not on this Mac): one row per file, straight into cloud storage. */
+function UploadRow({ ep, kind, label, hint, need, have, size, reload }:
+  { ep: Episode; kind: string; label: string; hint: string; need?: boolean; have?: string; size?: number | null; reload: () => void }) {
+  const [pct, setPct] = useState(-1);
+  const [err, setErr] = useState<string | null>(null);
+  async function pick(f: File | null) {
+    if (!f) return;
+    setErr(null); setPct(0);
+    try { await uploadEpisodeFile(ep.id, kind, f, setPct); reload(); }
+    catch (e: any) { setErr(e.message); } finally { setPct(-1); }
+  }
+  async function clear() {
+    try { await api.del(`/api/episodes/${ep.id}/files/${kind}`); reload(); } catch (e: any) { setErr(e.message); }
+  }
+  return (
+    <tr>
+      <td><b>{label}</b>{need && <span className="req"> *</span>}<div className="hint">{hint}</div></td>
+      <td>
+        {have ? <span title={have}>{base(have)} <span className="muted">{fmtSize(size)}</span></span>
+          : <span className="muted">{need ? "not uploaded yet" : "none (fine)"}</span>}
+        {pct >= 0 && <><div className="bar" style={{ marginTop: 6 }}><div className="bar-fill" style={{ width: `${Math.round(pct * 100)}%` }} /></div>
+          <div className="muted small-text">{Math.round(pct * 100)}% uploaded</div></>}
+        {err && <div className="error small-text">{err}</div>}
+      </td>
+      <td className="small-text muted">{have ? <span className="good">✓ in cloud storage</span> : ""}</td>
+      <td className="right">
+        <label className="button small">{have ? "Replace…" : "Upload…"}
+          <input type="file" style={{ display: "none" }} disabled={pct >= 0} onChange={(e) => pick(e.target.files?.[0] || null)} />
+        </label>
+        {have && <button className="small ghost" disabled={pct >= 0} onClick={clear}>Remove</button>}
+      </td>
+    </tr>
+  );
+}
+
+function UploadFiles({ ep, reload, onStarted }: { ep: Episode; reload: () => void; onStarted: () => void }) {
+  const [busy, setBusy] = useState(""); const [err, setErr] = useState<string | null>(null);
+  const [d, s] = (ep.show.profile.labels || "DUB,SRC").split(",");
+  const have: Record<string, { path: string; size: number | null }> = {};
+  ep.assets.filter((a) => a.role === "input").forEach((a) => (have[a.kind] = { path: a.path, size: a.size ?? null }));
+  const missing = KINDS.filter((k) => k.need && !have[k.kind]);
+  async function start() {
+    setBusy("start"); setErr(null);
+    try { await api.post(`/api/episodes/${ep.id}/process`); reload(); onStarted(); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(""); }
+  }
+  return (
+    <div>
+      <div className="panel">
+        <div className="muted small-text">The files you upload go to cloud storage (R2) under
+          <code> shows/{ep.show.code}/ep{ep.number}/input/</code>. When you press Start processing the episode joins the
+          queue; a worker brings the files down, runs every step, puts the results back and frees the machine.</div>
+      </div>
+      <table className="table files">
+        <thead><tr><th style={{ width: 200 }}>File</th><th>Uploaded</th><th style={{ width: 160 }}></th><th style={{ width: 180 }}></th></tr></thead>
+        <tbody>
+          {KINDS.map((k) => (
+            <UploadRow key={k.kind} ep={ep} kind={k.kind} label={k.label(d, s)} hint={k.hint} need={k.need}
+              have={have[k.kind]?.path} size={have[k.kind]?.size} reload={reload} />
+          ))}
+        </tbody>
+      </table>
+      <ErrorBox error={err} />
+      <div className="actions">
+        <button className="primary" disabled={!!busy || missing.length > 0} onClick={start}>
+          {busy === "start" ? "Starting…" : ep.run ? "Process again" : "Start processing"}
+        </button>
+        {missing.length > 0 && <span className="muted">Still needed: {missing.map((k) => k.label(d, s)).join(", ")}</span>}
+      </div>
+    </div>
+  );
 }
 
 function Files({ ep, reload, onStarted }: { ep: Episode; reload: () => void; onStarted: () => void }) {
@@ -247,10 +329,58 @@ function Outputs({ ep }: { ep: Episode }) {
           ))}
         </tbody>
       </table>
+      <Cloud ep={ep} />
       {d.final_check_image && <div className="panel">
         <div className="small-text muted" style={{ marginBottom: 8 }}>The final check: the same moment in every video (clean = no subtitles; the others show theirs).</div>
         <img src={`/api/episodes/${ep.id}/final-check.jpg?v=${r?.finished || 0}`} alt="final check" style={{ maxWidth: "100%", borderRadius: 10 }} />
       </div>}
+    </div>
+  );
+}
+
+// ---------------- the same files in the cloud (R2) ----------------
+function Cloud({ ep }: { ep: Episode }) {
+  const [c, setC] = useState<{ configured: boolean; auto: boolean; prefix: string | null; uploads: Upload[] } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState("");
+  const load = () => api.get<any>(`/api/episodes/${ep.id}/uploads`).then(setC).catch((e) => setErr(e.message));
+  useEffect(() => { load(); }, [ep.id]);   // eslint-disable-line
+  useLive((e) => { if (e.kind === "upload" && e.episode_id === ep.id) load(); });
+
+  async function send() {
+    setBusy("send"); setErr(null);
+    try { await api.post(`/api/episodes/${ep.id}/uploads`); load(); } catch (e: any) { setErr(e.message); } finally { setBusy(""); }
+  }
+  async function link(u: Upload) {
+    try { const r = await api.get<{ url: string }>(`/api/uploads/${u.id}/link`); window.open(r.url, "_blank"); }
+    catch (e: any) { setErr(e.message); }
+  }
+  if (!c || !c.configured) return null;
+  const running = c.uploads.find((u) => u.status === "sending");
+  return (
+    <div className="panel">
+      <div className="panel-row">
+        <b>In the cloud</b>
+        <span className="muted small-text">R2 · <code>{c.prefix}</code>{c.auto ? " · sent up by itself when the episode is done" : ""}</span>
+        <span className="grow" />
+        <button className="small" disabled={!!busy} onClick={send}>{busy === "send" ? "Queueing…" : "Send the finished files up"}</button>
+      </div>
+      <ErrorBox error={err} />
+      {running && <div className="bar" style={{ marginBottom: 8 }}><div className="bar-fill" style={{ width: `${Math.round(((running.sent || 0) / Math.max(running.size || 1, 1)) * 100)}%` }} /></div>}
+      {!c.uploads.length && <div className="muted small-text">Nothing up there yet.</div>}
+      {c.uploads.length > 0 && <table className="table"><tbody>
+        {c.uploads.map((u) => (
+          <tr key={u.id}>
+            <td style={{ width: 24 }}>{u.status === "done" ? <span className="good">✓</span> : u.status === "failed" ? <span className="bad">✗</span> : "⟳"}</td>
+            <td>{u.name}<div className="small-text muted">{u.status === "sending" ? `${fmtSize(u.sent)} of ${fmtSize(u.size)}` : u.status === "failed" ? u.error : u.key}</div></td>
+            <td className="muted">{fmtSize(u.size)}</td>
+            <td className="right">
+              {u.status === "done" && <button className="small ghost" onClick={() => link(u)}>Download link</button>}
+              {u.status === "failed" && <button className="small ghost" onClick={() => api.post(`/api/uploads/${u.id}/retry`).then(load).catch((e) => setErr(e.message))}>Try again</button>}
+            </td>
+          </tr>
+        ))}
+      </tbody></table>}
     </div>
   );
 }

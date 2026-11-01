@@ -6,7 +6,7 @@ from .config import cfg
 from .db import now
 from .events import bus
 from .pipeline import steps as pipeline_steps, decisions as dec
-from . import scan, timeline
+from . import deliver, envfile, scan, storage, timeline
 
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
@@ -117,6 +117,74 @@ class Runner:
         bus.publish("run_created", ep_id, run=run, steps=len(plan))
         self.wake.set()
         return run
+
+    # ---------- the queue: episodes take their turn (docs/09 §4) ----------
+    @staticmethod
+    def max_active():
+        """How many episodes are worked on at the same time. 1 = one by one (the default)."""
+        return max(1, envfile.number("MAX_ACTIVE_EPISODES", 1))
+
+    def active_episodes(self):
+        """Episodes using the machine now. An episode parked at a gate (Check matching, Ready for review) is not:
+        it is waiting for a person, so the next episode in the line may start."""
+        return [r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='processing'")]
+
+    def submit(self, ep_id):
+        """Press Start processing: begin now if the machine is free, otherwise wait in the line."""
+        show, ep, assets = self.episode_context(ep_id)
+        missing = [k for k in ("src_video", "dub_audio") if not assets.get(k)]
+        if missing:
+            raise ValueError(f"missing input files: {', '.join(missing)}")
+        active = [e for e in self.active_episodes() if e != ep_id]
+        if len(active) >= self.max_active():
+            self.db.update("episodes", ep_id, status="queued", queued=now(), updated=now())
+            bus.publish("episode_status", ep_id, status="queued")
+            pos = self.queue_position(ep_id)
+            return {"queued": True, "position": pos, "message": f"in the line: {pos} ahead of this one"
+                    if pos else "next in the line"}
+        run = self.create_run(ep_id)
+        return {"queued": False, "run": run, "position": 0}
+
+    def queue_position(self, ep_id):
+        row = self.db.one("SELECT queued FROM episodes WHERE id=?", (ep_id,))
+        if not row or not row.get("queued"):
+            return 0
+        n = self.db.one("SELECT COUNT(*) AS n FROM episodes WHERE status='queued' AND queued < ?", (row["queued"],))
+        return (n or {}).get("n", 0) + 1
+
+    def start_next(self):
+        """A machine came free: take the oldest episode out of the line (never more than max_active at once)."""
+        while len(self.active_episodes()) < self.max_active():
+            nxt = self.db.one("SELECT * FROM episodes WHERE status='queued' ORDER BY queued LIMIT 1")
+            if not nxt:
+                return
+            try:
+                self.create_run(nxt["id"])
+                self.db.update("episodes", nxt["id"], queued=None)
+            except Exception as ex:
+                self.db.update("episodes", nxt["id"], status="failed", queued=None, note=str(ex)[:200])
+                bus.publish("episode_status", nxt["id"], status="failed")
+
+    def queue_view(self, db=None):
+        d = db or self.db
+        rows = d.q("SELECT e.id, e.number, e.status, e.queued, s.code, s.name, s.owner_id FROM episodes e "
+                   "JOIN shows s ON s.id=e.show_id WHERE e.status IN ('queued','processing') ORDER BY e.queued, e.id")
+        active = set(self.active_episodes())
+        out = []
+        for r in rows:
+            run = self.latest_run(r["id"])
+            jobs = d.q("SELECT step, status, progress, params FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
+                       (r["id"], run)) if run else []
+            cur = next((j for j in jobs if j["status"] == "running"), None)
+            done = sum(1 for j in jobs if j["status"] in ("done", "skipped"))
+            out.append({**r, "working": r["id"] in active, "step": (cur or {}).get("step"),
+                        "step_label": ((cur or {}).get("params") or {}).get("label"),
+                        "steps_done": done, "steps": len(jobs),
+                        "progress": round(done / len(jobs), 3) if jobs else 0})
+        for i, e in enumerate([x for x in out if x["status"] == "queued"], start=1):
+            e["position"] = i
+        return {"max_active": self.max_active(), "working": [e for e in out if e["working"]],
+                "waiting": [e for e in out if e["status"] == "queued"]}
 
     def latest_run(self, ep_id):
         r = self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))
@@ -234,6 +302,22 @@ class Runner:
             if new != e["status"]:
                 self.db.update("episodes", e["id"], status=new, updated=now())
                 bus.publish("episode_status", e["id"], status=new)
+                if new == "done":
+                    self._cloud_upload(e["id"])
+                if new in ("done", "failed", "cancelled", "review", "needs_input"):
+                    self.start_next()          # this episode has let the machine go: the next in the line starts
+
+    def _cloud_upload(self, eid):
+        """A finished episode's deliverables go up to R2 by themselves (switch off with R2_AUTO_UPLOAD=false)."""
+        try:
+            if not (storage.configured() and storage.settings()["auto_upload"]):
+                return
+            ep = self.db.one("SELECT * FROM episodes WHERE id=?", (eid,))
+            show = self.db.one("SELECT * FROM shows WHERE id=?", (ep["show_id"],))
+            files = deliver.deliverables(show, ep, None)
+            storage.queue_uploads(self.db, show, ep, files, user_id=show.get("owner_id"))
+        except Exception as ex:
+            print("R2 upload:", str(ex)[:200])
 
     # ---------- one job ----------
     def _set(self, j, **vals):
@@ -249,13 +333,14 @@ class Runner:
 
     @staticmethod
     def _spend():
-        """The AI gateway's spend so far ($), or 'NA' (no AI set up / not reachable): quick, never blocks a step long."""
+        """What Claude has cost so far ($), from whichever provider is in use, or 'NA' (not set up / not reachable).
+        The difference before and after a step is that step's cost in the run-times table."""
         from . import ai
         if not ai.available():
             return "NA"
         try:
-            i = ai._req("/key/info", timeout=8); i = i.get("info", i)
-            return str(i.get("spend")) if i.get("spend") is not None else "NA"
+            spend = ai.key_info().get("spend")
+            return str(spend) if spend is not None else "NA"
         except Exception:
             return "NA"
 
@@ -265,14 +350,17 @@ class Runner:
         left. Never skip the step: it stops here with a message for the owner (docs/06)."""
         from . import ai
         if not ai.available():
-            raise RuntimeError("the AI gateway is not set up (Settings → AI): this step needs Claude")
+            raise RuntimeError("Claude is not set up (Settings → AI): this step needs it")
+        where = "OpenRouter" if ai.provider() == "openrouter" else "the AI gateway"
         try:
-            i = ai._req("/key/info", timeout=15); i = i.get("info", i)
+            i = ai.key_info()
         except Exception as ex:
-            raise RuntimeError(f"the AI gateway is not reachable ({str(ex)[:80]}) — turn the VPN on, then Retry this step")
+            extra = " — turn the VPN on, then Retry this step" if ai.provider() != "openrouter" else " — check the internet, then Retry"
+            raise RuntimeError(f"{where} is not reachable ({str(ex)[:80]}){extra}")
         spend, cap = i.get("spend"), i.get("max_budget")
-        if spend is not None and cap is not None and float(spend) >= float(cap):
-            raise RuntimeError(f"AI budget used up: ${float(spend):.2f} of ${float(cap):.2f} — ask to raise it, then Retry")
+        if spend is not None and cap is not None and float(cap) > 0 and float(spend) >= float(cap):
+            raise RuntimeError(f"AI budget used up on {where}: ${float(spend):.2f} of ${float(cap):.2f} — "
+                               f"raise it (or top up), then Retry")
 
     def _log_time(self, j, secs, s0, s1, rc):
         """W/run_times.tsv, the run_episode.sh format: name, seconds, spend before, spend after, exit code, clock time."""
@@ -396,6 +484,86 @@ class Runner:
             return []
 
     # ---------- internal steps ----------
+    # ---------- the three storage steps (docs/09 §3): get the files, put the results back, clean up ----------
+    def _fn_fetch_inputs(self, j):
+        """Uploaded episodes keep their files in R2: bring them down to the work folder before anything runs.
+        A show whose files are on this Mac has nothing to fetch."""
+        show, ep, _ = self.episode_context(j["episode_id"])
+        todo = storage.inputs_to_fetch(self.db, ep) if storage.configured() else []
+        if not todo:
+            self._set(j, status="done", progress=1, finished=now(), message="the files are here already")
+            return
+        total = sum(a["size"] or 0 for a in todo) or 1
+        done_bytes = [0]; last = [0.0]
+
+        def prog(kind, got, size):
+            if time.time() - last[0] > 0.5:
+                last[0] = time.time()
+                self._set(j, progress=round(min((done_bytes[0] + got) / total, 1), 4),
+                          message=f"getting {kind} ({(done_bytes[0] + got) / 1e6:.0f} of {total / 1e6:.0f} MB)")
+        with open(j["log_path"], "a") as f:
+            def log(m):
+                f.write(m + "\n"); f.flush()
+            for a in todo:
+                storage.fetch_inputs(self.db, show, ep, kinds=[a["kind"]], log=log, on_progress=prog)
+                done_bytes[0] += a["size"] or 0
+        self._set(j, status="done", progress=1, finished=now(),
+                  message=f"{len(todo)} file(s) brought down ({total / 1e6:.0f} MB)")
+
+    def _fn_publish(self, j):
+        """The delivered files (and the small work files) go up to R2."""
+        show, ep, _ = self.episode_context(j["episode_id"])
+        if not storage.configured():
+            self._set(j, status="skipped", progress=1, finished=now(), message="cloud storage is off")
+            return
+        with open(j["log_path"], "a") as f:
+            out = storage.publish_outputs(self.db, show, ep, deliver.deliverables(show, ep, None),
+                                          user_id=show.get("owner_id"), log=lambda m: f.write(m + "\n"))
+        self._set(j, status="done", progress=1, finished=now(),
+                  message=f"{out['uploads']} files to the cloud, {out['work_files']} work files kept")
+
+    def _fn_cleanup(self, j):
+        """Free the machine for the next episode: the files that came from R2 are deleted again."""
+        show, ep, _ = self.episode_context(j["episode_id"])
+        if not storage.configured():
+            self._set(j, status="skipped", progress=1, finished=now(), message="cloud storage is off")
+            return
+        waiting = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status IN ('waiting','sending')",
+                              (ep["id"],))
+        for _ in range(600):                      # the files must be up there before the local ones go
+            if not (waiting or {}).get("n"):
+                break
+            time.sleep(1)
+            waiting = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status IN ('waiting','sending')",
+                                  (ep["id"],))
+            self._set(j, message=f"waiting for {waiting['n']} file(s) to finish going up")
+        failed = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status='failed'", (ep["id"],))
+        if (failed or {}).get("n"):
+            raise RuntimeError(f"{failed['n']} file(s) could not be sent to the cloud: nothing was deleted")
+        with open(j["log_path"], "a") as f:
+            out = storage.clean_scratch(self.db, ep, keep_work=not envfile.flag("CLEAN_WORK", False),
+                                        log=lambda m: f.write(m + "\n"))
+        self._set(j, status="done", progress=1, finished=now(), message=f"{out['freed'] / 1e9:.2f} GB freed")
+
+    def _fn_lip_scan_cloud(self, j):
+        """The lip scan on rented machines: the episode is split into pieces that scan side by side and come back
+        as the same `lips_nets` files the local step writes (proved identical to this Mac: docs/03, 2026-11-01)."""
+        from . import cloud
+        show, ep, assets = self.episode_context(j["episode_id"])
+        dur = assets.get("_dur_src_video")
+        if not dur:
+            raise RuntimeError("the source video's length is not known yet (the ingest step measures it)")
+        with open(j["log_path"], "a") as f:
+            def log(m):
+                f.write(m + "\n"); f.flush()
+
+            def progress(done, total, workers):
+                self._set(j, progress=round(done / max(total, 1), 3),
+                          message=f"{done} of {total} pieces; {workers.get('running', 0)} machines working")
+            out = cloud.lip_scan(self.db, show, ep, float(dur), log=log, on_progress=progress)
+        self._set(j, status="done", progress=1, finished=now(),
+                  message=f"{out['files']} pieces scanned on {out['pieces']} machines in {out['seconds']:.0f} s")
+
     def _fn_ingest(self, j):
         ep_id = j["episode_id"]; problems = []
         rows = self.db.q("SELECT * FROM assets WHERE episode_id=? AND role='input'", (ep_id,))

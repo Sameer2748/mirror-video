@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
-import { api, Show, useLive } from "./api";
+import { api, auth, onSignedOut, Show, useLive, User } from "./api";
 import Shows from "./pages/Shows";
 import NewShow from "./pages/NewShow";
 import ShowPage from "./pages/Show";
@@ -9,6 +9,8 @@ import EpisodePage from "./pages/Episode";
 import Editor from "./pages/Editor";
 import Renders from "./pages/Renders";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import Accounts from "./pages/Accounts";
 
 type AiStatus = { configured: boolean; model?: string; spend?: number; max_budget?: number; error?: string };
 
@@ -29,7 +31,20 @@ export function BrandMark() {
   );
 }
 
-function Sidebar() {
+function WhoAmI({ me, onOut }: { me: User | null; onOut: () => void }) {
+  if (!me) return null;
+  return (
+    <div className="who">
+      <Link to="/account" className="who-name" title={`Signed in as ${me.username}${me.role === "admin" ? " (owner)" : ""}`}>
+        <span className="who-dot">{(me.name || me.username).slice(0, 1).toUpperCase()}</span>
+        <span className="grow">{me.name || me.username}</span>
+      </Link>
+      <button className="small ghost" onClick={onOut}>Sign out</button>
+    </div>
+  );
+}
+
+function Sidebar({ me, onOut }: { me: User | null; onOut: () => void }) {
   const [shows, setShows] = useState<Show[]>([]);
   const [active, setActive] = useState(0);
   const load = () => {
@@ -46,6 +61,7 @@ function Sidebar() {
       <NavLink to="/" end className="nav-item">◫ All shows</NavLink>
       <NavLink to="/shows/new" className="nav-item">＋ New show</NavLink>
       <NavLink to="/renders" className="nav-item">▤ Render queue{active ? <><span className="grow" /><span className="chip chip-blue" style={{ padding: "1px 7px" }}>{active}</span></> : null}</NavLink>
+      <NavLink to="/account" className="nav-item">◉ {me?.role === "admin" ? "Accounts" : "My account"}</NavLink>
       <NavLink to="/settings" className="nav-item">⚙ Settings</NavLink>
       {shows.length > 0 && <div className="side-label">Shows</div>}
       {shows.map((s) => {
@@ -59,25 +75,41 @@ function Sidebar() {
           </NavLink>
         );
       })}
-      <div className="side-foot"><AiBadge /></div>
+      <div className="side-foot"><AiBadge /><WhoAmI me={me} onOut={onOut} /></div>
     </aside>
   );
 }
 
 export default function App() {
   const { pathname } = useLocation();
+  const [me, setMe] = useState<User | null>(null);
+  const [need, setNeed] = useState<boolean | null>(null);      // null = we have not asked the server yet
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    auth.me().then((m) => { setMe(m.user); setNeed(m.required && !m.user); })
+      .catch(() => { setMe(null); setNeed(true); });
+    onSignedOut(() => { setMe(null); setNeed(true); });
+    return () => onSignedOut(null);
+  }, []);
+  async function signOut() {
+    try { await auth.logout(); } catch { /* the cookie is gone either way */ }
+    setMe(null); setNeed(true);
+  }
+
+  if (need === null) return <div className="signin"><div className="muted">…</div></div>;
+  if (need) return <Login onDone={(u) => { setMe(u); setNeed(false); }} />;
   if (/^\/episodes\/\d+\/editor/.test(pathname)) {
     return <Routes><Route path="/episodes/:eid/editor" element={<Editor />} /></Routes>;
   }
   return (
     <div className="app">
-      <Sidebar />
+      <Sidebar me={me} onOut={signOut} />
       <main className="main">
         <Routes>
           <Route path="/" element={<Shows />} />
           <Route path="/shows/new" element={<NewShow />} />
           <Route path="/renders" element={<Renders />} />
+          <Route path="/account" element={<Accounts me={me} onMe={setMe} />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/shows/:sid" element={<ShowPage />} />
           <Route path="/shows/:sid/new-episode" element={<NewEpisode />} />

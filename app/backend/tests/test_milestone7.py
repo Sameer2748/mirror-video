@@ -38,7 +38,9 @@ def test_settings_never_return_the_key(env, tmp_path, monkeypatch):
     assert "AI_KEY=sk-SECRET123" in (tmp_path / ".env").read_text()                      # empty key = keep it
     assert c.put("/api/settings/ai", json={"remove_key": True}).json()["key_set"] is False
     assert c.put("/api/settings/ai", json={"base": "gw.example"}).status_code == 400
-    assert {h["name"] for h in g.json()["health"]} >= {"Pipeline scripts", "ffmpeg", "Free disk space", "AI gateway"}
+    names = {h["name"] for h in g.json()["health"]}
+    assert names >= {"Pipeline scripts", "ffmpeg", "Free disk space"}
+    assert any(n.startswith("Claude (") for n in names)        # which provider is in use is on the page
     # app settings: checked, saved in config.json
     assert c.put("/api/settings/app", json={"cpu_slots": 3}).json()["saved"]["cpu_slots"] == 3
     assert c.put("/api/settings/app", json={"cpu_slots": 30}).status_code == 400

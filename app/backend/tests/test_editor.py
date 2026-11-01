@@ -117,3 +117,24 @@ def test_software_trims_are_marked_for_the_editor(tmp_path):
     assert [f for f in tlm.flags(tl, tlm.context(w), {})["c1"] if f["kind"] == "trimmed"][0]["approved"]
     tl["clips"][2]["s0"] += 200                                  # the editor changed it: his cut now
     assert not [f for f in tlm.flags(tl, tlm.context(w), {})["c2"] if f["kind"] == "trimmed"]
+
+
+def test_a_broll_repeat_is_a_note_not_a_blocker(tmp_path):
+    """The scene edit shows a B-roll shot again on purpose (zoomed, at most 3 times). That must not be a red flag:
+    red flags stop the render, and the editor would have to approve 50 of them on every episode."""
+    from dubstudio import timeline as tlm
+    W = tmp_path / "w"; W.mkdir()
+    (W / "manifest_groups.json").write_text(json.dumps({"total_ms": 20000, "segments": []}))
+    clip = lambda i, t0, s0, **kw: dict(id=f"c{i}", row=i, t0=t0, t1=t0 + 4000, s0=s0, s1=s0 + 4000, **kw)
+    ctx = tlm.context(str(W))
+    plain = {"clips": [clip(0, 0, 1000), clip(1, 4000, 1000)], "v2": [], "tracks": {}, "approved": [],
+             "total_ms": 20000, "holes": []}
+    red = tlm.open_counts(tlm.flags(plain, ctx, None, []))
+    assert red["red"] >= 1                                   # two normal clips on the same footage: fix it
+
+    scene = {**plain, "clips": [clip(0, 0, 1000), clip(1, 4000, 1000, broll=True, zoom=1.08)]}
+    after = tlm.flags(scene, ctx, None, [])
+    assert tlm.open_counts(after)["red"] == 0                 # the same thing, planned by the scene edit: a note
+    msgs = [f["msg"] for fs in after.values() for f in fs if f["kind"] == "repeat"]
+    assert msgs and all(f["sev"] == "yellow" for fs in after.values() for f in fs if f["kind"] == "repeat")
+    assert "B-roll" in msgs[0]

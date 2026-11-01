@@ -46,7 +46,7 @@ def test_full_run_with_gate_resume_and_outputs(env):
     e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json()
     r = c.post(f"/api/episodes/{e['id']}/process").json()
     steps = [j["step"] for j in r["jobs"]]
-    assert steps[:3] == ["ingest", "mksrt_dub", "mksrt_src"] and "lip_gpu" in steps and "fastfix" not in steps
+    assert steps[:4] == ["fetch", "ingest", "mksrt_dub", "mksrt_src"] and "lip_gpu" in steps and "fastfix" not in steps
     assert steps.index("groups") < steps.index("library") < steps.index("facemap") < steps.index("scene_edit") \
         < steps.index("use_scene") < steps.index("review")                         # Step 4C, every show (owner, 2026-10-30)
     # the gate waits for decisions
@@ -60,7 +60,7 @@ def test_full_run_with_gate_resume_and_outputs(env):
     tl = c.get(f"/api/episodes/{e['id']}/timeline").json()["timeline"]
     assert c.post(f"/api/episodes/{e['id']}/timeline/render", json=tl).json()["steps"] == ["review"]
     ep = wait_for(lambda: (lambda x: x if x["status"] == "done" else None)(c.get(f"/api/episodes/{e['id']}").json()))
-    assert all(j["status"] == "done" for j in ep["jobs"])
+    assert all(j["status"] in ("done", "skipped") for j in ep["jobs"])   # publish/cleanup: skipped, no cloud in tests
     out = Path(ep["output_dir"])
     assert out == env["show"] / "outputs" / "ep17"
     for f in ("SHOW_EP17_IT_final_clean.mp4", "SHOW_EP17_IT_final_it_subs.mp4", "SHOW_EP17_IT_final_en_subs.mp4",
@@ -185,7 +185,8 @@ def test_scene_edit_steps_in_the_order_of_docs06():
     ctx, st = plan(show, ep, {"src_video": "/v.mp4", "dub_audio": "/a.mp3", "dub_script": "/s.docx"})
     names = [s["step"] for s in st]; by = {s["step"]: s for s in st}
     order = ["groups", "library", "facemap", "scene_edit", "use_scene", "review", "render", "verify", "bookends",
-             "trans_plan", "transitions", "subs_dub", "subs_en", "scene_sheet", "qc", "check", "notes"]
+             "trans_plan", "transitions", "subs_dub", "subs_en", "scene_sheet", "qc", "check", "notes",
+             "publish", "cleanup"]
     assert [n for n in names if n in order] == order and "fastfix" not in names
     assert {s["step"] for s in st if s.get("ai")} == {"library", "facemap", "scene_edit", "qc"}
     assert by["facemap"]["cmd"][0] == "{fpy}" and by["facemap"]["resource"] == "gpu"
@@ -200,9 +201,12 @@ def test_scene_edit_steps_in_the_order_of_docs06():
 
 
 def test_ai_gate_stops_on_no_gateway_and_on_a_used_up_budget(monkeypatch):
+    """On the gateway the message says "turn the VPN on"; on OpenRouter it says to check the internet. Either way
+    a used-up budget stops the step with the numbers in it, and a step never runs without Claude."""
     import urllib.error, pytest
     from dubstudio import ai
     from dubstudio.runner import Runner
+    monkeypatch.setenv("AI_PROVIDER", "gateway")
     monkeypatch.setattr(ai, "available", lambda: True)
     def down(*a, **k):
         raise urllib.error.URLError("timed out")
@@ -210,10 +214,17 @@ def test_ai_gate_stops_on_no_gateway_and_on_a_used_up_budget(monkeypatch):
     with pytest.raises(RuntimeError, match="VPN"):
         Runner.ai_gate()
     monkeypatch.setattr(ai, "_req", lambda *a, **k: {"info": {"spend": 100.4, "max_budget": 100.0}})
-    with pytest.raises(RuntimeError, match=r"AI budget used up: \$100.40 of \$100.00"):
+    with pytest.raises(RuntimeError, match=r"AI budget used up on the AI gateway: \$100.40 of \$100.00"):
         Runner.ai_gate()
     monkeypatch.setattr(ai, "_req", lambda *a, **k: {"info": {"spend": 14.0, "max_budget": 100.0}})
     Runner.ai_gate()                                                     # budget left: goes on
+    monkeypatch.setenv("AI_PROVIDER", "openrouter"); monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
+    monkeypatch.setattr(ai, "_req", down)
+    with pytest.raises(RuntimeError, match="OpenRouter is not reachable"):
+        Runner.ai_gate()
+    monkeypatch.setattr(ai, "_req", lambda *a, **k: {"data": {"usage": 250.0, "limit": 250.0}})
+    with pytest.raises(RuntimeError, match=r"AI budget used up on OpenRouter"):
+        Runner.ai_gate()
 
 
 def test_use_scene_keeps_the_automatic_edit_and_stretches_the_last_piece(tmp_path):

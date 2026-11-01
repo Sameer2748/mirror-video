@@ -1,14 +1,14 @@
 """FastAPI app: REST API under /api, live events on /api/ws, the built UI at /."""
-import asyncio, json, os, re, shutil, time
+import asyncio, json, os, re, shutil, threading, time
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Body
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Body, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from .config import cfg, ROOT
 from .db import DB, now
 from .events import bus
 from .runner import Runner
-from . import gen, imports, presets, scan, deliver, names as nm, settings as stg, timeline as tlm
+from . import auth, envfile, gen, imports, presets, scan, deliver, names as nm, settings as stg, storage, timeline as tlm
 from .pipeline import steps as pipeline_steps
 from .pipeline import decisions as dec
 
@@ -29,13 +29,34 @@ def _startup():
     cfg.library.mkdir(parents=True, exist_ok=True)
     state["db"] = DB(cfg.db_path)
     bus.db = state["db"]
+    bus.connect_redis(envfile.get("REDIS_URL"))      # one machine: not needed; several: every replica hears it all
     state["runner"] = Runner(state["db"])
     state["runner"].start()
     gen_interrupted(state["db"])
+    accounts_ready(state["db"])
     try:
         stg.daily_backup(state["db"].conn, cfg.library)
+        if storage.configured() and storage.settings()["db_sync"]:
+            threading.Thread(target=_push_db_quietly, daemon=True).start()
+        storage.start_worker(state["db"])          # finishes any upload that was running when the app stopped
     except Exception as ex:
         print("backup:", ex)
+
+
+def accounts_ready(d):
+    """The first account (app/.env ADMIN_USERNAME / ADMIN_PASSWORD) and, on an older library, every show without an
+    owner goes to that account -- so nothing the owner made before accounts existed disappears."""
+    auth.seed(d)
+    admin = d.one("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1")
+    if admin and d.one("SELECT id FROM shows WHERE owner_id IS NULL LIMIT 1"):
+        d.ex("UPDATE shows SET owner_id=? WHERE owner_id IS NULL", (admin["id"],))
+
+
+def _push_db_quietly():
+    try:
+        storage.push_db(state["db"].conn, cfg.library)
+    except Exception as ex:
+        print("R2 database copy:", str(ex)[:200])
 
 
 def gen_interrupted(d):
@@ -48,6 +69,7 @@ def gen_interrupted(d):
 
 @app.on_event("shutdown")
 def _shutdown():
+    storage.stop_worker()
     if "runner" in state:
         state["runner"].shutdown()
 
@@ -57,6 +79,188 @@ def _get(table, id_):
     if not row:
         raise HTTPException(404, f"{table[:-1]} {id_} not found")
     return row
+
+
+# ---------------- accounts: who is signed in, and what they may open ----------------
+# Everyone sees their own shows and episodes; the admin (the owner) sees them all. The check is done once here,
+# for every /api path that carries an id, so no endpoint can forget it.
+PUBLIC_API = {"/api/info", "/api/auth/login", "/api/auth/logout", "/api/auth/me"}
+ADMIN_API = (re.compile(r"^/api/users"), re.compile(r"^/api/settings/"), re.compile(r"^/api/restart$"),
+             re.compile(r"^/api/storage/db"))
+OWNED_API = re.compile(r"^/api/(shows|episodes|jobs|markers|uploads)/(\d+)")
+OWNER_SQL = {
+    "shows": "SELECT owner_id FROM shows WHERE id=?",
+    "episodes": "SELECT s.owner_id AS owner_id FROM episodes e JOIN shows s ON s.id=e.show_id WHERE e.id=?",
+    "jobs": "SELECT s.owner_id AS owner_id FROM jobs j JOIN episodes e ON e.id=j.episode_id "
+            "JOIN shows s ON s.id=e.show_id WHERE j.id=?",
+    "markers": "SELECT s.owner_id AS owner_id FROM markers m JOIN episodes e ON e.id=m.episode_id "
+               "JOIN shows s ON s.id=e.show_id WHERE m.id=?",
+    "uploads": "SELECT s.owner_id AS owner_id FROM uploads u JOIN episodes e ON e.id=u.episode_id "
+               "JOIN shows s ON s.id=e.show_id WHERE u.id=?",
+}
+
+
+def local_user():
+    """Who we are when sign-in is switched off (AUTH_REQUIRED=false): the owner's own account."""
+    row = db().one("SELECT * FROM users WHERE role='admin' ORDER BY id LIMIT 1")
+    return auth.public(row) if row else {"id": None, "username": "local", "name": "This Mac", "role": "admin", "active": 1}
+
+
+def user_of(request):
+    if not auth.required():
+        return local_user()
+    return auth.public(auth.user_of_token(db(), request.cookies.get(auth.COOKIE)))
+
+
+def me(request) -> dict:
+    """The signed-in account of this request (the guard put it there)."""
+    u = getattr(request.state, "user", None)
+    return u or user_of(request) or {}
+
+
+def _not_allowed(user, path, method):
+    """None = allowed, else the message for a 403."""
+    if not auth.is_admin(user):
+        for rx in ADMIN_API:
+            if rx.match(path):
+                return "only the owner's account can change this"
+        m = OWNED_API.match(path)
+        if m:
+            kind, id_ = m.group(1), int(m.group(2))
+            row = db().one(OWNER_SQL[kind], (id_,))
+            if row is None:
+                return None                                   # it does not exist: the endpoint answers 404
+            if row.get("owner_id") != user.get("id"):
+                return "this belongs to another account"
+    return None
+
+
+@app.middleware("http")
+async def accounts_guard(request: Request, call_next):
+    path = request.url.path
+    if not path.startswith("/api/") or path in PUBLIC_API or "db" not in state:
+        return await call_next(request)
+    user = user_of(request)
+    if not user:
+        return JSONResponse({"detail": "sign in to use Dub Studio"}, status_code=401)
+    request.state.user = user
+    msg = _not_allowed(user, path, request.method)
+    if msg:
+        return JSONResponse({"detail": msg}, status_code=403)
+    return await call_next(request)
+
+
+@app.post("/api/auth/login")
+def login(request: Request, body: dict = Body(...)):
+    """{username, password} -> the account, and the session cookie."""
+    try:
+        user, token = auth.sign_in(db(), body.get("username"), body.get("password"),
+                                   agent=request.headers.get("user-agent"), ip=request.client.host if request.client else None)
+    except ValueError as ex:
+        raise HTTPException(401, str(ex))
+    out = JSONResponse({"user": auth.public(user), "required": auth.required()})
+    out.set_cookie(value=token, **auth.cookie_kwargs())
+    return out
+
+
+@app.post("/api/auth/logout")
+def logout(request: Request):
+    auth.sign_out(db(), request.cookies.get(auth.COOKIE))
+    out = JSONResponse({"ok": True})
+    out.delete_cookie(auth.COOKIE, path="/")
+    return out
+
+
+@app.get("/api/auth/me")
+def auth_me(request: Request):
+    """Who is signed in (user = null when nobody is). The UI shows the sign-in screen on null."""
+    return {"user": user_of(request), "required": auth.required(), "ttl_seconds": auth.ttl()}
+
+
+@app.post("/api/auth/password")
+def change_password(request: Request, body: dict = Body(...)):
+    """Change your own password: {current, password}."""
+    user = me(request)
+    row = db().one("SELECT * FROM users WHERE id=?", (user.get("id"),)) if user.get("id") else None
+    if not row:
+        raise HTTPException(404, "no account to change")
+    if not auth.verify_password(body.get("current") or "", row["pw"]):
+        raise HTTPException(403, "the current password is wrong")
+    try:
+        auth.set_password(db(), row["id"], body.get("password"))
+    except ValueError as ex:
+        raise HTTPException(400, str(ex))
+    user2, token = auth.sign_in(db(), row["username"], body.get("password"))
+    out = JSONResponse({"user": auth.public(user2)})
+    out.set_cookie(value=token, **auth.cookie_kwargs())        # stay signed in on this device
+    return out
+
+
+# ---------------- accounts: the owner manages them ----------------
+@app.get("/api/users")
+def list_users():
+    rows = db().q("SELECT * FROM users ORDER BY id")
+    out = []
+    for r in rows:
+        u = auth.public(r)
+        u["shows"] = (db().one("SELECT COUNT(*) AS n FROM shows WHERE owner_id=?", (r["id"],)) or {}).get("n", 0)
+        out.append(u)
+    return out
+
+
+@app.post("/api/users")
+def add_user(body: dict = Body(...)):
+    """{username, password, name, role: admin|editor}."""
+    try:
+        u = auth.create_user(db(), body.get("username"), body.get("password"), name=body.get("name"),
+                             role=body.get("role") or "editor", email=body.get("email"))
+    except ValueError as ex:
+        raise HTTPException(400, str(ex))
+    return auth.public(u)
+
+
+@app.patch("/api/users/{uid}")
+def patch_user(request: Request, uid: int, body: dict = Body(...)):
+    """{name, email, role, active, password} -- the owner may switch an account off or give it a new password."""
+    row = _get("users", uid)
+    vals = {k: body[k] for k in ("name", "email") if k in body}
+    if "role" in body:
+        if body["role"] not in auth.ROLES:
+            raise HTTPException(400, f"the role must be one of {', '.join(auth.ROLES)}")
+        if row["role"] == "admin" and body["role"] != "admin" and _admins() <= 1:
+            raise HTTPException(409, "there must be one owner account left")
+        vals["role"] = body["role"]
+    if "active" in body:
+        if not body["active"] and row["role"] == "admin" and _admins() <= 1:
+            raise HTTPException(409, "there must be one owner account left")
+        if not body["active"]:
+            db().ex("DELETE FROM sessions WHERE user_id=?", (uid,))
+        vals["active"] = 1 if body["active"] else 0
+    if vals:
+        db().update("users", uid, updated=now(), **vals)
+    if body.get("password"):
+        try:
+            auth.set_password(db(), uid, body["password"])
+        except ValueError as ex:
+            raise HTTPException(400, str(ex))
+    return auth.public(_get("users", uid))
+
+
+@app.delete("/api/users/{uid}")
+def delete_user(request: Request, uid: int):
+    """Remove an account. Its shows move to the account that does this, so no episode is lost."""
+    row = _get("users", uid)
+    if row["role"] == "admin" and _admins() <= 1:
+        raise HTTPException(409, "there must be one owner account left")
+    if uid == me(request).get("id"):
+        raise HTTPException(409, "you cannot remove the account you are signed in with")
+    db().ex("UPDATE shows SET owner_id=? WHERE owner_id=?", (me(request).get("id"), uid))
+    db().ex("DELETE FROM users WHERE id=?", (uid,))
+    return {"deleted": uid}
+
+
+def _admins():
+    return (db().one("SELECT COUNT(*) AS n FROM users WHERE role='admin' AND active=1") or {}).get("n", 0)
 
 
 # ---------------- app info ----------------
@@ -71,9 +275,17 @@ def get_presets():
 
 
 # ---------------- shows ----------------
+def _own_filter(request, column="owner_id"):
+    user = me(request)
+    if auth.is_admin(user):
+        return "", []
+    return f" AND {column}=?", [user.get("id")]
+
+
 @app.get("/api/shows")
-def list_shows():
-    shows = db().q("SELECT * FROM shows ORDER BY name")
+def list_shows(request: Request):
+    where, args = _own_filter(request)
+    shows = db().q(f"SELECT * FROM shows WHERE 1=1{where} ORDER BY name", args)
     for s in shows:
         c = db().q("SELECT status, COUNT(*) AS n FROM episodes WHERE show_id=? GROUP BY status", (s["id"],))
         s["episode_counts"] = {r["status"]: r["n"] for r in c}
@@ -81,23 +293,34 @@ def list_shows():
 
 
 @app.post("/api/shows")
-def create_show(body: dict = Body(...)):
+def create_show(request: Request, body: dict = Body(...)):
     name = (body.get("name") or "").strip(); code = re.sub(r"[^A-Za-z0-9]", "", body.get("code") or "").upper()
     folder = (body.get("folder") or "").strip()
-    if not name or not code or not folder:
-        raise HTTPException(400, "name, code and folder are required")
-    if not Path(folder).expanduser().is_dir():
+    if not name or not code:
+        raise HTTPException(400, "name and code are required")
+    # Two kinds of show: one whose files already sit in a folder on this Mac, and one where the editor uploads them
+    # in the browser (then the "folder" is the show's own staging folder in the library -- docs/09 §3).
+    uploads = not folder
+    if uploads:
+        folder = str(cfg.library / "shows" / code)
+        Path(folder).mkdir(parents=True, exist_ok=True)
+    elif not Path(folder).expanduser().is_dir():
         raise HTTPException(400, f"folder not found: {folder}")
-    if db().one("SELECT id FROM shows WHERE code=?", (code,)):
-        raise HTTPException(409, f"a show with code {code} exists")
+    # one show code on this Mac: the code decides the output file names, so two accounts must not write the same files
+    old = db().one("SELECT id, owner_id FROM shows WHERE code=?", (code,))
+    if old:
+        mine = old.get("owner_id") == me(request).get("id")
+        raise HTTPException(409, f"a show with code {code} exists" if mine else
+                            f"a show with code {code} belongs to another account")
     prof = presets.preset(body.get("preset") or "NEW")
     prof.update(body.get("profile") or {})
-    if not prof.get("names_sheet"):                          # the localisation sheet, found in the show folder
+    prof["uploads"] = uploads                                # the screens ask for uploads instead of folders
+    if not prof.get("names_sheet") and not uploads:          # the localisation sheet, found in the show folder
         found = nm.find(Path(folder).expanduser())
         if found:
             prof["names_sheet"] = found[0]
     sid = db().insert("shows", name=name, code=code, folder=str(Path(folder).expanduser()), preset=body.get("preset"),
-                      profile=prof, created=now(), updated=now())
+                      profile=prof, owner_id=me(request).get("id"), created=now(), updated=now())
     return _get("shows", sid)
 
 
@@ -241,6 +464,8 @@ def _episode_full(eid):
     e["show"] = _get("shows", e["show_id"])
     out = Path(e["output_dir"] or "")
     e["output_existing"] = sorted(c.name for c in out.iterdir() if not c.name.startswith(".")) if e["output_dir"] and out.is_dir() else []
+    if e["status"] == "queued":
+        e["queue_position"] = runner().queue_position(eid)
     return e
 
 
@@ -248,6 +473,8 @@ def _episode_full(eid):
 def list_episodes(sid: int):
     eps = db().q("SELECT * FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     for e in eps:
+        if e["status"] == "queued":
+            e["queue_position"] = runner().queue_position(e["id"])
         run = runner().latest_run(e["id"])
         if run:
             js = db().q("SELECT status, progress FROM jobs WHERE episode_id=? AND run=?", (e["id"], run))
@@ -256,7 +483,7 @@ def list_episodes(sid: int):
 
 
 @app.post("/api/shows/{sid}/episodes")
-def create_episode(sid: int, body: dict = Body(...)):
+def create_episode(request: Request, sid: int, body: dict = Body(...)):
     s = _get("shows", sid)
     try:
         n = int(body.get("number"))
@@ -275,7 +502,7 @@ def create_episode(sid: int, body: dict = Body(...)):
         # instead of finding the old results (e.g. a lip scan "done" in 0 s)
         work.rename(work.with_name(f"{work.name}_old_{time.strftime('%Y%m%d_%H%M%S')}"))
     eid = db().insert("episodes", show_id=sid, number=n, status="new", work_dir=str(work),
-                      output_dir=str(out), created=now(), updated=now())
+                      output_dir=str(out), created_by=me(request).get("id"), created=now(), updated=now())
     found = scan.scan_episode(s["folder"], n, s["profile"])
     for kind, paths in found.items():
         if paths:
@@ -341,6 +568,216 @@ def set_assets(eid: int, body: dict = Body(...)):
     return _episode_full(eid)
 
 
+# ---------------- uploads: the browser sends the files, they live in R2 (docs/09) ----------------
+UPLOAD_KINDS = ("src_video", "dub_audio", "dub_script", "src_script", "dub_srt", "src_srt", "names_csv")
+
+
+def _save_upload(up: UploadFile, dest: Path, max_bytes=20 << 30):
+    """Write the browser's file to disk a megabyte at a time (a source video is hundreds of MB)."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    size = 0
+    with dest.open("wb") as f:
+        while True:
+            chunk = up.file.read(1 << 20)
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > max_bytes:
+                f.close(); dest.unlink(missing_ok=True)
+                raise HTTPException(413, "that file is too big")
+            f.write(chunk)
+    return size
+
+
+@app.post("/api/shows/{sid}/sheet")
+def upload_sheet(sid: int, file: UploadFile = File(...)):
+    """The show's localisation sheet (source name | target name), uploaded when the show is made."""
+    show = _get("shows", sid)
+    name = storage.safe_name(file.filename)
+    if not name.lower().endswith((".csv", ".xlsx", ".xls")):
+        raise HTTPException(400, "the localisation sheet must be a .csv or .xlsx file")
+    local = Path(show["folder"]) / "localisation" / name
+    size = _save_upload(file, local)
+    key = None
+    if storage.configured():
+        key = storage.sheet_key(show, name)
+        storage.put_file(local, key)
+    prof = show["profile"]; prof["names_sheet"] = str(local)
+    db().update("shows", sid, sheet_key=key, profile=prof, updated=now())
+    sheet = nm.read(str(local))
+    return {"name": name, "size": size, "path": str(local), "key": key, "names": len(sheet["names"]),
+            "format": sheet["format"], "problem": sheet.get("error")}
+
+
+@app.post("/api/episodes/{eid}/files/{kind}")
+def upload_file(eid: int, kind: str, file: UploadFile = File(...)):
+    """One of the episode's input files: it lands in the work folder and goes straight up to R2."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
+    if db().one("SELECT id FROM jobs WHERE episode_id=? AND status IN ('waiting','running')", (eid,)):
+        raise HTTPException(409, "this episode is processing: cancel it before changing its files")
+    name = storage.safe_name(file.filename)
+    local = Path(storage.cache_path(ep, kind, name))
+    size = _save_upload(file, local)
+    key = None
+    if storage.configured():
+        key = storage.input_key(show, ep, kind, name)
+        storage.put_big_file(local, key)                      # one PUT for small files, parts for big ones
+    return _register_asset(eid, kind, name, local, key, size)
+
+
+# ---- big files (GB): the browser sends them in parts, so a dropped line only costs one part ----
+def _ep_show(eid):
+    ep = _get("episodes", eid)
+    return ep, _get("shows", ep["show_id"])
+
+
+def _register_asset(eid, kind, name, local, key, size):
+    info, problems = scan.check_asset(kind, str(local)) if Path(local).exists() else ({}, [])
+    db().ex("DELETE FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+    db().insert("assets", episode_id=eid, kind=kind, path=str(local), role="input", size=size, r2_key=key,
+                origin="r2" if key else "local", uploaded=now(), fingerprint=(info or {}).get("fingerprint"),
+                mtime=(info or {}).get("mtime"), probe=(info or {}).get("probe"), created=now())
+    bus.publish("upload", eid, store=False, file_kind=kind, status="done", name=name)
+    return {"kind": kind, "name": name, "size": size, "key": key, "in_cloud": bool(key),
+            "info": (info or {}).get("probe"), "problems": problems}
+
+
+@app.post("/api/episodes/{eid}/files/{kind}/start")
+def upload_start(eid: int, kind: str, body: dict = Body(...)):
+    """Begin a big upload: the browser then sends the file in parts (any size, a few GB is fine)."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep, show = _ep_show(eid)
+    if db().one("SELECT id FROM jobs WHERE episode_id=? AND status IN ('waiting','running')", (eid,)):
+        raise HTTPException(409, "this episode is processing: cancel it before changing its files")
+    name = storage.safe_name(body.get("filename") or kind)
+    size = int(body.get("size") or 0)
+    local = Path(storage.cache_path(ep, kind, name))
+    local.parent.mkdir(parents=True, exist_ok=True)
+    local.unlink(missing_ok=True)                                  # a new attempt starts from the beginning
+    mode = storage.upload_mode() if storage.configured() else "local"
+    if mode != "direct" and size and size < storage.MULTIPART_FROM:
+        mode = "single"                                            # small file: one request through the API
+    out = {"key": None, "upload_id": None, "name": name, "part_size": storage.PART_BIG,
+           "parts": max(1, -(-size // storage.PART_BIG)), "mode": mode}
+    if storage.configured() and mode != "single":
+        out["key"] = storage.input_key(show, ep, kind, name)
+        out["upload_id"] = storage.multipart_start(out["key"], storage.content_type(name))
+    return out
+
+
+@app.put("/api/episodes/{eid}/files/{kind}/part")
+async def upload_part(request: Request, eid: int, kind: str, part: int, key: str = "", upload_id: str = "",
+                      name: str = ""):
+    """One part of a big upload: it is appended to the file on this machine and sent on to R2."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep, _ = _ep_show(eid)
+    data = await request.body()
+    local = Path(storage.cache_path(ep, kind, storage.safe_name(name or key or kind)))
+    local.parent.mkdir(parents=True, exist_ok=True)
+    with local.open("ab" if part > 1 else "wb") as f:
+        f.write(data)
+    etag = None
+    if key and upload_id:
+        etag = storage.multipart_put(key, upload_id, part, data)
+    bus.publish("upload", eid, store=False, file_kind=kind, status="sending", part=part, received=local.stat().st_size)
+    return {"part": part, "etag": etag, "received": local.stat().st_size}
+
+
+@app.post("/api/episodes/{eid}/files/{kind}/part-url")
+def upload_part_url(eid: int, kind: str, body: dict = Body(...)):
+    """Direct mode: a signed link for one part, so the browser sends the bytes to R2 itself (the API never carries
+    a 3 GB video). The browser reads the part's ETag from the answer — the bucket's CORS rule exposes it."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    _ep_show(eid)
+    if not (body.get("key") and body.get("upload_id") and body.get("part")):
+        raise HTTPException(400, "key, upload_id and part are needed")
+    return {"url": storage.multipart_url(body["key"], body["upload_id"], int(body["part"]), seconds=3600)}
+
+
+@app.post("/api/episodes/{eid}/files/{kind}/finish")
+def upload_finish(eid: int, kind: str, body: dict = Body(...)):
+    """All parts are in: close the upload in R2 and make the file this episode's input."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep, _ = _ep_show(eid)
+    name = storage.safe_name(body.get("name") or kind)
+    local = Path(storage.cache_path(ep, kind, name))
+    key, upload_id = body.get("key"), body.get("upload_id")
+    if key and upload_id:
+        etags = [(int(n), e) for n, e in (body.get("etags") or [])]
+        if not etags:
+            raise HTTPException(400, "no parts were sent")
+        storage.multipart_finish(key, upload_id, etags)
+        head = storage.head(key)
+        if not head:
+            raise HTTPException(502, "the file did not arrive in the cloud")
+        size = head["size"]
+    else:
+        size = local.stat().st_size if local.exists() else 0
+    return _register_asset(eid, kind, name, local, key, size)
+
+
+@app.post("/api/episodes/{eid}/files/{kind}/abort")
+def upload_abort(eid: int, kind: str, body: dict = Body(...)):
+    if body.get("key") and body.get("upload_id") and storage.configured():
+        storage.multipart_abort(body["key"], body["upload_id"])
+    return {"aborted": True}
+
+
+@app.post("/api/episodes/{eid}/upload-url")
+def upload_url(eid: int, body: dict = Body(...)):
+    """Deployed version: a signed link so the browser uploads straight to R2 (no bytes through the API).
+    Needs a CORS rule on the bucket (docs/09 §3); `confirm` below registers the file afterwards."""
+    if not storage.configured():
+        raise HTTPException(409, "cloud storage is not set up")
+    kind = body.get("kind")
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
+    name = storage.safe_name(body.get("filename") or kind)
+    key = storage.input_key(show, ep, kind, name)
+    return {"mode": storage.upload_mode(), "key": key, "name": name,
+            "url": storage.presign(key, seconds=3600, method="PUT"),
+            "headers": {"Content-Type": body.get("content_type") or storage.content_type(name)}}
+
+
+@app.post("/api/episodes/{eid}/files/{kind}/confirm")
+def upload_confirm(eid: int, kind: str, body: dict = Body(...)):
+    """After a direct upload: check the object is really there, then make it the episode's file."""
+    if kind not in UPLOAD_KINDS:
+        raise HTTPException(400, f"unknown file kind {kind}")
+    ep = _get("episodes", eid); _get("shows", ep["show_id"])
+    key = body.get("key") or ""
+    head = storage.head(key)
+    if not head:
+        raise HTTPException(409, "the file did not arrive in the cloud")
+    name = Path(key).name
+    db().ex("DELETE FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+    db().insert("assets", episode_id=eid, kind=kind, path=storage.cache_path(ep, kind, name), role="input",
+                size=head["size"], r2_key=key, origin="r2", uploaded=now(), created=now())
+    return {"kind": kind, "name": name, "size": head["size"], "key": key, "in_cloud": True}
+
+
+@app.delete("/api/episodes/{eid}/files/{kind}")
+def delete_file(eid: int, kind: str):
+    ep = _get("episodes", eid)
+    for a in db().q("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind)):
+        if a.get("r2_key"):
+            try:
+                storage.delete(a["r2_key"])
+            except Exception:
+                pass
+        if a.get("origin") == "r2" and Path(a["path"]).exists():
+            Path(a["path"]).unlink(missing_ok=True)
+        db().ex("DELETE FROM assets WHERE id=?", (a["id"],))
+    return {"deleted": kind}
+
+
 @app.post("/api/episodes/{eid}/check")
 def check_files(eid: int):
     out = {}
@@ -360,20 +797,36 @@ def delete_episode(eid: int):
     return {"deleted": eid}
 
 
-# ---------------- processing ----------------
+# ---------------- processing and the queue ----------------
 @app.post("/api/episodes/{eid}/process")
 def process(eid: int):
+    """Put the episode in the line. It starts at once when the machine is free, else it waits its turn
+    (one episode at a time by default -- MAX_ACTIVE_EPISODES)."""
     _get("episodes", eid)
     try:
-        run = runner().create_run(eid)
+        out = runner().submit(eid)
     except ValueError as e:
         raise HTTPException(400, str(e))
-    return {"run": run, **_episode_full(eid)}
+    return {**_episode_full(eid), **out}          # `queued` here means "waiting its turn", not the episode's column
+
+
+@app.get("/api/queue")
+def queue():
+    """The line of episodes: what is being worked on now, and who is next."""
+    return runner().queue_view(db())
 
 
 @app.post("/api/episodes/{eid}/cancel")
 def cancel_episode(eid: int):
-    runner().cancel_run(eid)
+    ep = _get("episodes", eid)
+    if ep["status"] == "queued":                              # it had not started: it simply leaves the line
+        db().update("episodes", eid, status="cancelled" if runner().latest_run(eid) else "new", queued=None,
+                    updated=now())
+        bus.publish("episode_status", eid, status="left the queue")
+    else:
+        runner().cancel_run(eid)
+        db().update("episodes", eid, queued=None)
+    runner().start_next()
     return _episode_full(eid)
 
 
@@ -430,7 +883,9 @@ def decisions_auto(eid: int):
 @app.get("/api/ai/status")
 def ai_status():
     from . import ai
-    s = ai.settings(); out = {"configured": ai.available(), "model": s["AI_MODEL"], "model_fast": s["AI_MODEL_FAST"]}
+    s = ai.settings()
+    out = {"configured": ai.available(), "model": s["AI_MODEL"], "model_fast": s["AI_MODEL_FAST"],
+           "provider": s["AI_PROVIDER"]}
     if out["configured"]:
         try:
             out.update(ai.key_info())
@@ -541,16 +996,19 @@ def _src_duration_ms(eid):
 
 
 def _versions(eid):
-    return db().q("SELECT version, made_by, note, created, json_extract(body, '$.base') AS base FROM timeline_versions "
-                  "WHERE episode_id=? ORDER BY version DESC", (eid,))
+    """The saved timeline versions, newest first (the `base` of each one comes out of its JSON: the same code works
+    on SQLite and on Postgres)."""
+    rows = db().q("SELECT version, made_by, note, created, body FROM timeline_versions WHERE episode_id=? "
+                  "ORDER BY version DESC", (eid,))
+    return [{**{k: v for k, v in r.items() if k != "body"}, "base": (r["body"] or {}).get("base")} for r in rows]
 
 
 def _current_timeline(eid, work):
     v1 = tlm.build_v1(work)
     if v1 is None:
         raise HTTPException(409, "the edit list is not made yet: the editor opens after the Groups step")
-    row = db().one("SELECT * FROM timeline_versions WHERE episode_id=? AND json_extract(body, '$.base')=? "
-                   "ORDER BY version DESC LIMIT 1", (eid, v1["base"]))
+    rows = db().q("SELECT * FROM timeline_versions WHERE episode_id=? ORDER BY version DESC", (eid,))
+    row = next((r for r in rows if (r["body"] or {}).get("base") == v1["base"]), None)
     tl = row["body"] if row else v1
     tl["holes"] = v1.get("holes") or []
     if row:
@@ -737,15 +1195,17 @@ def _render_row(r):
 @app.get("/api/busy")
 def busy():
     """Steps running now (any episode): the editor shows "processing is running, preview may lag" while the GPU or
-    the processors are busy (a lip scan, Whisper, a render)."""
+    the processors are busy (a lip scan, Whisper, a render). Every account sees the same Mac is busy."""
     rows = db().q("SELECT j.step, j.resource, e.number, s.code FROM jobs j JOIN episodes e ON e.id=j.episode_id "
                   "JOIN shows s ON s.id=e.show_id WHERE j.status='running' AND j.resource IN ('cpu','gpu')")
     return {"running": [{"step": r["step"], "episode": f"{r['code']} ep{r['number']}", "resource": r["resource"]} for r in rows]}
 
 
 @app.get("/api/renders")
-def list_renders(limit: int = 60):
-    rows = db().q("SELECT * FROM renders ORDER BY id DESC LIMIT ?", (limit,))
+def list_renders(request: Request, limit: int = 60):
+    where, args = _own_filter(request, "s.owner_id")
+    rows = db().q(f"SELECT r.* FROM renders r JOIN episodes e ON e.id=r.episode_id JOIN shows s ON s.id=e.show_id "
+                  f"WHERE 1=1{where} ORDER BY r.id DESC LIMIT ?", args + [limit])
     return [_render_row(r) for r in rows]
 
 
@@ -1260,9 +1720,12 @@ def wave(eid: int):
 
 # ---------------- settings (milestone 7) ----------------
 @app.get("/api/settings")
-def get_settings():
+def get_settings(request: Request):
     return {"ai": stg.ai_settings(), "app": stg.app_settings(cfg), "health": stg.health(cfg, cfg.db_path),
-            "supervised": os.environ.get("DUBSTUDIO_SUPERVISED") == "1"}
+            "supervised": os.environ.get("DUBSTUDIO_SUPERVISED") == "1",
+            "storage": storage.public_settings(),
+            "accounts": {"required": auth.required(), "ttl_seconds": auth.ttl(), "me": me(request),
+                         "users": (db().one("SELECT COUNT(*) AS n FROM users") or {}).get("n", 0)}}
 
 
 @app.put("/api/settings/ai")
@@ -1280,6 +1743,26 @@ def put_ai(body: dict = Body(...)):
 @app.post("/api/settings/ai/test")
 def test_ai():
     return stg.test_ai()
+
+
+@app.put("/api/settings/storage")
+def put_storage(body: dict = Body(...)):
+    """{account_id, bucket, endpoint, key_id, secret, prefix, auto_upload, db_sync}: saved in app/.env.
+    Empty key fields keep the keys that are already saved; the keys are never sent back."""
+    from . import envfile
+    vals = {"R2_ACCOUNT_ID": body.get("account_id"), "R2_BUCKET": body.get("bucket"),
+            "R2_ENDPOINT": body.get("endpoint"), "R2_PREFIX": body.get("prefix")}
+    for field, key in (("key_id", "R2_ACCESS_KEY_ID"), ("secret", "R2_SECRET_ACCESS_KEY")):
+        if (body.get(field) or "").strip():
+            vals[key] = body[field].strip()
+    for field, key in (("auto_upload", "R2_AUTO_UPLOAD"), ("db_sync", "R2_DB_SYNC")):
+        if field in body:
+            vals[key] = "true" if body[field] else "false"
+    vals = {k: v for k, v in vals.items() if v is not None}
+    if any(re.search(r"\s", str(v)) for v in vals.values()):
+        raise HTTPException(400, "no spaces allowed in the storage settings")
+    envfile.write(vals, keep_empty=True)
+    return storage.status()
 
 
 @app.put("/api/settings/app")
@@ -1302,6 +1785,102 @@ def restart():
     import threading
     threading.Timer(0.5, lambda: os._exit(3)).start()
     return {"restarting": True}
+
+
+# ---------------- cloud storage (Cloudflare R2) ----------------
+@app.get("/api/storage/status")
+def storage_status():
+    """Is R2 set up, does the bucket answer, and when was the database copied up."""
+    out = storage.status()
+    try:
+        out["database"] = storage.db_status()
+    except Exception as ex:
+        out["database"] = {"configured": True, "error": str(ex)[:200]}
+    return out
+
+
+@app.get("/api/episodes/{eid}/uploads")
+def list_uploads(eid: int):
+    """What of this episode is in the cloud, and what is on its way up."""
+    ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
+    return {"configured": storage.configured(), "auto": storage.settings()["auto_upload"],
+            "prefix": storage.episode_prefix(show, ep) if storage.configured() else None,
+            "uploads": storage.uploads_of(db(), eid)}
+
+
+@app.post("/api/episodes/{eid}/uploads")
+def start_uploads(request: Request, eid: int, body: dict = Body(None)):
+    """Send this episode's finished files to R2 (all of them, or {"kinds": ["clean", "qc"]})."""
+    if not storage.configured():
+        raise HTTPException(409, "R2 storage is not set up (Settings -> Cloud storage)")
+    ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
+    files = deliver.deliverables(show, ep, None)             # what is on disk now (no pipeline context needed)
+    kinds = (body or {}).get("kinds")
+    if kinds:
+        files = [f for f in files if f["kind"] in kinds]
+    rows = storage.queue_uploads(db(), show, ep, files, user_id=me(request).get("id"))
+    if not rows:
+        raise HTTPException(409, "there is nothing to send up yet: render the episode first")
+    return {"queued": rows}
+
+
+@app.post("/api/uploads/{uid}/retry")
+def retry_upload(uid: int):
+    _get("uploads", uid)
+    storage.retry_upload(db(), uid)
+    storage.start_worker(db())
+    return _get("uploads", uid)
+
+
+@app.get("/api/uploads/{uid}/link")
+def upload_link(uid: int, seconds: int = 3600):
+    """A download link straight from R2 (it works for a while without any key)."""
+    row = _get("uploads", uid)
+    if row["status"] != "done":
+        raise HTTPException(409, "this file is not in the cloud yet")
+    return {"url": storage.presign(row["key"], seconds=seconds, download_name=row["name"]),
+            "expires": now() + seconds, "name": row["name"]}
+
+
+@app.delete("/api/uploads/{uid}")
+def delete_upload(uid: int, remove_file: bool = False):
+    """Forget an upload; `remove_file=true` also deletes the object in R2."""
+    row = _get("uploads", uid)
+    if remove_file and row["status"] == "done":
+        try:
+            storage.delete(row["key"])
+        except Exception as ex:
+            raise HTTPException(502, str(ex)[:200])
+    db().ex("DELETE FROM uploads WHERE id=?", (uid,))
+    return {"deleted": uid}
+
+
+@app.get("/api/storage/objects")
+def storage_objects(request: Request, prefix: str = "", limit: int = 200):
+    if not auth.is_admin(me(request)):
+        raise HTTPException(403, "only the owner's account can list the bucket")
+    try:
+        return storage.listing(prefix, limit)
+    except Exception as ex:
+        raise HTTPException(502, str(ex)[:200])
+
+
+@app.post("/api/storage/db/push")
+def storage_db_push():
+    """Copy the database up to R2 now (it also happens at startup, after the daily backup)."""
+    try:
+        return storage.push_db(db().conn, cfg.library)
+    except Exception as ex:
+        raise HTTPException(502, str(ex)[:300])
+
+
+@app.post("/api/storage/db/pull")
+def storage_db_pull():
+    """Bring the copy in R2 down to <library>/restored/ (never over the live database)."""
+    try:
+        return storage.pull_db(cfg.library)
+    except Exception as ex:
+        raise HTTPException(502, str(ex)[:300])
 
 
 # ---------------- files (pick inputs) ----------------
@@ -1331,13 +1910,31 @@ def reveal(body: dict = Body(...)):
 
 
 # ---------------- live events ----------------
+def _episode_owner(eid):
+    row = db().one("SELECT s.owner_id AS owner_id FROM episodes e JOIN shows s ON s.id=e.show_id WHERE e.id=?", (eid,))
+    return row.get("owner_id") if row else None
+
+
 @app.websocket("/api/ws")
 async def ws(sock: WebSocket):
+    """Live progress. Sign-in is needed here too, and an account only hears about its own episodes."""
+    user = None
+    if auth.required():
+        user = auth.public(auth.user_of_token(db(), sock.cookies.get(auth.COOKIE)))
+        if not user:
+            await sock.close(code=1008)                       # policy violation: not signed in
+            return
+    else:
+        user = local_user()
     await sock.accept()
     loop = asyncio.get_running_loop(); q = bus.subscribe(loop)
+    admin = auth.is_admin(user)
     try:
         while True:
             ev = await q.get()
+            eid = ev.get("episode_id")
+            if not admin and eid and _episode_owner(eid) != user.get("id"):
+                continue
             await sock.send_text(json.dumps(ev, default=str))
     except (WebSocketDisconnect, RuntimeError):
         pass

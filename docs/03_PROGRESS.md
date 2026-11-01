@@ -1037,3 +1037,237 @@ same order, as `adaptation-tool/scripts/run_episode.sh`. Generation (Veo) is on 
 ## Handover to a new chat (2026-10-30, owner: switching account)
 - [x] `docs/07_HANDOVER.md`: map, full step list per show, final decisions, the owner's questions and their results,
       state at handover, open items. `docs/PROMPT_new_chat.md`: the prompt to paste into the new chat. CLAUDE.md points at both.
+
+## Accounts (id + password) and cloud storage on R2 (2026-10-30, owner; workspace `hamburg`)
+Built in the Conductor workspace `hamburg` (the copy in ~/Downloads/dub-studioo is untouched, so the old state can
+still be looked at). Full write-up: `docs/08_ACCOUNTS_AND_STORAGE.md`.
+- **Sign-in** (`auth.py`, `envfile.py`): id + password, PBKDF2 hashes, session cookie (7 days), 10 wrong tries = a
+  five-minute wait. First account from `ADMIN_USERNAME` / `ADMIN_PASSWORD` in app/.env (else `admin` + a password
+  printed once). `AUTH_REQUIRED=false` gives back the old single-user mode.
+- **Own shows**: `shows.owner_id` (+ `episodes.created_by`); one guard in `main.accounts_guard` checks every
+  `/api/...` path with an id (shows, episodes, jobs, markers, uploads) → 403 for someone else's; the lists (shows,
+  render queue) and the live socket are filtered the same way; the owner's account sees everything. An older library
+  is upgraded at startup: every show goes to the owner. Show codes stay unique on the Mac (they decide the file names).
+- **Screens**: sign-in screen; "Accounts" in the sidebar (own password; the owner adds accounts, gives new passwords,
+  switches accounts off, makes someone an owner, removes an account); who is signed in + Sign out in the sidebar foot.
+- **Cloud storage** (`storage.py`): Cloudflare R2 through the S3 API, signed in our own code (SigV4 over httpx, no new
+  package). Deliverables go to `shows/<SHOW>/ep<N>/`, the database to `db/dubstudio.db` (+ `db/history/<date>`), all
+  under `R2_PREFIX=dub-studio-mac` because the bucket `dubstudioprod` is shared with the owner's other dubbing app.
+  Background uploader with progress, retry and signed download links on the Deliverables tab ("In the cloud"); a
+  finished episode is sent up by itself; Settings → Cloud storage (status, keys, Copy the database to R2 now, Bring
+  the copy down) and a health line.
+- **Tests: 101 passed, 2 skipped** (live AI, live R2). New `test_auth.py` (15) and `test_storage.py` (14 + live);
+  the whole old suite now runs signed in. `playback_check.py` signs in by itself (`--user` / `--password`).
+- Checked against the real bucket: show + episode through the API, two files up, download link, database copy up and
+  back, then the test objects deleted.
+- 2026-10-30 (evening): started for the owner to try, on **http://127.0.0.1:8766** (the older copy keeps 8765): a copy
+  of the live database (4 shows, 7 episodes), the real pipeline Python, sign-in on, R2 connected (the database copy
+  went up: 1.0 MB). How to run it and where every file lives: `docs/08_ACCOUNTS_AND_STORAGE.md` §3.
+
+## Web flow: uploads to R2, the queue, fetch / publish / cleanup (2026-10-31, owner; workspace `hamburg`)
+The owner's ask with the deployment requirements doc: no more folder picking on the Mac — a show is made in the
+browser with its localisation sheet, an episode by uploading the source video, dub audio and script; the files live
+in R2; Start processing puts the episode in a queue; the workers take the files, run our steps and clean up.
+Plan and target architecture: `docs/09_WEB_PLATFORM.md`.
+- **Uploads**: `POST /api/shows/{id}/sheet` and `POST /api/episodes/{id}/files/{kind}` stream the browser's file to
+  disk and on to R2 (`shows/<CODE>/localisation/…`, `shows/<CODE>/ep<N>/input/<kind>/…`); `upload-url` + `confirm`
+  do the same with a signed link for the deployed version (needs a CORS rule on the bucket — the S3 keys cannot set
+  it, the dashboard can). Assets keep `r2_key` + `origin` + the local cache path the pipeline will read.
+- **Shows without a Mac folder**: no folder given → `profile.uploads = true` and a staging folder in the library;
+  New show asks "where do the files come from", New episode and the Files tab show upload rows with progress bars.
+- **Three new steps** (`steps.py`, `runner.py`, `storage.py`): `fetch` (inputs down from R2 before `ingest`),
+  `publish` (deliverables → `…/ep<N>/out/`, small work files → `…/ep<N>/work/`), `cleanup` (the fetched files are
+  deleted once everything is up; `CLEAN_WORK=true` also drops proxies and rendered pieces). The pipeline scripts are
+  untouched: they still get plain file paths.
+- **Queue**: `submit()` starts the episode or puts it in the line (`MAX_ACTIVE_EPISODES`, default 1, one by one);
+  `GET /api/queue` + the Render-queue page show what is working (step, progress) and who is waiting with its place;
+  an episode waiting for a person (Check matching, review) lets the next one start; cancelling a queued episode takes
+  it out of the line.
+- **Tests: 113 passed, 2 skipped.** New `test_uploads_queue.py` (12): cloud show, sheet upload, file upload/replace/
+  remove, direct upload + confirm, files locked while processing, the run starting with `fetch` and ending with
+  `publish`/`cleanup`, a deleted file coming back from R2, the full fake-pipeline run publishing to R2 and cleaning
+  the machine, and the queue (waiting, starting by itself, cancelling, per account).
+- Checked against the real bucket as the new `sameer` editor account: cloud show + sheet + video + audio uploaded
+  (`dub-studio-mac/shows/DEMO/…`), the Files tab showed them as "in cloud storage"; the demo show and its objects
+  were deleted again.
+
+## Any-size uploads, Postgres and Redis (2026-10-31, owner; workspace `hamburg`)
+- **Files of any size**: files over 96 MB go up in 64 MB parts (S3 multipart: start → part → finish, with abort and
+  3 tries per part), from the browser too (`uploadEpisodeFile` slices the file, the API streams each part on to R2 and
+  appends it to the machine's copy). A dropped line now costs one part, not the whole video. New endpoints:
+  `files/{kind}/start | part | finish | abort`; `storage.put_big_file` is used for the deliverables as well.
+- **Postgres**: `DATABASE_URL` switches the whole app to Postgres (`db.py` translates the same SQL: `?` → `%s`,
+  `INTEGER PRIMARY KEY` → `BIGSERIAL`, `REAL` → `DOUBLE PRECISION`, `INSERT … RETURNING id`, `information_schema`
+  instead of `PRAGMA`). Removed the two SQLite-only bits in the API (`json_extract` on timeline versions,
+  `COLLATE NOCASE` on the account lookup). SQLite stays the default for the Mac.
+- **Redis**: `REDIS_URL` sends every live event through a Redis channel, so several API replicas / workers share one
+  stream; without it the events stay in the process (one machine). The queue still claims jobs in the database.
+- `app/docker-compose.yml` runs both locally (Postgres 5433, Redis 6380; `docker-compose up -d`).
+- **Tests: 117 passed on SQLite, 119 on Postgres + Redis** (the two extra are the Postgres and Redis checks).
+  New: multipart upload against the fake bucket, the chunked upload API, give-up/abort, Redis fan-out between two
+  buses, and the app answering on Postgres. One run on Postgres had a flaky failure that two later runs did not
+  reproduce; worth watching.
+- 2026-10-31: the owner added the bucket's CORS rule, so **direct uploads are on** (`UPLOAD_MODE=direct`): the API
+  signs a link per part and the browser sends the bytes to R2 itself. Checked from a real headless Chrome — a 120 MB
+  file in 2 parts, 10.5 s, nothing through the API; `fetch` brought it back to the machine in 4.1 s. Small files
+  (< 96 MB) still go in one request through the API. 119 tests pass.
+
+## Claude through OpenRouter (2026-10-31, owner: "can we use OpenRouter for our Claude usage")
+- `ai.py` now speaks to **either provider**, chosen by `AI_PROVIDER` (or by itself: OpenRouter when its key is there):
+  - **openrouter** — `OPENROUTER_API_KEY`, base `https://openrouter.ai/api/v1`, our model names mapped to theirs
+    (`claude-sonnet-5-5` → `anthropic/claude-sonnet-5.5`, `claude-haiku-5-5` → `anthropic/claude-haiku-5.5`),
+    budget from `GET /key` (+ `/credits` when the key has no limit of its own).
+  - **gateway** — the Pocket FM gateway as before (VPN only).
+  No pipeline step changed: they all call `ai.chat()` with our own names.
+- The owner's project key is in app/.env: **$250 a month**, nothing spent yet. Checked live: a text call, an
+  **image** call (the shot library, face map and scene edit send frames) and a Step-2-style matching call — all
+  correct, 1.4 s, $0.0004 each. Total spent on these checks: under one cent.
+- Why it matters: OpenRouter is on the public internet, so a **deployed worker reaches Claude without the VPN** —
+  that was the open deployment blocker. Prices on this account: Sonnet 5.5 $2/M in, $10/M out (the `:batch` variant
+  is half that, a later cost lever); Haiku 5.5 $0.10/$0.50.
+- The AI gate, the badge and the Settings health line now say which provider is in use and show its budget.
+- Tests: 122 passed, 4 skipped. New: provider choice, model mapping, the call shape per provider, the budget read,
+  and the gate's message for each ("turn the VPN on" vs "check the internet").
+
+## TGS ep34, first 5 minutes, re-made on OpenRouter and compared with the Cowork run (2026-10-31, owner)
+Same window (0–297.68 s), same inputs (ep34 sentences, lip scan, groups, shot library + face map), **every cached
+Claude answer deleted** so speakers, line places, gap plan and all ten stretches were answered fresh — through
+OpenRouter (`anthropic/claude-sonnet-5.5`), not the gateway.
+
+| | OpenRouter (today) | Cowork / gateway (before) |
+| --- | --- | --- |
+| Scene edit | 107 pieces, 10 stretches, 441 s, 36 calls, **$4.99** | 110 pieces, 486 s, $4.81 (first full run) |
+| Problems left | **0** (stretches and whole-episode) | 0 in `expected/`; 1 left in the 2026-10-30 new-rules re-run |
+| B-roll | 31 pieces, 80 s, from **19** shots, most-used **3×** | 30 pieces, 68 s, from 16 shots, most-used **5×** |
+| Render | 265/265 rows show their own footage | 268/268 (A/B re-render) |
+| Transitions | 115 clip switches (86 transitions, 29 cuts into B-roll) | 59 switches in the app's earlier check |
+| Subtitles | self-check clean (0 bad frames) | clean |
+| **Final QC** | repeats **PASS**, short shots WARN (20), story sync FAIL (6), black PASS, 25 fps PASS, speaker PASS | repeats **FAIL** (shot 9 ×5, shot 54 ×4), 23 short, story sync 8, rest PASS |
+| Same source footage on screen | 39.6% of the window (a different but equally valid cut; the rules changed since `expected/` and the scene edit is not deterministic) | — |
+| Whole test | **$5.24** of Claude (scene edit $4.99, speakers/places/gap plan $0.16, QC $0.007, matching checks $0.07) | ~$4.9 |
+
+Output for watching, next to the owner's own videos in `TGS US_DE/output/ep34_test5min/`:
+`TGS_EP34_first5min_OPENROUTER_scene_edit_en_subs.mp4` (+ `..._openrouter_qc.xlsx`, `..._openrouter_scene_manifest.json`).
+Conclusion: OpenRouter gives the same quality at the same price and speed, and the new B-roll rules show in the QC
+(repeats PASS instead of FAIL). Nothing in the pipeline changed — only the provider.
+
+## TGS ep34 run from step 0 through the app, on OpenRouter (2026-10-31, owner: "run every step yourself")
+Show + episode made in the app (folder show), **all 37 steps** run by the app's own queue — nothing reused from the
+owner's earlier run. Scene edit limited to the first 5 minutes (new `scene_until_s` / `DUBSTUDIO_SCENE_SECONDS`
+setting) so the test matches his own 5-minute reference and stays in budget.
+- **79 minutes wall, $6.30 of Claude** (matching $1.28 incl. the earlier checks, shot library, scene edit, QC).
+  Slowest: lip scan 1033 s, Whisper 682 + 587 s, scene edit 455 s, face map 407 s.
+- Five Claude steps all ran on OpenRouter: `decisions` (23 groups, 7 assigns, 10 gaps — every flagged row decided),
+  `library` (92 s), `scene_edit` (105 pieces, 26 B-roll, 24 zoomed), `translate`, `qc`.
+- Deliverables in `output/ep34_openrouter_full/`: the three videos (230/205/204 MB), English SRT, mapping, groups,
+  lip-sync, scene-edit and QC sheets, Premiere XML, run notes and times. `publish` sent 12 files + 54 work files to
+  R2 (`dub-studio-mac/shows/TGS/ep34/out|work`), `cleanup` freed nothing (a folder show keeps its own files).
+- **Final QC**: B-roll repeats PASS, short shots WARN (18), story sync FAIL (6), black PASS, 25 fps PASS, speaker
+  PASS — the same shape as the owner's own 5-min QC, with repeats PASS where his older cut FAILED.
+- **Found and fixed**: the render gate counted the scene edit's own B-roll as red flags (55 of them: 39 "repeat",
+  16 "not found"), so every episode would need 50+ approvals by hand. `timeline.py`: a repeat on a B-roll piece is
+  now a yellow note ("B-roll: the same shot as …"), and a line the gap plan covered on purpose is an info note.
+  Red flags on this episode: **55 -> 6** (the 6 are real). Test added (`test_editor.py`).
+
+## Scene edit on Haiku 5.5 instead of Sonnet: tested, not usable (2026-10-31, owner)
+Same 5 minutes of ep34, same shot library / face map / groups from the full run, every Claude answer deleted,
+`sceneedit.py --model anthropic/claude-haiku-5.5`.
+- **It failed**: after 862 s and $0.53 it stopped with "stretch 0: no usable answer after 3 tries". Four of the ten
+  stretches (0, 3, 4, 6 — the image-heaviest) answered **empty** over and over ("no JSON in model reply"); a small
+  test prompt to the same model answers fine, so it is the 40 k-token, 35–95-image prompts it cannot handle.
+- **Where it did answer, it broke the rules**: first-round problems 11, 8, 6, 5 (Sonnet: 0–4, converging to 0),
+  including B-roll of 0.58–1.36 s (the rule is ≥ 2 s), B-roll on lines that are **not slow** (the hard rule of v21),
+  footage outside the stretch's window, and invented timings ("147.92-147.92 not inside shot 42").
+- Sonnet on the same inputs: 107 pieces, 0 problems left, 441 s, $4.99.
+- **Conclusion**: the scene edit stays on `claude-sonnet-5.5`. The cheap-model route would need the prompt split
+  (fewer shots per call) plus the mechanical fixes in code; that is the cascade idea, not a drop-in swap.
+- The cost work to do instead (no quality risk): prompt caching of the identical shot/rules prefix (~$5/episode),
+  fixing mechanical problems in code instead of another Claude round (~$2–3/episode), smaller frame strips (~$1).
+- Also fixed: the run-times sheet showed $0.00 per step because the cost reader still called the old gateway's
+  endpoint; it now asks whichever provider is in use, so the next run shows real dollars per step.
+
+## Prompt caching for the scene edit (2026-10-31, owner: "test caching first")
+`sceneedit.py` now marks the end of the block that never changes between rounds (rules + shot list + the ~95 frame
+strips) with `cache_control: ephemeral`; `AI_CACHE=false` switches it off. **Nothing about the prompt changes** —
+same blocks, same order, same bytes — only the billing: the first call writes the cache, later ones read it at a
+tenth of the price. `ai.py` counts cached tokens per call (`ai.cache_stats()`), and the run-times sheet now reads
+the spend from whichever provider is in use (it printed $0.00 before).
+- Proof on two calls sharing a 7.3 k-token image block: first $0.0184 (0 cached), second **$0.0009 with 7 303 of
+  7 334 tokens cached** — 20× cheaper on the repeat.
+- Same 5 minutes of ep34, fresh, caching on: **110 pieces, 0 problems left, 216 s, $2.29** (uncached baseline:
+  107 pieces, 0 problems, 441 s, $4.99).
+- Honest split of that drop: this run needed **19 calls instead of 36** (run-to-run variance in how many stretches
+  need a re-cut), which alone would have cost $3.01 at list price; **caching took it to $2.29 — it paid for 24% of
+  the run, about half the input bill**. On the earlier 36-call run the same mechanism would have saved a similar
+  share. Expect **$10.50 -> $6-7 per episode** from caching alone, more when the re-cut rounds are fixed in code.
+- Quality unchanged: 0 problems left in both runs, no shot used more than 3 times.
+
+## First cloud step: the lip scan of ep34 on a RunPod L4 (2026-10-31, owner)
+One pipeline step run end to end on rented hardware, to prove the shape of the deployed platform.
+- **How**: an L4 pod (24 GB, $0.59/h) started from the stock `runpod/pytorch` image with a start command that pulls a
+  job script from R2. The pod got **four signed links only** (code+weights bundle in, source video in, result out,
+  report out) — no R2, RunPod or AI key ever left the Mac. It installed the few extra packages, fetched the 142 MB
+  lip-scan bundle (lipgpu/lipdetect/lipfast + TalkNet-ASD + its weights) and the 651 MB episode, ran
+  `lipgpu.py --device cuda`, tarred `lips_nets/` back to R2 and wrote a report. Then terminated from here.
+- **Result**: exit 0, 44 files, **$0.20 for the whole test**.
+- **Same output as the Mac**: `compare_lips.py` on the Mac's `lips_nets` vs the cloud's — **42 pieces, tracks same,
+  talking intervals same in every one**; 2 pieces flagged only on score/visual drift (0.18 / 0.77), which is what
+  docs/01 predicted for a different device. The edit would come out identical.
+- **GPU barely used**: **peak 1,008 MiB of 23,034 MiB (4%)**, mean 802 MiB over 433 samples taken during the scan.
+  Scan 926 s vs the Mac's 1,033 s — only 10% faster, and the pod's telemetry showed CPU 98% / GPU 3%: this step is
+  **CPU-bound**, not GPU-bound. So: many jobs fit on one GPU by memory, but they would fight over CPU; the lever is
+  vCPUs per worker, and an L4 is more GPU than this step needs. Next cheap measurement: sample GPU *utilisation*
+  during a run to see whether a CPU-only box could do it.
+- Staged in R2 for any future worker: `worker/lipscan_bundle.tar.gz`, `worker/job_lipscan.sh`, and ep34's source
+  video under `shows/TGS/ep34/input/`.
+
+## What the cloud tests actually proved about GPUs (2026-11-01, owner; $0.90 of RunPod)
+Four L4 runs on ep34. Three findings that change the deployment plan:
+1. **The lip scan gives the same answer in the cloud as on the Mac.** `compare_lips.py`, Mac vs L4, full episode:
+   42 pieces, **tracks same and talking intervals same in every one**; 2 pieces differ only in score (0.18) and
+   visual drift (0.77), exactly as docs/01 predicted for another device. The cut is identical.
+2. **The lip scan does not use the GPU**: mean GPU utilisation **1%** (peak 27%), peak VRAM 1,008 MiB of 23,034.
+   It is CPU-bound, and the container's real budget is **13.6 cores** (`cgroup cpu.max 1360000 100000`; `nproc`
+   misleadingly reports the host's 128).
+3. **More processes on one machine do not help** — they hurt. Same 30 s pieces, one L4:
+   | pieces at once | wall | video | s per second of video |
+   |---|---|---|---|
+   | 1 (full episode, sequential) | 918 s | 630 s | **1.46** |
+   | 4 | 392 s | 120 s | 3.27 |
+   | 8 | 800 s | 240 s | 3.33 |
+   `lipgpu` sets threads = cores − 2, so N processes spawn ~11N threads on 13.6 cores and thrash. Level 16 was not
+   run (the answer was clear; it would have cost another $0.26). **One job per machine is optimal; parallelism must
+   be across machines** (the pipeline already supports `--ranges`, and `lipmerge` joins the pieces — 8 workers would
+   do an episode's lip scan in ~2-3 min for the same money, since billing is per second).
+   An earlier run of the same 4-piece test reported 36 s; it could not be reproduced and is **not trusted**.
+4. **Whisper does not use the GPU either** — and never has, on the Mac or in the cloud. `mksrt.py --engine` defaults
+   to `faster`, and every `WhisperModel(...)` in `dubstitch.py` / `mksrt.py` is hard-coded
+   `device="cpu", compute_type="int8"` (dubstitch.py lines 331, 418, 2796). The MLX (Apple GPU) path only runs with
+   `--engine mlx`, which the app never passes. That is why Whisper took 682 s + 587 s on ep34.
+   **Opportunity (needs the owner's go-ahead, it is a pipeline change):** faster-whisper on CUDA float16 is typically
+   5-10× quicker than CPU int8 — roughly 20 min -> 2-3 min per episode. The transcription would have to be checked
+   against the Mac's output first.
+5. **Only the face map really wants a GPU** (`facemap.py`: InsightFace `ctx_id=0`, YOLO `device=cuda`). Not yet
+   measured in the cloud — that is the remaining test before the worker shapes are fixed.
+
+## Serverless worker on RunPod: it works, autoscales, and matches the Mac (2026-11-01, owner)
+The queue-based worker the owner asked for, proved end to end. **Total RunPod spend for every test today: $1.55.**
+- **Image** `sameer27488/dubstudio-worker:cpu` (911 MB), built here for linux/amd64 and pushed to Docker Hub.
+  It carries `lipgpu/lipdetect/lipfast`, TalkNet-ASD **and its weights**, torch/torchvision/torchaudio (CPU),
+  ffmpeg and the RunPod SDK — **nothing is downloaded at job time**, which is what broke five earlier bare-pod
+  attempts (InsightFace weights, Ultralytics, apt, …). Build file: `/tmp/worker/Dockerfile`, handler: `handler.py`.
+- **Endpoint** `dubstudio-cpu` (`9k3nkvxj8zarxj`): min 0 / max 4 workers, scales when a job waits > 4 s.
+  Created through GraphQL (template) + the REST API (endpoint; REST needs a browser User-Agent or Cloudflare
+  answers 403).
+- **A job is one step of one episode**: `{"step":"lip_scan","inputs":{"video":<signed GET>},"args":{"range":[0,15]},
+  "outputs":{"result":<signed PUT>}}`. The worker fetches, runs the **unchanged** pipeline script, PUTs the result
+  back, returns timings, and wipes its scratch. **No credential ever reaches the worker** — only expiring links.
+- **Autoscale measured**: 8 pieces submitted at once against max 4 workers → 0 → 4 workers, **all 8 done in 208 s**,
+  0 failures, 420 s of worker time. Idle workers afterwards are **not billed** (`currentSpendPerHr: $0`).
+- **Output is right**: the 8 cloud pieces vs the Mac's own `lips_nets` for 0-120 s —
+  **`8 pieces compared: ALL PIECES MATCH`**, box 0.0 px, several pieces 0.0000 score and visual difference.
+  Better than the GPU pod run, which had 2 pieces flagged on score drift.
+- Speed per worker: 2-3.5 s per second of video (the Mac does 1.64), so the win is **parallelism across machines**,
+  not per-machine speed: a full 11-minute episode as 8 pieces would clear in roughly 5 minutes instead of 17.
+- First attempt failed with `No module named torchvision` (TalkNet's S3FD needs it) — the API returned the whole
+  traceback, fixed in one line and rebuilt. That is the difference the image makes: failures are legible.

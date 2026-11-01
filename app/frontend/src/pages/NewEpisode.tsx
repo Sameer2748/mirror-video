@@ -25,8 +25,10 @@ export default function NewEpisode() {
     <div className="page narrow">
       <div className="crumbs"><Link to="/">Shows</Link> / <Link to={`/shows/${sid}`}>{show.code}</Link> / New episode</div>
       <h1>New episode</h1>
-      <p className="muted">Enter the episode number. Dub Studio looks in <code>{show.folder}</code> for its video, audio, SRTs and scripts
-        {show.profile.episode_offset ? ` (source episode = ${num || "N"} + ${show.profile.episode_offset})` : ""}; you confirm them on the next screen.</p>
+      <p className="muted">{show.profile.uploads
+        ? "Enter the episode number. On the next screen you upload its source video, dub audio and script; they go to cloud storage and the workers take them from there."
+        : <>Enter the episode number. Dub Studio looks in <code>{show.folder}</code> for its video, audio, SRTs and scripts
+          {show.profile.episode_offset ? ` (source episode = ${num || "N"} + ${show.profile.episode_offset})` : ""}; you confirm them on the next screen.</>}</p>
       <div className="form">
         <label>Episode number<input type="number" min={1} value={num} autoFocus onChange={(e) => setNum(e.target.value)} onKeyDown={(e) => e.key === "Enter" && num && create()} /></label>
         <label>Output folder (optional)
@@ -35,7 +37,8 @@ export default function NewEpisode() {
         </label>
       </div>
       <ErrorBox error={err} />
-      <div className="actions"><button className="primary" disabled={!num || busy} onClick={create}>{busy ? "Looking for files…" : "Find the files"}</button></div>
+      <div className="actions"><button className="primary" disabled={!num || busy} onClick={create}>
+        {busy ? "Working…" : show.profile.uploads ? "Create and upload the files" : "Find the files"}</button></div>
     </div>
   );
 }

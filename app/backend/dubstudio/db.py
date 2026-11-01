@@ -1,8 +1,23 @@
-"""SQLite storage. One file (<library>/dubstudio.db), WAL mode, JSON stored as TEXT."""
-import json, sqlite3, threading, time
+"""The database. SQLite by default (one file, <library>/dubstudio.db, WAL mode, JSON stored as TEXT); Postgres when
+`DATABASE_URL` is set, which is what the deployed platform uses (docs/09 §1).
+
+Both speak the same SQL in the rest of the app: queries are written with `?` placeholders and plain column types,
+and this module translates for Postgres (`?` -> `%s`, `INTEGER PRIMARY KEY` -> `BIGSERIAL`, `REAL` -> `DOUBLE
+PRECISION`, `INSERT … RETURNING id` instead of lastrowid). JSON columns stay TEXT on both, so a library can be
+dumped from one and loaded into the other.
+"""
+import json, re, sqlite3, threading, time
 from pathlib import Path
 
+from . import envfile
+
 SCHEMA = """
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE COLLATE NOCASE, name TEXT, email TEXT, pw TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'editor', active INTEGER DEFAULT 1, created REAL, updated REAL, last_login REAL);
+CREATE TABLE IF NOT EXISTS sessions (
+  id INTEGER PRIMARY KEY, token TEXT NOT NULL UNIQUE, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created REAL, expires REAL, seen REAL, agent TEXT, ip TEXT);
 CREATE TABLE IF NOT EXISTS shows (
   id INTEGER PRIMARY KEY, name TEXT NOT NULL, code TEXT NOT NULL UNIQUE, folder TEXT NOT NULL,
   preset TEXT, profile TEXT NOT NULL, created REAL, updated REAL);
@@ -53,27 +68,95 @@ CREATE TABLE IF NOT EXISTS gen_jobs (
   id INTEGER PRIMARY KEY, thread_id INTEGER NOT NULL REFERENCES gen_threads(id) ON DELETE CASCADE, model TEXT,
   prompt TEXT, params TEXT, status TEXT, request_id TEXT, result TEXT, import_id TEXT, error TEXT, created REAL,
   finished REAL);
+CREATE TABLE IF NOT EXISTS uploads (
+  id INTEGER PRIMARY KEY, episode_id INTEGER REFERENCES episodes(id) ON DELETE CASCADE, kind TEXT, name TEXT,
+  path TEXT, bucket TEXT, key TEXT, size INTEGER, sent INTEGER DEFAULT 0, status TEXT DEFAULT 'waiting',
+  error TEXT, user_id INTEGER, created REAL, started REAL, finished REAL);
 CREATE INDEX IF NOT EXISTS ix_gen_threads ON gen_threads(episode_id, slot);
 CREATE INDEX IF NOT EXISTS ix_jobs_ep ON jobs(episode_id, run);
 CREATE INDEX IF NOT EXISTS ix_events_ep ON events(episode_id, id);
+CREATE INDEX IF NOT EXISTS ix_sessions_token ON sessions(token);
+CREATE INDEX IF NOT EXISTS ix_uploads_ep ON uploads(episode_id, id);
 """
+
+# columns added after the first release (an existing library is upgraded in place, see DB._migrate)
+ADDED_COLUMNS = (("shows", "owner_id", "INTEGER REFERENCES users(id)"),
+                 ("episodes", "created_by", "INTEGER REFERENCES users(id)"),
+                 # files uploaded in the browser live in R2; `path` is where a worker caches them while it runs
+                 ("assets", "r2_key", "TEXT"),
+                 ("assets", "origin", "TEXT DEFAULT 'local'"),      # 'local' = a file on this Mac, 'r2' = uploaded
+                 ("assets", "uploaded", "REAL"),
+                 ("shows", "sheet_key", "TEXT"),                    # the localisation sheet in R2
+                 ("episodes", "queued", "REAL"))                    # when it went in the line (one episode at a time)
 
 JSON_COLS = {"profile", "probe", "needs", "params", "data", "body", "cues", "style", "outputs", "check_result", "clip", "frames",
              "images", "result"}
 
 
+def database_url():
+    """The Postgres URL when the platform runs on one; None = SQLite in the library folder."""
+    url = envfile.get("DATABASE_URL", "")
+    return url if url.startswith(("postgres://", "postgresql://")) else None
+
+
+def _pg_schema(sql):
+    """The same schema, in Postgres words."""
+    sql = sql.replace("INTEGER PRIMARY KEY", "BIGSERIAL PRIMARY KEY")
+    sql = sql.replace(" COLLATE NOCASE", "")           # case-insensitive lookups use LOWER() in the queries
+    sql = re.sub(r"\bREAL\b", "DOUBLE PRECISION", sql)
+    sql = re.sub(r"\bINTEGER\b", "BIGINT", sql)
+    return sql
+
+
 class DB:
     def __init__(self, path):
-        self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.url = database_url()
         self.lock = threading.RLock()
-        self.conn = sqlite3.connect(str(self.path), check_same_thread=False, timeout=30)
-        self.conn.row_factory = sqlite3.Row
+        self.kind = "postgres" if self.url else "sqlite"
+        if self.url:
+            import psycopg
+            from psycopg.rows import dict_row
+            self.path = None
+            self.conn = psycopg.connect(self.url, autocommit=True, row_factory=dict_row)
+            with self.lock:
+                self.conn.execute(_pg_schema(SCHEMA))
+        else:
+            self.path = Path(path)
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.conn = sqlite3.connect(str(self.path), check_same_thread=False, timeout=30)
+            self.conn.row_factory = sqlite3.Row
+            with self.lock:
+                self.conn.execute("PRAGMA journal_mode=WAL")
+                self.conn.execute("PRAGMA foreign_keys=ON")
+                self.conn.executescript(SCHEMA)
+                self.conn.commit()
+        self._migrate()
+
+    # ---------- talking to either database ----------
+    def _sql(self, sql):
+        return sql.replace("?", "%s") if self.url else sql
+
+    def _run(self, sql, args=()):
+        """One statement, on either database. Returns the cursor."""
+        if self.url:
+            return self.conn.execute(self._sql(sql), tuple(args))
+        return self.conn.execute(sql, tuple(args))
+
+    def _columns(self, table):
+        if self.url:
+            rows = self.conn.execute("SELECT column_name FROM information_schema.columns WHERE table_name=%s",
+                                     (table,)).fetchall()
+            return {r["column_name"] for r in rows}
+        return {r[1] for r in self.conn.execute(f"PRAGMA table_info({table})").fetchall()}
+
+    def _migrate(self):
+        """Add the columns a newer version needs to a database made by an older one."""
         with self.lock:
-            self.conn.execute("PRAGMA journal_mode=WAL")
-            self.conn.execute("PRAGMA foreign_keys=ON")
-            self.conn.executescript(SCHEMA)
-            self.conn.commit()
+            for table, col, decl in ADDED_COLUMNS:
+                if col not in self._columns(table):
+                    self._run(f"ALTER TABLE {table} ADD COLUMN {col} {_pg_schema(decl) if self.url else decl}")
+            if not self.url:
+                self.conn.commit()
 
     @staticmethod
     def _out(row):
@@ -94,22 +177,32 @@ class DB:
 
     def q(self, sql, args=()):
         with self.lock:
-            return [self._out(r) for r in self.conn.execute(sql, args).fetchall()]
+            return [self._out(r) for r in self._run(sql, args).fetchall()]
 
     def one(self, sql, args=()):
         with self.lock:
-            return self._out(self.conn.execute(sql, args).fetchone())
+            return self._out(self._run(sql, args).fetchone())
 
     def ex(self, sql, args=()):
         with self.lock:
-            cur = self.conn.execute(sql, [self._in(a) for a in args])
-            self.conn.commit()
-            return cur.lastrowid
+            cur = self._run(sql, [self._in(a) for a in args])
+            if not self.url:
+                self.conn.commit()
+                return cur.lastrowid
+            return None
 
     def insert(self, table, **vals):
         vals = {k: self._in(v) for k, v in vals.items()}
         cols = ",".join(vals)
-        return self.ex(f"INSERT INTO {table} ({cols}) VALUES ({','.join('?' * len(vals))})", list(vals.values()))
+        sql = f"INSERT INTO {table} ({cols}) VALUES ({','.join('?' * len(vals))})"
+        if not self.url:
+            return self.ex(sql, list(vals.values()))
+        with self.lock:
+            row = self._run(sql + " RETURNING id", [self._in(v) for v in vals.values()]).fetchone()
+            if "id" in vals:        # an explicit id does not move Postgres' counter: keep it past the biggest id
+                self._run(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
+                          f"(SELECT COALESCE(MAX(id), 1) FROM {table}))")
+            return row["id"] if row else None
 
     def update(self, table, id_, **vals):
         if not vals:

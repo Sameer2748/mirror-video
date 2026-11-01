@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { api } from "./api";
 
 export const EP_STATUS: Record<string, [string, string]> = {
-  new: ["Uploaded", "grey"],
+  new: ["Files", "grey"],
+  queued: ["Queued", "blue"],
   processing: ["Processing", "blue"],
   needs_input: ["Check matching", "yellow"],
   review: ["Ready for review", "violet"],
@@ -53,6 +54,73 @@ export function fmtSize(b?: number | null) {
   return `${Math.round(b / 1024)} KB`;
 }
 export const base = (p: string) => p.split("/").pop() || p;
+
+/** Send a file to the API with a progress bar (fetch cannot report upload progress, XHR can).
+ *  The API streams it on into R2, so a 650 MB source video never sits in memory. */
+export function uploadFile<T = any>(url: string, file: File, onProgress?: (fraction: number) => void,
+                                    field = "file"): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const form = new FormData(); form.append(field, file);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.withCredentials = true;
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total);
+    xhr.onload = () => {
+      let data: any = null;
+      try { data = xhr.responseText ? JSON.parse(xhr.responseText) : null; } catch { data = xhr.responseText; }
+      if (xhr.status >= 200 && xhr.status < 300) resolve(data as T);
+      else reject(new Error((data && data.detail) || `${xhr.status} ${xhr.statusText}`));
+    };
+    xhr.onerror = () => reject(new Error("the upload stopped: check the connection"));
+    xhr.send(form);
+  });
+}
+
+/** Upload a file of any size to an episode: small files in one go, big ones in parts (a dropped line then only
+ *  costs the part it was on, and the progress bar keeps moving). The API streams each part on to R2. */
+type UploadStart = { key: string | null; upload_id: string | null; name: string; part_size: number; parts: number; mode: string };
+
+export async function uploadEpisodeFile<T = any>(eid: number, kind: string, file: File,
+                                                 onProgress?: (fraction: number) => void): Promise<T> {
+  const start = await api.post<UploadStart>(`/api/episodes/${eid}/files/${kind}/start`,
+    { filename: file.name, size: file.size });
+  const direct = start.mode === "direct" && !!start.key;
+  if (start.mode === "single")                            // small file through the API: one request, simplest
+    return uploadFile<T>(`/api/episodes/${eid}/files/${kind}`, file, onProgress);
+  const etags: [number, string][] = [];
+  try {
+    for (let n = 1, at = 0; at < file.size; n++, at += start.part_size) {
+      const blob = file.slice(at, Math.min(at + start.part_size, file.size));
+      let etag: string | null = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (direct) {                                   // the bytes go from the browser straight to R2
+            const { url } = await api.post<{ url: string }>(`/api/episodes/${eid}/files/${kind}/part-url`,
+              { key: start.key, upload_id: start.upload_id, part: n });
+            const r = await fetch(url, { method: "PUT", body: blob });
+            if (!r.ok) throw new Error(`cloud storage refused part ${n} (${r.status})`);
+            etag = (r.headers.get("ETag") || "").replace(/"/g, "");
+          } else {                                        // through the API, which streams the part on to R2
+            const q = new URLSearchParams({ part: String(n), name: start.name });
+            if (start.key) { q.set("key", start.key); q.set("upload_id", start.upload_id!); }
+            const r = await fetch(`/api/episodes/${eid}/files/${kind}/part?${q}`,
+              { method: "PUT", body: blob, credentials: "same-origin" });
+            if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || `${r.status} ${r.statusText}`);
+            etag = (await r.json()).etag;
+          }
+          break;
+        } catch (e) { if (attempt === 2) throw e; await new Promise((s) => setTimeout(s, 1500 * (attempt + 1))); }
+      }
+      if (etag) etags.push([n, etag]);
+      onProgress?.(Math.min((at + blob.size) / file.size, 1));
+    }
+    return await api.post<T>(`/api/episodes/${eid}/files/${kind}/finish`,
+      { key: start.key, upload_id: start.upload_id, name: start.name, etags });
+  } catch (e) {
+    await api.post(`/api/episodes/${eid}/files/${kind}/abort`, { key: start.key, upload_id: start.upload_id }).catch(() => {});
+    throw e;
+  }
+}
 
 export function ErrorBox({ error }: { error?: string | null }) {
   if (!error) return null;

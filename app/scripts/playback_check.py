@@ -16,6 +16,16 @@ import websockets
 
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
+
+def env_value(key):
+    """A setting from app/.env (the sign-in uses ADMIN_USERNAME / ADMIN_PASSWORD when none is given)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
+    try:
+        from dubstudio import envfile
+        return envfile.get(key, "")
+    except Exception:
+        return ""
+
 SAMPLER = r"""
 (async () => {
   const d = await fetch('/api/episodes/%(eid)d/timeline').then(r => r.json());
@@ -83,6 +93,18 @@ async def main(a):
                         if "exceptionDetails" in r:
                             raise RuntimeError(r["exceptionDetails"].get("exception", {}).get("description"))
                         return r.get("result", {}).get("value")
+
+            user, pw = a.user or env_value("ADMIN_USERNAME"), a.password or env_value("ADMIN_PASSWORD")
+            if await ev("fetch('/api/auth/me').then(r => r.json()).then(m => m.required && !m.user)"):
+                if not (user and pw):
+                    raise SystemExit("this Dub Studio asks for a sign-in: pass --user and --password "
+                                     "(or keep ADMIN_USERNAME / ADMIN_PASSWORD in app/.env)")
+                ok = await ev("fetch('/api/auth/login', {method: 'POST', headers: {'Content-Type': 'application/json'},"
+                              f" body: JSON.stringify({json.dumps({'username': user, 'password': pw})})}}).then(r => r.ok)")
+                if not ok:
+                    raise SystemExit(f"could not sign in as {user}: wrong id or password")
+                await ev("location.reload()", await_promise=False)
+                await asyncio.sleep(2)
 
             for _ in range(60):                                   # wait for the editor and its players
                 if await ev("!!document.querySelector('.monitor audio') && document.querySelector('.monitor audio').readyState >= 2"):
@@ -157,4 +179,6 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="")
     ap.add_argument("--cpu-throttle", type=float, default=1, help="simulate a busy Mac: Chrome runs N times slower")
     ap.add_argument("--slow-raf", type=int, default=0, help="screen redraws only every N ms (window not in front)")
+    ap.add_argument("--user", default="", help="sign in as this account (default: ADMIN_USERNAME in app/.env)")
+    ap.add_argument("--password", default="", help="its password (default: ADMIN_PASSWORD in app/.env)")
     sys.exit(asyncio.run(main(ap.parse_args())))

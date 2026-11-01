@@ -23,13 +23,14 @@ Premiere-style editor to review and fix before rendering.
 | Start the app | `app/scripts/start.sh` → http://127.0.0.1:8765 (restart: `POST /api/restart`, refused while a step runs) |
 | Backend (FastAPI + SQLite) | `app/backend/dubstudio/` — `main.py` API, `runner.py` job runner, `pipeline/steps.py` step plan |
 | Frontend (React + Vite) | `app/frontend/src/pages/` — Shows, NewShow, NewEpisode, Processing, Matching, Editor, GenPanel, Renders, Settings |
-| Tests | `cd app/backend && .venv/bin/python -m pytest -q tests` → **72 passed, 1 skipped** (fake pipeline, seconds) |
+| Tests | `cd app/backend && .venv/bin/python -m pytest -q tests` → **123 passed, 4 skipped** (fake pipeline, seconds) |
 | Real pipeline (run this one) | `/Users/manish/Desktop/france-team/adaptation-tool/scripts` (reference copies in `pipeline_tools/`) |
 | Pipeline Python | `app/pipeline_env` (made by `app/scripts/setup_pipeline.sh`) |
 | Face-map Python (separate!) | `adaptation-tool/mac_lipscan/venv_face` (made by `app/scripts/setup_face_env.sh`) |
 | Scene-edit scripts (Step 4C) | `app/backend/dubstudio/pipeline/` — `library.py`, `sceneedit.py`, `scene_transitions.py`, `sceneedit_sheet.py`, `qc_final.py` |
 | AI key + settings | `app/.env` (never print / log / copy / commit it) |
 | Pipeline manual (skill) | `skill/SKILL_dub-clip-video-stitcher_v21_full.md` (v21 is current) |
+| Accounts + cloud storage (2026-10-30) | `docs/08_ACCOUNTS_AND_STORAGE.md` — sign-in, own shows per account, R2 |
 | Show folders (inputs: never touch) | `~/Downloads/WBM US-IT`, `TOLR DE_ITaly`, `TDMB US-IT`, `HIH US-IT`, `TGS US_DE` |
 | Known-good examples | `examples/wbm_ep17`, `examples/tolr_ep24`, `examples/tgs_ep34_5min` (scene-edit done-test) |
 

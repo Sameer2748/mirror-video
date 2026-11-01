@@ -1,0 +1,5 @@
+{
+  "pipeline_python": "/Users/manish/Downloads/dub-studioo/app/pipeline_env/bin/python",
+  "library": "/Users/manish/conductor/workspaces/dub-studioo/hamburg/app/library",
+  "port": 8766
+}

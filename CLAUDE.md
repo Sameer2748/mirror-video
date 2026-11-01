@@ -29,7 +29,7 @@ dub-studioo/
   app/                      THE PROJECT YOU BUILD
     backend/dubstudio/      FastAPI app: config, db (SQLite), presets, scan, events, runner, main (API)
     backend/dubstudio/pipeline/  steps.py (plan of commands per show), decisions.py (Step 2 helpers)
-    backend/tests/          pytest (72 tests + 1 live AI; they use a fake pipeline, no video needed)
+    backend/tests/          pytest (123 tests + live AI / live R2; they use a fake pipeline, no video needed)
     frontend/               React + TypeScript (Vite): the screens (built to frontend/dist)
     scripts/                start.sh (launcher), setup_pipeline.sh (the pipeline's Python env → app/pipeline_env)
   pipeline_tools/           REFERENCE COPIES of the pipeline scripts (read them; do not run the app against them)
@@ -84,11 +84,22 @@ override, then `app/config.json`, then defaults). Check the paths exist before r
   (see `presets.py` `names()`); the app's own work files go in its library folder.
 - **Localisation sheet:** one per show, two columns `source name` | `target name` (csv/xlsx), found in the show
   folder, always sent to Claude for matching (`names.py`).
-- **AI = Claude through the owner's gateway.** The key and settings are in `app/.env` (gitignored). The
+- **AI = Claude, through OpenRouter by default** (`AI_PROVIDER=openrouter`, `OPENROUTER_API_KEY`; the owner's
+  gateway is the fallback, `AI_PROVIDER=gateway`, and is VPN-only so a deployed worker cannot reach it).
+  Prompt caching is on (`AI_CACHE=true`): the repeated part of a scene-edit prompt is billed once — same
+  prompt, about half the input cost (docs/05). Costs per episode and per step: `docs/03_PROGRESS.md`.
+- **AI (the gateway details).** The key and settings are in `app/.env` (gitignored). The
   client is `app/backend/dubstudio/ai.py`. How to call it, the models and the gotchas are in
   `docs/05_AI_GATEWAY.md`. Step 2 matching by Claude is built (`pipeline/ai_match.py`). Never print, log,
   hard-code or commit the key, and never copy `.env` anywhere else. Watch the budget with `GET /api/ai/status`.
-- **Mac only**, one editor, no login, everything local. Apple GPU (MPS) for Whisper and the lip scan.
+- **Accounts** (2026-10-30, `docs/08_ACCOUNTS_AND_STORAGE.md`): id + password sign-in; each account sees its own
+  shows and episodes, the owner's account sees them all. Settings live in `app/.env` (`AUTH_REQUIRED`,
+  `ADMIN_USERNAME` / `ADMIN_PASSWORD`); `AUTH_REQUIRED=false` gives back the old no-login mode. Never print or commit
+  the admin password or the R2 keys.
+- **Cloud storage**: finished files and a copy of the database go to Cloudflare R2 (`dubstudio/storage.py`), under
+  `R2_PREFIX` because the bucket is shared with the owner's other app. R2 is storage, not a database: SQLite stays
+  the live database on the Mac.
+- **Mac only**, Apple GPU (MPS) for Whisper and the lip scan; the pipeline and the files stay local.
 - **Face map runs in its own Python** (`venv_face`: insightface, onnxruntime, ultralytics; `DUBSTUDIO_FACE_PY`). Never
   install those packages into `app/pipeline_env` or the lip-scan venv: they upgrade numpy and break mediapipe.
 - **Work in milestones** (design doc "Build plan"). Each ends with its "done when" test passing on WBM ep17 and
@@ -101,8 +112,9 @@ override, then `app/config.json`, then defaults). Check the paths exist before r
 ```bash
 cd app/backend
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # once
-.venv/bin/python -m pytest -q tests                                  # 72 passed, 1 skipped (live AI)
+.venv/bin/python -m pytest -q tests                                  # 123 passed, 4 skipped (live AI, live R2, Postgres, Redis)
 DUBSTUDIO_LIVE_AI=1 .venv/bin/python -m pytest -q tests/test_ai.py -k live   # one real gateway call
+DUBSTUDIO_LIVE_R2=1 .venv/bin/python -m pytest -q tests/test_storage.py -k live   # one real R2 round trip
 ```
 
 The tests use a fake pipeline (`tests/conftest.py`) so they run in seconds without video files.

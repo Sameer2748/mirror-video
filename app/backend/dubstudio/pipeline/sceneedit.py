@@ -219,6 +219,21 @@ Answer ONLY JSON: {{"edl": [{{"t0": s, "t1": s, "shot": n, "from": s, "to": s, "
 Keep the answer short: no text outside the JSON."""
 
 
+# ---- prompt caching (owner, 2026-10-31) ----------------------------------------------------------------
+# Every round of a stretch re-sends the same rules, shot list and ~95 frame strips -- tens of thousands of tokens,
+# charged in full each time. Marking the end of that block makes the provider keep it: the first call writes the
+# cache, the later ones read it at a tenth of the price. NOTHING about the prompt changes -- same blocks, same
+# order, same bytes -- so the answers do not change either. AI_CACHE=false switches it off.
+CACHE_PROMPT = (os.environ.get("AI_CACHE", "true").strip().lower() not in ("0", "false", "no"))
+
+
+def cacheable(content):
+    """Mark the last block of the part that never changes between rounds, so it is billed once."""
+    if not CACHE_PROMPT or not content:
+        return content
+    return content[:-1] + [{**content[-1], "cache_control": {"type": "ephemeral"}}]
+
+
 def b64(n):
     return "data:image/jpeg;base64," + base64.b64encode(open(LIBD / "_frames" / f"shot_{n:03d}.jpg", "rb").read()).decode()
 
@@ -749,6 +764,7 @@ def cut_window(T0, T1, before, cache, wkey):
     content = [{"type": "text", "text": head}]
     for r in shots:
         content += [{"type": "text", "text": f"shot {r['n']}:"}, {"type": "image_url", "image_url": {"url": b64(r["n"])}}]
+    content = cacheable(content)                      # the rounds below re-send exactly this: bill it once
     extra, rounds, edl = "", [], []
     for rnd in range(4):
         key = f"{wkey}|round{rnd}"
@@ -1052,7 +1068,7 @@ def run_par(A0, A1):
         content = [{"type": "text", "text": head}]
         for r in shots:
             content += [{"type": "text", "text": f"shot {r['n']}:"}, {"type": "image_url", "image_url": {"url": b64(r["n"])}}]
-        return content
+        return cacheable(content)                     # every round of this stretch re-sends it: bill it once
 
     def run(k, tag, nr, extra0="", others=(), prev_last=None, prev_edl=None):
         T0, T1 = wins[k]; t = time.time()

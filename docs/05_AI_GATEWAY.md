@@ -113,3 +113,33 @@ OpenAI-style video API:
 - Reference images (Veo 3.1): `extra_body.instances.referenceImages = [{"image": {...}, "referenceType": "asset"}, …]`
   (up to 3). Only 8 s, and not together with `image` / `lastFrame` (Vertex: "Image and reference images cannot be both
   set"). Tested 2026-10-26.
+
+
+## Two providers, and prompt caching (2026-10-31)
+
+**Provider** (`dubstudio/ai.py`, `AI_PROVIDER` in app/.env):
+
+| | gateway | openrouter |
+| --- | --- | --- |
+| who | the owner's Pocket FM gateway | OpenRouter, public internet |
+| keys | `AI_BASE`, `AI_KEY`, `AI_EMAIL` | `OPENROUTER_API_KEY` |
+| models | `claude-sonnet-5-5`, `claude-haiku-5-5`, … | `anthropic/claude-sonnet-5.5`, `anthropic/claude-haiku-5.5`, … |
+| budget | `GET /key/info` | `GET /key` (+ `/credits`) |
+| reachable from a deployed worker | **no, VPN only** | **yes** |
+
+With no `AI_PROVIDER` the choice is automatic: OpenRouter when its key is set, else the gateway. Our own model
+names are mapped per provider, so no step had to change. In use since 2026-10-31: **openrouter /
+anthropic/claude-sonnet-5.5** ($2 per M in, $10 per M out).
+
+**Prompt caching** (`AI_CACHE=true`, on by default). Every round of a scene-edit stretch re-sends the same rules,
+shot list and ~95 frame strips — tens of thousands of tokens. `sceneedit.cacheable()` marks the last block of that
+part with `cache_control: ephemeral`, so the provider keeps it: the first call writes the cache, the later ones
+read it at a tenth of the price. **The prompt does not change** (same blocks, same order, same bytes), so the
+answers do not either; `AI_CACHE=false` sends exactly what it used to.
+
+- Measured on two calls sharing a 7.3 k-token image block: $0.0184 → **$0.0009** (7 303 of 7 334 tokens cached).
+- Measured on the ep34 5-minute scene edit: **$4.99 → $2.29**, 0 problems left either way. Caching paid for about
+  24% of that run (roughly half the input bill); the rest was needing 19 calls instead of 36.
+- `ai.cache_stats()` reports calls, prompt tokens, cached tokens and cost; the run-times sheet shows the real
+  dollars per step (it read the old gateway's endpoint before and printed $0.00).
+- Caching discounts **input only**. Output (43% of the bill) falls when the re-cut rounds do — the next job.

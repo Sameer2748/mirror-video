@@ -3,6 +3,8 @@ import json, os, subprocess, sys, textwrap, time
 from pathlib import Path
 import pytest
 
+ADMIN = ("owner", "owner-password")          # the account every test signs in with (made at startup from the env)
+
 FAKE_DUBSTITCH = r'''
 import json, os, sys, time
 from pathlib import Path
@@ -116,6 +118,18 @@ out = Path(a[a.index("--out-dir") + 1] if "--out-dir" in a else a[a.index("--out
 '''
 
 
+@pytest.fixture(autouse=True)
+def _fresh_postgres():
+    """When the suite runs on Postgres (DATABASE_URL set), every test starts with an empty database — the same
+    isolation a new SQLite file gives."""
+    url = os.environ.get("DATABASE_URL", "")
+    if url.startswith(("postgres://", "postgresql://")):
+        import psycopg
+        with psycopg.connect(url, autocommit=True) as c:
+            c.execute("DROP SCHEMA public CASCADE; CREATE SCHEMA public")
+    yield
+
+
 @pytest.fixture()
 def env(tmp_path, monkeypatch):
     tools = tmp_path / "tools"; (tools / "scripts").mkdir(parents=True)
@@ -147,6 +161,15 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("DUBSTUDIO_TOOLS", str(tools))
     monkeypatch.setenv("DUBSTUDIO_PIPELINE_PY", sys.executable)
     monkeypatch.setenv("DUBSTUDIO_MODELS", str(tmp_path / "models"))
+    # accounts: the tests sign in with their own owner account, and the real app/.env is never read (so no test can
+    # reach the owner's AI gateway, his R2 bucket or his admin password)
+    import dubstudio.envfile as envfile_mod
+    monkeypatch.setattr(envfile_mod, "ROOT", tmp_path)
+    monkeypatch.setenv("AUTH_REQUIRED", "true")
+    monkeypatch.setenv("ADMIN_USERNAME", ADMIN[0])
+    monkeypatch.setenv("ADMIN_PASSWORD", ADMIN[1])
+    for k in ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_ENDPOINT", "R2_PREFIX"):
+        monkeypatch.delenv(k, raising=False)
     # the tests never see the owner's AI key (app/.env): no real gateway calls, no cost; tests that need the AI stub it
     if not os.environ.get("DUBSTUDIO_LIVE_AI"):
         import dubstudio.ai as ai_mod
@@ -164,7 +187,9 @@ def env(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
     import dubstudio.main as main
     with TestClient(main.app) as client:
-        yield {"client": client, "show": show, "tmp": tmp_path}
+        r = client.post("/api/auth/login", json={"username": ADMIN[0], "password": ADMIN[1]})
+        assert r.status_code == 200, r.text                  # every test runs as the owner's account, signed in
+        yield {"client": client, "show": show, "tmp": tmp_path, "admin": ADMIN}
 
 
 def wait_for(fn, timeout=30):

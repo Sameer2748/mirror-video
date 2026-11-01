@@ -2,6 +2,7 @@
 
 Each step: name, resource ('cpu' | 'gpu' | 'none'), needs (step names), and either a command (run as a
 subprocess with the pipeline python, cwd = the tools' scripts folder) or an internal function name."""
+import os
 from pathlib import Path
 from ..config import cfg
 from .. import presets, names as nm
@@ -42,7 +43,11 @@ def plan(show, episode, assets):
                       "label": label or name, "duration": duration, "ai": ai})
 
     dur_src = assets.get("_dur_src_video"); dur_dub = assets.get("_dur_dub_audio")
-    add("ingest", fn="ingest", resource="none", label="Check files")
+    # Uploaded episodes keep their files in cloud storage: `fetch` brings them to this machine first, `publish` and
+    # `cleanup` at the end put the results back and free the disk (docs/09 §3). Both do nothing for a show whose
+    # files already live on this Mac.
+    add("fetch", fn="fetch_inputs", resource="none", label="Get the files from the cloud")
+    add("ingest", fn="ingest", needs=["fetch"], resource="none", label="Check files")
     # Step 0B for EVERY episode (owner, 2026-10-20): Whisper makes both sides' SRTs so every sentence has its exact
     # time, and each side is cleaned with its script so the words and sentence ends are right. Script per side: the
     # .docx/.txt script; else the given SRT's text (it has the right words and punctuation); else only the
@@ -101,8 +106,15 @@ def plan(show, episode, assets):
     g_needs = ["manifest"]
     if True:                                           # the lip scan runs for every show (owner, 2026-10-16)
         nets, mesh = W / "lips_nets", W / "lips_mesh"
-        add("lip_gpu", [py, T("lipgpu.py"), "--video", assets["src_video"], "--out-dir", str(nets)], ["ingest"],
-            resource="gpu", label="Lip scan: faces + TalkNet (GPU)", duration=dur_src)
+        # the lip scan is CPU-bound (measured: 1% GPU), so it is the first step that can run on rented machines:
+        # the episode is split into pieces that scan side by side and come back as the same lips_nets files.
+        from .. import cloud
+        if cloud.enabled_for("lip_gpu"):
+            add("lip_gpu", fn="lip_scan_cloud", needs=["ingest"], resource="none",
+                label=f"Lip scan on the cloud ({cloud.pieces()} pieces at once)", duration=dur_src)
+        else:
+            add("lip_gpu", [py, T("lipgpu.py"), "--video", assets["src_video"], "--out-dir", str(nets)], ["ingest"],
+                resource="gpu", label="Lip scan: faces + TalkNet (GPU)", duration=dur_src)
         add("lip_mesh", [py, T("lipmesh.py"), "--video", assets["src_video"], "--out-dir", str(mesh), "--ranges",
                          str(nets / "ranges.json")], ["lip_gpu"], label="Lip scan: lip opening", duration=dur_src)
         add("lip_merge", [py, T("lipmerge.py"), "--nets", str(nets), "--mesh", str(mesh), "--out", str(W / "lips_range")],
@@ -126,6 +138,11 @@ def plan(show, episode, assets):
         label="Scene edit (Claude, B-roll for slow lines)")
     add("use_scene", fn="use_scene", needs=["scene_edit"], resource="none", label="Use the scene edit")
     ctx.update(scene_dir=str(W / "scene"), library_dir=str(LIB), scene_parallel=8)
+    # a test window: the scene edit (the expensive Claude step) only cuts the first N seconds. The profile's
+    # `scene_until_s`, else DUBSTUDIO_SCENE_SECONDS. Empty = the whole episode, which is what a real run does.
+    until = prof.get("scene_until_s") or os.environ.get("DUBSTUDIO_SCENE_SECONDS")
+    if until:
+        ctx["scene_until_s"] = float(until)
     # the editor's stop: the episode opens as a timeline; render starts when the editor presses Render
     add("review", fn="review_gate", needs=["use_scene"] if dynamic else ["use_scene", "translate"], resource="none",
         label="Review & edit (editor)")
@@ -183,4 +200,6 @@ def plan(show, episode, assets):
         label="Final QC (PASS / WARN / FAIL sheet)")
     add("check", [py, T("dubstitch.py"), "check", "--work", str(W)], ["qc"], label="Final check")
     add("notes", fn="run_notes", needs=["check"], resource="none", label="Run notes (run_notes.md)")
+    add("publish", fn="publish", needs=["notes"], resource="none", label="Send the finished files to the cloud")
+    add("cleanup", fn="cleanup", needs=["publish"], resource="none", label="Free the machine for the next episode")
     return ctx, steps
