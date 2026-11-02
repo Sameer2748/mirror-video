@@ -5,7 +5,7 @@ PUT, and R2 is a folder in tmp_path. What is checked is the part that was wrong 
 must be **lipgpu's own pieces** with lipgpu's own names, and `ranges.json` -- which the two steps after the scan
 read -- must hold the whole list, not one machine's share.
 """
-import json, tarfile
+import json, shutil, tarfile
 from pathlib import Path
 
 import pytest
@@ -136,3 +136,117 @@ def test_which_steps_go_to_the_cloud(monkeypatch):
 
     settings.update(CLOUD_STEPS="all", RUNPOD_API_KEY=None)
     assert not cloud.enabled_for("lip_gpu")                   # no key, no cloud
+
+
+# ---------------- any step on a rented machine ----------------
+class FakeCfg:
+    """The paths of a Mac, so tokenise has something real to swap out."""
+    def __init__(self, root):
+        self.tools_dir = root / "adaptation-tool"
+        self.scripts = self.tools_dir / "scripts"
+        self.scene_dir = root / "app/backend/dubstudio/pipeline"
+        self.models_dir = self.tools_dir / "data/models"
+        self.pipeline_python = str(root / "app/pipeline_env/bin/python")
+        self.face_python = str(self.tools_dir / "mac_lipscan/venv_face/bin/python")
+
+
+def test_a_command_is_rewritten_with_placeholders(tmp_path):
+    """Every path on this Mac becomes a placeholder; a file somewhere else becomes a token with a signed link,
+    so the worker needs to know nothing about this machine's layout."""
+    cfg = FakeCfg(tmp_path)
+    work, out = tmp_path / "library/work/TGS_ep34", tmp_path / "show/output/ep34"
+    video = tmp_path / "TGS show/TGS EPISODE 34.mp4"
+    video.parent.mkdir(parents=True); video.write_bytes(b"v" * 32)
+    cmd = [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "words", "--work", str(work),
+           "--srt", f"{work}/TGS_EP34_EN_sentences.srt", "--media", str(video),
+           "--models", str(cfg.models_dir), "--out", f"{out}/mapping.xlsx"]
+    got, files = cloud.tokenise(cmd, work, out, cfg)
+    assert got == ["{PY}", "{SCRIPTS}/dubstitch.py", "words", "--work", "{WORK}",
+                   "--srt", "{WORK}/TGS_EP34_EN_sentences.srt", "--media", "{F0}",
+                   "--models", "{MODELS}", "--out", "{OUT}/mapping.xlsx"]
+    assert files == {"{F0}": str(video)}
+    # {SCRIPTS} lives inside {TOOLS}: the longer prefix has to win, or the script path breaks
+    assert cloud.tokenise([f"{cfg.tools_dir}/data/x", f"{cfg.scripts}/y"], work, out, cfg)[0] == \
+           ["{TOOLS}/data/x", "{SCRIPTS}/y"]
+    # the runner's own placeholders are understood too
+    assert cloud.tokenise(["{py}", "{fpy}"], work, out, cfg)[0] == ["{PY}", "{FPY}"]
+
+
+def _episode(tmp_path):
+    work = tmp_path / "work/TGS_ep34"; out = tmp_path / "out/ep34"
+    work.mkdir(parents=True); out.mkdir(parents=True)
+    return {"code": "TGS"}, {"id": 1, "number": 34, "work_dir": str(work), "output_dir": str(out)}
+
+
+def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path, monkeypatch):
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    (work / "manifest.json").write_text('{"a": 1}')                     # small: travels
+    (work / "lips_nets").mkdir(); (work / "lips_nets" / "range_0_15.json").write_text("{}")
+    (work / "clean.mp4").write_bytes(b"x" * (2 << 20))                  # big: stays here
+    (work / "input" / "src_video").mkdir(parents=True)
+    (work / "input" / "src_video" / "v.mp4").write_text("tiny but an input")   # never travels in the tar
+    bucket = tmp_path / "bucket"
+
+    sent_job = {}
+
+    def fake_submit(job):
+        sent_job.update(job)
+        return "job0"
+
+    def fake_wait(ids, **kw):
+        # the "worker": unpack what it was sent, write a result, send back only what changed
+        got = tarfile.open(bucket / "cloud/words_work_in.tar.gz")
+        names = sorted(got.getnames())
+        box = tmp_path / "worker"; box.mkdir(exist_ok=True)
+        got.extractall(box); got.close()
+        (box / "rows.json").write_text('{"rows": []}')
+        back = bucket / "cloud/words_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "rows.json", arcname="rows.json")
+        return {"job0": {"output": {"ok": True, "rc": 0, "seconds": 12.3, "log": "all rows done",
+                                    "sent": {"work": {"files": 1, "names": ["rows.json"]}},
+                                    "_tar_names": names}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    cmd = [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "words", "--work", str(work)]
+    res = cloud.run_command({}, show, ep, "words", cmd, cfg, log=lambda m: None)
+
+    assert res["ok"] and res["seconds"] == 12.3
+    names = res["_tar_names"]
+    assert "manifest.json" in names and "lips_nets/range_0_15.json" in names
+    assert "clean.mp4" not in names                                     # too big to post about
+    assert not any(n.startswith("input/") for n in names)               # inputs travel as links, not in the tar
+    assert (work / "rows.json").read_text() == '{"rows": []}'           # what the step wrote is back here
+    assert sent_job["cmd"][0] == "{PY}" and sent_job["name"] == "words"
+
+
+def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):
+    show, ep = _episode(tmp_path)
+    monkeypatch.setattr(cloud, "submit", lambda job: "j")
+    monkeypatch.setattr(cloud, "wait", lambda ids, **kw: (
+        {"j": {"output": {"ok": False, "rc": 1, "log": "Traceback …\nValueError: no rows in the manifest"}}}, {}))
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: "https://r2/x")
+    with pytest.raises(RuntimeError, match="no rows in the manifest"):
+        cloud.run_command({}, show, ep, "manifest", ["{py}", "x"], FakeCfg(tmp_path), log=lambda m: None)
+
+
+def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(monkeypatch):
+    """facemap and qc ask the app's AI client for a vote. Without a key they do not fail -- they give a worse
+    answer -- so they must not go to a rented machine by accident."""
+    settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all"}
+    monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
+    monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
+    assert cloud.enabled_for("render") and not cloud.enabled_for("facemap") and not cloud.enabled_for("qc")
+    settings["CLOUD_AI"] = "true"
+    assert cloud.enabled_for("facemap") and cloud.enabled_for("qc")

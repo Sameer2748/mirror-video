@@ -42,8 +42,21 @@ def steps():
     return {s.strip() for s in raw.split(",") if s.strip()}
 
 
+# Two steps ask the app's own AI client for a vote (`facemap.py --app`, `qc_final.py --app`). On a rented machine
+# that means sending it an OpenRouter key, which is the owner's call, not ours -- so unless CLOUD_AI is on they
+# stay here. Running them in the cloud without a key does not fail: it quietly gives a *worse* answer (facemap:
+# "groups without a clear vote stay 'unknown'"), and a quietly worse answer is the thing to avoid.
+NEEDS_AI_KEY = {"facemap", "qc"}
+
+
+def ai_key_allowed():
+    return envfile.flag("CLOUD_AI", False)
+
+
 def enabled_for(step, kind="cpu"):
     want = steps()
+    if step in NEEDS_AI_KEY and not ai_key_allowed():
+        return False
     return available(kind) and ("all" in want or step in want)
 
 
@@ -196,3 +209,143 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
     log(f"{files} range files in {time.time() - t0:.0f} s (workers used {worker_s:.0f} s, {retries} retries)")
     return {"pieces": len(shares), "files": files, "seconds": round(time.time() - t0, 1),
             "worker_seconds": round(worker_s, 1), "retries": retries}
+
+
+# ---------------- any step, on a rented machine ----------------
+# A deployed API box can run none of the 37 pipeline steps: it has no Whisper, no models and no pipeline scripts.
+# So rather than an image per step, there is one image with the whole pipeline in it, and the app sends it the
+# command it was going to run anyway -- with this machine's paths swapped for placeholders the worker fills in with
+# its own. The pipeline scripts are never touched, which is the rule in CLAUDE.md.
+#
+#   {PY} {FPY}   the pipeline's python (the worker has one python for both)
+#   {SCRIPTS}    adaptation-tool/scripts        {TOOLS}   adaptation-tool
+#   {SCENE}      the scene-edit scripts         {MODELS}  the Whisper / sentence models
+#   {WORK}       the episode's work folder      {OUT}     the show's output folder
+#   {F0} {F1} …  one big input file each (the source video, the dub audio, the font): a signed link
+SMALL = 1 << 20                  # a file this size or under travels in the work tar, not on its own
+
+
+def tokenise(cmd, work_dir, out_dir, cfg):
+    """One command line as the worker should see it. -> (cmd, {token: local path of a big file})
+
+    Everything that is a path on this machine becomes a placeholder. What is left over and is a real file -- the
+    source video, the dub audio, the subtitle font -- gets a token of its own and travels as a signed link."""
+    app_dir = str(Path(__file__).resolve().parent.parent)       # app/backend: facemap and qc import `dubstudio`
+    prefixes = [("{SCRIPTS}", str(cfg.scripts)), ("{SCENE}", str(cfg.scene_dir)), ("{MODELS}", str(cfg.models_dir)),
+                ("{TOOLS}", str(cfg.tools_dir)), ("{WORK}", str(work_dir)), ("{OUT}", str(out_dir)),
+                ("{APP}", app_dir)]
+    prefixes.sort(key=lambda kv: len(kv[1]), reverse=True)      # longest first: {SCRIPTS} is inside {TOOLS}
+    exact = {str(cfg.pipeline_python): "{PY}", str(cfg.face_python): "{FPY}", "{py}": "{PY}", "{fpy}": "{FPY}"}
+    out, files = [], {}
+    for arg in cmd:
+        if arg in exact:
+            out.append(exact[arg]); continue
+        arg = arg.replace("{scripts}", str(cfg.scripts))
+        for token, real in prefixes:
+            if real and arg.startswith(real):
+                arg = token + arg[len(real):]
+                break
+        if arg.startswith("/") and Path(arg).is_file():          # a file somewhere else on this Mac
+            token = f"{{F{len(files)}}}"
+            files[token] = arg
+            arg = token
+        out.append(arg)
+    return out, files
+
+
+def _tar(paths, root, dest):
+    """Tar a list of paths (relative to root). -> how many went in."""
+    n = 0
+    with tarfile.open(dest, "w:gz") as t:
+        for p in paths:
+            full = Path(root) / p
+            if full.is_file():
+                t.add(full, arcname=str(p))
+                n += 1
+    return n
+
+
+def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200):
+    """Run one pipeline step on a rented machine. -> the worker's answer.
+
+    The episode's small work files go up as one tar, the big inputs as signed links, and only what the step
+    **changed** comes back -- so a step that writes one JSON brings back one JSON, and a render brings back the
+    video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one."""
+    W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
+    cmd_t, files = tokenise(cmd, W, O, cfg)
+
+    job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
+
+    # the work folder: the small files only (the big ones are either inputs, sent as links, or outputs we want back)
+    small = [p.relative_to(W) for p in W.rglob("*")
+             if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
+    if small:
+        tar = W.parent / f"_{name}_work_in.tar.gz"
+        n = _tar(small, W, tar)
+        key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
+        storage.put_file(tar, key)
+        tar.unlink(missing_ok=True)
+        job["work_in"] = storage.presign(key, 10800)
+        log(f"{n} work files sent up")
+    if O.is_dir():
+        osmall = [p.relative_to(O) for p in O.rglob("*") if p.is_file() and p.stat().st_size <= SMALL]
+        if osmall:
+            tar = W.parent / f"_{name}_out_in.tar.gz"
+            _tar(osmall, O, tar)
+            key = storage.work_key(show, ep, f"cloud/{name}_out_in.tar.gz")
+            storage.put_file(tar, key)
+            tar.unlink(missing_ok=True)
+            job["out_in"] = storage.presign(key, 10800)
+
+    # the big inputs, each as a signed link (uploaded once; an episode's video is reused by every step)
+    if files:
+        job["files"], job["names"] = {}, {}
+        for token, path in files.items():
+            key = _file_in_cloud(db, show, ep, Path(path))
+            job["files"][token] = storage.presign(key, 10800)
+            job["names"][token] = Path(path).name
+        log(f"{len(files)} big input file(s) ready in the cloud")
+
+    back_work = storage.work_key(show, ep, f"cloud/{name}_work_out.tar.gz")
+    back_out = storage.work_key(show, ep, f"cloud/{name}_out_out.tar.gz")
+    job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
+                      "out": storage.presign(back_out, 10800, method="PUT")}
+
+    jid = submit(job)
+    log(f"{name}: sent to a rented machine (job {jid})")
+    done, failed = wait([jid], on_progress=on_progress, timeout=timeout)
+    if failed:
+        raise RuntimeError(f"the cloud could not run {name}: {list(failed.values())[0]}")
+    res = (list(done.values())[0] or {}).get("output") or {}
+    if res.get("log"):
+        log(res["log"])
+    if not res.get("ok"):
+        raise RuntimeError(f"{name} failed on the rented machine (exit {res.get('rc')}): "
+                           f"{(res.get('log') or res.get('error') or '')[-300:]}")
+
+    sent = res.get("sent") or {}
+    for which, key, root in (("work", back_work, W), ("out", back_out, O)):
+        if sent.get(which):
+            tar = W.parent / f"_{name}_{which}_back.tar.gz"
+            storage.download(key, tar)
+            root.mkdir(parents=True, exist_ok=True)
+            with tarfile.open(tar) as t:
+                t.extractall(root)
+            tar.unlink(missing_ok=True)
+    log(f"{name}: done in {res.get('seconds')} s; "
+        f"{sum(v.get('files', 0) for v in sent.values())} files came back")
+    return res
+
+
+def _file_in_cloud(db, show, ep, path):
+    """A big input file in R2, uploading it once if it is not there yet. -> the key."""
+    a = db.one("SELECT * FROM assets WHERE episode_id=? AND path=? AND role='input'", (ep["id"], str(path)))
+    if a and a.get("r2_key") and storage.head(a["r2_key"]):
+        return a["r2_key"]
+    kind = (a or {}).get("kind") or "file"
+    key = storage.input_key(show, ep, kind, path.name)
+    if not storage.head(key):
+        storage.put_big_file(path, key)
+    if a:
+        db.update("assets", a["id"], r2_key=key)
+    return key

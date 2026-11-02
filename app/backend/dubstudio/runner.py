@@ -6,7 +6,7 @@ from .config import cfg
 from .db import now
 from .events import bus
 from .pipeline import steps as pipeline_steps, decisions as dec
-from . import deliver, envfile, scan, storage, timeline
+from . import cloud, deliver, envfile, scan, storage, timeline
 
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
@@ -414,6 +414,8 @@ class Runner:
 
     def _run_cmd(self, j, cmd=None):
         prm = j["params"]
+        if cloud.enabled_for(j["step"]):                   # CLOUD_STEPS: run it on a rented machine instead
+            return self._run_cmd_cloud(j, cmd or prm["cmd"])
         cmd = self._expand(cmd or prm["cmd"])
         if cfg.step_max_seconds and any(x in cmd for x in ("render", "transitions", "subs", "words")) or \
                 cfg.step_max_seconds and any(x.endswith(("mksrt.py", "lipgpu.py", "lipmesh.py")) for x in cmd):
@@ -459,6 +461,28 @@ class Runner:
                 break
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done in {time.time() - t0:.0f} s" + (f" ({rounds} rounds)" if rounds > 1 else ""))
+
+    def _run_cmd_cloud(self, j, cmd):
+        """The same step, on a rented machine (dubstudio/cloud.py). The command is the one this machine would have
+        run; only the paths differ. Its log is written to the job's log file, so the screens look the same."""
+        t0 = time.time()
+        show, ep, _ = self.episode_context(j["episode_id"])
+        with open(j["log_path"], "a", encoding="utf-8") as f:
+            def log(msg):
+                f.write(str(msg).rstrip() + "\n"); f.flush()
+
+            def prog(done, total, workers):
+                busy = (workers or {}).get("running", 0)
+                self._set(j, message=f"running on a rented machine ({busy} working)")
+
+            self._set(j, message="sending the files to a rented machine")
+            res = cloud.run_command(self.db, show, ep, j["step"], self._expand(cmd), cfg,
+                                    log=log, on_progress=prog,
+                                    timeout=cfg.step_max_seconds or 7200)
+        if res.get("rc") == 3:                             # "not finished -- run again (it resumes)"
+            return self._run_cmd_cloud(j, cmd)
+        self._set(j, status="done", progress=1, finished=now(), eta=0,
+                  message=f"done on a rented machine in {time.time() - t0:.0f} s")
 
     @staticmethod
     def _parse_progress(line, dur):
