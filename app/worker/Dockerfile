@@ -10,7 +10,7 @@
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl xz-utils libgl1 libglib2.0-0 fontconfig \
+      curl xz-utils libgl1 libglib2.0-0 fontconfig tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
 # ffmpeg 8.1, to match the Mac's 8.1.2 -- NOT Debian's apt ffmpeg. Measured, not assumed: on ep34's dub MP3 the

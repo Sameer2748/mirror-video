@@ -83,9 +83,10 @@ for v in vis:
             c6.append(dict(at=fmt(a0), line=d["text"][:70], speaker=who, on_screen_talking=", ".join(talk), shot=v["shot"]))
 res[6] = ("Speaker", "during a dialogue line nobody but its speaker talks on screen", "FAIL" if c6 else "PASS", len(c6), c6)
 # 4. black frames, 5. frame rate
-c4, c5 = [], []
+c4, c5, video_missing = [], [], False
 for vp in a.videos:
-    if not os.path.exists(vp): c4.append(dict(video=os.path.basename(vp), at="-", seconds="missing")); continue
+    if not os.path.exists(vp):
+        c4.append(dict(video=os.path.basename(vp), at="-", seconds="missing")); video_missing = True; continue
     r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate,avg_frame_rate", "-of", "csv=p=0", vp],
                        capture_output=True, text=True).stdout.strip().split(",")
     from fractions import Fraction
@@ -163,3 +164,6 @@ wb.save(a.out)
 for k in sorted(res):
     print(f"QC {k} {res[k][0]}: {res[k][2]} ({res[k][3]} findings)")
 print("saved", a.out, "| shots on screen:", len(vis), "| story check usage:", usage)
+# A missing file is a failed job. A QC finding (short shot, speaker, story) stays on the sheet and exits 0.
+if video_missing:
+    sys.exit(1)

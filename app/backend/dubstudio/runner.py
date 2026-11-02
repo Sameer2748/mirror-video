@@ -464,6 +464,20 @@ class Runner:
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done in {time.time() - t0:.0f} s" + (f" ({rounds} rounds)" if rounds > 1 else ""))
 
+    def _worker_cmd(self, j, cmd):
+        """Run this command on a rented machine when the step is in CLOUD_STEPS. The caller marks the job done.
+        -> True when it ran there."""
+        if not cloud.enabled_for(j["step"]):
+            return False
+        show, ep, _ = self.episode_context(j["episode_id"])
+        with open(j["log_path"], "a", encoding="utf-8") as f:
+            def log(msg):
+                f.write(str(msg).rstrip() + "\n"); f.flush()
+            self._set(j, message="sending the files to a rented machine")
+            cloud.run_command(self.db, show, ep, j["step"], cmd, cfg, log=log,
+                              timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]))
+        return True
+
     def _run_cmd_cloud(self, j, cmd):
         """The same step, on a rented machine (dubstudio/cloud.py). The command is the one this machine would have
         run; only the paths differ. Its log is written to the job's log file, so the screens look the same."""
@@ -666,14 +680,33 @@ class Runner:
                         (j["episode_id"],))
         dur = ((a or {}).get("probe") or {}).get("duration") if isinstance((a or {}).get("probe"), dict) else None
         work = j["params"]["ctx"]["W"]; last = [0.0]
-        def prog(x):
-            if time.time() - last[0] > 0.5:
-                last[0] = time.time(); self._set(j, progress=round(x, 4), message=f"making the preview copy {x:.0%}")
-        with open(j["log_path"], "a") as f:
-            p = timeline.make_proxy(work, a["path"], dur, prog, log=lambda m: f.write(m + "\n"))
-            d = self.db.one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (j["episode_id"],))
-            if d:                                          # the editor's exact copy of the dub audio
-                timeline.dub_preview(work, d["path"], log=lambda m: f.write(m + "\n"))
+        out = Path(work) / timeline.PROXY
+        d = self.db.one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (j["episode_id"],))
+        if cloud.enabled_for("proxy"):
+            # The website server has no ffmpeg. Same flags as timeline.make_proxy / dub_preview.
+            if not out.exists():
+                self._worker_cmd(j, ["ffmpeg", "-v", "error", "-y", "-i", a["path"], "-map", "0:v:0", "-map", "0:a:0?",
+                                     "-vf", "scale=-2:'min(540,ih)'", "-c:v", "libx264", "-preset", "veryfast", "-crf", "27",
+                                     "-pix_fmt", "yuv420p", "-force_key_frames", "expr:gte(t,n_forced*0.5)",
+                                     "-c:a", "aac", "-b:a", "96k", "-ac", "2", "-movflags", "+faststart", str(out)])
+            dub_out = Path(work) / timeline.DUB_PREVIEW
+            if d and not dub_out.exists():
+                self._worker_cmd(j, ["ffmpeg", "-v", "error", "-y", "-i", d["path"], "-map", "0:a:0", "-c:a", "aac",
+                                     "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(dub_out)])
+                st = Path(d["path"]).stat()
+                (Path(work) / "dub_preview.json").write_text(json.dumps(
+                    {"src": d["path"], "size": st.st_size, "mtime": st.st_mtime}))
+            if not out.exists():
+                raise RuntimeError("the preview copy did not come back from the rented machine")
+            p = out
+        else:
+            def prog(x):
+                if time.time() - last[0] > 0.5:
+                    last[0] = time.time(); self._set(j, progress=round(x, 4), message=f"making the preview copy {x:.0%}")
+            with open(j["log_path"], "a") as f:
+                p = timeline.make_proxy(work, a["path"], dur, prog, log=lambda m: f.write(m + "\n"))
+                if d:                                      # the editor's exact copy of the dub audio
+                    timeline.dub_preview(work, d["path"], log=lambda m: f.write(m + "\n"))
         if storage.configured():                           # so an editor on another machine can play this episode
             show, ep, _ = self.episode_context(j["episode_id"])
             storage.mirror(show, ep, timeline.PROXY, background=False)
@@ -684,8 +717,12 @@ class Runner:
         work = j["params"]["ctx"]["W"]
         a = self.db.one("SELECT path FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (j["episode_id"],))
         video = timeline.proxy_path(work) or a["path"]
-        with open(j["log_path"], "a") as f:
-            timeline.make_sharpness(work, video, cfg.pipeline_python, log=lambda m: f.write(m + "\n"))
+        out = Path(work) / timeline.SHARPNESS
+        tool = Path(timeline.__file__).with_name("sharpness_tool.py")
+        cmd = [str(cfg.pipeline_python), str(tool), "--video", str(video), "--out", str(out)]
+        if not self._worker_cmd(j, cmd):
+            with open(j["log_path"], "a") as f:
+                timeline.make_sharpness(work, video, cfg.pipeline_python, log=lambda m: f.write(m + "\n"))
         self._set(j, status="done", progress=1, finished=now(), message="sharpness measured")
 
     def ensure_steps(self, ep_id):
@@ -823,6 +860,8 @@ class Runner:
         if not spec.exists():
             p = json.loads((w / "prep.json").read_text()); D = json.loads((w / "decisions.json").read_text())
             spec.write_text(dec.to_spec(p, D, "# Step 2 decisions (Dub Studio: imported or accepted)"))
+        if self._worker_cmd(j, [str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)]):
+            return "mkdec on a rented machine"
         r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)],
                            capture_output=True, text=True, cwd=str(cfg.scripts), timeout=300)
         with open(j["log_path"], "a", encoding="utf-8") as log:
@@ -834,6 +873,10 @@ class Runner:
     def _fn_merged(self, j):
         """`merged.py W 95 > W/merged.txt`: the reading view for Step 2 (the dub rows with their source lines)."""
         w = Path(j["params"]["ctx"]["W"])
+        if self._worker_cmd(j, ["/bin/sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]):
+            text = (w / "merged.txt").read_text(encoding="utf-8") if (w / "merged.txt").exists() else ""
+            self._set(j, status="done", progress=1, finished=now(), message=f"merged.txt: {text.count(chr(10))} lines")
+            return
         r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "merged.py"), str(w), "95"],
                            capture_output=True, text=True, cwd=str(cfg.scripts), timeout=300)
         with open(j["log_path"], "a", encoding="utf-8") as log:

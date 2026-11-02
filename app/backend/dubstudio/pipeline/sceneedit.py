@@ -24,7 +24,15 @@ from pathlib import Path
 W, LIBD, A0, A1, OUTM = Path(sys.argv[1]), Path(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), Path(sys.argv[5])
 opt = lambda k, d: type(d)(sys.argv[sys.argv.index(k) + 1]) if k in sys.argv else d
 WIN = opt("--window", 30.0); MODEL = opt("--model", "")
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))          # app/backend
+def _app_dir(script):
+    """Folder on sys.path for `import dubstudio`: parents[2] (Mac), else /opt/app (CPU worker)."""
+    script = Path(script).resolve()
+    for folder in (script.parents[2], Path("/opt/app")):
+        pkg = folder / "dubstudio"
+        if (pkg / "ai.py").is_file() or (pkg / "__init__.py").is_file():
+            return folder
+    return script.parents[2]
+sys.path.insert(0, str(_app_dir(__file__)))          # app/backend, or /opt/app on the CPU worker
 from dubstudio import ai  # noqa: E402
 
 SPEED_LO, SPEED_HI, MIN_PIECE, LIP_TOL, REUSE_GAP = 0.8, 1.25, 0.5, 0.3, 8.0

@@ -41,7 +41,10 @@ SETTINGS = {
     "AUTH_COOKIE_SECURE": "true",                 # https on Render: the session cookie must be secure
     "AI_PROVIDER": "openrouter",                  # the owner's gateway is VPN-only, so a server cannot reach it
     "AI_CACHE": "true",
-    "CLOUD_STEPS": "lip_gpu",                     # which steps go to the RunPod workers instead of this box
+    # Video and pipeline steps. Not "all": that also turns on the render tail, and library, scene edit,
+    # captions and the tail stay off until the CPU image is rebuilt and episode 34 is compared to the Mac.
+    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,words_src,words_dub,analyze,sheet,manifest,lip_mesh,lip_merge,lipsync,groups,proxy,sharpness,merged,decisions,translate",
+    "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2
     "MAX_ACTIVE_EPISODES": "2",
@@ -54,7 +57,8 @@ SETTINGS = {
 }
 # copied from app/.env as they are; never printed
 SECRETS = ["OPENROUTER_API_KEY", "R2_ACCOUNT_ID", "R2_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY",
-           "R2_BUCKET", "R2_PREFIX", "RUNPOD_API_KEY", "RUNPOD_CPU_ENDPOINT", "ADMIN_USERNAME", "ADMIN_PASSWORD"]
+           "R2_BUCKET", "R2_PREFIX", "RUNPOD_API_KEY", "RUNPOD_CPU_ENDPOINT", "RUNPOD_GPU_ENDPOINT",
+           "ADMIN_USERNAME", "ADMIN_PASSWORD"]
 
 APPLY = "--apply" in sys.argv
 KEY = os.environ.get("RENDER_API_KEY") or envfile.get("RENDER_API_KEY")

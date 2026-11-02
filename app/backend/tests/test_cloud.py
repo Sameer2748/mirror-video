@@ -230,6 +230,50 @@ def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path
     assert sent_job["cmd"][0] == "{PY}" and sent_job["name"] == "words"
 
 
+def test_a_big_file_already_in_the_work_folder_is_sent_on_its_own(tmp_path, monkeypatch):
+    """The preview copy is written into the work folder and is far over 1 MB, so the next step (sharpness)
+    cannot find it in the work tar. It has to travel as its own link, and the tar must still leave it out."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    proxy = work / "proxy_540.mp4"
+    proxy.write_bytes(b"x" * (2 << 20))
+    (work / "manifest.json").write_text("{}")
+    bucket = tmp_path / "bucket"
+    sent_job = {}
+
+    def fake_submit(job, **kw):
+        sent_job.update(job)
+        return "job0"
+
+    def fake_wait(ids, **kw):
+        got = tarfile.open(bucket / "cloud/sharpness_work_in.tar.gz")
+        names = sorted(got.getnames())
+        got.close()
+        back = bucket / "cloud/sharpness_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"job0": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}, "_tar_names": names}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    cmd = [cfg.pipeline_python, str(tmp_path / "sharpness_tool.py"), "--video", str(proxy), "--out", str(work / "sharpness.json")]
+    res = cloud.run_command({}, show, ep, "sharpness", cmd, cfg, log=lambda m: None)
+
+    assert "{F0}" in sent_job["cmd"] and "{WORK}/proxy_540.mp4" not in sent_job["cmd"]
+    assert sent_job["files"]["{F0}"].endswith("proxy_540.mp4") or "proxy_540" in sent_job["files"]["{F0}"]
+    assert "proxy_540.mp4" not in res["_tar_names"]
+    assert "manifest.json" in res["_tar_names"]
+
+
 def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):
     show, ep = _episode(tmp_path)
     monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")

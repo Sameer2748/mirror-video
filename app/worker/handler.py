@@ -20,7 +20,8 @@ one JSON sends back one JSON, and a render sends back the video.
 
 No key ever reaches here: every URL is a signed link that expires.
 """
-import json, os, shutil, subprocess, sys, tarfile, time, urllib.request
+import http.client, io, json, os, shutil, subprocess, sys, tarfile, time
+import urllib.error, urllib.parse, urllib.request
 
 import runpod
 
@@ -47,11 +48,24 @@ def fetch(url, path):
 
 
 def put(url, path, ctype="application/octet-stream"):
-    with open(path, "rb") as f:
-        req = urllib.request.Request(url, data=f.read(), method="PUT",
-                                     headers={"Content-Type": ctype})
-        with urllib.request.urlopen(req, timeout=1800) as r:
-            return r.status
+    # Stream the open file in chunks. Content-Length is the file size, so a multi-GB render is not loaded into RAM.
+    size = os.path.getsize(path)
+    u = urllib.parse.urlsplit(url)
+    cls = http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection
+    conn = cls(u.hostname, u.port or cls.default_port, timeout=1800)
+    conn.blocksize = 8 << 20          # same chunk size as fetch(); the file itself stays on disk
+    target = (u.path or "/") + (("?" + u.query) if u.query else "")
+    try:
+        with open(path, "rb") as f:
+            conn.request("PUT", target, body=f,
+                         headers={"Content-Type": ctype, "Content-Length": str(size)})
+            resp = conn.getresponse()
+            status, body = resp.status, resp.read()
+        if not 200 <= status < 300:   # urlopen raised for these; a rejected PUT must still fail the job
+            raise urllib.error.HTTPError(url, status, resp.reason, resp.headers, io.BytesIO(body))
+        return status
+    finally:
+        conn.close()
 
 
 def untar_from(url, dest):

@@ -5,16 +5,22 @@ A job is one step -- or one piece of a long step -- of one episode:
     {"step": "lip_scan", "inputs": {"video": <signed GET>}, "args": {"range": [0, 15]},
      "outputs": {"result": <signed PUT>}}
 
-The worker image (`sameer27488/dubstudio-worker:cpu`) already holds the pipeline scripts and the model weights, so
-nothing is downloaded while a job runs. **No key ever leaves this machine**: the worker only gets signed links that
-expire. The endpoint keeps no workers when the queue is empty and starts more when it grows, so a long step is split
+Two images, and the app picks the endpoint rather than the image name:
+
+  sameer27488/dubstudio-worker:pipeline   CPU. Lip scan, Whisper, and the other CPU steps. On RUNPOD_CPU_ENDPOINT.
+  sameer27488/dubstudio-worker:face-gpu    CUDA 13. Face map only (InsightFace buffalo_l + yolo26l). On RUNPOD_GPU_ENDPOINT.
+
+Nothing is downloaded while a job runs. **No key ever leaves this machine** unless CLOUD_AI is on, and then only the
+OpenRouter key, for the steps that ask Claude to name a face. The worker otherwise gets signed links that expire.
+The endpoint keeps no workers when the queue is empty and starts more when it grows, so a long step is split
 into pieces that run side by side -- which is the only parallelism that helps (measured: several processes on ONE
 machine are slower than one, because the lip scan is CPU-bound).
 
 Settings (app/.env):
   RUNPOD_API_KEY        the account key
-  RUNPOD_CPU_ENDPOINT   the serverless endpoint id for the CPU steps
-  CLOUD_STEPS           which steps go to the cloud, e.g. "lip_gpu" (empty = everything runs here, as before)
+  RUNPOD_CPU_ENDPOINT   the CPU image endpoint
+  RUNPOD_GPU_ENDPOINT   the face-gpu image endpoint
+  CLOUD_STEPS           which steps go to the cloud, e.g. "lip_gpu,mksrt_src,mksrt_dub,facemap"
   CLOUD_PIECES          how many pieces a long step is split into (default 8)
 """
 import json, tarfile, time, urllib.error, urllib.request
@@ -340,6 +346,25 @@ def tokenise(cmd, work_dir, out_dir, cfg, files=None):
     return out, files
 
 
+def _send_large_work_files(cmd, work_dir, files):
+    """Replace `{WORK}/some-big-file` with a file token when that file is already on disk and over 1 MB.
+
+    The render tail does not come through here one step at a time, so a multi-GB master is not uploaded
+    between those steps. -> (cmd, files)"""
+    out = []
+    for arg in cmd:
+        if isinstance(arg, str) and arg.startswith("{WORK}/"):
+            local = Path(work_dir) / arg[len("{WORK}/"):]
+            if local.is_file() and local.stat().st_size > SMALL:
+                token = next((t for t, p in files.items() if p == str(local)), None)
+                if token is None:
+                    token = f"{{F{len(files)}}}"
+                    files[token] = str(local)
+                arg = token
+        out.append(arg)
+    return out, files
+
+
 def _files_named_in_config(W, O, already):
     """The big files a step needs may be named **only inside config.json**, never on the command line.
     `dubstitch.py manifest --work W` is the whole command, and `cmd_manifest` then does
@@ -397,6 +422,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if preset_files:
         files.update(preset_files)
     files.update(_files_named_in_config(W, O, files))
+    # A later step can need a big file an earlier step wrote into the work folder (the 540 px preview).
+    # The work tar only carries files of 1 MB or under, so that file goes as its own link, like the source video.
+    cmd_t, files = _send_large_work_files(cmd_t, W, files)
 
     job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
 
