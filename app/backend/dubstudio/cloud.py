@@ -250,12 +250,34 @@ WORKER = {"{WORK}": "/work", "{OUT}": "/out", "{FILES}": "/files"}
 CONFIG = "config.json"
 
 
+def _swap_paths(value, pairs):
+    """Rewrite whole path prefixes inside a loaded JSON value. -> a new value.
+
+    Doing this as a text replace looks simpler and is badly wrong: `/work` is a substring of `/workspaces` and
+    `/out` is a substring of `/output`, so a plain replace turned `/Users/…/conductor/workspaces/…` into
+    `/Users/…/conductor/<the work dir>spaces/…` and `…/TGS US_DE/output/…` into `…/TGS US_DE/<the out dir>put/…`.
+    It corrupted every path in the file that merely contained those letters -- found by comparing a real run's
+    config.json with the Mac's. Matching whole path segments on the parsed JSON cannot do that."""
+    if isinstance(value, str):
+        for a, b in sorted(pairs, key=lambda kv: len(kv[0]), reverse=True):
+            a = str(a).rstrip("/")
+            if a and (value == a or value.startswith(a + "/")):
+                return str(b).rstrip("/") + value[len(a):]
+        return value
+    if isinstance(value, list):
+        return [_swap_paths(v, pairs) for v in value]
+    if isinstance(value, dict):
+        return {k: _swap_paths(v, pairs) for k, v in value.items()}
+    return value
+
+
 def _swap(text, pairs):
-    """Replace each (from, to) in a JSON text, longest `from` first so a prefix never eats a longer one."""
-    for a, b in sorted(pairs, key=lambda kv: len(kv[0]), reverse=True):
-        if a:
-            text = text.replace(json.dumps(a)[1:-1], json.dumps(b)[1:-1])
-    return text
+    """`config.json` with its paths pointing at the other machine's copies of the same files."""
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return text
+    return json.dumps(_swap_paths(data, pairs), ensure_ascii=False)
 
 
 def tokenise(cmd, work_dir, out_dir, cfg):

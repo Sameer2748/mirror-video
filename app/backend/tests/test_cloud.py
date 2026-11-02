@@ -342,3 +342,36 @@ def test_a_file_named_only_in_config_still_travels(tmp_path):
     # one already on the command line is not sent twice
     got2 = cloud._files_named_in_config(work, out, {"{F0}": str(video)})
     assert list(got2.values()) == [str(audio)] and list(got2) == ["{F1}"]
+
+
+def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
+    """The reason this is not a text replace: `/work` is inside `/workspaces` and `/out` is inside `/output`.
+    A plain replace turned the Mac's own paths into nonsense like
+    `/Users/manish/conductor/<work dir>spaces/...` -- found by comparing a real cloud run's config.json."""
+    pairs = [("/Users/me/conductor/workspaces/app/library/work/TGS_ep34", "/work"),
+             ("/Users/me/Downloads/TGS US_DE/output/ep34", "/out")]
+    conf = {
+        "src_video": "/Users/me/Downloads/TGS US_DE/US/ep34.mp4",            # untouched
+        "dub_srt": "/Users/me/conductor/workspaces/app/library/work/TGS_ep34/x.srt",
+        "clean_final": "/Users/me/Downloads/TGS US_DE/output/ep34/final.mp4",
+        "work_itself": "/Users/me/conductor/workspaces/app/library/work/TGS_ep34",
+        "sibling": "/Users/me/conductor/workspaces/app/library/work/TGS_ep35/y.srt",   # a different episode
+        "labels": "DE,US", "n": 7, "flag": True,
+        "nested": {"list": ["/Users/me/conductor/workspaces/app/library/work/TGS_ep34/z.json", "not a path"]},
+    }
+    there = json.loads(cloud._swap(json.dumps(conf), pairs))
+    assert there["src_video"] == "/Users/me/Downloads/TGS US_DE/US/ep34.mp4"
+    assert there["dub_srt"] == "/work/x.srt"
+    assert there["clean_final"] == "/out/final.mp4"
+    assert there["work_itself"] == "/work"
+    assert there["sibling"] == "/Users/me/conductor/workspaces/app/library/work/TGS_ep35/y.srt"
+    assert there["nested"]["list"] == ["/work/z.json", "not a path"]
+    assert there["labels"] == "DE,US" and there["n"] == 7 and there["flag"] is True
+    # and back again, exactly
+    back = json.loads(cloud._swap(json.dumps(there), [(b, a) for a, b in pairs]))
+    assert back == conf
+
+    # the specific corruption: "workspaces" and "output" must survive a round trip untouched
+    text = json.dumps({"a": "/Users/me/conductor/workspaces/elsewhere/f.mp4",
+                       "b": "/Users/me/Downloads/TGS US_DE/output/other/f.mp4"})
+    assert json.loads(cloud._swap(text, [(b, a) for a, b in pairs])) == json.loads(text)
