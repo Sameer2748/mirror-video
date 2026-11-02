@@ -873,7 +873,9 @@ class Runner:
     def _fn_merged(self, j):
         """`merged.py W 95 > W/merged.txt`: the reading view for Step 2 (the dub rows with their source lines)."""
         w = Path(j["params"]["ctx"]["W"])
-        if self._worker_cmd(j, ["/bin/sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]):
+        # `sh`, not `/bin/sh`: an absolute path that exists on this machine is sent as a file, and the worker
+        # then tries to run that uploaded file.
+        if self._worker_cmd(j, ["sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]):
             text = (w / "merged.txt").read_text(encoding="utf-8") if (w / "merged.txt").exists() else ""
             self._set(j, status="done", progress=1, finished=now(), message=f"merged.txt: {text.count(chr(10))} lines")
             return

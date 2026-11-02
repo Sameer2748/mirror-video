@@ -41,9 +41,9 @@ SETTINGS = {
     "AUTH_COOKIE_SECURE": "true",                 # https on Render: the session cookie must be secure
     "AI_PROVIDER": "openrouter",                  # the owner's gateway is VPN-only, so a server cannot reach it
     "AI_CACHE": "true",
-    # Video and pipeline steps. Not "all": that also turns on the render tail, and library, scene edit,
-    # captions and the tail stay off until the CPU image is rebuilt and episode 34 is compared to the Mac.
-    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,words_src,words_dub,analyze,sheet,manifest,lip_mesh,lip_merge,lipsync,groups,proxy,sharpness,merged,decisions,translate",
+    # Steps compared with the Mac cut of episode 34. Not "all": matching, the edit list, groups, the
+    # reading view, captions, library, scene edit and the render tail did not match or have not been run.
+    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,translate",
     "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2
