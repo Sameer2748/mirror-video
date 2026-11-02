@@ -969,8 +969,11 @@ class Runner:
             return
         try:
             prev = json.loads((w / ai_match.AUTO).read_text())
-            if prev.get("prep_mtime") == (w / "prep.json").stat().st_mtime:
-                return                                             # already tried for this matching result
+            # A failed try writes the same file with an error. Only a finished one is skipped, so a deploy
+            # that can now run the check does not leave the rows waiting.
+            if (prev.get("prep_mtime") == (w / "prep.json").stat().st_mtime and not prev.get("error")
+                    and prev.get("rows") is not None):
+                return
         except Exception:
             pass
         ep = self.db.one("SELECT show_id FROM episodes WHERE id=?", (j["episode_id"],))

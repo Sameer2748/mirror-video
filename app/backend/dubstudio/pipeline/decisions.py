@@ -63,27 +63,9 @@ def missing(work):
     return sorted(i for i in unmatched + case_a if i not in done)
 
 
-def check_spec(work, spec_text, python, scripts, labels, timeout=180):
-    """Dry run: the spec's decisions go through the pipeline's own `sheet` integrity check in a scratch copy of the
-    work folder (top-level .json/.srt files only; nothing in the real work folder changes).
-    -> {"ok": bool, "problems": [str], "overlaps": [[row, row, ms]], "counts": {...}, "log": [str]}"""
-    import ast, re, shutil, subprocess, tempfile
-    w = Path(work)
-    with tempfile.TemporaryDirectory(prefix="dubstudio_check_") as tmp:
-        t = Path(tmp)
-        for f in w.iterdir():
-            if f.is_file() and f.suffix in (".json", ".srt"):
-                shutil.copy2(f, t / f.name)
-        for f in ("decisions.json", "spec.py"):
-            (t / f).unlink(missing_ok=True)
-        try:
-            counts = from_spec(t, spec_text)
-        except Exception as ex:
-            return {"ok": False, "problems": [f"the decisions file does not read: {ex}"], "overlaps": [], "counts": {}, "log": []}
-        p = subprocess.run([str(python), str(Path(scripts) / "dubstitch.py"), "sheet", "--work", str(t), "--out",
-                            str(t / "check.xlsx"), "--labels", labels], capture_output=True, text=True, timeout=timeout,
-                           cwd=str(scripts))
-        out = (p.stdout + "\n" + p.stderr).splitlines()
+def _parse_sheet_log(out, returncode, counts):
+    """The lines `dubstitch.py sheet` prints. The same reading on this machine and on a rented one."""
+    import ast, re
     overlaps, problems = [], []
     for ln in out:
         m = re.search(r"row pairs sharing footage.*?:\s*(\[.*\])", ln)
@@ -94,11 +76,110 @@ def check_spec(work, spec_text, python, scripts, labels, timeout=180):
                 pass
         if re.match(r"\s+DUB#\d+", ln) or "integrity check failed" in ln or "0ms rows: [" in ln and ln.strip() != "0ms rows: []":
             problems.append(ln.strip())
-    if p.returncode != 0 and not problems and not overlaps:
-        problems.append((out[-1] if out else f"sheet exit code {p.returncode}").strip())
+    if returncode != 0 and not problems and not overlaps:
+        problems.append((out[-1] if out else f"sheet exit code {returncode}").strip())
     for a, b, ms in overlaps:
         problems.append(f"rows {a} and {b} show the same source footage ({ms} ms overlap)")
-    return {"ok": p.returncode == 0, "problems": problems, "overlaps": overlaps, "counts": counts, "log": out[-30:]}
+    return {"ok": returncode == 0 and not problems, "problems": problems, "overlaps": overlaps,
+            "counts": counts, "log": out[-30:]}
+
+
+def _scratch_for_check(work, spec_text):
+    """A copy of the matching files with this spec applied. The real episode folder is not written.
+    -> (scratch, counts) or (None, error result)."""
+    import shutil, tempfile
+    w = Path(work)
+    tmp = Path(tempfile.mkdtemp(prefix="dubstudio_check_"))
+    try:
+        prep = w / "prep.json"
+        if prep.is_file():
+            shutil.copy2(prep, tmp / "prep.json")
+        try:
+            counts = from_spec(tmp, spec_text)
+        except Exception as ex:
+            shutil.rmtree(tmp, ignore_errors=True)
+            return None, {"ok": False, "problems": [f"the decisions file does not read: {ex}"],
+                          "overlaps": [], "counts": {}, "log": []}
+        (tmp / "config.json").write_text(json.dumps({"labels": ""}), encoding="utf-8")
+        (tmp / "out").mkdir()
+        return tmp, counts
+    except Exception:
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise
+
+
+def _check_on_worker(work, spec_text, labels, counts_and_scratch=None, database=None, show=None, episode=None):
+    """`dubstitch.py sheet` on a rented machine. The website has no pipeline scripts, so Claude's decisions
+    were refused here and the 42 rows waited for a person."""
+    import shutil
+    from .. import cloud
+    from ..config import cfg
+    scratch, counts = counts_and_scratch if counts_and_scratch else _scratch_for_check(work, spec_text)
+    if scratch is None:
+        return counts
+    try:
+        if episode is None:
+            from ..main import db as get_db
+            database = get_db()
+            ep = database.one("SELECT * FROM episodes WHERE work_dir=?", (str(Path(work)),))
+            if not ep:
+                return {"ok": False, "problems": ["this episode is not in the library, so the check cannot be sent"],
+                        "overlaps": [], "counts": counts, "log": []}
+            show = database.one("SELECT * FROM shows WHERE id=?", (ep["show_id"],))
+        ep = dict(episode or ep)
+        ep["work_dir"] = str(scratch)
+        ep["output_dir"] = str(scratch / "out")
+        holder = scratch / "_sheet_check.py"
+        holder.write_text(
+            "import subprocess, sys\n"
+            "p = subprocess.run(sys.argv[1:], capture_output=True, text=True)\n"
+            "sys.stdout.write((p.stdout or '') + (p.stderr or ''))\n"
+            "print('SHEET_RC', p.returncode)\n",
+            encoding="utf-8")
+        res = cloud.run_command(
+            database, show, ep, "decision_check",
+            [str(cfg.pipeline_python), str(holder), str(cfg.pipeline_python), str(cfg.scripts / "dubstitch.py"),
+             "sheet", "--work", str(scratch), "--out", str(scratch / "check.xlsx"), "--labels", labels],
+            cfg, log=lambda m: None, timeout=600)
+        log = (res.get("log") or "").splitlines()
+    except Exception as ex:
+        return {"ok": False, "problems": [f"the check could not run: {ex}"], "overlaps": [], "counts": counts, "log": []}
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+    rc = 1
+    kept = []
+    for ln in log:
+        if ln.startswith("SHEET_RC "):
+            try:
+                rc = int(ln.split()[1])
+            except Exception:
+                rc = 1
+        else:
+            kept.append(ln)
+    return _parse_sheet_log(kept, rc, counts)
+
+
+def check_spec(work, spec_text, python, scripts, labels, timeout=180):
+    """Dry run: the spec's decisions go through the pipeline's own `sheet` integrity check in a scratch copy of the
+    work folder (top-level prep only; nothing in the real work folder changes).
+    On the website the pipeline scripts are not installed, so the same command runs on a rented machine.
+    -> {"ok": bool, "problems": [str], "overlaps": [[row, row, ms]], "counts": {...}, "log": [str]}"""
+    import subprocess
+    script = Path(scripts) / "dubstitch.py"
+    scratch, counts = _scratch_for_check(work, spec_text)
+    if scratch is None:
+        return counts
+    if not script.is_file():
+        return _check_on_worker(work, spec_text, labels, (scratch, counts))
+    try:
+        p = subprocess.run([str(python), str(script), "sheet", "--work", str(scratch), "--out",
+                            str(scratch / "check.xlsx"), "--labels", labels], capture_output=True, text=True,
+                           timeout=timeout, cwd=str(scripts))
+        out = (p.stdout + "\n" + p.stderr).splitlines()
+        return _parse_sheet_log(out, p.returncode, counts)
+    finally:
+        import shutil
+        shutil.rmtree(scratch, ignore_errors=True)
 
 
 def _kw(text, n=3):

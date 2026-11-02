@@ -10,6 +10,28 @@ def test_progress_from_tool_lines():
     assert p("nothing here", 100) is None
 
 
+def test_the_decision_check_uses_a_worker_when_the_scripts_are_not_here(tmp_path, monkeypatch):
+    """The website has no dubstitch.py. Claude's decisions still have to pass that check, on a rented machine."""
+    import json
+    from dubstudio.pipeline import decisions as dec
+    prep = {"dub": [{"text": "Hallo", "start_ms": 0, "end_ms": 1000}],
+            "src": [{"text": "Hello", "start_ms": 0, "end_ms": 1000}],
+            "sim": [], "auto": {"0": {"src": 0, "kind": "DP match"}}}
+    (tmp_path / "prep.json").write_text(json.dumps(prep))
+    seen = {}
+
+    def fake(work, spec, labels, counts_and_scratch=None, database=None, show=None, episode=None):
+        seen["work"] = work
+        seen["scratch"] = counts_and_scratch[0]
+        return {"ok": True, "problems": [], "overlaps": [], "counts": counts_and_scratch[1], "log": ["0ms rows: []"]}
+
+    monkeypatch.setattr(dec, "_check_on_worker", fake)
+    got = dec.check_spec(tmp_path, 'C(0,"ok")\n', "python", tmp_path / "missing-scripts", "DE,US")
+    assert got["ok"] and seen["work"] == tmp_path
+    assert (seen["scratch"] / "prep.json").is_file()
+    assert (seen["scratch"] / "decisions.json").is_file()
+
+
 def test_a_blocked_step_starts_when_the_failed_one_has_finished(tmp_path, monkeypatch):
     """A failed German SRT blocks matching. Retrying the SRT used to leave matching blocked even after the
     SRT and the sentence times had finished. The next tick should start matching on its own."""
