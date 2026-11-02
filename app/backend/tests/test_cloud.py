@@ -250,7 +250,11 @@ def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(mo
     assert cloud.enabled_for("groups")
     assert not cloud.enabled_for("facemap") and not cloud.enabled_for("qc") and not cloud.enabled_for("library")
     settings["CLOUD_AI"] = "true"
-    assert cloud.enabled_for("facemap") and cloud.enabled_for("qc") and cloud.enabled_for("library")
+    assert cloud.enabled_for("qc") and cloud.enabled_for("library")
+    # the face map needs the CUDA image: no GPU endpoint, no cloud face map
+    assert not cloud.enabled_for("facemap")
+    settings["RUNPOD_GPU_ENDPOINT"] = "g"
+    assert cloud.enabled_for("facemap") and cloud.kind_for("facemap") == "gpu" and cloud.kind_for("qc") == "cpu"
 
 
 def test_the_work_folders_config_is_translated_both_ways(tmp_path, monkeypatch):

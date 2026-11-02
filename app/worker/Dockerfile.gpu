@@ -5,12 +5,15 @@
 # (insightface 2.1, ultralytics 8.4.192, onnxruntime 1.31.1, Python 3.12), so the answer matches; only the
 # device changes: CUDA instead of the Mac's MPS / CoreML.
 #
-# A plain CUDA base, not runpod/pytorch: that image's start script runs Jupyter, and a serverless worker that
-# runs Jupyter instead of the handler shows as "ready" and never takes a job (measured 2026-11-02).
+# Not runpod/pytorch: that image's start script runs Jupyter, and a serverless worker that runs Jupyter instead
+# of the handler shows as "ready" and never takes a job (measured 2026-11-02).
 #
 # Built in CI (`.github/workflows/worker-face-gpu.yml`): python3 app/worker/fetch_face_inputs.py, then
 #   docker buildx build --platform linux/amd64 -f app/worker/Dockerfile.gpu -t <user>/dubstudio-worker:face-gpu app/worker
-FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
+# Plain Ubuntu: the GPU driver is mounted by the container runtime, and every CUDA library comes from pip, in ONE
+# CUDA major. onnxruntime-gpu 1.31 is built for CUDA 13; on a CUDA 12.8 base it could not load libcublasLt.so.13
+# and InsightFace silently ran on the CPU (352 s of faces, against YOLO's 20 s on the GPU -- measured 2026-11-02).
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -30,8 +33,8 @@ RUN curl -fsSL -o /tmp/ff.tar.xz \
 RUN python3 -m venv /opt/venv_face \
     && ln -s /opt/venv_face /opt/pipeline_env \
     && /opt/venv_face/bin/pip install --no-cache-dir --upgrade pip
-RUN /opt/venv_face/bin/pip install --no-cache-dir torch==2.15.0 torchvision --index-url https://download.pytorch.org/whl/cu128 \
-    || /opt/venv_face/bin/pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu128
+RUN /opt/venv_face/bin/pip install --no-cache-dir torch==2.15.0 torchvision --index-url https://download.pytorch.org/whl/cu130 \
+    || /opt/venv_face/bin/pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu130
 # onnxruntime and onnxruntime-gpu share one package folder: if anything pulled the CPU build, remove it and
 # reinstall the GPU build over the top, or uninstalling one deletes the other's files.
 RUN /opt/venv_face/bin/pip install --no-cache-dir \
@@ -39,6 +42,9 @@ RUN /opt/venv_face/bin/pip install --no-cache-dir \
       numpy==2.5.4 scipy==1.18.1 pillow \
     && (/opt/venv_face/bin/pip uninstall -y onnxruntime || true) \
     && /opt/venv_face/bin/pip install --no-cache-dir --force-reinstall --no-deps onnxruntime-gpu==1.31.1 \
+    && find /opt/venv_face/lib/python3.12/site-packages/nvidia -type d -name lib > /etc/ld.so.conf.d/nvidia-pip.conf \
+    && ldconfig \
+    && ldconfig -p | grep -E "libcublasLt.so.13|libcudart.so.13|libcudnn.so.9" \
     && /opt/venv_face/bin/python -c "import insightface, onnxruntime, ultralytics, torch, cv2; \
 print('insightface', insightface.__version__, 'ort', onnxruntime.__version__, onnxruntime.get_available_providers(), \
 'ultralytics', ultralytics.__version__, 'torch', torch.__version__, 'cv2', cv2.__version__); \

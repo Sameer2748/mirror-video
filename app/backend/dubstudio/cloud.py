@@ -75,13 +75,22 @@ def capable(step):
     return step not in NEEDS_AI_KEY or ai_key_allowed()
 
 
-def enabled_for(step, kind="cpu"):
+# The face map runs on its own CUDA image (`app/worker/Dockerfile.gpu`): the CPU pipeline image has no insightface
+# or ultralytics, so without a GPU endpoint the face map stays here rather than failing on a worker.
+GPU_STEPS = {"facemap"}
+
+
+def kind_for(step):
+    return "gpu" if step in GPU_STEPS else "cpu"
+
+
+def enabled_for(step, kind=None):
     """`CLOUD_STEPS` asks; `capable` decides. "all" means every step that can actually work there -- so turning it
     on cannot break a run half way through."""
     want = steps()
     if not capable(step):
         return False
-    return available(kind) and ("all" in want or step in want)
+    return available(kind or kind_for(step)) and ("all" in want or step in want)
 
 
 def chain_wanted(kind="cpu"):

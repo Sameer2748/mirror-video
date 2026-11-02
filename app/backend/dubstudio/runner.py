@@ -480,7 +480,7 @@ class Runner:
             self._set(j, message="sending the files to a rented machine")
             res = cloud.run_command(self.db, show, ep, j["step"], self._expand(cmd), cfg,
                                     log=log, on_progress=prog,
-                                    timeout=cfg.step_max_seconds or 7200)
+                                    timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]))
         if res.get("rc") == 3:                             # "not finished -- run again (it resumes)"
             return self._run_cmd_cloud(j, cmd)
         self._set(j, status="done", progress=1, finished=now(), eta=0,
