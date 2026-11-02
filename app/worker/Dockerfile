@@ -35,11 +35,12 @@ RUN pip install --no-cache-dir runpod
 RUN python -m venv /opt/pipeline_env \
     && /opt/pipeline_env/bin/pip install --no-cache-dir --upgrade pip \
     && /opt/pipeline_env/bin/pip install --no-cache-dir \
-         torch==2.5.1 torchaudio==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
+         torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cpu
 # The versions the Mac's pipeline_env actually runs (`app/scripts/setup_pipeline.sh` installs them unpinned, which
 # is fine on one machine but not here: the point of a worker is that it gives the SAME answer). Pinning also stops
 # pip backtracking for ten minutes through onnxruntime and faster-whisper releases looking for a numpy<2 fit.
-# torch is the exception: 2.14 has no CPU wheel for this base, and the lip scan came back byte-identical on 2.5.1.
+# torch 2.14.1 is the Mac's, and it has a CPU wheel. 2.5.1 does not: sentence-transformers then dies on
+# `torch.accelerator` during matching. The Mac's pipeline env has no torchaudio, and TalkNet does not import it.
 RUN /opt/pipeline_env/bin/pip install --no-cache-dir \
       numpy==1.26.4 scipy==1.17.1 opencv-python-headless==4.11.0.86 mediapipe==0.10.14 \
       faster-whisper==1.2.1 ctranslate2==4.8.3 onnxruntime==1.31.0 \
@@ -55,6 +56,7 @@ RUN mkdir -p /opt/dubstudio /opt/models /opt/scene /opt/app \
     && rm /tmp/*.tar.gz \
     && test -f /opt/dubstudio/scripts/dubstitch.py \
     && test -d /opt/models/whisper \
+    && /opt/pipeline_env/bin/python -c "import torch; assert hasattr(torch, 'accelerator'), torch.__version__" \
     && ls /opt/scene/pipeline | head -3
 
 COPY Poppins-Bold.ttf /opt/fonts/Poppins-Bold.ttf
