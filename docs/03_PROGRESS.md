@@ -1338,3 +1338,20 @@ tests cover it (mirror → serve from disk → take the disk copy away → serve
   **Processing an episode — not yet**: only the lip scan has a worker image, so every other step would look for
   Whisper, the models and the pipeline scripts, which are not in the API image. Processing stays on the Mac until
   the other worker images exist.
+
+### The cloud scan's output drives the next step too (same day)
+Matching files is not enough — the point is that the pipeline can carry on from them. So:
+- `lipmerge.py` was run **on the cloud scan's `lips_nets`** (with the Mac's `lips_mesh`): 42 merged files.
+- Against the Mac's own `lips_range`, on everything the pipeline decides from — talking intervals, visual
+  intervals, frame counts, face boxes, track times, mouth and aperture — **41 of 42 files are identical**, and the
+  42nd differs by **one pixel** on one of three face boxes (the pipeline's own tolerance is 2 px) with the talking
+  intervals identical. The rest of each file differs only in 2nd-decimal float noise and `method.device`, which
+  honestly records `cpu` instead of `mps`.
+- **A second real bug, found the same way**: the cloud path never wrote `lips_nets/ranges.json`. `lipgpu` writes it,
+  and both following steps read it (`lipmesh --ranges`, and `lipmerge` defaults to `NETS_DIR/ranges.json`) — each
+  worker only knows its own share, so the whole list has to be written by the app. Without it the scan reported
+  success and the next step had nothing to work from. `cloud.lip_scan` now writes it, and also checks the pieces it
+  got are the pieces it asked for (the right *count* is not the right *pieces*).
+- `tests/test_cloud.py` (5 new tests) pins all of it: lipgpu's piece list including the unclamped last piece, the
+  full `ranges.json`, a failed share being re-sent while the finished ones are kept, and a share that keeps failing
+  being reported rather than hidden. **135 passed, 4 skipped.**

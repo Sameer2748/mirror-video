@@ -182,10 +182,17 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
     if todo:
         raise RuntimeError(f"{len(todo)} share(s) still failing after {tries} tries: pieces "
                            f"{[c for _, mine in todo for c in mine][:6]}…")
+    # lipgpu writes this next to the pieces, and the two steps after the scan read it (`lipmesh --ranges`,
+    # `lipmerge` defaults to NETS_DIR/ranges.json). Each worker only knows its own share, so the whole list is
+    # written here -- without it the scan "succeeds" and the next step has nothing to work from.
+    (nets / "ranges.json").write_text(json.dumps(cuts))
     files = len(list(nets.glob("range_*.json")))
     want = len(cuts)
     if files < want:
         raise RuntimeError(f"the cloud returned {files} of {want} range files")
+    missing = [c for c in cuts if not (nets / f"range_{c[0]:g}_{c[1]:g}.json").exists()]
+    if missing:                                            # the right count is not the right pieces
+        raise RuntimeError(f"{len(missing)} pieces are missing, e.g. {missing[:3]}")
     log(f"{files} range files in {time.time() - t0:.0f} s (workers used {worker_s:.0f} s, {retries} retries)")
     return {"pieces": len(shares), "files": files, "seconds": round(time.time() - t0, 1),
             "worker_seconds": round(worker_s, 1), "retries": retries}

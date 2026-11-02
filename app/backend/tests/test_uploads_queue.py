@@ -316,8 +316,10 @@ def test_the_lip_scan_can_run_on_the_cloud_in_pieces(r2, monkeypatch, tmp_path):
     # 60 s of video at the pipeline's own 15 s piece size = 4 range files, shared across the machines
     assert out["files"] == 4
     nets = Path(ep_db["work_dir"]) / "lips_nets"
-    assert sorted(p.name for p in nets.glob("*.json")) == ["range_0_15.json", "range_15_30.json",
-                                                           "range_30_45.json", "range_45_60.json"]
+    assert sorted(p.name for p in nets.glob("range_*.json")) == ["range_0_15.json", "range_15_30.json",
+                                                                 "range_30_45.json", "range_45_60.json"]
+    # lipgpu writes this next to the pieces and the two steps after the scan read it, so the cloud must too
+    assert js.loads((nets / "ranges.json").read_text()) == [[0, 15], [15, 30], [30, 45], [45, 60]]
     # every job carried signed links only -- never a key
     for job in sent:
         assert job["step"] == "lip_scan" and "X-Amz-Signature=" in job["inputs"]["video"]
