@@ -332,6 +332,8 @@ WORKER = {"{WORK}": "/work", "{OUT}": "/out", "{FILES}": "/files"}
 # from the command line (dubstitch.py: `cfg["src_video"]`, `cfg.get("video_out")`, ...). So it is translated on the
 # way out and translated back on the way in. Only paths change; nothing else in the file is touched.
 CONFIG = "config.json"
+# The edit lists the render reads. A segment the editor filled with an imported clip names that file in `video`.
+EDIT_LISTS = ("manifest_groups.json", "manifest.json")
 
 
 def _swap_paths(value, pairs):
@@ -438,6 +440,49 @@ def _files_named_in_config(W, O, already):
     return out
 
 
+def _used_clip_files(W, already):
+    """Imported clips the editor actually placed on the timeline.
+
+    The edit list stores each one as a segment's `video` path. A file of 1 MB or under already rides in the
+    work tar. A bigger one does not, so it goes as its own link, the same way the source video does. A clip
+    that was imported and never used is left here. -> {token: path}"""
+    out, seen = {}, set(already.values())
+    root = str(W)
+    for name in EDIT_LISTS:
+        path = W / name
+        if not path.is_file():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        for seg in data.get("segments") or []:
+            value = seg.get("video") if isinstance(seg, dict) else None
+            if not isinstance(value, str) or not value.startswith("/") or value in seen:
+                continue
+            p = Path(value)
+            if not p.is_file():
+                continue
+            inside = value == root or value.startswith(root + "/")
+            if inside and p.stat().st_size <= SMALL:
+                continue
+            out[f"{{F{len(already) + len(out)}}}"] = str(p)
+            seen.add(value)
+    return out
+
+
+def _work_patches(W, there):
+    """Rewrite this machine's paths inside the files the worker reads for its inputs.
+
+    config.json names the source video. The edit list names an imported clip. Both have to say where the
+    file is on the worker, or the render looks for a path that only exists here."""
+    patch = {}
+    for name in (CONFIG, *EDIT_LISTS):
+        if (W / name).is_file():
+            patch[name] = lambda s, pairs=there: _swap(s, pairs)
+    return patch
+
+
 def _tar(paths, root, dest, patch=None):
     """Tar a list of paths (relative to root), rewriting the text of any file named in `patch`.
     -> how many went in."""
@@ -474,6 +519,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     # A later step can need a big file an earlier step wrote into the work folder (the 540 px preview).
     # The work tar only carries files of 1 MB or under, so that file goes as its own link, like the source video.
     cmd_t, files = _send_large_work_files(cmd_t, W, files)
+    clips = _used_clip_files(W, files)
+    if clips:
+        files.update(clips)
+        log(f"{len(clips)} imported clip(s) the editor used, sent with this job")
 
     job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
 
@@ -488,7 +537,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
              if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
     if small:
         tar = W.parent / f"_{name}_work_in.tar.gz"
-        n = _tar(small, W, tar, patch={CONFIG: lambda s: _swap(s, there)} if (W / CONFIG).exists() else None)
+        n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
         key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
         storage.put_file(tar, key)
         tar.unlink(missing_ok=True)
@@ -543,10 +592,12 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             with tarfile.open(tar) as t:
                 t.extractall(root)
             tar.unlink(missing_ok=True)
-            back = root / CONFIG                   # the step may have recorded new paths: read them as ours
-            if back.exists():
-                back.write_text(_swap(back.read_text(encoding="utf-8"), [(b, a) for a, b in there]),
-                                encoding="utf-8")
+            # the step may have recorded new paths: read them as ours
+            back_pairs = [(b, a) for a, b in there]
+            for name in (CONFIG, *EDIT_LISTS):
+                back = root / name
+                if back.is_file():
+                    back.write_text(_swap(back.read_text(encoding="utf-8"), back_pairs), encoding="utf-8")
     log(f"{name}: done in {res.get('seconds')} s; "
         f"{sum(v.get('files', 0) for v in sent.values())} files came back")
     return res

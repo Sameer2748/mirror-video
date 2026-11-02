@@ -594,6 +594,78 @@ def test_a_file_named_only_in_config_still_travels(tmp_path):
     assert list(got2.values()) == [str(audio)] and list(got2) == ["{F1}"]
 
 
+def test_an_imported_clip_the_editor_used_is_sent_and_placed(tmp_path, monkeypatch):
+    """A clip the editor dropped on the timeline is named only inside the edit list, and it is usually far
+    over 1 MB, so the work tar leaves it behind. The render then looks for a path that exists only on the
+    website. The clip has to travel, and the edit list the worker reads has to point at the worker's copy.
+    A clip that was imported and never used stays here."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    used = work / "imports" / "impabc.mp4"
+    small = work / "imports" / "impsmall.mp4"
+    unused = work / "imports" / "impunused.mp4"
+    used.parent.mkdir(parents=True)
+    used.write_bytes(b"u" * (cloud.SMALL + 8))
+    small.write_bytes(b"s" * 40)
+    unused.write_bytes(b"n" * (cloud.SMALL + 8))
+    manifest = {
+        "total_ms": 5000,
+        "segments": [
+            {"it_start_ms": 0, "it_end_ms": 2000, "us_start_ms": 0, "us_end_ms": 2000},
+            {"it_start_ms": 2000, "it_end_ms": 3500, "us_start_ms": 100, "us_end_ms": 1600, "video": str(used)},
+            {"it_start_ms": 3500, "it_end_ms": 5000, "us_start_ms": 0, "us_end_ms": 1500, "video": str(small)},
+        ],
+    }
+    (work / "manifest_groups.json").write_text(json.dumps(manifest))
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_submit(job, **kw):
+        sent.update(job)
+        return "j"
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/render_work_in.tar.gz") as t:
+            sent["manifest"] = json.loads(t.extractfile("manifest_groups.json").read())
+            sent["tar_names"] = t.getnames()
+        box = tmp_path / "w"; box.mkdir(exist_ok=True)
+        back_m = dict(sent["manifest"])
+        back_m["segments"] = [dict(s) for s in back_m["segments"]]
+        (box / "manifest_groups.json").write_text(json.dumps(back_m))
+        back = bucket / "cloud/render_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "manifest_groups.json", arcname="manifest_groups.json")
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {"work": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    cloud.run_command({}, show, ep, "render", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render",
+                                               "--work", str(work)], cfg, log=lambda m: None)
+
+    assert list(sent["files"]) == ["{F0}"]
+    assert sent["names"]["{F0}"] == "impabc.mp4"
+    assert "impunused" not in json.dumps(sent["files"])
+    segs = sent["manifest"]["segments"]
+    assert "video" not in segs[0]
+    assert segs[1]["video"] == "/files/F0/impabc.mp4"
+    assert segs[2]["video"] == f"/work/imports/impsmall.mp4"
+    assert "imports/impsmall.mp4" in sent["tar_names"]
+    assert "imports/impabc.mp4" not in sent["tar_names"] and "imports/impunused.mp4" not in sent["tar_names"]
+    # what comes back points at this machine again, so the next edit still finds the clip
+    home = json.loads((work / "manifest_groups.json").read_text())
+    assert home["segments"][1]["video"] == str(used)
+    assert home["segments"][2]["video"] == str(small)
+
+
 def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
     """The reason this is not a text replace: `/work` is inside `/workspaces` and `/out` is inside `/output`.
     A plain replace turned the Mac's own paths into nonsense like
