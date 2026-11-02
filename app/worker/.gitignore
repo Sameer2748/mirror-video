@@ -1,0 +1,7 @@
+# The build inputs, fetched by fetch_inputs.py. They must never be committed: this repo is public, and the pipeline
+# scripts, TalkNet and the models are the owner's. They live in R2 instead.
+bundle.tar.gz
+models.tar.gz
+app.tar.gz
+scene.tar.gz
+Poppins-Bold.ttf
