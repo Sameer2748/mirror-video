@@ -721,7 +721,36 @@ class Runner:
                 named.append(("clean_master", self._clean_master_cmd()))
             named.append((step, self._expand(cmd)))
             to_mark.append(sj)
+        # The automatic cut (no B-roll, fast lines still fast) is rendered first, then the scene edit
+        # overwrites video_out so verify still checks the finished picture.
+        if any(n == "render" for n, _ in named) and (Path(work) / "manifest_groups.auto.json").is_file():
+            extra = self._before_picture_cmds(by)
+            if extra:
+                at = next(i for i, (n, _) in enumerate(named) if n == "render")
+                named[at:at] = extra
         return named, to_mark
+
+    def _before_picture_cmds(self, by):
+        """Render manifest_groups.auto.json beside the finished video, then drop its segment cache.
+
+        That list is the cut after matching and groups, before the scene edit adds B-roll and trims
+        fast lines. The segment pieces are only needed to build this one file."""
+        render = ((by.get("render") or {}).get("params") or {}).get("cmd") or []
+        trans = ((by.get("transitions") or {}).get("params") or {}).get("cmd") or []
+        if "render" not in render or "--out" not in trans:
+            return []
+        clean = trans[trans.index("--out") + 1]
+        out = clean.replace("_final_clean.mp4", "_before.mp4")
+        py = render[0]
+        picture = self._expand(list(render) + ["--manifest", "manifest_groups.auto.json", "--out", out])
+        drop = self._expand([py, "-c",
+                             "import os, shutil\n"
+                             "shutil.rmtree('/work/segs_groups.auto', True)\n"
+                             "for n in ('silent_groups.auto.mp4', 'concat_groups.auto.txt'):\n"
+                             "    p = '/work/' + n\n"
+                             "    if os.path.isfile(p):\n"
+                             "        os.remove(p)\n"])
+        return [("before_render", picture), ("before_cleanup", drop)]
 
     def _run_cloud_tail(self, j):
         """render → verify → bookends → transitions → both subtitle burns, on ONE rented machine.

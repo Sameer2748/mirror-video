@@ -73,7 +73,8 @@ def deliverables(show, ep, ctx):
     """The files an episode delivers, in order, with what is on disk now."""
     prof = show["profile"]; names = presets.names(show["code"], ep["number"], prof)
     out = Path(ep["output_dir"]); D = prof.get("dub_label") or prof["labels"].split(",")[0]
-    want = [("clean", f"{D} video, no subtitles", names["clean"]),
+    want = [("before", "Picture before B-roll and the fast trim", names["clean"].replace("_final_clean.mp4", "_before.mp4")),
+            ("clean", f"{D} video, no subtitles", names["clean"]),
             ("dub_subs", f"{D} video with {D} subtitles", names["dub_subs"]),
             ("en_subs", f"{D} video with English subtitles", names["en_subs"]),
             ("en_srt", "English subtitles (SRT)", names["en_srt"]),

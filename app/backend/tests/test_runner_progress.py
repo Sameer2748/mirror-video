@@ -95,6 +95,15 @@ def test_retrying_transitions_rebuilds_the_video_first(tmp_path):
     named, _ = r._tail_commands({"id": 99, "step": "transitions"}, by, tmp_path)
     names = [n for n, _ in named]
     assert names[0] == "bookends"
+    # The automatic cut is rendered only when this run kept it, and it does not replace the finished video.
+    by["transitions"]["params"]["cmd"] = ["{py}", "transitions", "--out", str(tmp_path / "TGS_EP34_DE_final_clean.mp4")]
+    by["render"]["params"]["cmd"] = ["{py}", "dubstitch.py", "render", "--work", str(tmp_path), "--subs", "keep"]
+    (tmp_path / "manifest_groups.auto.json").write_text("{}", encoding="utf-8")
+    named, _ = r._tail_commands({"id": 1, "step": "render"}, by, tmp_path)
+    names = [n for n, _ in named]
+    assert names[:3] == ["before_render", "before_cleanup", "render"]
+    assert named[0][1][-4:] == ["--manifest", "manifest_groups.auto.json", "--out",
+                                 str(tmp_path / "TGS_EP34_DE_before.mp4")]
 
 
 def test_run_notes_are_written_without_the_mac_scripts_folder(tmp_path, monkeypatch):
