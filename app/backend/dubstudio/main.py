@@ -46,10 +46,11 @@ def _startup():
 def accounts_ready(d):
     """The first account (app/.env ADMIN_USERNAME / ADMIN_PASSWORD) and, on an older library, every show without an
     owner goes to that account -- so nothing the owner made before accounts existed disappears."""
-    auth.seed(d)
-    admin = d.one("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1")
-    if admin and d.one("SELECT id FROM shows WHERE owner_id IS NULL LIMIT 1"):
-        d.ex("UPDATE shows SET owner_id=? WHERE owner_id IS NULL", (admin["id"],))
+    with d.setup_lock():                             # two processes must not both make the first account
+        auth.seed(d)
+        admin = d.one("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1")
+        if admin and d.one("SELECT id FROM shows WHERE owner_id IS NULL LIMIT 1"):
+            d.ex("UPDATE shows SET owner_id=? WHERE owner_id IS NULL", (admin["id"],))
 
 
 def _push_db_quietly():

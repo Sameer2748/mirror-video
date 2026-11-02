@@ -7,6 +7,7 @@ PRECISION`, `INSERT … RETURNING id` instead of lastrowid). JSON columns stay T
 dumped from one and loaded into the other.
 """
 import json, re, sqlite3, threading, time
+from contextlib import contextmanager
 from pathlib import Path
 
 from . import envfile
@@ -108,6 +109,9 @@ def _pg_schema(sql):
     return sql
 
 
+SETUP_LOCK = 0x64756273          # "dubs": the advisory lock two processes take turns on while setting up
+
+
 class DB:
     def __init__(self, path):
         self.url = database_url()
@@ -118,19 +122,40 @@ class DB:
             from psycopg.rows import dict_row
             self.path = None
             self.conn = psycopg.connect(self.url, autocommit=True, row_factory=dict_row)
-            with self.lock:
+            # One at a time. `CREATE TABLE IF NOT EXISTS` is NOT atomic against another session doing the same:
+            # both look, both see nothing, both create, and the loser dies with "duplicate key value violates
+            # pg_type_typname_nsp_index". Render starts WEB_CONCURRENCY uvicorn processes, so this happened on the
+            # very first deploy -- and it would happen again with two replicas.
+            with self.lock, self.setup_lock():
                 self.conn.execute(_pg_schema(SCHEMA))
-        else:
-            self.path = Path(path)
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            self.conn = sqlite3.connect(str(self.path), check_same_thread=False, timeout=30)
-            self.conn.row_factory = sqlite3.Row
-            with self.lock:
-                self.conn.execute("PRAGMA journal_mode=WAL")
-                self.conn.execute("PRAGMA foreign_keys=ON")
-                self.conn.executescript(SCHEMA)
-                self.conn.commit()
+                self._migrate()
+            return
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.conn = sqlite3.connect(str(self.path), check_same_thread=False, timeout=30)
+        self.conn.row_factory = sqlite3.Row
+        with self.lock:
+            self.conn.execute("PRAGMA journal_mode=WAL")
+            self.conn.execute("PRAGMA foreign_keys=ON")
+            self.conn.executescript(SCHEMA)
+            self.conn.commit()
         self._migrate()
+
+    @contextmanager
+    def setup_lock(self):
+        """Hold the setup lock while making tables or the first account, so two processes cannot race.
+        On SQLite there is one process and one file lock already, so this does nothing."""
+        if not self.url:
+            yield
+            return
+        self.conn.execute("SELECT pg_advisory_lock(%s)", (SETUP_LOCK,))
+        try:
+            yield
+        finally:
+            try:
+                self.conn.execute("SELECT pg_advisory_unlock(%s)", (SETUP_LOCK,))
+            except Exception:
+                pass
 
     # ---------- talking to either database ----------
     def _sql(self, sql):

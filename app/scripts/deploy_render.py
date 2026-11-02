@@ -26,6 +26,14 @@ REPO = "https://github.com/Sameer2748/mirror-video"
 BRANCH = os.environ.get("DEPLOY_BRANCH", "handover-doc-review")
 NAME = "dubstudio-api"
 DB_NAME = "dubstudio-db"
+# The owner's existing service (the old DUBSTUDIO app, which he no longer needs: 2026-11-02, "we dont need this app
+# now can we replace its github"). It is already a Docker web service on 2 CPU / 8 GB, so only the repo, the build
+# paths and the environment change. It lives in **singapore** and has a 20 GB disk mounted at /app/output -- the
+# database has to be in the same region to use the internal connection string, and the library goes on that disk
+# rather than destroying it to mount a new one somewhere else.
+SERVICE = os.environ.get("DEPLOY_SERVICE", "srv-dar686jncjis73c9rr90")
+REGION = "singapore"
+LIBRARY = "/app/output/library"
 
 # the plain settings (the same list as render.yaml, which is the written record of them)
 SETTINGS = {
@@ -38,7 +46,11 @@ SETTINGS = {
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2
     "MAX_ACTIVE_EPISODES": "2",
     "PYTHONUNBUFFERED": "1",
-    "DUBSTUDIO_LIBRARY": "/data/library",
+    # One uvicorn process per container. Render picks WEB_CONCURRENCY from the CPU count (2 here), and a second
+    # process means a second job runner in the same container, both polling for the same steps. When we really want
+    # more than one, they need REDIS_URL for shared events and a Redis-claimed queue (docs/09 §4).
+    "WEB_CONCURRENCY": "1",
+    "DUBSTUDIO_LIBRARY": LIBRARY,
 }
 # copied from app/.env as they are; never printed
 SECRETS = ["OPENROUTER_API_KEY", "R2_ACCOUNT_ID", "R2_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY",
@@ -77,7 +89,7 @@ def do(what, fn):
 
 
 def find_service():
-    sid = arg("--service")
+    sid = arg("--service") or SERVICE
     if sid:
         s = call("GET", f"/services/{sid}")
         return s.get("service", s)
@@ -113,9 +125,9 @@ def main():
     if db:
         print(f"database: {db['name']} ({db['id']}), {db.get('status')}")
     else:
-        db = do(f"make the Postgres database {DB_NAME}",
-                lambda: call("POST", "/postgres", {"name": DB_NAME, "plan": "basic_256mb", "region": "oregon",
-                                                   "version": "16", "ownerId": svc["ownerId"] if svc else None}))
+        db = do(f"make the Postgres database {DB_NAME} in {REGION}",
+                lambda: call("POST", "/postgres", {"name": DB_NAME, "plan": "basic_256mb", "region": REGION,
+                                                   "version": "16", "ownerId": svc["ownerId"]}))
         if APPLY:
             db = db.get("postgres", db)
 
@@ -128,7 +140,7 @@ def main():
            lambda: call("PATCH", f"/services/{svc['id']}", body))
     else:
         svc = do("make the web service", lambda: call("POST", "/services", {
-            "type": "web_service", "name": NAME, "region": "oregon", "plan": "standard", **body}))
+            "type": "web_service", "name": NAME, "region": REGION, "plan": "standard", **body}))
         svc = (svc or {}).get("service", svc) if APPLY else {"id": "<new>"}
 
     # the environment: settings from this file, secrets from app/.env, DATABASE_URL from the database

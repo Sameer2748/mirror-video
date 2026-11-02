@@ -519,3 +519,41 @@ def test_the_app_runs_on_postgres(env):
     s = c.post("/api/shows", json={"name": "PG", "code": "PGS", "preset": "WBM"}).json()
     assert s["id"] and c.get(f"/api/shows/{s['id']}").json()["code"] == "PGS"
     assert c.get("/api/auth/me").json()["user"]["role"] == "admin"
+
+
+@pytest.mark.skipif(not os.environ.get("DUBSTUDIO_PG"), reason="needs a Postgres (DUBSTUDIO_PG=postgresql://…)")
+def test_two_processes_can_start_against_the_same_postgres_at_once(monkeypatch):
+    """Render runs WEB_CONCURRENCY uvicorn processes, so two of them build the schema at the same moment.
+    `CREATE TABLE IF NOT EXISTS` is not atomic against another session doing the same: both look, both see nothing,
+    both create, and the loser died with "duplicate key value violates pg_type_typname_nsp_index". It happened on
+    the very first real deploy."""
+    import threading as th
+    import psycopg
+    from dubstudio.db import DB
+    base = os.environ["DUBSTUDIO_PG"]
+    name = "ds_race_test"
+    with psycopg.connect(base, autocommit=True) as c:
+        c.execute(f"DROP DATABASE IF EXISTS {name}")
+        c.execute(f"CREATE DATABASE {name}")
+    url = base.rsplit("/", 1)[0] + "/" + name
+    monkeypatch.setenv("DATABASE_URL", url)
+
+    errors, dbs, ready = [], [], th.Barrier(4)
+
+    def start():
+        try:
+            ready.wait(timeout=20)                 # all four at the same instant, which is the whole point
+            dbs.append(DB(None))
+        except Exception as ex:
+            errors.append(repr(ex))
+
+    ts = [th.Thread(target=start) for _ in range(4)]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join(60)
+    assert not errors, errors
+    assert len(dbs) == 4
+    assert dbs[0].one("SELECT COUNT(*) AS n FROM users")["n"] == 0
+    for d in dbs:
+        d.close()
