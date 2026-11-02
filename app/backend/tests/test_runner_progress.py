@@ -104,6 +104,7 @@ def test_retrying_transitions_rebuilds_the_video_first(tmp_path):
     assert names[:3] == ["before_render", "before_cleanup", "render"]
     assert named[0][1][-4:] == ["--manifest", "manifest_groups.auto.json", "--out",
                                  str(tmp_path / "TGS_EP34_DE_before.mp4")]
+    assert "manifest_groups.json" in named[1][1][2]
 
 
 def test_run_notes_are_written_without_the_mac_scripts_folder(tmp_path, monkeypatch):

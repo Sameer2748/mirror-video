@@ -259,6 +259,7 @@ class Runner:
             if j["status"] == "running":
                 busy[j["resource"]] = busy.get(j["resource"], 0) + 1
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
+        chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
         for j in jobs:
             if j["status"] in ("running", "needs_input"):
                 continue
@@ -280,6 +281,12 @@ class Runner:
             # they ride with the sheet instead, one machine, after the decisions.
             if j["step"] == "captions" and cloud.stretch("cut"):
                 continue
+            # The render, the transitions and the subtitle burns are one visit. Starting a second
+            # one while the first is still packing its files deletes the upload out from under it.
+            if cloud.chain_wanted() and j["step"] in cloud.CHAIN:
+                if j["episode_id"] in chain_busy:
+                    continue
+                chain_busy.add(j["episode_id"])
             res = j["resource"]
             if res in slots and busy.get(res, 0) >= slots[res]:
                 continue
@@ -744,12 +751,19 @@ class Runner:
         py = render[0]
         picture = self._expand(list(render) + ["--manifest", "manifest_groups.auto.json", "--out", out])
         drop = self._expand([py, "-c",
-                             "import os, shutil\n"
+                             "import json, os, shutil\n"
                              "shutil.rmtree('/work/segs_groups.auto', True)\n"
                              "for n in ('silent_groups.auto.mp4', 'concat_groups.auto.txt'):\n"
                              "    p = '/work/' + n\n"
                              "    if os.path.isfile(p):\n"
-                             "        os.remove(p)\n"])
+                             "        os.remove(p)\n"
+                             "cfgp = '/work/config.json'\n"
+                             "if os.path.isfile(cfgp):\n"
+                             "    c = json.load(open(cfgp, encoding='utf-8'))\n"
+                             "    c['manifest'] = 'manifest_groups.json'\n"
+                             "    c.pop('video_out', None)\n"
+                             "    c.pop('video_manifest', None)\n"
+                             "    json.dump(c, open(cfgp, 'w'), indent=1)\n"])
         return [("before_render", picture), ("before_cleanup", drop)]
 
     def _run_cloud_tail(self, j):
