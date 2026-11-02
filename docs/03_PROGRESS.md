@@ -1355,3 +1355,36 @@ Matching files is not enough — the point is that the pipeline can carry on fro
 - `tests/test_cloud.py` (5 new tests) pins all of it: lipgpu's piece list including the unclamped last piece, the
   full `ranges.json`, a failed share being re-sent while the finished ones are kept, and a share that keeps failing
   being reported rather than hidden. **135 passed, 4 skipped.**
+
+## Live on Render, and the editor works for someone with no files (2026-11-02, owner)
+**https://dubstudio-yg5s.onrender.com** — the owner's old `DUBSTUDIO` service, repointed at our repo as he asked,
+with its own Postgres in Singapore and its existing 20 GB disk reused for the library. Details in docs/09 §9.
+
+- **The first deploy crashed and it was my bug.** Render sets `WEB_CONCURRENCY` from the CPU count, so two uvicorn
+  processes built the schema at the same moment — and `CREATE TABLE IF NOT EXISTS` is not atomic against another
+  session doing the same. Fixed with a Postgres advisory lock around the schema, the migration and the first
+  account, so any number of replicas can start together; **proved by deploying with `WEB_CONCURRENCY=2`, the exact
+  condition that crashed, and watching it come up live.** Now set to 1, for a different reason: a second process in
+  one container means a second job runner polling for the same steps.
+- **Checked on the live site**: the API answers, the screens load, no session is 401, a wrong password is 401,
+  signing in works, R2 is reachable from Singapore, OpenRouter is configured, a show made with no Mac folder gets
+  `uploads: true`, and **the real web upload works end to end** — the API signs a link, the bytes go straight to R2,
+  `confirm` registers the file.
+- **The editor was broken for anyone without the files, and now is not.** Found by running the API image with an
+  empty library against the real database — a deployed box — and walking every endpoint the editor calls:
+  **4 of 15 worked, now 15 of 15**, including a real trim saved as version 2. See docs/09 §7.
+- **Any step can now run on a rented machine** (docs/09 §8): one image with the whole pipeline, and the app sends
+  the command it was going to run anyway with this machine's paths tokenised. 13 steps can go today (both Whisper
+  runs among them); the render tail is **refused** rather than attempted, because each of those steps reads the
+  previous one's multi-GB video.
+- **The worker image is built in CI now, not on the laptop.** The Mac's disk reached 98% full mid-build, which
+  aborted the Docker VM's ext4 journal and corrupted its content store — the build died and took local Docker with
+  it. `.github/workflows/worker-image.yml` builds and pushes it from a runner, fetching the pipeline bundle and the
+  models out of R2 (they are not in the repo: it is public). `main` was fast-forwarded to this branch so the
+  workflow can be dispatched (it was a plain fast-forward — main had only the initial commit).
+- **Still for the owner**: add `https://dubstudio-yg5s.onrender.com` to the R2 bucket's CORS `AllowedOrigins`. Our
+  R2 token is object-scoped and cannot change bucket CORS (403 on `GET /?cors`), so this one needs the Cloudflare
+  dashboard. Everything else works; without it, uploading from a real **browser** on the deployed site will fail.
+- **Worth fixing, cheap**: the RunPod endpoint called `dubstudio-cpu` is configured with `gpuCount: 1` and a list of
+  NVIDIA cards, so every job so far rented a GPU machine (~$0.58/h) for work measured at **1% GPU use**.
+  144 tests pass (5 skipped). RunPod balance $196.25.
