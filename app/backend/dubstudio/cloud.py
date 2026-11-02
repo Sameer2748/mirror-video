@@ -398,15 +398,20 @@ def tokenise(cmd, work_dir, out_dir, cfg, files=None):
 
 
 def _send_large_work_files(cmd, work_dir, files):
-    """Replace `{WORK}/some-big-file` with a file token when that file is already on disk and over 1 MB.
+    """Replace a `{WORK}/…` path with a file token when the work tar will not carry that file.
 
-    The render tail does not come through here one step at a time, so a multi-GB master is not uploaded
-    between those steps. -> (cmd, files)"""
+    The tar skips anything over 1 MB, and it skips the whole `input/` folder (the uploaded video, audio and
+    script live there, and the big ones already travel as their own links). A script is small, so it used to
+    be neither: the worker was told `/work/input/…/script.docx` and the file was not in the tar. The render
+    tail does not come through here one step at a time, so a multi-GB master is not uploaded between those
+    steps either. -> (cmd, files)"""
     out = []
     for arg in cmd:
         if isinstance(arg, str) and arg.startswith("{WORK}/"):
-            local = Path(work_dir) / arg[len("{WORK}/"):]
-            if local.is_file() and local.stat().st_size > SMALL:
+            rel = arg[len("{WORK}/"):]
+            local = Path(work_dir) / rel
+            left_out = rel == "input" or rel.startswith("input/")
+            if local.is_file() and (local.stat().st_size > SMALL or left_out):
                 token = next((t for t, p in files.items() if p == str(local)), None)
                 if token is None:
                     token = f"{{F{len(files)}}}"

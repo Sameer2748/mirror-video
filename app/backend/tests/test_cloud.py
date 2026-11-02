@@ -275,6 +275,48 @@ def test_a_big_file_already_in_the_work_folder_is_sent_on_its_own(tmp_path, monk
     assert "manifest.json" in res["_tar_names"]
 
 
+def test_a_script_in_the_input_folder_is_sent_even_though_it_is_small(tmp_path, monkeypatch):
+    """Uploaded scripts live in work/input/, and that folder is left out of the work tar on purpose (the video
+    is huge). The German SRT step then opens the .docx by the path it was given. A 40 KB script was neither in
+    the tar nor sent as its own file, so the worker died with 'Package not found at /work/input/…docx'."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    script = work / "input" / "dub_script" / "Episode_34_Ehekrach_cleaned.docx"
+    script.parent.mkdir(parents=True)
+    script.write_bytes(b"PK" + b"x" * 40)
+    (work / "note.txt").write_text("stays in the tar")
+    bucket = tmp_path / "bucket"
+    sent_job = {}
+
+    def fake_submit(job, **kw):
+        sent_job.update(job)
+        return "job0"
+
+    def fake_wait(ids, **kw):
+        got = tarfile.open(bucket / "cloud/mksrt_dub_work_in.tar.gz")
+        names = sorted(got.getnames())
+        got.close()
+        return {"job0": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}, "_tar_names": names}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    cmd = [cfg.pipeline_python, f"{cfg.scripts}/mksrt.py", "--work", str(work), "--script", str(script)]
+    res = cloud.run_command({}, show, ep, "mksrt_dub", cmd, cfg, log=lambda m: None)
+
+    assert "{F0}" in sent_job["cmd"] and "{WORK}/input/" not in " ".join(sent_job["cmd"])
+    assert sent_job["names"]["{F0}"] == "Episode_34_Ehekrach_cleaned.docx"
+    assert "note.txt" in res["_tar_names"]
+    assert not any(n.startswith("input/") for n in res["_tar_names"])
+
+
 def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):
     show, ep = _episode(tmp_path)
     monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
