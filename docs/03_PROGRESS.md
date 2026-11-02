@@ -1271,3 +1271,70 @@ The queue-based worker the owner asked for, proved end to end. **Total RunPod sp
   not per-machine speed: a full 11-minute episode as 8 pieces would clear in roughly 5 minutes instead of 17.
 - First attempt failed with `No module named torchvision` (TalkNet's S3FD needs it) — the API returned the whole
   traceback, fixed in one line and rebuilt. That is the difference the image makes: failures are legible.
+
+## The whole episode's lip scan in the cloud: right answer, but slower than the Mac (2026-11-02, owner)
+The first full-episode run (ep34, 627 s) **failed**, and both reasons were mine:
+- the endpoint's execution limit was **30 min** and two of the eight shares hit it;
+- worse, `cloud.wait()` **raised on the first failure**, so the six shares that had finished were thrown away.
+
+Both fixed. The limit is now 2 h, and a failure is reported rather than raised: `cloud.lip_scan` sends the failed
+shares again (3 attempts) and keeps the finished ones, so one bad machine costs one share, not the episode.
+
+**The re-run worked: 42 of 42 range files, 0 retries.** And the answer is the Mac's answer — the pipeline's own
+`compare_lips.py`, Mac vs cloud, full episode: **`ALL PIECES MATCH`**, box 0.0 px, worst score difference 0.02 and
+worst visual difference 0.07 (the threshold is 0.5; most pieces are 0.0000). That is a better match than the GPU pod
+run, which had 2 pieces drifting on score.
+
+**One real bug found by comparing, not by reading.** My splitter clamped the last piece to the end of the video —
+`[615, 627]` — so the file came back as `range_615_627.json`. `lipgpu.make_ranges` does **not** clamp: it steps
+`while s < L`, so a 627 s episode's last piece is `[615, 630]` and the file is `range_615_630.json`. A clamped last
+piece writes a name the rest of the pipeline does not look for. `cloud.make_ranges` is now `lipgpu.make_ranges`
+written out, with the reason in the docstring.
+
+**Correction to yesterday's estimate.** I wrote that an 8-piece episode "would clear in roughly 5 minutes instead of
+17". It did not: **1,736 s of wall time (29 min) against the Mac's 1,033 s (17 min)**, for 1,085 s of billed worker
+time. The arithmetic I did (8 jobs x ~136 s of execution / 4 workers = ~5 min) ignored everything that is not
+execution: each of the 8 jobs cold-starts a 911 MB image and pulls the 651 MB source video before it scans anything,
+and the endpoint's max of 4 workers means two rounds of that. The per-piece *compute* is as fast as measured before;
+the overhead is per job, so **cutting an episode into more, smaller pieces makes it worse, not better**. For the
+record: a single 15 s piece submitted on its own takes minutes, nearly all of it fetch and start-up.
+
+What that means for the plan: the cloud lip scan is **right**, **safe to retry** and **cheap** (about $0.5 of worker
+time for a full episode; the balance is $196.46 and idle workers are not billed), but it is **not a speed-up for one
+episode**. It is a way to run episodes **side by side** without tying up the Mac, and the thing to fix if speed
+matters is the per-job overhead: keep the source video on the worker between pieces (one job per episode, not per
+piece) or stream only the needed seconds instead of the whole file.
+
+## The editor's media comes from the cloud now (2026-11-02)
+A deployed API box has none of the big files, so the editor had nothing to play: the 540-px preview copy, the dub
+preview (the exact AAC copy — browsers run ahead on some MP3s), the waveform and the thumbnails are all made by
+ffmpeg from the originals. Now:
+- each one is copied to R2 when it is made (and on first serve, so older episodes are covered the first time someone
+  opens them);
+- **playback** is a 307 to a signed R2 link when the file is not on this machine — R2 answers the range requests, so
+  scrubbing works and the API carries no video bytes;
+- the two things that need a real file (thumbnails, the waveform) pull the small preview copy down once;
+- nothing anywhere is still a plain 404.
+This is also what makes `cleanup` safe: after the big local files are deleted the episode still plays. Three new
+tests cover it (mirror → serve from disk → take the disk copy away → served from R2), **130 passed, 4 skipped**.
+
+## Ready to deploy on Render, waiting for one key (2026-11-02)
+- `app/backend/Dockerfile` — the API image (python:3.11-slim + ffmpeg, the built screens inside it, no pipeline, no
+  models: the heavy steps go to the RunPod workers). `app/backend/build_frontend.sh` builds the screens into it.
+- `render.yaml` — the blueprint (web service + Postgres 16, 50 GB disk, health check `/api/info`); the secrets are
+  deliberately **not** in it.
+- `app/scripts/deploy_render.py` — one command does the lot: points the service at our repo and branch, makes the
+  Postgres database, copies the settings and the **keys straight out of `app/.env`** (never printed, never
+  committed), deploys and waits for it to go live. Nothing is sent without `--apply`.
+- **Proved the image before deploying it**: run against a clean Postgres it seeded the owner's account from
+  `ADMIN_USERNAME`/`ADMIN_PASSWORD`, signed in, refused a wrong password (401) and an API call with no session
+  (401), served the screens, and made an upload-only show (`profile.uploads = true`, no Mac folder).
+  Worth knowing: `auth.seed()` only ever makes the **first** account, so `ADMIN_USERNAME` must be set before the
+  deployed database gets its first user — it will not change an existing password.
+- **Still needed from the owner**: a **Render API key**, and the Render URL added to the R2 bucket's CORS
+  `AllowedOrigins`. Also to decide: the repo is private, so Render's GitHub app needs access to
+  `Sameer2748/mirror-video` (or we deploy the image from Docker Hub instead).
+- **What the deployed box can and cannot do**: accounts, shows, uploads, the queue, the editor and review — yes.
+  **Processing an episode — not yet**: only the lip scan has a worker image, so every other step would look for
+  Whisper, the models and the pipeline scripts, which are not in the API image. Processing stays on the Mac until
+  the other worker images exist.

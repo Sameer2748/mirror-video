@@ -107,6 +107,22 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10):
 
 
 # ---------------- the lip scan, split into pieces ----------------
+def make_ranges(duration_s, piece=PIECE_SECONDS):
+    """The pieces the local step would cut, **exactly** -- this is `lipgpu.make_ranges` written out:
+
+        s = 0; while s < L: [s, s + piece]; s += piece
+
+    The last piece therefore runs PAST the end of the video (a 627 s episode ends with `[615, 630]`, not
+    `[615, 627]`), and lipgpu names the file after the range it was asked for. Clamping it looks tidier and is
+    wrong: the file comes back as `range_615_627.json`, which is not the name the rest of the pipeline looks for.
+    """
+    out, s = [], 0.0
+    while s < duration_s:
+        out.append([s, s + piece])
+        s += piece
+    return out
+
+
 def ensure_input_in_cloud(db, show, ep, kind="src_video"):
     """The worker reads from R2: make sure this episode's file is there (a show whose files live on the Mac has
     not uploaded it yet). -> the key."""
@@ -129,10 +145,7 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
     share, not the episode. -> {pieces, files, seconds, worker_seconds, retries}."""
     n = n_pieces or pieces()
     key = ensure_input_in_cloud(db, show, ep)
-    # the SAME pieces the local step would cut (lipgpu --piece 15), only shared out between machines, so the range
-    # files come back identical to a scan done here -- not merely equivalent
-    cuts = [[round(x * PIECE_SECONDS, 2), round(min((x + 1) * PIECE_SECONDS, duration_s), 2)]
-            for x in range(int((duration_s + PIECE_SECONDS - 1) // PIECE_SECONDS))]
+    cuts = make_ranges(duration_s)
     shares = [c for c in (cuts[i::n] for i in range(n)) if c]          # round-robin: a fair mix for every machine
     log(f"{len(cuts)} pieces of {PIECE_SECONDS:.0f} s across {len(shares)} machines ({duration_s:.0f} s of video)")
 
