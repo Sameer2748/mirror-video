@@ -350,3 +350,44 @@ worker's versions to the Mac's matters more than it first looked — which is wh
 (One more difference in that comparison — `config.json`'s `manifest` key flipping from `manifest_groups.json` back
 to `manifest.json` — is an artefact of the test re-running an early step on an episode that had already finished,
 not a fault.)
+
+### The path translation was corrupting the config, and how that was found (2026-11-02)
+
+Comparing a real run's `config.json` with the Mac's showed paths like
+
+```
+/Users/manish/conductor/Users/manish/conductor/workspaces/…/TGS_ep34spaces/…
+/Users/manish/Downloads/TGS US_DE/Users/manish/Downloads/TGS US_DE/output/ep34_openrouter_fullput/…
+```
+
+The translation was a **text replace**, and `/work` is a substring of `/work`**spaces** while `/out` is a substring
+of `/out`**put** — so every path in the file that merely contained those letters was mangled. Processing an episode
+in the cloud would have quietly wrecked its work folder. It now walks the **parsed JSON** and matches whole path
+segments, so a sibling episode's folder (`…/work/TGS_ep35/…`) and an unrelated `workspaces` path are left alone; a
+test covers exactly that corruption in both directions. ep34 was never damaged — the test harness puts the Mac's
+files back after every run.
+
+### Careful with "identical": a step that skips proves nothing
+
+Two comparisons looked perfect and meant nothing, because the step **skipped**:
+
+- `words_src` finished in 2.8 s — it reuses what is already there, so "identical" only meant the file was never
+  rewritten. (It also writes `sentences_src.json`, not `TGS_EP34_EN_words.json`; that one is `mksrt`'s.)
+- `mksrt_src` finished in 0.7 s even with its outputs deleted, because `mksrt` caches the raw transcription in
+  `<work>/asr/` and rebuilds the SRT from it. Byte-identical, but it proves only that the **rebuild** matches.
+
+To make Whisper really listen, the `asr/` cache has to go aside as well. Worth remembering for any future
+comparison: **check the step's own runtime against the Mac's before believing a match.** A step that finished in
+one second did not do the work.
+
+### A CPU endpoint needs the dashboard
+
+The endpoint is `gpuCount: 1` with a list of NVIDIA cards, and that is set by the **template's** `category`. A
+template can be made with `category: CPU` through the REST API, but the endpoint still comes back with
+`gpuTypeIds`, and `instanceIds` is rejected (`key provided in request body which is not in input schema`). So the
+REST API only makes GPU endpoints — a CPU one needs the RunPod dashboard (Serverless → New Endpoint → CPU) or the
+GraphQL `saveEndpoint`. Two endpoints created while finding this out were deleted again.
+
+It is worth doing: this is renting GPU machines at about $0.58/h for work measured at **1% GPU utilisation**, and
+GPU scarcity now actively gets in the way — three or four of the four workers sat **throttled** during today's
+runs, with jobs queued behind capacity that CPU machines would not have been short of.
