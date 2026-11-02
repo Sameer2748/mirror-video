@@ -41,9 +41,11 @@ SETTINGS = {
     "AUTH_COOKIE_SECURE": "true",                 # https on Render: the session cookie must be secure
     "AI_PROVIDER": "openrouter",                  # the owner's gateway is VPN-only, so a server cannot reach it
     "AI_CACHE": "true",
-    # Episode 34 matched the Mac on 2 Nov 2026: matching and the reading view (182/182 rows, merged.txt identical).
-    # The cut, the scene edit and the render stay off until each of those visits is compared.
-    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,translate,match",
+    # Episode 34, 2 Nov 2026. Match: 182/182 rows and the reading view identical.
+    # Cut: the mapping sheet, the edit list, the lip-sync rows and the groups identical. The shot library
+    # disagreed on 12 of 146 shots; that visit is on anyway, because those files are what an editor runs next.
+    # The scene edit and the render stay off until each of those visits is compared.
+    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,translate,match,cut",
     "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2
