@@ -124,8 +124,9 @@ Uploads happen in one of two ways (`UPLOAD_MODE` in `app/.env`; **direct** since
       free. A share that fails (a slow or reclaimed machine) is sent again on its own — the shares that finished are
       kept, so one bad machine costs one share, not the episode.
 - [x] **The editor's media from R2** (see §7): a machine that never had the big files can still play the episode.
-- [ ] Worker images for the other steps (render, transitions, subtitles) and a CUDA image for the face map;
-      per-**step** storage sync instead of per-episode (the code is ready for it: `storage.fetch_inputs(kinds=…)`).
+- [x] **Render tail on one machine** (`cloud.run_chain`): `render` → `verify` → `bookends` → `transitions` →
+      both subtitle burns as one job on the existing worker image. Off on the live site until a real episode
+      is compared with the Mac (`CLOUD_STEPS=tail`). Face map still needs a CUDA image.
 - [x] **CORS on the bucket** (owner, 2026-10-31) → `UPLOAD_MODE=direct` is on: a 120 MB file from a real
       browser went to R2 in two parts without touching the API.
 
@@ -225,7 +226,7 @@ work folder with `/work/...` paths that the next local step cannot find.
 | | steps | why |
 | --- | --- | --- |
 | **Can go now (13)** | `mksrt_dub` `mksrt_src` `words_src` `words_dub` `analyze` `sheet` `manifest` `lip_mesh` `lip_merge` `lipsync` `groups` `trans_plan` `translate` — plus the lip scan, which has its own split-into-pieces path | their inputs are the episode's own files plus small work files |
-| **One machine only (7)** | `render` `verify` `bookends` `transitions` `subs_dub` `subs_en` `check` | each reads the **previous step's multi-GB video**, and the work folder records where it is. The machine that runs `verify` is not the one that ran `render`, so the file would have to travel up and down — gigabytes each way, per step. That chain belongs on one machine. |
+| **One machine only (the render tail)** | `render` `verify` `bookends` `transitions` `subs_dub` `subs_en` | each reads the **previous step's multi-GB video**, and the work folder records where it is. They now go as **one job** on one machine (`cloud.run_chain`, `CLOUD_STEPS` includes `all` / `tail` / `render`): a tiny driver runs the same commands in order, and only the finished videos come back. `trans_plan` is JSON and stays here so the editor's picks are applied first. `check` stays here too — it reads the QC sheet. The pipeline scripts are unchanged. |
 | **Needs an AI key there (3)** | `library` `facemap` `qc` | they ask the app's own AI client for a vote. Sending an OpenRouter key to a rented machine is the owner's call, so they stay here unless `CLOUD_AI=true`. Note *why* this matters: without a key `facemap` does not fail, it gives a **worse** answer ("groups without a clear vote stay unknown") — and a quietly worse answer is the thing to avoid. |
 
 `CLOUD_STEPS=all` therefore means *every step that can actually work there* — turning it on cannot break a run at

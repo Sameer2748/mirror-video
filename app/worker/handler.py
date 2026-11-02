@@ -29,7 +29,10 @@ OUT = "/out"                      # the show's output folder, as {OUT}
 FILES = "/files"                  # big inputs land here
 CODE = "/opt/dubstudio"
 PIPE_PY = "/opt/pipeline_env/bin/python"      # the pipeline's own python, as on the Mac (see the Dockerfile)
-PLACES = {"{PY}": PIPE_PY, "{FPY}": PIPE_PY, "{TOOLS}": CODE, "{SCRIPTS}": f"{CODE}/scripts",
+# Face map has its own env on the GPU image (`/opt/venv_face`). The CPU image has no such env, so {FPY}
+# falls back to the pipeline python there -- same as before.
+FACE_PY = "/opt/venv_face/bin/python" if os.path.isfile("/opt/venv_face/bin/python") else PIPE_PY
+PLACES = {"{PY}": PIPE_PY, "{FPY}": FACE_PY, "{TOOLS}": CODE, "{SCRIPTS}": f"{CODE}/scripts",
           "{SCENE}": "/opt/scene/pipeline", "{MODELS}": "/opt/models", "{WORK}": WORK, "{OUT}": OUT,
           "{APP}": "/opt/app"}
 

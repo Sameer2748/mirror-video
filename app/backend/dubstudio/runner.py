@@ -412,9 +412,11 @@ class Runner:
         return [str(cfg.pipeline_python) if c == "{py}" else str(cfg.face_python) if c == "{fpy}"
                 else c.replace("{scripts}", str(cfg.scripts)) for c in cmd]
 
-    def _run_cmd(self, j, cmd=None):
+    def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
-        if cloud.enabled_for(j["step"]):                   # CLOUD_STEPS: run it on a rented machine instead
+        if not force_local and cloud.chain_wanted() and j["step"] in cloud.CHAIN:
+            return self._run_cloud_tail(j)
+        if not force_local and cloud.enabled_for(j["step"]):  # CLOUD_STEPS: run it on a rented machine instead
             return self._run_cmd_cloud(j, cmd or prm["cmd"])
         cmd = self._expand(cmd or prm["cmd"])
         if cfg.step_max_seconds and any(x in cmd for x in ("render", "transitions", "subs", "words")) or \
@@ -483,6 +485,61 @@ class Runner:
             return self._run_cmd_cloud(j, cmd)
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done on a rented machine in {time.time() - t0:.0f} s")
+
+    def _run_cloud_tail(self, j):
+        """render → verify → bookends → transitions → both subtitle burns, on ONE rented machine.
+
+        Each of those reads the previous step's multi-GB video, so one step per machine cannot work
+        (docs/09 §8). `trans_plan` is JSON only and stays here so the editor's picks are applied before
+        the videos are cut. The pipeline scripts are unchanged."""
+        t0 = time.time()
+        show, ep, _ = self.episode_context(j["episode_id"])
+        jobs = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
+                         (j["episode_id"], j["run"]))
+        by = {x["step"]: x for x in jobs}
+
+        tp = by.get("trans_plan")
+        if tp and tp["status"] not in DONE:
+            self._run_cmd(tp, force_local=True)
+            n = timeline.apply_editor_transitions((j["params"] or {}).get("ctx", {}).get("W") or ep["work_dir"])
+            if n:
+                with open(j["log_path"], "a", encoding="utf-8") as f:
+                    f.write(f"the editor's own transitions on {n} cuts kept on top of the plan\n")
+
+        named, to_mark = [], []
+        started = False
+        for step in cloud.CHAIN:
+            sj = by.get(step)
+            if not sj:
+                continue
+            if sj["id"] == j["id"]:
+                started = True
+            if not started:
+                continue
+            cmd = (sj["params"] or {}).get("cmd")
+            if not cmd:
+                continue
+            named.append((step, self._expand(cmd)))
+            to_mark.append(sj)
+        if not named:
+            raise RuntimeError("the render tail has no commands to send")
+
+        with open(j["log_path"], "a", encoding="utf-8") as f:
+            def log(msg):
+                f.write(str(msg).rstrip() + "\n"); f.flush()
+
+            def prog(done, total, workers):
+                busy = (workers or {}).get("running", 0)
+                self._set(j, message=f"render tail on a rented machine ({busy} working)")
+
+            self._set(j, message="sending the render tail to one rented machine")
+            res = cloud.run_chain(self.db, show, ep, named, cfg, log=log, on_progress=prog,
+                                  timeout=cfg.step_max_seconds or 7200)
+        if res.get("rc") == 3:
+            return self._run_cloud_tail(j)
+        msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
+        for sj in to_mark:
+            self._set(sj, status="done", progress=1, finished=now(), eta=0, message=msg)
 
     @staticmethod
     def _parse_progress(line, dur):

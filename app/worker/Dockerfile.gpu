@@ -1,0 +1,61 @@
+# Face-map GPU worker (RunPod serverless): `facemap.py` on CUDA.
+#
+# Its own image because insightface / ultralytics upgrade numpy and break mediapipe (the CPU pipeline image
+# needs mediapipe). Same script, same models and the same package versions as the Mac's venv_face
+# (insightface 2.1, ultralytics 8.4.192, onnxruntime 1.31.1, Python 3.12), so the answer matches; only the
+# device changes: CUDA instead of the Mac's MPS / CoreML.
+#
+# A plain CUDA base, not runpod/pytorch: that image's start script runs Jupyter, and a serverless worker that
+# runs Jupyter instead of the handler shows as "ready" and never takes a job (measured 2026-11-02).
+#
+# Built in CI (`.github/workflows/worker-face-gpu.yml`): python3 app/worker/fetch_face_inputs.py, then
+#   docker buildx build --platform linux/amd64 -f app/worker/Dockerfile.gpu -t <user>/dubstudio-worker:face-gpu app/worker
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      python3 python3-venv python3-dev build-essential curl xz-utils ca-certificates libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Same ffmpeg 8.1 as the CPU worker and the Mac: facemap cuts every shot with it.
+RUN curl -fsSL -o /tmp/ff.tar.xz \
+      "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz" \
+    && tar -xJf /tmp/ff.tar.xz -C /tmp \
+    && mv /tmp/ffmpeg-n8.1*/bin/ffmpeg /tmp/ffmpeg-n8.1*/bin/ffprobe /usr/local/bin/ \
+    && rm -rf /tmp/ff.tar.xz /tmp/ffmpeg-n8.1* \
+    && ffmpeg -version | head -1
+
+# One venv holds the face stack and the RunPod SDK (no mediapipe here, so no protobuf clash).
+# /opt/pipeline_env points at it too, because handler.py runs `{PY}` from there.
+RUN python3 -m venv /opt/venv_face \
+    && ln -s /opt/venv_face /opt/pipeline_env \
+    && /opt/venv_face/bin/pip install --no-cache-dir --upgrade pip
+RUN /opt/venv_face/bin/pip install --no-cache-dir torch==2.15.0 torchvision --index-url https://download.pytorch.org/whl/cu128 \
+    || /opt/venv_face/bin/pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu128
+# onnxruntime and onnxruntime-gpu share one package folder: if anything pulled the CPU build, remove it and
+# reinstall the GPU build over the top, or uninstalling one deletes the other's files.
+RUN /opt/venv_face/bin/pip install --no-cache-dir \
+      runpod insightface==2.1 ultralytics==8.4.192 onnxruntime-gpu==1.31.1 \
+      numpy==2.5.4 scipy==1.18.1 pillow \
+    && (/opt/venv_face/bin/pip uninstall -y onnxruntime || true) \
+    && /opt/venv_face/bin/pip install --no-cache-dir --force-reinstall --no-deps onnxruntime-gpu==1.31.1 \
+    && /opt/venv_face/bin/python -c "import insightface, onnxruntime, ultralytics, torch, cv2; \
+print('insightface', insightface.__version__, 'ort', onnxruntime.__version__, onnxruntime.get_available_providers(), \
+'ultralytics', ultralytics.__version__, 'torch', torch.__version__, 'cv2', cv2.__version__); \
+assert 'CUDAExecutionProvider' in onnxruntime.get_available_providers()"
+
+# The script, its weights and the app package (facemap asks the app's AI client to name unclear faces).
+# yolo26l.pt sits next to the script, as on the Mac: the job runs in the scripts folder and facemap's
+# default `--yolo yolo26l.pt` is relative.
+COPY facemap.py yolo26l.pt /opt/dubstudio/scripts/
+COPY app.tar.gz buffalo_l.tar.gz /tmp/
+RUN mkdir -p /opt/app /root/.insightface/models \
+    && tar -xzf /tmp/app.tar.gz -C /opt/app \
+    && tar -xzf /tmp/buffalo_l.tar.gz -C /root/.insightface/models \
+    && rm /tmp/app.tar.gz /tmp/buffalo_l.tar.gz \
+    && test -f /root/.insightface/models/buffalo_l/w600k_r50.onnx \
+    && test -f /opt/app/dubstudio/ai.py
+
+COPY handler.py /handler.py
+ENV PYTHONUNBUFFERED=1
+CMD ["/opt/venv_face/bin/python", "-u", "/handler.py"]

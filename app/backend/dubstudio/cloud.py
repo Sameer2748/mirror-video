@@ -55,7 +55,13 @@ NEEDS_AI_KEY = {"facemap", "qc", "library"}
 # file would have to travel up and down -- gigabytes each way, per step. That chain belongs on ONE machine.
 # Measured, not assumed: the only work files over 1 MB in a finished episode are videos; everything else (the lip
 # scan's 42 range files, the meshes, the manifests) is a few kB and travels fine.
+#
+# Individual tail steps stay refused (`enabled_for` is False). They go together via `run_chain` when the owner
+# asks for them (`CLOUD_STEPS` includes `all`, `tail`, `render` or `render_tail`). `trans_plan` is JSON only and
+# stays here; `check` / `qc` stay here too (`qc` needs an AI vote; `check` reads the sheet it writes).
 ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "dynsrt", "check"}
+CHAIN = ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en")
+CHAIN_NAMES = {"all", "tail", "render", "render_tail"}
 
 
 def ai_key_allowed():
@@ -78,33 +84,47 @@ def enabled_for(step, kind="cpu"):
     return available(kind) and ("all" in want or step in want)
 
 
+def chain_wanted(kind="cpu"):
+    """The render tail as one job on one machine. Individual tail steps stay refused."""
+    want = steps()
+    return available(kind) and bool(want & CHAIN_NAMES)
+
+
 def pieces():
     return max(1, envfile.number("CLOUD_PIECES", 8))
 
 
 # ---------------- the queue ----------------
-def _call(path, body=None, timeout=60):
+def _call(path, body=None, timeout=60, kind="cpu"):
     key = envfile.get("RUNPOD_API_KEY")
+    ep = endpoint(kind)
+    if not ep:
+        raise RuntimeError(f"no RUNPOD_{kind.upper()}_ENDPOINT set")
     data = json.dumps(body).encode() if body is not None else None
-    r = urllib.request.Request(f"{API}/{endpoint()}{path}", data=data,
+    r = urllib.request.Request(f"{API}/{ep}{path}", data=data,
                                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
                                         "User-Agent": UA})
     return json.load(urllib.request.urlopen(r, timeout=timeout))
 
 
-def submit(job_input):
-    return _call("/run", {"input": job_input})["id"]
+def submit(job_input, kind="cpu"):
+    return _call("/run", {"input": job_input}, kind=kind)["id"]
 
 
-def status(job_id):
-    return _call(f"/status/{job_id}", timeout=30)
+def status(job_id, kind="cpu"):
+    return _call(f"/status/{job_id}", timeout=30, kind=kind)
 
 
-def health():
-    return _call("/health", timeout=30)
+def health(kind="cpu"):
+    return _call("/health", timeout=30, kind=kind)
 
 
-def wait(job_ids, on_progress=None, timeout=7200, poll=10):
+def cancel(job_id, kind="cpu"):
+    """Ask RunPod to stop a job. Used when a try is abandoned so we stop paying for it."""
+    return _call(f"/cancel/{job_id}", body={}, timeout=30, kind=kind)
+
+
+def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
     """Wait for every job. -> ({job id: status}, [failed job ids with their reason]).
     A rented machine can be slow or taken away mid-job, so a failure is reported, not raised: the caller decides
     what to send again. The pieces that finished are kept."""
@@ -119,7 +139,7 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10):
             if jid in done or jid in failed:
                 continue
             try:
-                st = status(jid)
+                st = status(jid, kind=kind)
             except (urllib.error.URLError, TimeoutError):
                 continue
             if st.get("status") == "COMPLETED":
@@ -128,7 +148,7 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10):
                 failed[jid] = str(st.get("error") or st.get("output") or st.get("status"))[:300]
         if on_progress:
             try:
-                h = health().get("workers", {})
+                h = health(kind=kind).get("workers", {})
             except Exception:
                 h = {}
             on_progress(len(done), len(job_ids), h)
@@ -280,18 +300,19 @@ def _swap(text, pairs):
     return json.dumps(_swap_paths(data, pairs), ensure_ascii=False)
 
 
-def tokenise(cmd, work_dir, out_dir, cfg):
+def tokenise(cmd, work_dir, out_dir, cfg, files=None):
     """One command line as the worker should see it. -> (cmd, {token: local path of a big file})
 
     Everything that is a path on this machine becomes a placeholder. What is left over and is a real file -- the
-    source video, the dub audio, the subtitle font -- gets a token of its own and travels as a signed link."""
+    source video, the dub audio, the subtitle font -- gets a token of its own and travels as a signed link.
+    `files` is reused when several commands share one job, so the same video is always `{F0}`."""
     app_dir = str(Path(__file__).resolve().parent.parent)       # app/backend: facemap and qc import `dubstudio`
     prefixes = [("{SCRIPTS}", str(cfg.scripts)), ("{SCENE}", str(cfg.scene_dir)), ("{MODELS}", str(cfg.models_dir)),
                 ("{TOOLS}", str(cfg.tools_dir)), ("{WORK}", str(work_dir)), ("{OUT}", str(out_dir)),
                 ("{APP}", app_dir)]
     prefixes.sort(key=lambda kv: len(kv[1]), reverse=True)      # longest first: {SCRIPTS} is inside {TOOLS}
     exact = {str(cfg.pipeline_python): "{PY}", str(cfg.face_python): "{FPY}", "{py}": "{PY}", "{fpy}": "{FPY}"}
-    out, files = [], {}
+    out, files = [], (files if files is not None else {})
     for arg in cmd:
         if arg in exact:
             out.append(exact[arg]); continue
@@ -301,8 +322,10 @@ def tokenise(cmd, work_dir, out_dir, cfg):
                 arg = token + arg[len(real):]
                 break
         if arg.startswith("/") and Path(arg).is_file():          # a file somewhere else on this Mac
-            token = f"{{F{len(files)}}}"
-            files[token] = arg
+            token = next((t for t, p in files.items() if p == arg), None)
+            if token is None:
+                token = f"{{F{len(files)}}}"
+                files[token] = arg
             arg = token
         out.append(arg)
     return out, files
@@ -353,14 +376,17 @@ def _tar(paths, root, dest, patch=None):
     return n
 
 
-def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200):
+def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu"):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
     The episode's small work files go up as one tar, the big inputs as signed links, and only what the step
     **changed** comes back -- so a step that writes one JSON brings back one JSON, and a render brings back the
-    video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one."""
+    video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one.
+    `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     cmd_t, files = tokenise(cmd, W, O, cfg)
+    if preset_files:
+        files.update(preset_files)
     files.update(_files_named_in_config(W, O, files))
 
     job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
@@ -406,9 +432,13 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
                       "out": storage.presign(back_out, 10800, method="PUT")}
 
-    jid = submit(job)
-    log(f"{name}: sent to a rented machine (job {jid})")
-    done, failed = wait([jid], on_progress=on_progress, timeout=timeout)
+    if ai_key_allowed():
+        job["env"] = {k: v for k in ("OPENROUTER_API_KEY", "OPENROUTER_CLAUDE_MODEL", "OPENROUTER_FAST_MODEL",
+                                     "OPENROUTER_BASE", "AI_PROVIDER", "AI_CACHE")
+                      if (v := envfile.get(k))}
+    jid = submit(job, kind=kind)
+    log(f"{name}: sent to a rented {kind} machine (job {jid})")
+    done, failed = wait([jid], on_progress=on_progress, timeout=timeout, kind=kind)
     if failed:
         raise RuntimeError(f"the cloud could not run {name}: {list(failed.values())[0]}")
     res = (list(done.values())[0] or {}).get("output") or {}
@@ -434,6 +464,67 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     log(f"{name}: done in {res.get('seconds')} s; "
         f"{sum(v.get('files', 0) for v in sent.values())} files came back")
     return res
+
+
+# The existing worker only knows one command (`step: command`). The render tail is several commands that must
+# share one /work and one /out, so we send a tiny driver as the command and the real steps as a JSON list next
+# to it. No image rebuild, no pipeline change: the worker runs `{PY} {WORK}/_cloud_chain.py` the same way it
+# runs any other command.
+CHAIN_DRIVER = '''\
+import json, os, subprocess, sys
+jobs = json.loads(open(os.path.join(os.path.dirname(__file__), "_cloud_chain.json"), encoding="utf-8").read())
+for item in jobs["steps"]:
+    name, cmd = item["name"], item["cmd"]
+    print(f"=== {name} ===", flush=True)
+    while True:
+        p = subprocess.run(cmd)
+        if p.returncode == 3:
+            print(f"(resuming {name})", flush=True)
+            continue
+        if p.returncode != 0:
+            sys.exit(p.returncode)
+        break
+print("CHAIN OK", flush=True)
+'''
+
+# Where the worker image puts things -- same map as handler.py PLACES. Used to write the inner commands with
+# the worker's own paths so the driver does not have to expand tokens.
+WORKER_PLACES = {"{PY}": "/opt/pipeline_env/bin/python", "{FPY}": "/opt/pipeline_env/bin/python",
+                 "{TOOLS}": "/opt/dubstudio", "{SCRIPTS}": "/opt/dubstudio/scripts",
+                 "{SCENE}": "/opt/scene/pipeline", "{MODELS}": "/opt/models",
+                 "{WORK}": "/work", "{OUT}": "/out", "{APP}": "/opt/app"}
+
+
+def _fill_tokens(arg, places):
+    for token, real in places.items():
+        if token in arg:
+            arg = arg.replace(token, str(real))
+    return arg
+
+
+def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeout=7200, kind="cpu"):
+    """Run several pipeline steps on ONE rented machine, in order. -> the worker's answer.
+
+    `named_cmds` is [(name, cmd), ...] with this machine's paths, exactly as the runner would have run them
+    locally. They go up as one job; only what the last step changed comes back -- which for this tail is the
+    videos. The pipeline scripts themselves are not touched."""
+    W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
+    files, packed = {}, []
+    for name, cmd in named_cmds:
+        cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
+        packed.append({"name": name, "cmd": cmd_t})
+    places = dict(WORKER_PLACES)
+    for token, path in files.items():
+        places[token] = f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"
+    for item in packed:
+        item["cmd"] = [_fill_tokens(a, places) for a in item["cmd"]]
+    (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed}, ensure_ascii=False), encoding="utf-8")
+    (W / "_cloud_chain.py").write_text(CHAIN_DRIVER, encoding="utf-8")
+    log(f"{len(packed)} steps on one rented machine: " + ", ".join(n for n, _ in named_cmds))
+    return run_command(db, show, ep, "render_tail",
+                       [cfg.pipeline_python if hasattr(cfg, "pipeline_python") else "{py}",
+                        str(W / "_cloud_chain.py")],
+                       cfg, log=log, on_progress=on_progress, timeout=timeout, preset_files=files, kind=kind)
 
 
 def _file_in_cloud(db, show, ep, path):

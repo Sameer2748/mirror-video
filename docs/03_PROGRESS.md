@@ -1388,3 +1388,50 @@ with its own Postgres in Singapore and its existing 20 GB disk reused for the li
 - **Worth fixing, cheap**: the RunPod endpoint called `dubstudio-cpu` is configured with `gpuCount: 1` and a list of
   NVIDIA cards, so every job so far rented a GPU machine (~$0.58/h) for work measured at **1% GPU use**.
   144 tests pass (5 skipped). RunPod balance $196.25.
+
+## Real CPU endpoint, proven against the Mac (2026-11-02, owner)
+The owner made a true CPU serverless endpoint in the dashboard (`7f5bk2vh9hv1qk`, now named `dubstudio-cpu-v2`).
+REST shows no `gpuCount` / no GPU list — unlike the old `dubstudio-cpu` (`9k3nkvxj8zarxj`), which was a GPU
+endpoint wearing a CPU name.
+
+- **Smoke**: one 15 s piece, device `cpu`, 88 s wall (35 s fetch + 37 s scan). Against the Mac:
+  `ALL PIECES MATCH`, box 0.0 px, score/visual diff 0.0000.
+- **Full ep34, 42 pieces, 8 machines, 0 retries**: **421 s wall** (7 min) vs the Mac's 1,033 s and the GPU
+  endpoint's 1,736 s. Worker time 1,373 s. Pipeline's own `compare_lips.py`: **42 of 42 ALL PIECES MATCH**.
+  Worst score/visual drift 0.06 / 0.20 (threshold 0.5); most pieces 0.0000. The last piece is `range_615_630.json`,
+  same unclamped name as the Mac.
+- **Cost**: RunPod balance $196.084 → $196.014. The whole episode on CPU was **about $0.07**, against ~$0.50
+  on the GPU endpoint for the same work (~7× cheaper). Idle spend is still $0/h.
+- **Why the GPU run was slow**: three of four workers sat throttled waiting for GPU capacity. The CPU endpoint
+  ran 4 workers at once with none throttled, so wall time dropped even though billed worker-seconds were similar.
+- **Services after the proof**:
+  - live site `https://dubstudio-yg5s.onrender.com` now has `RUNPOD_CPU_ENDPOINT=7f5bk2vh9hv1qk`
+  - old GPU endpoint parked (`dubstudio-gpu-legacy`, `workersMax: 0`) — kept as a fallback, not deleted
+  - `WEB_CONCURRENCY=1` put back on Render (it had gone missing)
+  - OpenRouter: $37.45 of $500 used; Render Postgres `dubstudio-db` available in Singapore
+- **Render tail on one machine (code, not live yet)**: `cloud.run_chain` sends `render` → `verify` → `bookends`
+  → `transitions` → both subtitle burns as one job on the existing worker image (a tiny driver; no pipeline
+  change, no image rebuild). Individual tail steps stay refused so `CLOUD_STEPS=all` cannot break at step 25.
+  Turned on with `CLOUD_STEPS=tail` (or `all` / `render`). Not enabled on the live site yet — needs a real
+  episode render compared with the Mac first. `trans_plan` and `check` stay here.
+  147 tests pass (5 skipped).
+
+**Still the owner's**:
+1. Add `https://dubstudio-yg5s.onrender.com` to the R2 bucket CORS `AllowedOrigins` (browser uploads on the
+   live site fail without it). Dashboard only; our key gets 403.
+2. Whisper: cloud is 5.5× faster and 99.3% the same words. Not identical and cannot be. Cloud for speed, or
+   Mac for exact reproducibility? The SRTs feed matching.
+3. Face map still unmeasured in the cloud — the one step that actually wants a GPU.
+
+## CORS confirmed; Whisper deployed and re-tested on the CPU box (2026-11-02, owner)
+- **R2 CORS**: a real OPTIONS + PUT from origin `https://dubstudio-yg5s.onrender.com` — OPTIONS 204, PUT 200,
+  `Access-Control-Allow-Origin` is the live site, object landed in the bucket. One leftover: OPTIONS did not
+  expose `ETag`. Small uploads are fine; a browser multipart of a multi-GB video still needs
+  `ExposeHeaders: ["ETag"]` on the same rule.
+- **Whisper is on**: `CLOUD_STEPS=lip_gpu,mksrt_src,mksrt_dub` locally and on Render (restarted).
+- **Real no-cache `mksrt_src` on the CPU endpoint** (asr/ not sent up; Whisper listened to all 11 minutes):
+  **75 s** of work, 95 s wall. Mac was 682 s. It heard every 60 s chunk (171, 162, … 61 words).
+  Cleaned SRT vs the Mac: every Mac word is there (1,621/1,621) plus the same eleven words the earlier cloud
+  run heard and the Mac missed (`know that you might want to work on that aiden blinked`). Cleaned SRT vs
+  the previous cloud run: **1,632/1,632, identical**. So this CPU box gives the same Whisper answer as the
+  old GPU-priced worker, 9× faster than the Mac.

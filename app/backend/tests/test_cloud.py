@@ -190,7 +190,7 @@ def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path
 
     sent_job = {}
 
-    def fake_submit(job):
+    def fake_submit(job, **kw):
         sent_job.update(job)
         return "job0"
 
@@ -232,7 +232,7 @@ def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path
 
 def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):
     show, ep = _episode(tmp_path)
-    monkeypatch.setattr(cloud, "submit", lambda job: "j")
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
     monkeypatch.setattr(cloud, "wait", lambda ids, **kw: (
         {"j": {"output": {"ok": False, "rc": 1, "log": "Traceback …\nValueError: no rows in the manifest"}}}, {}))
     monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
@@ -281,7 +281,7 @@ def test_the_work_folders_config_is_translated_both_ways(tmp_path, monkeypatch):
         return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1,
                                  "sent": {"work": {"files": 1}}}}}, {}
 
-    monkeypatch.setattr(cloud, "submit", lambda job: "j")
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
     monkeypatch.setattr(cloud, "wait", fake_wait)
     monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
     monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
@@ -318,9 +318,80 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
         assert not cloud.enabled_for(step), step
     for step in ("mksrt_dub", "words_src", "analyze", "manifest", "lip_mesh", "lip_merge", "groups", "translate"):
         assert cloud.enabled_for(step), step
-    # asking for one by name does not get round it either
+    # asking for one by name does not send it alone -- it turns on the one-machine chain instead
     settings["CLOUD_STEPS"] = "render"
     assert not cloud.enabled_for("render")
+    assert cloud.chain_wanted()
+    settings["CLOUD_STEPS"] = "lip_gpu"
+    assert not cloud.chain_wanted()
+    settings["CLOUD_STEPS"] = "all"
+    assert cloud.chain_wanted()
+    settings["CLOUD_STEPS"] = "tail"
+    assert cloud.chain_wanted()
+
+
+def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
+    """The six video steps go to one machine as one command -- the existing worker image, a tiny driver, no
+    pipeline change. Inner commands already have the worker's paths, and the same source video is one file."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    video = tmp_path / "show/US/TGS EPISODE 34.mp4"
+    video.parent.mkdir(parents=True); video.write_bytes(b"v" * 32)
+    font = tmp_path / "Poppins-Bold.ttf"; font.write_bytes(b"f" * 16)
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text(json.dumps({"src_video": str(video), "dub_srt": f"{work}/x.srt"}))
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/render_tail_work_in.tar.gz") as t:
+            sent["driver"] = t.extractfile("_cloud_chain.py").read().decode()
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+        back = bucket / "cloud/render_tail_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 9, "sent": {}}}}, {}
+
+    def fake_submit(job, **kw):
+        sent["job"] = job
+        sent["kind"] = kw.get("kind", "cpu")
+        return "j"
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path)
+                        if (bucket / key).exists() else Path(path).write_bytes(b""))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cmds = [
+        ("render", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render", "--work", str(work)]),
+        ("verify", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "verify", "--work", str(work)]),
+        ("subs_dub", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "subs", "--work", str(work),
+                      "--font", str(font), "--out", f"{out}/dub.mp4"]),
+    ]
+    res = cloud.run_chain({}, show, ep, cmds, cfg, log=lambda m: None)
+    assert res["ok"] and res["seconds"] == 9
+    assert sent["job"]["name"] == "render_tail"
+    assert sent["job"]["cmd"] == ["{PY}", "{WORK}/_cloud_chain.py"]
+    assert "CHAIN OK" in sent["driver"]
+    names = [s["name"] for s in sent["jobs"]["steps"]]
+    assert names == ["render", "verify", "subs_dub"]
+    # worker paths, nothing of this Mac
+    for item in sent["jobs"]["steps"]:
+        joined = " ".join(item["cmd"])
+        assert "/opt/pipeline_env/bin/python" in joined
+        assert "/opt/dubstudio/scripts/dubstitch.py" in joined
+        assert str(tmp_path) not in joined
+        assert "/work" in joined
+    font_args = sent["jobs"]["steps"][2]["cmd"]
+    assert any(a.startswith("/files/F") and a.endswith("Poppins-Bold.ttf") for a in font_args)
+    assert any(a == "/out/dub.mp4" for a in font_args)
+    # the two extra files (video via config, font via the command) both travelled
+    assert len(sent["job"]["files"]) >= 2
 
 
 def test_a_file_named_only_in_config_still_travels(tmp_path):
@@ -375,3 +446,26 @@ def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
     text = json.dumps({"a": "/Users/me/conductor/workspaces/elsewhere/f.mp4",
                        "b": "/Users/me/Downloads/TGS US_DE/output/other/f.mp4"})
     assert json.loads(cloud._swap(text, [(b, a) for a, b in pairs])) == json.loads(text)
+
+
+def test_a_job_can_go_to_the_gpu_endpoint(monkeypatch):
+    """Face map wants CUDA. The CPU endpoint's image has no CUDA libs, so submit/wait have to
+    take a kind and hit RUNPOD_GPU_ENDPOINT, not silently reuse the CPU one."""
+    seen = []
+
+    def fake_call(path, body=None, timeout=60, kind="cpu"):
+        seen.append((path, kind, (body or {}).get("input", {}).get("step")))
+        if path == "/run":
+            return {"id": "gpu-job"}
+        if path.startswith("/status/"):
+            return {"status": "COMPLETED", "output": {"ok": True, "seconds": 1}}
+        if path == "/health":
+            return {"workers": {}}
+        return {}
+
+    monkeypatch.setattr(cloud, "_call", fake_call)
+    assert cloud.submit({"step": "command"}, kind="gpu") == "gpu-job"
+    done, failed = cloud.wait(["gpu-job"], kind="gpu", poll=0)
+    assert done and not failed
+    assert seen[0] == ("/run", "gpu", "command")
+    assert any(p.startswith("/status/") and k == "gpu" for p, k, _ in seen)

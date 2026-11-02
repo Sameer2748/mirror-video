@@ -288,7 +288,7 @@ def test_the_lip_scan_can_run_on_the_cloud_in_pieces(r2, monkeypatch, tmp_path):
     assert cloud.enabled_for("lip_gpu") and cloud.pieces() == 4
 
     sent = []
-    def fake_call(path, body=None, timeout=60):
+    def fake_call(path, body=None, timeout=60, kind="cpu"):
         if path == "/run":
             sent.append(body["input"])
             # the "worker": make the range file this piece would produce and PUT it to the signed link
