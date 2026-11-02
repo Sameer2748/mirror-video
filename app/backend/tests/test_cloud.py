@@ -752,6 +752,55 @@ def test_an_imported_clip_the_editor_used_is_sent_and_placed(tmp_path, monkeypat
     assert home["segments"][2]["video"] == str(small)
 
 
+def test_the_video_named_in_config_is_sent_when_it_lives_in_the_input_folder(tmp_path, monkeypatch):
+    """The edit list only says `--work`. It then ffprobes cfg['src_video'] and cfg['dub_audio'].
+    For an uploaded episode those files live in work/input/, which is not in the tar, so the probe
+    used to read nothing."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    video = work / "input" / "src_video" / "TGS_EPISODE_34.mp4"
+    audio = work / "input" / "dub_audio" / "Episode_34_Ehekrach.mp3"
+    video.parent.mkdir(parents=True)
+    audio.parent.mkdir(parents=True)
+    video.write_bytes(b"v" * 64)
+    audio.write_bytes(b"a" * (cloud.SMALL + 8))
+    (work / "config.json").write_text(json.dumps({"src_video": str(video), "dub_audio": str(audio), "labels": "DE,US"}))
+    (work / "note.txt").write_text("stays")
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/cut_work_in.tar.gz") as t:
+            sent["config"] = json.loads(t.extractfile("config.json").read())
+            sent["tar"] = t.getnames()
+        back = bucket / "cloud/cut_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: sent.update(job=job) or "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path)
+                        if (bucket / key).exists() else Path(path).write_bytes(b""))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cfg = FakeCfg(tmp_path)
+    cloud.run_chain({}, show, ep, [
+        ("manifest", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "manifest", "--work", str(work)]),
+    ], cfg, log=lambda m: None, name="cut")
+    assert sent["config"]["src_video"] == "/files/F0/TGS_EPISODE_34.mp4"
+    assert sent["config"]["dub_audio"] == "/files/F1/Episode_34_Ehekrach.mp3"
+    assert sent["job"]["names"]["{F0}"] == "TGS_EPISODE_34.mp4"
+    assert sent["job"]["names"]["{F1}"] == "Episode_34_Ehekrach.mp3"
+    assert "note.txt" in sent["tar"]
+    assert not any(n.startswith("input/") for n in sent["tar"])
+
+
 def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
     """The reason this is not a text replace: `/work` is inside `/workspaces` and `/out` is inside `/output`.
     A plain replace turned the Mac's own paths into nonsense like

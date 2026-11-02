@@ -434,12 +434,22 @@ def _files_named_in_config(W, O, already):
     except ValueError:
         return {}
     out, seen = {}, set(already.values())
+    root_w, root_o = str(W), str(O)
     for value in data.values():
         if not isinstance(value, str) or not value.startswith("/") or value in seen:
             continue
         p = Path(value)
-        if not p.is_file() or str(p).startswith((str(W), str(O))):
-            continue                                       # inside the work or output folder: it travels in the tar
+        if not p.is_file():
+            continue
+        # A small file in the work folder rides in the tar, and the path is rewritten to /work.
+        # The uploaded video and audio live in input/, which the tar skips, and anything over 1 MB is
+        # skipped too. Leaving those as /work/… makes ffprobe read an empty file (the edit list, 2 Nov 2026).
+        rel = value[len(root_w) + 1:] if value.startswith(root_w + "/") else None
+        in_out = value.startswith(root_o + "/")
+        if rel is not None and not (rel == "input" or rel.startswith("input/") or p.stat().st_size > SMALL):
+            continue
+        if in_out and p.stat().st_size <= SMALL:
+            continue
         out[f"{{F{len(already) + len(out)}}}"] = str(p)
         seen.add(value)
     return out
