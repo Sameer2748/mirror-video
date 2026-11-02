@@ -193,3 +193,63 @@ exactly a deployed box, and every endpoint the editor calls was walked. Before: 
 pulled out of R2, the bin, QC markers, the deliverables and the Premiere XML. Then a real edit: trim a clip, `check`
 (which correctly **refused** a careless trim that left a 200 ms black gap), autosave the draft, save **version 2**,
 read it back, add a QC note. All of it on a machine holding none of the episode's files.
+
+## 8. Any step on a rented machine (2026-11-02)
+
+A deployed API box can run **none** of the 37 steps: no Whisper, no models, no pipeline scripts. So an image per
+step was the wrong shape — there is **one image with the whole pipeline in it**
+(`sameer27488/dubstudio-worker:pipeline`), and the app sends it *the command it was going to run anyway*, with this
+machine's paths swapped for placeholders the worker fills in with its own:
+
+```
+{PY} {FPY}   the pipeline's python        {SCRIPTS} adaptation-tool/scripts    {TOOLS} adaptation-tool
+{SCENE}      the scene-edit scripts       {MODELS}  the Whisper / sentence models
+{WORK}       the episode's work folder    {OUT}     the show's output folder   {APP} the app's backend
+{F0} {F1} …  one big input file each (source video, dub audio, the font): a signed link that expires
+```
+
+The pipeline scripts are **not touched** (CLAUDE.md's rule). Checked against all 24 real commands of ep34: every
+one comes out with no leftover path from this Mac.
+
+Only the episode's **small** work files travel up (one tar), the big inputs go as signed links, and only what the
+step **changed** comes back — a step that writes one JSON brings back one JSON. Measured: in a finished episode the
+only work files over 1 MB are videos; the lip scan's 42 range files, the meshes and the manifests are all a few kB.
+
+**`config.json` is translated both ways.** It records absolute paths on this Mac (`src_video`, `dub_audio`,
+`models`, `video_out`, `clean_final`…) and pipeline stages read file paths out of it, not just from argv. It goes up
+pointing at the worker's files and comes back pointing at ours — without that, the step either fails or poisons the
+work folder with `/work/...` paths that the next local step cannot find.
+
+### What can and cannot go, and why
+
+| | steps | why |
+| --- | --- | --- |
+| **Can go now (13)** | `mksrt_dub` `mksrt_src` `words_src` `words_dub` `analyze` `sheet` `manifest` `lip_mesh` `lip_merge` `lipsync` `groups` `trans_plan` `translate` — plus the lip scan, which has its own split-into-pieces path | their inputs are the episode's own files plus small work files |
+| **One machine only (7)** | `render` `verify` `bookends` `transitions` `subs_dub` `subs_en` `check` | each reads the **previous step's multi-GB video**, and the work folder records where it is. The machine that runs `verify` is not the one that ran `render`, so the file would have to travel up and down — gigabytes each way, per step. That chain belongs on one machine. |
+| **Needs an AI key there (3)** | `library` `facemap` `qc` | they ask the app's own AI client for a vote. Sending an OpenRouter key to a rented machine is the owner's call, so they stay here unless `CLOUD_AI=true`. Note *why* this matters: without a key `facemap` does not fail, it gives a **worse** answer ("groups without a clear vote stay unknown") — and a quietly worse answer is the thing to avoid. |
+
+`CLOUD_STEPS=all` therefore means *every step that can actually work there* — turning it on cannot break a run at
+step 25. Asking for `render` by name is refused too.
+
+### The image
+
+Two pythons, for the same reason the Mac has two: the RunPod SDK pulls opentelemetry (protobuf ≥ 5) and
+mediapipe 0.10.14 pins protobuf < 5 — one environment cannot hold both (`pip` says ResolutionImpossible). The
+handler runs on the system python; the pipeline runs in `/opt/pipeline_env`, which is what `{PY}` means.
+
+Pinned to **the versions the Mac actually runs** (numpy 1.26.4, mediapipe 0.10.14, faster-whisper 1.2.1,
+ctranslate2 4.8.3, onnxruntime 1.31.0, sentence-transformers 6.1.0, scenedetect 0.7.2 …), because the point of a
+worker is that it gives the *same* answer; `setup_pipeline.sh` installs them unpinned, which is fine on one machine
+and not here. torch is the exception — 2.14 has no CPU wheel for this base, and the lip scan already came back
+byte-identical on 2.5.1. Only the two models the pipeline really uses are baked in (faster-whisper-small and
+paraphrase-multilingual-MiniLM-L12-v2, ~920 MB); `LaBSE`, `mpnet` and the cross-encoder appear only in the
+`sanity_*` experiment scripts, so 3.3 GB of the models folder is not shipped.
+
+### Worth fixing: we are paying GPU prices for CPU work
+
+The endpoint is called `dubstudio-cpu`, but it is configured `gpuCount: 1` with a list of NVIDIA cards — so every
+job so far has rented a **GPU** machine (about $0.58/h each) to do work that was measured yesterday at **1% GPU
+utilisation**. A CPU-only serverless endpoint would cost a fraction of that. Idle workers really are free
+(`currentSpendPerHr: 0` with 4 idle), so the waste is only while jobs run — but it is the single easiest saving
+available. Also found: RunPod **retried 3 jobs by itself** during the full-episode lip scan, which explains part of
+the gap between 1,736 s of wall clock and 1,085 s of reported execution.
