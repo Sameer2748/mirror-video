@@ -414,6 +414,12 @@ class Runner:
             self.wake.set()
 
     @staticmethod
+    def _local_cwd():
+        """Where a local command starts. The tools' scripts folder on the Mac; the website does not have that
+        folder, and Popen refuses to start if the folder is missing."""
+        return str(cfg.scripts) if cfg.scripts.is_dir() else None
+
+    @staticmethod
     def _expand(cmd):
         """{py} = the pipeline python, {fpy} = the face map's python, {scripts} = the tools' scripts folder."""
         return [str(cfg.pipeline_python) if c == "{py}" else str(cfg.face_python) if c == "{fpy}"
@@ -445,7 +451,7 @@ class Runner:
             log.write(f"\n$ {' '.join(cmd)}\n")
             while True:
                 rounds += 1
-                p = subprocess.Popen(cmd, cwd=str(cfg.scripts), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                p = subprocess.Popen(cmd, cwd=self._local_cwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      text=True, bufsize=1, env=env, start_new_session=True)
                 with self.lock:
                     self.procs[j["id"]] = p

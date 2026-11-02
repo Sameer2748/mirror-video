@@ -67,6 +67,18 @@ def test_a_blocked_step_starts_when_the_failed_one_has_finished(tmp_path, monkey
     assert mid not in started and still not in started
 
 
+def test_a_local_command_does_not_require_the_mac_scripts_folder(tmp_path, monkeypatch):
+    """The transition plan runs on the website before the rented machine renders. The website has no
+    adaptation-tool scripts folder, and starting a command there raises FileNotFoundError."""
+    from dubstudio.config import cfg
+    monkeypatch.setattr(type(cfg), "scripts", property(lambda self: tmp_path / "no-such-scripts"))
+    assert Runner._local_cwd() is None
+    here = tmp_path / "scripts"
+    here.mkdir()
+    monkeypatch.setattr(type(cfg), "scripts", property(lambda self: here))
+    assert Runner._local_cwd() == str(here)
+
+
 def test_library_warnings_are_not_the_last_line():
     assert NOISE.search("box_utils.py:103: UserWarning: An output with one or more elements was resized")
     assert NOISE.search("  torch.index_select(x1, 0, idx, out=xx1)")
