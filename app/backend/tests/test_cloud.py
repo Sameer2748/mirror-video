@@ -543,6 +543,50 @@ def test_matching_is_one_visit_and_the_face_map_is_not_in_it(tmp_path, monkeypat
     assert str(tmp_path) not in shell[2]
 
 
+def test_matching_sends_the_dub_audio_that_lives_in_the_input_folder(tmp_path, monkeypatch):
+    """Matching is one chain. The chain used to freeze /work/input/dub_audio/….mp3 into its command list
+    before the input folder was lifted out of the tar, so analyze died with '--dub-audio missing'."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    audio = work / "input" / "dub_audio" / "Episode_34_Ehekrach.mp3"
+    audio.parent.mkdir(parents=True)
+    audio.write_bytes(b"a" * (cloud.SMALL + 8))
+    cfg = FakeCfg(tmp_path)
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/match_work_in.tar.gz") as t:
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+            sent["tar"] = t.getnames()
+        back = bucket / "cloud/match_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: sent.update(job) or "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path)
+                        if (bucket / key).exists() else Path(path).write_bytes(b""))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cloud.run_chain({}, show, ep, [
+        ("analyze", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "analyze", "--work", str(work),
+                     "--dub-audio", str(audio)]),
+        ("merged", list(cloud.MERGED_CMD)),
+    ], cfg, log=lambda m: None, name="match")
+    analyze = sent["jobs"]["steps"][0]["cmd"]
+    assert any(a == "/files/F0/Episode_34_Ehekrach.mp3" for a in analyze)
+    assert not any("/work/input/" in a for a in analyze)
+    assert sent["names"]["{F0}"] == "Episode_34_Ehekrach.mp3"
+    assert not any(n.startswith("input/") for n in sent["tar"])
+
+
 def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     """The cut is mkdec, the sheet, the edit list, lip-sync, groups, the library, then captions.
     The face map is not in that list. The final check is on the render machine, after the sheet it reads."""

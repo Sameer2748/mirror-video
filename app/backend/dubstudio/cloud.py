@@ -656,6 +656,9 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     files, packed = {}, []
     for step_name, cmd in named_cmds:
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
+        # Do this before {WORK} is frozen to /work. The dub audio lives in input/, which the work tar skips,
+        # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).
+        cmd_t, files = _send_large_work_files(cmd_t, W, files)
         packed.append({"name": step_name, "cmd": cmd_t})
     places = dict(WORKER_PLACES)
     for token, path in files.items():
