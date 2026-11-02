@@ -594,8 +594,8 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             tar.unlink(missing_ok=True)
             # the step may have recorded new paths: read them as ours
             back_pairs = [(b, a) for a, b in there]
-            for name in (CONFIG, *EDIT_LISTS):
-                back = root / name
+            for listed in (CONFIG, *EDIT_LISTS):
+                back = root / listed
                 if back.is_file():
                     back.write_text(_swap(back.read_text(encoding="utf-8"), back_pairs), encoding="utf-8")
     log(f"{name}: done in {res.get('seconds')} s; "
