@@ -391,3 +391,43 @@ GraphQL `saveEndpoint`. Two endpoints created while finding this out were delete
 It is worth doing: this is renting GPU machines at about $0.58/h for work measured at **1% GPU utilisation**, and
 GPU scarcity now actively gets in the way — three or four of the four workers sat **throttled** during today's
 runs, with jobs queued behind capacity that CPU machines would not have been short of.
+
+### Whisper on a rented machine: 5.5× faster, 99.3% the same words (2026-11-02)
+
+The real test, with the `asr/` cache moved aside so Whisper had to listen to all 11 minutes of ep34:
+
+| | the Mac | the worker |
+| --- | --- | --- |
+| `mksrt_src` | **682 s** | **124 s** (wall 175 s, including sending the video up) |
+
+**5.5× faster** — and the reason is the same one that makes the Mac slow: Whisper never used the Apple GPU
+(docs/03, `device="cpu", compute_type="int8"` is hard-coded), so this is x86 int8 against Apple-Silicon int8, and
+the x86 box wins.
+
+What it transcribed, measured on the **word sequence** rather than line by line (a different row split makes a
+line diff look catastrophic when the words agree):
+
+| file | words (Mac / cloud) | words in common | stretches differing |
+| --- | --- | --- | --- |
+| `TGS_EP34_EN.srt` (the cleaned one the pipeline uses) | 1,622 / 1,633 | **99.3%** | **1** |
+| `TGS_EP34_EN_raw.srt` | 1,622 / 1,636 | 98.3% | 19 |
+| `TGS_EP34_EN_words.json` | 1,621 / 1,632 | 99.3% | — |
+
+- The **single** difference in the cleaned SRT is eleven words the cloud *heard and the Mac missed*:
+  `"know that you might want to work on that aiden blinked"`. Not worse — if anything slightly better.
+- The raw SRT's 19 differences are the usual small-model wobbles: `family has` / `family's`,
+  `mother has` / `mother's`, **`Ava` / `Eva`**, a few stray apostrophes. Worth noting that the character-name one
+  is in the **raw** SRT only — cleaning each side with its script repairs it, which is exactly why the cleaned SRT
+  comes out at 99.3% with one differing run.
+- Word timings, over the words that match: **median 0 ms, 95th percentile 20 ms** (one 4.65 s outlier, next to the
+  inserted stretch).
+
+**So Whisper is not reproducible across machines, and cannot be.** The lip scan was byte-identical because
+TalkNet's ops are deterministic; Whisper is int8-quantised inference, so a different CPU architecture gives
+slightly different logits and the decoder occasionally picks a different word. Nothing is broken.
+
+**This one is the owner's call**, because the SRTs feed Step 2 matching: run Whisper in the cloud and get an
+equivalent-but-not-identical transcript 5.5× faster, or keep it on the Mac for exact reproducibility. Our reading is
+that the cloud transcript is as good or marginally better, and 682 s → 124 s on the single most expensive step is
+worth having — but it is a change in output, so it is not ours to decide.
+(The cloud's own transcript is kept at `app/library/work/_cloud_whisper/` for comparison.)
