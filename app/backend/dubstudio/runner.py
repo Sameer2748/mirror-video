@@ -249,7 +249,7 @@ class Runner:
             self.wake.wait(0.5); self.wake.clear()
 
     def _tick(self):
-        jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input') ORDER BY episode_id, run, ord")
+        jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
         self._keep_awake(any(j["status"] == "running" for j in jobs))     # not for steps parked behind the review
         if not jobs:
             self._episode_status()
@@ -271,6 +271,9 @@ class Runner:
                 if j["status"] != "blocked":
                     self._set(j, status="blocked", message="waiting for a failed step")
                 continue
+            if j["status"] == "blocked":
+                # The step it was waiting on has finished. Start it; nobody has to press Retry.
+                self._set(j, status="waiting", message="")
             if any(d["status"] not in DONE for d in deps):
                 continue
             # Captions only need the source video, so they would start during matching. On the cut visit
