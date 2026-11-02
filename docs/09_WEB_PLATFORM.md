@@ -317,3 +317,36 @@ saves — §7), review, the deliverables.
 run the other 13 cloud-capable steps (§8) is built but **not pushed** — the Docker VM on the Mac ran out of disk
 mid-export (`failed to create temp dir: input/output error`) and corrupted its own content store. Processing stays
 on the Mac until that image is up.
+
+### Proved on a real step, and what that found (2026-11-02)
+
+The image is built, the endpoint points at it, and `manifest` ran on a rented machine: **`manifest.json` came back
+byte-identical to the Mac's**. Getting there found two things that no amount of reading the code would have shown.
+
+**1. A step's files may be named only inside `config.json`.** `dubstitch.py manifest --work W` is the entire
+command — the video is never mentioned — and then `cmd_manifest` does `probe_duration_ms(cfg["src_video"])`. The
+first real run died on `ValueError: could not convert string to float: ''`, which is ffprobe being handed a path to
+a file that was never sent. `cloud._files_named_in_config` now walks the config for absolute paths to real files
+outside the work and output folders and ships those too. A test pins it.
+
+**2. The worker's ffmpeg disagreed with the Mac's, and it reached the output.** The first comparison was
+1,242 of 1,244 files identical, with `manifest.json`'s `total_ms` at **664686** against the Mac's **664635**:
+
+| | ffprobe | ep34's dub MP3 | `total_ms` |
+| --- | --- | --- | --- |
+| the Mac | 8.1.2 | 664.634535 s | 664635 |
+| Debian slim's apt ffmpeg | much older | — | 664686 |
+
+Nothing was wrong with the pipeline: two ffmpeg versions estimate a **VBR MP3's** duration differently. But the
+pipeline turns that straight into `total_ms`, which is where the last clip ends, and **51 ms is more than a frame at
+25 fps**. The image now installs a pinned static **ffmpeg 8.1** (n8.1.3) rather than whatever apt ships, and the
+manifest then matches exactly.
+
+The lesson generalises: the lip scan was byte-identical across machines because torch and TalkNet are
+deterministic, but **anything that probes or decodes media is only as identical as its ffmpeg**. Pinning the
+worker's versions to the Mac's matters more than it first looked — which is why the pip list is pinned to
+`pipeline_env`'s versions too.
+
+(One more difference in that comparison — `config.json`'s `manifest` key flipping from `manifest_groups.json` back
+to `manifest.json` — is an artefact of the test re-running an early step on an episode that had already finished,
+not a fault.)
