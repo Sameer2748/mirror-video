@@ -21,6 +21,7 @@ Settings (app/.env):
   RUNPOD_CPU_ENDPOINT   the CPU image endpoint
   RUNPOD_GPU_ENDPOINT   the face-gpu image endpoint
   CLOUD_STEPS           which steps go to the cloud, e.g. "lip_gpu,mksrt_src,mksrt_dub,facemap"
+                        "match", "cut", "scene" and "tail" are whole visits (one machine each); "all" is every visit
   CLOUD_PIECES          how many pieces a long step is split into (default 8)
 """
 import json, tarfile, time, urllib.error, urllib.request
@@ -48,11 +49,11 @@ def steps():
     return {s.strip() for s in raw.split(",") if s.strip()}
 
 
-# Two steps ask the app's own AI client for a vote (`facemap.py --app`, `qc_final.py --app`). On a rented machine
-# that means sending it an OpenRouter key, which is the owner's call, not ours -- so unless CLOUD_AI is on they
-# stay here. Running them in the cloud without a key does not fail: it quietly gives a *worse* answer (facemap:
-# "groups without a clear vote stay 'unknown'"), and a quietly worse answer is the thing to avoid.
-NEEDS_AI_KEY = {"facemap", "qc", "library"}
+# These ask Claude. On a rented machine that means sending it an OpenRouter key, which is the owner's call, not
+# ours -- so unless CLOUD_AI is on they stay here. Running them in the cloud without a key does not fail: it
+# quietly gives a *worse* answer (facemap: "groups without a clear vote stay 'unknown'"), and a quietly worse
+# answer is the thing to avoid. The scene edit is the same kind of call.
+NEEDS_AI_KEY = {"facemap", "qc", "library", "scene_edit"}
 
 # The render tail chains **big videos**: `render` writes the cut, `verify` measures it, `bookends` makes the clean
 # master from it, `transitions` reads that, `subs` burns captions onto it, `qc` and `check` look at all three. Each
@@ -64,10 +65,18 @@ NEEDS_AI_KEY = {"facemap", "qc", "library"}
 #
 # Individual tail steps stay refused (`enabled_for` is False). They go together via `run_chain` when the owner
 # asks for them (`CLOUD_STEPS` includes `all`, `tail`, `render` or `render_tail`). `trans_plan` is JSON only and
-# stays here; `check` / `qc` stay here too (`qc` needs an AI vote; `check` reads the sheet it writes).
+# stays here, so the editor's picks are applied before the videos are cut. The final check is added to that
+# same visit by the runner, after the scene-edit sheet, and only when CLOUD_AI is on (`qc` asks Claude).
 ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "dynsrt", "check"}
 CHAIN = ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en")
 CHAIN_NAMES = {"all", "tail", "render", "render_tail"}
+# Two CPU visits before the face map, split only by the decision pause (that pause stays on the website).
+# The face map is not in either list: it stays on the GPU. The scene edit is its own visit after the face map.
+MATCH_CHAIN = ("analyze", "merged")
+CUT_CHAIN = ("sheet", "manifest", "lipsync", "groups", "library")
+# `sh`, not `/bin/sh`: an absolute path that exists on this machine is uploaded as a file, and the worker
+# then tries to execute that file.
+MERGED_CMD = ["sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]
 
 
 def ai_key_allowed():
@@ -90,13 +99,53 @@ def kind_for(step):
     return "gpu" if step in GPU_STEPS else "cpu"
 
 
-def enabled_for(step, kind=None):
-    """`CLOUD_STEPS` asks; `capable` decides. "all" means every step that can actually work there -- so turning it
-    on cannot break a run half way through."""
-    want = steps()
-    if not capable(step):
+def stretch(name):
+    """One named visit is on: match, cut, scene, or the render tail. "all" means every visit."""
+    if name == "tail":
+        return chain_wanted()
+    if name == "scene":
+        return enabled_for("scene_edit")
+    if not available("cpu"):
         return False
-    return available(kind or kind_for(step)) and ("all" in want or step in want)
+    want = steps()
+    return name in want or "all" in want
+
+
+def claimed_by_stretch(step):
+    """This step rides inside a visit, so it is not also sent as its own job."""
+    if step in MATCH_CHAIN and _visit_on("match"):
+        return True
+    if step in CUT_CHAIN and _visit_on("cut"):
+        if step == "library" and not ai_key_allowed():
+            return False
+        return True
+    if step == "captions" and _visit_on("cut"):
+        return True
+    if step == "qc" and chain_wanted():
+        return True
+    if step in CHAIN and chain_wanted():
+        return True
+    return False
+
+
+def _visit_on(name):
+    """Like `stretch`, but it does not ask `enabled_for` (that calls back into here)."""
+    if not available("cpu"):
+        return False
+    want = steps()
+    return name in want or "all" in want
+
+
+def enabled_for(step, kind=None):
+    """`CLOUD_STEPS` asks; `capable` decides. A step that belongs to a visit is not also sent on its own.
+    "all" means every visit, not "try the render one step at a time and fail at the videos"."""
+    if claimed_by_stretch(step):
+        return False
+    want = steps()
+    named = "all" in want or step in want or (step == "scene_edit" and "scene" in want)
+    if not named or not capable(step):
+        return False
+    return available(kind or kind_for(step))
 
 
 def chain_wanted(kind="cpu"):
@@ -539,17 +588,19 @@ def _fill_tokens(arg, places):
     return arg
 
 
-def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeout=7200, kind="cpu"):
+def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeout=7200, kind="cpu",
+              name="render_tail"):
     """Run several pipeline steps on ONE rented machine, in order. -> the worker's answer.
 
     `named_cmds` is [(name, cmd), ...] with this machine's paths, exactly as the runner would have run them
-    locally. They go up as one job; only what the last step changed comes back -- which for this tail is the
-    videos. The pipeline scripts themselves are not touched."""
+    locally. They go up as one job; only what the last step changed comes back -- which for the render visit
+    is the videos. The pipeline scripts themselves are not touched. `name` is the job name (`match`, `cut`,
+    `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     files, packed = {}, []
-    for name, cmd in named_cmds:
+    for step_name, cmd in named_cmds:
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
-        packed.append({"name": name, "cmd": cmd_t})
+        packed.append({"name": step_name, "cmd": cmd_t})
     places = dict(WORKER_PLACES)
     for token, path in files.items():
         places[token] = f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"
@@ -558,7 +609,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed}, ensure_ascii=False), encoding="utf-8")
     (W / "_cloud_chain.py").write_text(CHAIN_DRIVER, encoding="utf-8")
     log(f"{len(packed)} steps on one rented machine: " + ", ".join(n for n, _ in named_cmds))
-    return run_command(db, show, ep, "render_tail",
+    return run_command(db, show, ep, name,
                        [cfg.pipeline_python if hasattr(cfg, "pipeline_python") else "{py}",
                         str(W / "_cloud_chain.py")],
                        cfg, log=log, on_progress=on_progress, timeout=timeout, preset_files=files, kind=kind)

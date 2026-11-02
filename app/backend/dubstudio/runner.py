@@ -273,6 +273,10 @@ class Runner:
                 continue
             if any(d["status"] not in DONE for d in deps):
                 continue
+            # Captions only need the source video, so they would start during matching. On the cut visit
+            # they ride with the sheet instead, one machine, after the decisions.
+            if j["step"] == "captions" and cloud.stretch("cut"):
+                continue
             res = j["resource"]
             if res in slots and busy.get(res, 0) >= slots[res]:
                 continue
@@ -414,8 +418,17 @@ class Runner:
 
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
+        if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
+            return self._run_match(j)
+        if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
+            return self._run_cut(j)
         if not force_local and cloud.chain_wanted() and j["step"] in cloud.CHAIN:
             return self._run_cloud_tail(j)
+        # A step that already rode in a visit is not sent again on its own. A retry of one of those steps
+        # (the visit is already done) still has to run on a rented machine: this server has no pipeline.
+        if (not force_local and cloud.claimed_by_stretch(j["step"]) and j["step"] not in cloud.CHAIN
+                and (j["step"] != "qc" or cloud.ai_key_allowed())):
+            return self._run_cmd_cloud(j, cmd or prm["cmd"])
         if not force_local and cloud.enabled_for(j["step"]):  # CLOUD_STEPS: run it on a rented machine instead
             return self._run_cmd_cloud(j, cmd or prm["cmd"])
         cmd = self._expand(cmd or prm["cmd"])
@@ -467,7 +480,7 @@ class Runner:
     def _worker_cmd(self, j, cmd):
         """Run this command on a rented machine when the step is in CLOUD_STEPS. The caller marks the job done.
         -> True when it ran there."""
-        if not cloud.enabled_for(j["step"]):
+        if not (cloud.enabled_for(j["step"]) or cloud.claimed_by_stretch(j["step"])):
             return False
         show, ep, _ = self.episode_context(j["episode_id"])
         with open(j["log_path"], "a", encoding="utf-8") as f:
@@ -500,12 +513,156 @@ class Runner:
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done on a rented machine in {time.time() - t0:.0f} s")
 
+    def _jobs_by_step(self, j):
+        rows = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
+                         (j["episode_id"], j["run"]))
+        return {x["step"]: x for x in rows}
+
+    def _wait_for_step(self, j, step):
+        """Hold this job (no machine rented yet) until `step` has finished. -> False if this job was cancelled."""
+        while not self.stop.is_set():
+            if j["id"] in self.cancelled:
+                self._set(j, status="cancelled", finished=now(), message="cancelled")
+                return False
+            other = self.db.one("SELECT status FROM jobs WHERE episode_id=? AND run=? AND step=?",
+                                (j["episode_id"], j["run"], step))
+            if not other or other["status"] in DONE:
+                return True
+            if other["status"] in ("failed", "cancelled", "blocked"):
+                raise RuntimeError(f"{step} did not finish ({other['status']})")
+            self._set(j, message=f"waiting for {step} before renting a machine")
+            time.sleep(1.0)
+        return False
+
+    def _mark_visit(self, jobs, message):
+        """Mark the visit's jobs done, leaves first, so a dependent cannot start in the gap."""
+        for sj in reversed(jobs):
+            self._set(sj, status="done", progress=1, finished=now(), eta=0, message=message)
+
+    def _run_match(self, j):
+        """Automatic matching and the reading view, on one CPU. The decision pause stays here."""
+        t0 = time.time()
+        by = self._jobs_by_step(j)
+        named, to_mark = [], []
+        cmd = (j["params"] or {}).get("cmd")
+        if not cmd:
+            raise RuntimeError("matching has no command to send")
+        named.append(("analyze", self._expand(cmd)))
+        to_mark.append(j)
+        merged = by.get("merged")
+        if merged and merged["status"] not in DONE:
+            named.append(("merged", list(cloud.MERGED_CMD)))
+            to_mark.append(merged)
+        self._send_visit(j, "match", named, to_mark, t0, "matching on one rented machine")
+
+    def _run_cut(self, j):
+        """The mapping sheet through the shot library, on one CPU, after the decisions and the lip scan.
+
+        mkdec is first: it checks the decisions and does not need a video. Captions, when this episode has
+        them, ride along because they only read the source video. The face map is not here."""
+        if not self._wait_for_step(j, "lip_merge"):
+            return
+        t0 = time.time()
+        by = self._jobs_by_step(j)
+        work = Path(j["params"]["ctx"]["W"])
+        spec = self._write_spec(work)
+        named = [("mkdec", [str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(work), str(spec)])]
+        to_mark = []
+        for step in cloud.CUT_CHAIN:
+            sj = by.get(step)
+            if not sj or sj["status"] in DONE:
+                continue
+            if step == "library" and not cloud.ai_key_allowed():
+                continue
+            cmd = (sj["params"] or {}).get("cmd")
+            if not cmd:
+                continue
+            named.append((step, self._expand(cmd)))
+            to_mark.append(sj)
+        cap = by.get("captions")
+        if cap and cap["status"] not in DONE | ACTIVE:
+            cmd = (cap["params"] or {}).get("cmd")
+            if cmd:
+                named.append(("captions", self._expand(cmd)))
+                to_mark.append(cap)
+        if not any(sj["id"] == j["id"] for sj in to_mark):
+            raise RuntimeError("the cut has no sheet command")
+        self._send_visit(j, "cut", named, to_mark, t0, "the cut on one rented machine")
+
+    def _send_visit(self, j, name, named, to_mark, t0, progress):
+        show, ep, _ = self.episode_context(j["episode_id"])
+        with open(j["log_path"], "a", encoding="utf-8") as f:
+            def log(msg):
+                f.write(str(msg).rstrip() + "\n"); f.flush()
+
+            def prog(done, total, workers):
+                busy = (workers or {}).get("running", 0)
+                self._set(j, message=f"{progress} ({busy} working)")
+
+            self._set(j, message=f"sending {name} to one rented machine")
+            res = cloud.run_chain(self.db, show, ep, named, cfg, log=log, on_progress=prog,
+                                  timeout=cfg.step_max_seconds or 7200, name=name)
+        if res.get("rc") == 3:
+            if name == "match":
+                return self._run_match(j)
+            return self._run_cut(j)
+        msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
+        self._mark_visit(to_mark, msg)
+
+    def _scene_sheet_argv(self, j, show, ep):
+        """The scene-edit sheet command. The same one the local step runs."""
+        ctx = j["params"]["ctx"]
+        out = ctx["name_scene_sheet"]
+        en = ctx.get("en_srt_burn") or ctx["name_en_srt"]
+        cmd = ["{py}", str(cfg.scene_dir / "sceneedit_sheet.py"),
+               str(Path(ctx["scene_dir"]) / "scene_manifest.edl.json"),
+               str(Path(ctx["library_dir"]) / "broll_library.json"),
+               en, out, f"{show['code'].upper()} ep{ep['number']}: scene edit"]
+        return cmd, out
+
+    @staticmethod
+    def _groups_review_argv(out):
+        """Point config.json at the sheet `check` looks for. Paths are filled in on the worker."""
+        return ["{py}", "-c",
+                "import json,sys\n"
+                "p,g=sys.argv[1],sys.argv[2]\n"
+                "c=json.load(open(p,encoding='utf-8'))\n"
+                "c['groups_review']=g\n"
+                "json.dump(c,open(p,'w'),indent=1)\n",
+                "{WORK}/config.json", out]
+
+    def _tail_closing(self, show, ep, by):
+        """After the subtitle burns, on the same machine: the scene-edit sheet, then the final check.
+
+        The check reads the videos and the sheet. `qc` asks Claude, so it stays off this visit unless
+        CLOUD_AI is on. -> (commands, jobs to mark done)"""
+        named, mark = [], []
+        sj = by.get("scene_sheet")
+        if sj and sj["status"] not in DONE:
+            cmd, out = self._scene_sheet_argv(sj, show, ep)
+            named.append(("scene_sheet", self._expand(cmd)))
+            named.append(("groups_review", self._expand(self._groups_review_argv(out))))
+            mark.append(sj)
+        if not cloud.ai_key_allowed():
+            return named, mark
+        qj = by.get("qc")
+        if qj and qj["status"] not in DONE and (qj["params"] or {}).get("cmd"):
+            named.append(("qc", self._expand(qj["params"]["cmd"])))
+            mark.append(qj)
+        cj = by.get("check")
+        if cj and cj["status"] not in DONE and (cj["params"] or {}).get("cmd"):
+            if not qj or qj["status"] in DONE or qj in mark:
+                named.append(("check", self._expand(cj["params"]["cmd"])))
+                mark.append(cj)
+        return named, mark
+
     def _run_cloud_tail(self, j):
         """render → verify → bookends → transitions → both subtitle burns, on ONE rented machine.
 
         Each of those reads the previous step's multi-GB video, so one step per machine cannot work
         (docs/09 §8). `trans_plan` is JSON only and stays here so the editor's picks are applied before
-        the videos are cut. The pipeline scripts are unchanged."""
+        the videos are cut. When this visit burns the subtitles, the scene-edit sheet and the final
+        check stay on that machine too: they read the videos. The pipeline scripts are unchanged."""
         t0 = time.time()
         show, ep, _ = self.episode_context(j["episode_id"])
         jobs = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
@@ -535,6 +692,10 @@ class Runner:
                 continue
             named.append((step, self._expand(cmd)))
             to_mark.append(sj)
+        if any(n == "subs_en" for n, _ in named):
+            extra, extra_jobs = self._tail_closing(show, ep, by)
+            named.extend(extra)
+            to_mark.extend(extra_jobs)
         if not named:
             raise RuntimeError("the render tail has no commands to send")
 
@@ -552,8 +713,7 @@ class Runner:
         if res.get("rc") == 3:
             return self._run_cloud_tail(j)
         msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
-        for sj in to_mark:
-            self._set(sj, status="done", progress=1, finished=now(), eta=0, message=msg)
+        self._mark_visit(to_mark, msg)
 
     @staticmethod
     def _parse_progress(line, dur):
@@ -842,6 +1002,13 @@ class Runner:
                 return
             miss = dec.missing(work)
             if miss == []:
+                self._write_spec(work)
+                if cloud.stretch("cut"):
+                    # mkdec checks the decisions. It runs as the first command of the cut visit, on the
+                    # rented machine: this server does not have the pipeline scripts.
+                    self._set(j, status="done", progress=1, finished=now(),
+                              message="every flagged row has a decision; the cut continues on one machine")
+                    return
                 n = self._mkdec(j, work)
                 self._set(j, status="done", progress=1, finished=now(),
                           message=f"every flagged row has a decision (mkdec.py: {n})")
@@ -853,13 +1020,18 @@ class Runner:
                 self._set(j, status="needs_input", message=msg, item=str(len(miss or [])))
             time.sleep(1.0)
 
-    def _mkdec(self, j, work):
-        """Step 2 ends as the skill says: W/spec.py -> `mkdec.py W W/spec.py` -> decisions.json (every index checked
-        against its text by the skill's own tool). Decisions imported or accepted without a spec get one first."""
+    def _write_spec(self, work):
+        """Decisions imported or accepted without a spec get one first (pure Python, no video)."""
         w = Path(work); spec = w / "spec.py"
         if not spec.exists():
             p = json.loads((w / "prep.json").read_text()); D = json.loads((w / "decisions.json").read_text())
             spec.write_text(dec.to_spec(p, D, "# Step 2 decisions (Dub Studio: imported or accepted)"))
+        return spec
+
+    def _mkdec(self, j, work):
+        """Step 2 ends as the skill says: W/spec.py -> `mkdec.py W W/spec.py` -> decisions.json (every index checked
+        against its text by the skill's own tool)."""
+        w = Path(work); spec = self._write_spec(work)
         if self._worker_cmd(j, [str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)]):
             return "mkdec on a rented machine"
         r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)],
@@ -875,7 +1047,7 @@ class Runner:
         w = Path(j["params"]["ctx"]["W"])
         # `sh`, not `/bin/sh`: an absolute path that exists on this machine is sent as a file, and the worker
         # then tries to run that uploaded file.
-        if self._worker_cmd(j, ["sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]):
+        if self._worker_cmd(j, list(cloud.MERGED_CMD)):
             text = (w / "merged.txt").read_text(encoding="utf-8") if (w / "merged.txt").exists() else ""
             self._set(j, status="done", progress=1, finished=now(), message=f"merged.txt: {text.count(chr(10))} lines")
             return
@@ -986,12 +1158,10 @@ class Runner:
     def _fn_scene_sheet(self, j):
         """The scene-edit sheet in the output folder (and the review sheet `check` looks for)."""
         ctx = j["params"]["ctx"]; W = Path(ctx["W"])
-        ep = self.db.one("SELECT number, show_id FROM episodes WHERE id=?", (j["episode_id"],))
-        code = self.db.one("SELECT code FROM shows WHERE id=?", (ep["show_id"],))["code"].upper()
-        PL = cfg.scene_dir; out = ctx["name_scene_sheet"]
-        en = ctx.get("en_srt_burn") or ctx["name_en_srt"]
-        self._run_cmd(j, ["{py}", str(PL / "sceneedit_sheet.py"), str(Path(ctx["scene_dir"]) / "scene_manifest.edl.json"),
-                          str(Path(ctx["library_dir"]) / "broll_library.json"), en, out, f"{code} ep{ep['number']}: scene edit"])
+        ep = self.db.one("SELECT * FROM episodes WHERE id=?", (j["episode_id"],))
+        show = self.db.one("SELECT * FROM shows WHERE id=?", (ep["show_id"],))
+        cmd, out = self._scene_sheet_argv(j, show, ep)
+        self._run_cmd(j, cmd)
         cp = W / "config.json"; c = json.load(open(cp)) if cp.exists() else {}
         c["groups_review"] = out                          # `check` looks for the review sheet here
         json.dump(c, open(cp, "w"), indent=1)

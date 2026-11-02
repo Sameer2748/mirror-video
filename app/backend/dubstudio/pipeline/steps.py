@@ -100,15 +100,20 @@ def plan(show, episode, assets):
                     "--clauses", C] + CL, ["words_src", "words_dub"], label="Automatic matching")
     add("merged", fn="merged", needs=["analyze"], resource="none", label="Reading view (merged.txt)")
     add("decisions", fn="decisions_gate", needs=["merged"], resource="none", label="Check matching (decisions)")
+    # The cut visit is one rented machine for the sheet through the shot library, and it also runs the
+    # lip-sync rows, so it waits until the lip scan has merged. The sheet itself does not read those files.
+    sheet_needs = ["decisions"]
+    from .. import cloud
+    if cloud.stretch("cut"):
+        sheet_needs.append("lip_merge")
     add("sheet", [py, T("dubstitch.py"), "sheet", "--work", str(W), "--out", ctx["name_mapping"], "--labels",
-                  prof["labels"]], ["decisions"], label="Mapping sheet + integrity check")
+                  prof["labels"]], sheet_needs, label="Mapping sheet + integrity check")
     add("manifest", [py, T("dubstitch.py"), "manifest", "--work", str(W)], ["sheet"], label="Edit list")
     g_needs = ["manifest"]
     if True:                                           # the lip scan runs for every show (owner, 2026-10-16)
         nets, mesh = W / "lips_nets", W / "lips_mesh"
         # the lip scan is CPU-bound (measured: 1% GPU), so it is the first step that can run on rented machines:
         # the episode is split into pieces that scan side by side and come back as the same lips_nets files.
-        from .. import cloud
         if cloud.enabled_for("lip_gpu"):
             add("lip_gpu", fn="lip_scan_cloud", needs=["ingest"], resource="none",
                 label=f"Lip scan on the cloud ({cloud.pieces()} pieces at once)", duration=dur_src)

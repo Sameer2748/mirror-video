@@ -129,7 +129,8 @@ def test_which_steps_go_to_the_cloud(monkeypatch):
     assert cloud.enabled_for("lip_gpu") and cloud.enabled_for("groups")
 
     settings["CLOUD_STEPS"] = "all"
-    assert cloud.enabled_for("groups")
+    assert cloud.enabled_for("words_src")                 # a step that still goes on its own
+    assert not cloud.enabled_for("groups")                # groups rides in the cut visit
 
     settings["CLOUD_STEPS"] = ""                              # nothing set = everything runs here, as before
     assert not cloud.enabled_for("lip_gpu") and cloud.steps() == set()
@@ -291,10 +292,13 @@ def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(mo
     settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all"}
     monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
     monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
-    assert cloud.enabled_for("groups")
+    assert not cloud.enabled_for("groups")                # the cut visit, not its own job
     assert not cloud.enabled_for("facemap") and not cloud.enabled_for("qc") and not cloud.enabled_for("library")
+    assert not cloud.enabled_for("scene_edit")            # Claude, and no key yet
     settings["CLOUD_AI"] = "true"
-    assert cloud.enabled_for("qc") and cloud.enabled_for("library")
+    # qc and the shot library ride in a visit. They are not sent alone, and not at all without the key above.
+    assert not cloud.enabled_for("qc") and not cloud.enabled_for("library")
+    assert cloud.enabled_for("scene_edit") and cloud.stretch("scene")
     # the face map needs the CUDA image: no GPU endpoint, no cloud face map
     assert not cloud.enabled_for("facemap")
     settings["RUNPOD_GPU_ENDPOINT"] = "g"
@@ -362,10 +366,17 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all", "CLOUD_AI": "true"}
     monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
     monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
-    for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"):
+    for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check",
+                 "analyze", "merged", "sheet", "manifest", "lipsync", "groups", "library", "qc"):
         assert not cloud.enabled_for(step), step
-    for step in ("mksrt_dub", "words_src", "analyze", "manifest", "lip_mesh", "lip_merge", "groups", "translate"):
+    for step in ("mksrt_dub", "words_src", "lip_mesh", "lip_merge", "translate", "scene_edit"):
         assert cloud.enabled_for(step), step
+    assert cloud.stretch("match") and cloud.stretch("cut") and cloud.stretch("tail")
+    assert "facemap" not in cloud.MATCH_CHAIN and "facemap" not in cloud.CUT_CHAIN
+    # naming one visit does not turn the others on, and does not send its steps one by one
+    settings["CLOUD_STEPS"] = "match"
+    assert cloud.stretch("match") and not cloud.stretch("cut") and not cloud.chain_wanted()
+    assert not cloud.enabled_for("analyze") and not cloud.enabled_for("sheet")
     # asking for one by name does not send it alone -- it turns on the one-machine chain instead
     settings["CLOUD_STEPS"] = "render"
     assert not cloud.enabled_for("render")
@@ -440,6 +451,126 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
     assert any(a == "/out/dub.mp4" for a in font_args)
     # the two extra files (video via config, font via the command) both travelled
     assert len(sent["job"]["files"]) >= 2
+
+
+def test_matching_is_one_visit_and_the_face_map_is_not_in_it(tmp_path, monkeypatch):
+    """Automatic matching and the reading view share one machine. The face map is a different machine."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text("{}")
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/match_work_in.tar.gz") as t:
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+        back = bucket / "cloud/match_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 4, "sent": {}}}}, {}
+
+    def fake_submit(job, **kw):
+        sent["job"] = job
+        sent["kind"] = kw.get("kind", "cpu")
+        return "j"
+
+    monkeypatch.setattr(cloud, "submit", fake_submit)
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path)
+                        if (bucket / key).exists() else Path(path).write_bytes(b""))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cloud.run_chain({}, show, ep, [
+        ("analyze", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "analyze", "--work", str(work)]),
+        ("merged", list(cloud.MERGED_CMD)),
+    ], cfg, log=lambda m: None, name="match")
+    assert sent["job"]["name"] == "match" and sent["kind"] == "cpu"
+    names = [s["name"] for s in sent["jobs"]["steps"]]
+    assert names == ["analyze", "merged"]
+    assert "facemap" not in names
+    shell = sent["jobs"]["steps"][1]["cmd"]
+    assert shell[0] == "sh" and shell[1] == "-c"
+    assert shell[2].startswith("/opt/pipeline_env/bin/python /opt/dubstudio/scripts/merged.py /work ")
+    assert shell[2].endswith("> /work/merged.txt")
+    assert str(tmp_path) not in shell[2]
+
+
+def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
+    """The cut is mkdec, the sheet, the edit list, lip-sync, groups, the library, then captions.
+    The face map is not in that list. The final check is on the render machine, after the sheet it reads."""
+    from dubstudio.runner import Runner
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "spec.py").write_text("# spec\n")
+    log = tmp_path / "job.log"
+    ctx = {"W": str(work), "scene_dir": str(work / "scene"), "library_dir": str(work / "lib"),
+           "name_scene_sheet": str(tmp_path / "scene.xlsx"), "name_en_srt": str(tmp_path / "en.srt"),
+           "en_srt_burn": str(tmp_path / "en.srt")}
+
+    def job(step, jid, cmd):
+        return {"id": jid, "episode_id": 1, "run": 1, "step": step, "status": "waiting",
+                "log_path": str(log), "params": {"cmd": cmd, "ctx": ctx}}
+
+    sheet = job("sheet", 1, ["{py}", "sheet"])
+    by = {
+        "sheet": sheet,
+        "manifest": job("manifest", 2, ["{py}", "manifest"]),
+        "lipsync": job("lipsync", 3, ["{py}", "lipsync"]),
+        "groups": job("groups", 4, ["{py}", "groups"]),
+        "library": job("library", 5, ["{py}", "library"]),
+        "captions": job("captions", 6, ["{py}", "captions"]),
+        "analyze": job("analyze", 7, ["{py}", "analyze"]),
+        "merged": job("merged", 8, None),
+    }
+    sent = {}
+
+    def fake_chain(db, show, ep, named, cfg, **kw):
+        sent["name"] = kw.get("name")
+        sent["steps"] = [n for n, _ in named]
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(cloud, "run_chain", fake_chain)
+    monkeypatch.setattr(cloud, "ai_key_allowed", lambda: True)
+    runner = Runner(None)
+    runner._jobs_by_step = lambda j: by
+    runner._wait_for_step = lambda j, step: True
+    runner._write_spec = lambda w: work / "spec.py"
+    runner.episode_context = lambda eid: ({"code": "TGS", "id": 1}, {"id": 1, "number": 34, "work_dir": str(work)}, {})
+    marked = []
+    runner._set = lambda j, **vals: marked.append((j["step"], vals.get("status")))
+
+    runner._run_cut(sheet)
+    assert sent["name"] == "cut"
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "groups", "library", "captions"]
+    assert "facemap" not in sent["steps"]
+    assert [s for s, st in marked if st == "done"] == ["captions", "library", "groups", "lipsync", "manifest", "sheet"]
+
+    marked.clear()
+    runner._run_match(by["analyze"])
+    assert sent["name"] == "match" and sent["steps"] == ["analyze", "merged"]
+
+    closing, jobs = runner._tail_closing(
+        {"code": "TGS"}, {"number": 34},
+        {"scene_sheet": job("scene_sheet", 9, None),
+         "qc": job("qc", 10, ["{py}", "qc"]),
+         "check": job("check", 11, ["{py}", "check"])})
+    assert [n for n, _ in closing] == ["scene_sheet", "groups_review", "qc", "check"]
+    assert [j["step"] for j in jobs] == ["scene_sheet", "qc", "check"]
+
+    monkeypatch.setattr(cloud, "ai_key_allowed", lambda: False)
+    closing, jobs = runner._tail_closing(
+        {"code": "TGS"}, {"number": 34},
+        {"scene_sheet": job("scene_sheet", 9, None),
+         "qc": job("qc", 10, ["{py}", "qc"]),
+         "check": job("check", 11, ["{py}", "check"])})
+    assert [n for n, _ in closing] == ["scene_sheet", "groups_review"]
+    assert [j["step"] for j in jobs] == ["scene_sheet"]
 
 
 def test_a_file_named_only_in_config_still_travels(tmp_path):

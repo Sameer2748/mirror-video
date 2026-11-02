@@ -41,8 +41,8 @@ SETTINGS = {
     "AUTH_COOKIE_SECURE": "true",                 # https on Render: the session cookie must be secure
     "AI_PROVIDER": "openrouter",                  # the owner's gateway is VPN-only, so a server cannot reach it
     "AI_CACHE": "true",
-    # Steps compared with the Mac cut of episode 34. Not "all": matching, the edit list, groups, the
-    # reading view, captions, library, scene edit and the render tail did not match or have not been run.
+    # Steps compared with the Mac cut of episode 34. Not "all", "match", "cut", "scene" or "tail":
+    # those visits are wired, and they stay off until a fair episode 34 compare.
     "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,translate",
     "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
