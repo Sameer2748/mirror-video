@@ -321,3 +321,24 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     # asking for one by name does not get round it either
     settings["CLOUD_STEPS"] = "render"
     assert not cloud.enabled_for("render")
+
+
+def test_a_file_named_only_in_config_still_travels(tmp_path):
+    """`dubstitch.py manifest --work W` is the whole command -- and then `cmd_manifest` ffprobes
+    `cfg["src_video"]`. The first real cloud run of it died on `could not convert string to float: ''`, which is
+    ffprobe being handed a path that was never sent. Files named only in the config have to travel too."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    video = tmp_path / "show/US/ep34.mp4"; video.parent.mkdir(parents=True); video.write_bytes(b"v" * 64)
+    audio = tmp_path / "show/DE/ep34.mp3"; audio.parent.mkdir(parents=True); audio.write_bytes(b"a" * 32)
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(video), "dub_audio": str(audio),
+        "dub_srt": f"{work}/x.srt",                  # inside the work folder: travels in the tar
+        "clean_final": f"{out}/final.mp4",           # inside the output folder: same
+        "models": str(tmp_path / "models"),          # a folder, not a file
+        "labels": "DE,US"}))                         # not a path at all
+    got = cloud._files_named_in_config(work, out, {})
+    assert sorted(got.values()) == sorted([str(video), str(audio)])
+    # one already on the command line is not sent twice
+    got2 = cloud._files_named_in_config(work, out, {"{F0}": str(video)})
+    assert list(got2.values()) == [str(audio)] and list(got2) == ["{F1}"]

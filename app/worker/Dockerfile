@@ -10,8 +10,19 @@
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ffmpeg libgl1 libglib2.0-0 fontconfig \
+      curl xz-utils libgl1 libglib2.0-0 fontconfig \
     && rm -rf /var/lib/apt/lists/*
+
+# ffmpeg 8.1, to match the Mac's 8.1.2 -- NOT Debian's apt ffmpeg. Measured, not assumed: on ep34's dub MP3 the
+# older apt build reports the duration 51 ms longer than the Mac does (664686 vs 664635 ms), and the pipeline turns
+# that straight into `manifest.json`'s `total_ms`, which is where the last clip ends. 51 ms is over a frame at
+# 25 fps. A worker is meant to give the SAME answer, so the probe has to agree.
+RUN curl -fsSL -o /tmp/ff.tar.xz \
+      "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz" \
+    && tar -xJf /tmp/ff.tar.xz -C /tmp \
+    && mv /tmp/ffmpeg-n8.1*/bin/ffmpeg /tmp/ffmpeg-n8.1*/bin/ffprobe /usr/local/bin/ \
+    && rm -rf /tmp/ff.tar.xz /tmp/ffmpeg-n8.1* \
+    && ffmpeg -version | head -1 && ffprobe -version | head -1
 
 # CPU wheels come from PyTorch's own index; everything else from PyPI. Two steps on purpose: one `pip install`
 # with --index-url makes pip look for *every* package there, and `runpod` is not on it.

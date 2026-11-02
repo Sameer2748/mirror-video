@@ -286,6 +286,30 @@ def tokenise(cmd, work_dir, out_dir, cfg):
     return out, files
 
 
+def _files_named_in_config(W, O, already):
+    """The big files a step needs may be named **only inside config.json**, never on the command line.
+    `dubstitch.py manifest --work W` is the whole command, and `cmd_manifest` then does
+    `probe_duration_ms(cfg["src_video"])`. Found the hard way: the first real cloud `manifest` died on
+    `could not convert string to float: ''` -- ffprobe of a file that was never sent. -> {token: path}"""
+    conf = W / CONFIG
+    if not conf.exists():
+        return {}
+    try:
+        data = json.loads(conf.read_text(encoding="utf-8"))
+    except ValueError:
+        return {}
+    out, seen = {}, set(already.values())
+    for value in data.values():
+        if not isinstance(value, str) or not value.startswith("/") or value in seen:
+            continue
+        p = Path(value)
+        if not p.is_file() or str(p).startswith((str(W), str(O))):
+            continue                                       # inside the work or output folder: it travels in the tar
+        out[f"{{F{len(already) + len(out)}}}"] = str(p)
+        seen.add(value)
+    return out
+
+
 def _tar(paths, root, dest, patch=None):
     """Tar a list of paths (relative to root), rewriting the text of any file named in `patch`.
     -> how many went in."""
@@ -315,6 +339,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     cmd_t, files = tokenise(cmd, W, O, cfg)
+    files.update(_files_named_in_config(W, O, files))
 
     job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
 
