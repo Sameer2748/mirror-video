@@ -167,3 +167,29 @@ made by ffmpeg from the originals, which a deployed API box does not have. So:
 - Nothing anywhere? Still a plain 404, as before.
 
 This is also what makes `cleanup` safe: after the big local files are deleted, the episode still plays.
+
+### What else the editor needed (2026-11-02)
+
+Serving the media was not enough: the editor is **built out of the small work files** — the edit list
+(`manifest_groups.json`), the rows, the lip-sync, the sentences, the SRTs. On a box that never processed the episode
+it answered *"the edit list is not made yet"* for a finished episode. So `storage.fetch_work_files` brings them down
+once per episode, the first time anyone opens it: the same patterns `publish_outputs` sends up (`WORK_KEEP`), small
+files only, and they are skipped if they are already here.
+
+Also fixed while checking this on a real bare box:
+- the **project bin** listed nothing, because it filtered on "is the file on disk". It now lists a file that is only
+  in R2 (`in_cloud: true`) and downloading one goes straight to R2.
+- an input file with **no `r2_key` on its row** (every episode made from a Mac folder) was a 404. The key its name
+  would have is tried, and failing that the single object in that kind's folder — only when there is exactly one,
+  so it never guesses between two.
+- `final_check.jpg` / `qc_sheet.jpg` were not in `WORK_KEEP`, so the QC images never left the Mac. `*.jpg` is now
+  kept — top level only, **not** the thousands of `thumbs/*.jpg`. (That trap is real: `Path.glob("*.jpg")` is the
+  top level, but `PurePosixPath("thumbs/x.jpg").match("*.jpg")` is `True`, so the obvious way to match coming back
+  down would have pulled every thumbnail. A test pins it.)
+
+**How it was checked** — not by reading: the API image was run with an empty library and the real database, which is
+exactly a deployed box, and every endpoint the editor calls was walked. Before: 4 of 15 worked. After: **15 of 15**
+— the timeline (105 clips), the video and dub as 307s to R2, the waveform, a thumbnail cut from a preview copy
+pulled out of R2, the bin, QC markers, the deliverables and the Premiere XML. Then a real edit: trim a clip, `check`
+(which correctly **refused** a careless trim that left a 200 ms black gap), autosave the draft, save **version 2**,
+read it back, add a QC note. All of it on a machine holding none of the episode's files.

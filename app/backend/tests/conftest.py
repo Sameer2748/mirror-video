@@ -178,6 +178,9 @@ def env(tmp_path, monkeypatch):
         monkeypatch.setattr(gen_mod, "ROOT", tmp_path)                 # nor the fal.ai key
         for k in ("AI_BASE", "AI_KEY", "AI_EMAIL", "FAL_KEY"):
             monkeypatch.delenv(k, raising=False)
+    import dubstudio.storage as storage_mod                  # "done that already" caches must not cross tests
+    storage_mod._work_fetched.clear()
+    storage_mod._mirrored.clear()
     import dubstudio.config as c
     c.reload()
     for m in ("dubstudio.main", "dubstudio.runner", "dubstudio.scan", "dubstudio.pipeline.steps"):

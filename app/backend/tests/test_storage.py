@@ -8,6 +8,7 @@ from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
 
+import httpx
 import pytest
 
 from conftest import wait_for
@@ -372,6 +373,81 @@ def test_the_waveform_travels_with_the_episode(r2):
     storage.put_file(cache, storage.work_key(s, e, cache.name))
     cache.unlink()
     assert c.get(f"/api/episodes/{ep['id']}/waveform").json()["peaks"] == [1, 2, 3]
+
+
+def test_the_small_work_files_come_down_so_the_editor_can_open(r2):
+    """The editor is built out of the small work files (the edit list, rows, lip-sync, SRTs). On a box that never
+    processed the episode they have to come down from R2 -- but only those: not the big ones."""
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 24}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+
+    storage.put_bytes(storage.work_key(s, e, "manifest_groups.json"), b'{"segments": []}')
+    storage.put_bytes(storage.work_key(s, e, "rows.json"), b'{"rows": []}')
+    storage.put_bytes(storage.work_key(s, e, "SHOW_EP24.srt"), b"1\n")
+    storage.put_bytes(storage.work_key(s, e, "scene/answer.json"), b"{}")
+    storage.put_bytes(storage.work_key(s, e, "final_check.jpg"), b"\xff\xd8jpeg")
+    storage.put_bytes(storage.work_key(s, e, "clean_noglow.mp4"), b"x" * 4096)      # big: stays in the cloud
+    storage.put_bytes(storage.work_key(s, e, "thumbs/00001000_120.jpg"), b"thumb")  # thousands of these: not wanted
+
+    got = storage.fetch_work_files(s, e)
+    work = Path(e["work_dir"])
+    assert got == 5
+    assert (work / "manifest_groups.json").read_bytes() == b'{"segments": []}'
+    assert (work / "scene" / "answer.json").exists() and (work / "final_check.jpg").exists()
+    assert not (work / "clean_noglow.mp4").exists()
+    assert not (work / "thumbs" / "00001000_120.jpg").exists()
+    assert storage.fetch_work_files(s, e) == 0                 # once per episode, not on every request
+
+
+def test_the_bin_lists_a_file_that_is_only_in_the_cloud(r2):
+    """After `cleanup` the SRTs are not on disk any more. The bin still offers them, and downloading one goes
+    straight to R2."""
+    from dubstudio import storage
+    from test_uploads_queue import episode_with_files
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = episode_with_files(c, s, number=25)                   # the episode needs its files for the plan to build
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    show, ep_row, assets, ctx = main._ep_ctx(ep["id"])
+    srt = ctx.get("sub_srt")
+    assert srt and not Path(srt).exists()                      # nothing was processed here
+    storage.put_bytes(storage.work_key(s, e, Path(srt).name), b"1\n00:00:01,000 --> 00:00:02,000\nciao\n")
+
+    files = c.get(f"/api/episodes/{ep['id']}/bin").json()["files"]
+    row = next((f for f in files if f["kind"] == "dub_srt"), None)
+    assert row and row["in_cloud"] is True and row["size"] > 0
+    r = c.get(f"/api/episodes/{ep['id']}/bin/file/dub_srt", follow_redirects=False)
+    assert r.status_code == 307 and "X-Amz-Signature=" in r.headers["location"]
+    assert httpx.get(r.headers["location"]).content.endswith(b"ciao\n")
+
+
+def test_an_input_is_found_even_when_the_row_has_no_key(r2):
+    """An episode made from a Mac folder has no `r2_key`, and the copy in R2 may be under another name (a cloud
+    step put it there). The one file in that kind's folder is used -- but only if there is exactly one."""
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 26}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    # an episode made from a Mac folder: a path on disk, no r2_key
+    main.db().insert("assets", episode_id=e["id"], kind="dub_audio", role="input",
+                     path=str(Path(e["work_dir"]) / "Episode 26 original name.mp3"), size=5)
+    a = main.db().one("SELECT * FROM assets WHERE episode_id=? AND kind='dub_audio'", (e["id"],))
+    assert main._input_in_cloud(s, e, a, "dub_audio") is None
+
+    storage.put_bytes(f"{storage.episode_prefix(s, e)}/input/dub_audio/dub.mp3", b"audio")
+    assert main._input_in_cloud(s, e, a, "dub_audio").endswith("/dub_audio/dub.mp3")
+    r = c.get(f"/api/episodes/{ep['id']}/media/dub_audio", follow_redirects=False)
+    assert r.status_code == 307
+
+    storage.put_bytes(f"{storage.episode_prefix(s, e)}/input/dub_audio/another.mp3", b"audio")
+    assert main._input_in_cloud(s, e, a, "dub_audio") is None   # two candidates: do not guess
 
 
 def test_the_owner_can_save_the_keys_from_the_settings_page(r2, monkeypatch):

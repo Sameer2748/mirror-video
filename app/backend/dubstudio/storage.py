@@ -17,6 +17,7 @@ R2 is **object storage, not a database**: SQLite stays the live database on the 
 and the file is mirrored to R2, so the data also lives off the machine. See docs/08_ACCOUNTS_AND_STORAGE.md.
 """
 import hashlib, hmac, mimetypes, re, shutil, sqlite3, threading, time
+from fnmatch import fnmatch
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -531,8 +532,67 @@ def send_one(db, row):
 
 # ---------------- what a worker does with storage (docs/09 §3) ----------------
 MEDIA_KINDS = ("src_video", "dub_audio")                 # the big ones: fetched by the `fetch` step
-WORK_KEEP = ("*.json", "*.tsv", "*.txt", "*.srt", "*.py", "scene/*.json", "broll_library/*.json",
+WORK_KEEP = ("*.json", "*.tsv", "*.txt", "*.srt", "*.py", "*.jpg", "scene/*.json", "broll_library/*.json",
              "broll_library/*.xlsx")                     # small work files worth keeping (a rerun then costs $0)
+# `*.jpg` is the top level only (the QC sheet and the final-check frame), not the thousands of thumbs/*.jpg.
+
+_work_fetched = set()
+
+
+def _work_wanted(rel):
+    """Is this work file one of the ones `publish_outputs` keeps? The same patterns, matched the same way.
+
+    `Path.glob("*.jpg")` is the top level only, but `PurePosixPath("thumbs/x.jpg").match("*.jpg")` is True -- so
+    matching with `match` would pull down every one of an episode's thousands of thumbnails. A pattern without a
+    slash must match a name without a slash."""
+    for pat in WORK_KEEP:
+        if "/" in pat:
+            if fnmatch(rel, pat):
+                return True
+        elif "/" not in rel and fnmatch(rel, pat):
+            return True
+    return False
+
+
+def fetch_work_files(show, ep, log=None):
+    """Bring this episode's small work files down from R2 if they are not here.
+
+    The editor is built out of them -- the edit list, the rows, the lip-sync, the sentences, the SRTs -- so on a
+    machine that never processed this episode (a deployed API box, or this Mac after `cleanup`) the editor cannot
+    open without them. They are the same files `publish_outputs` sends up, they are small, and they are fetched once
+    per episode per process. -> how many came down."""
+    # keyed on the work folder, not the episode id: two libraries can hold the same ids
+    key = str(ep["work_dir"])
+    if not configured() or key in _work_fetched:
+        return 0
+    W = Path(ep["work_dir"])
+    prefix = f"{episode_prefix(show, ep)}/work/"
+    got = 0
+    try:
+        objects = listing(f"shows/{safe_name(show['code'])}/ep{ep['number']}/work", limit=1000)["objects"]
+    except Exception as ex:
+        if log:
+            log(f"could not look in the cloud for the work files: {ex}")
+        return 0
+    for o in objects:
+        rel = o["key"].split(prefix, 1)[-1] if prefix in o["key"] else None
+        if not rel or o["size"] >= 64 << 20:
+            continue
+        if not _work_wanted(rel):
+            continue
+        p = W / rel
+        if p.exists() and p.stat().st_size == o["size"]:
+            continue
+        p.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            download(o["key"], p)
+            got += 1
+        except Exception:
+            continue
+    _work_fetched.add(key)
+    if got and log:
+        log(f"{got} work files came down from the cloud")
+    return got
 
 
 def inputs_to_fetch(db, ep, kinds=None):

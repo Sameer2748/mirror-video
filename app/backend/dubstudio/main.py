@@ -985,6 +985,11 @@ async def decisions_import(eid: int, file: UploadFile = File(...)):
 # ---------------- editor: the timeline before render ----------------
 def _ep_ctx(eid):
     show, ep, assets = runner().episode_context(eid)
+    # the editor is built out of the small work files (the edit list, rows, lip-sync, sentences, SRTs). On a machine
+    # that never processed this episode -- a deployed box, or this Mac after `cleanup` -- they come down from R2
+    # first, once. Without this the editor answers "the edit list is not made yet" for a finished episode.
+    if not Path(ep["work_dir"], "manifest_groups.json").exists():
+        storage.fetch_work_files(show, ep)
     ctx, _ = pipeline_steps.plan(show, ep, assets)
     return show, ep, assets, ctx
 
@@ -1233,8 +1238,12 @@ def deliverables(eid: int):
 
 @app.get("/api/episodes/{eid}/final-check.jpg")
 def final_check_image(eid: int):
-    p = Path(_get("episodes", eid)["work_dir"]) / "final_check.jpg"
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    p = Path(e["work_dir"]) / "final_check.jpg"
     if not p.exists():
+        p = storage.ensure_local(show, e, "final_check.jpg")
+    if not p:
         raise HTTPException(404, "no final check image yet")
     return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "no-cache"})
 
@@ -1458,9 +1467,31 @@ def media(eid: int, kind: str):
         raise HTTPException(404, f"no {kind}")
     if Path(a["path"]).exists():
         return FileResponse(a["path"], headers=PLAY)
-    if a.get("r2_key") and storage.head(a["r2_key"]):       # uploaded episode, scratch already cleaned
-        return RedirectResponse(storage.presign(a["r2_key"], 10800), status_code=307, headers=PLAY)
+    key = _input_in_cloud(show, e, a, kind)
+    if key:                                                 # uploaded episode, or the scratch is already cleaned
+        return RedirectResponse(storage.presign(key, 10800), status_code=307, headers=PLAY)
     raise HTTPException(404, f"no {kind}")
+
+
+def _input_in_cloud(show, ep, asset, kind):
+    """The R2 key of an input file, or None.
+
+    Three ways, in order of trust: the key on the asset row; the key its file name would have; and failing both, the
+    one object sitting in that kind's folder. The last one matters because an episode whose files came from a show
+    folder on the Mac has no `r2_key`, and the copy in R2 may have been put there under a different name."""
+    if not storage.configured():
+        return None
+    if asset.get("r2_key") and storage.head(asset["r2_key"]):
+        return asset["r2_key"]
+    key = storage.input_key(show, ep, kind, Path(asset["path"]).name)
+    if storage.head(key):
+        return key
+    try:
+        found = storage.listing(f"shows/{storage.safe_name(show['code'])}/ep{ep['number']}/input/{kind}",
+                                limit=5)["objects"]
+    except Exception:
+        return None
+    return found[0]["key"] if len(found) == 1 else None      # only when there is no doubt which file it is
 
 
 # ---------------- the project bin: imported clips + the episode's files ----------------
@@ -1470,15 +1501,32 @@ def bin_items(eid: int):
     (source video, the SRTs, the translated SRT)."""
     show, ep, assets, ctx = _ep_ctx(eid); work = ep["work_dir"]
     files = []
-    def add(kind, label, path, kind2=None):
-        if path and Path(path).exists():
-            files.append(dict(kind=kind, label=label, name=Path(path).name, path=str(path), size=Path(path).stat().st_size))
+
+    def add(kind, label, path, cloud_key=None):
+        """A file is listed when it is here, or when R2 has it (a deployed box, or after `cleanup`)."""
+        if not path:
+            return
+        p = Path(path)
+        if p.exists():
+            files.append(dict(kind=kind, label=label, name=p.name, path=str(p), size=p.stat().st_size))
+            return
+        if cloud_key:
+            head = storage.head(cloud_key) if storage.configured() else None
+            if head:
+                files.append(dict(kind=kind, label=label, name=p.name, path=str(p), size=head["size"],
+                                  in_cloud=True))
+
+    def work_key(path):
+        return storage.work_key(show, ep, Path(path).name) if path and storage.configured() else None
+
     S = (show["profile"].get("labels") or "IT,US").split(",")
-    add("src_video", f"Source video ({S[1]})", assets.get("src_video"))
-    add("dub_audio", f"Dub audio ({S[0]})", assets.get("dub_audio"))
-    add("dub_srt", f"{S[0]} subtitles (SRT)", ctx.get("sub_srt"))
-    add("src_srt", f"{S[1]} subtitles (SRT)", ctx.get("src_srt"))
-    add("en_srt", "Translated subtitles (EN SRT)", ctx.get("en_srt_burn"))
+    for kind, label in (("src_video", f"Source video ({S[1]})"), ("dub_audio", f"Dub audio ({S[0]})")):
+        path = assets.get(kind)
+        a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+        add(kind, label, path, _input_in_cloud(show, ep, a, kind) if a else None)
+    add("dub_srt", f"{S[0]} subtitles (SRT)", ctx.get("sub_srt"), work_key(ctx.get("sub_srt")))
+    add("src_srt", f"{S[1]} subtitles (SRT)", ctx.get("src_srt"), work_key(ctx.get("src_srt")))
+    add("en_srt", "Translated subtitles (EN SRT)", ctx.get("en_srt_burn"), work_key(ctx.get("en_srt_burn")))
     return {"imports": imports.items(work), "files": files}
 
 
@@ -1487,7 +1535,14 @@ def bin_file(eid: int, kind: str):
     f = next((x for x in bin_items(eid)["files"] if x["kind"] == kind), None)
     if not f:
         raise HTTPException(404, "no such file")
-    return FileResponse(f["path"], filename=f["name"])
+    if Path(f["path"]).exists():
+        return FileResponse(f["path"], filename=f["name"])
+    show, ep, assets, ctx = _ep_ctx(eid)
+    a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+    key = _input_in_cloud(show, ep, a, kind) if a else storage.work_key(show, ep, f["name"])
+    if key and storage.head(key):
+        return RedirectResponse(storage.presign(key, 3600, download_name=f["name"]), status_code=307)
+    raise HTTPException(404, "no such file")
 
 
 @app.post("/api/episodes/{eid}/imports")
