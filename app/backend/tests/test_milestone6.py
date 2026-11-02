@@ -63,6 +63,22 @@ def test_render_queue_deliverables_and_export(env):
     assert c.get(f"/api/episodes/{eid}/export/premiere?version=99").status_code == 404
 
 
+def test_the_finished_files_pack_into_one_folder(tmp_path):
+    a = tmp_path / "clean.mp4"; b = tmp_path / "notes.md"
+    a.write_bytes(b"video"); b.write_text("notes")
+    files = [
+        {"kind": "clean", "name": "clean.mp4", "path": str(a), "exists": True},
+        {"kind": "notes", "name": "notes.md", "path": str(b), "exists": True},
+        {"kind": "missing", "name": "nope.mp4", "path": str(tmp_path / "nope.mp4"), "exists": False},
+    ]
+    dest = tmp_path / "out.zip"
+    assert deliver.write_zip(files, dest, "TGS_ep34") == 2
+    import zipfile
+    with zipfile.ZipFile(dest) as z:
+        assert sorted(z.namelist()) == ["TGS_ep34/clean.mp4", "TGS_ep34/notes.md"]
+        assert z.read("TGS_ep34/clean.mp4") == b"video"
+
+
 def test_replaced_render(tmp_path):
     from dubstudio.db import DB
     db = DB(tmp_path / "t.db")

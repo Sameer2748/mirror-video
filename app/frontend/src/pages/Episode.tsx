@@ -363,6 +363,7 @@ function Cloud({ ep }: { ep: Episode }) {
         <b>In the cloud</b>
         <span className="muted small-text">R2 · <code>{c.prefix}</code>{c.auto ? " · sent up by itself when the episode is done" : ""}</span>
         <span className="grow" />
+        <a className="button small" href={`/api/episodes/${ep.id}/deliverables.zip`}>Download all</a>
         <button className="small" disabled={!!busy} onClick={send}>{busy === "send" ? "Queueing…" : "Send the finished files up"}</button>
       </div>
       <ErrorBox error={err} />

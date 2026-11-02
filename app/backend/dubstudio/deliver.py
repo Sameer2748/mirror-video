@@ -101,6 +101,29 @@ def deliverables(show, ep, ctx):
     return files
 
 
+def write_zip(files, dest, folder):
+    """The finished files that are on disk, stored (not recompressed) in one folder inside a zip. -> how many."""
+    import zipfile
+    n = 0
+    used = set()
+    with zipfile.ZipFile(dest, "w", compression=zipfile.ZIP_STORED) as z:
+        for f in files:
+            path = f.get("path")
+            if not f.get("exists") or not path or not Path(path).is_file():
+                continue
+            name = f["name"]
+            arc = f"{folder}/{name}"
+            stem, suf = Path(name).stem, Path(name).suffix
+            i = 2
+            while arc in used:
+                arc = f"{folder}/{stem}_{i}{suf}"
+                i += 1
+            used.add(arc)
+            z.write(path, arcname=arc)
+            n += 1
+    return n
+
+
 # ---------------- Premiere (FCP7 XML) ----------------
 def _rate(fps):
     tb = round(fps); ntsc = abs(fps - tb) > 0.01

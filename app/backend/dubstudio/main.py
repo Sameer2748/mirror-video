@@ -1,8 +1,9 @@
 """FastAPI app: REST API under /api, live events on /api/ws, the built UI at /."""
-import asyncio, json, os, re, shutil, threading, time
+import asyncio, json, os, re, shutil, tempfile, threading, time
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Body, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from starlette.background import BackgroundTask
 from fastapi.staticfiles import StaticFiles
 from .config import cfg, ROOT
 from .db import DB, now
@@ -1235,6 +1236,27 @@ def deliverables(eid: int):
                                (draft and clean and draft.get("saved", 0) > clean["mtime"])),
             "final_check_image": (work / "final_check.jpg").exists(),
             "qc_open": (db().one("SELECT COUNT(*) AS n FROM markers WHERE episode_id=? AND resolved=0", (eid,)) or {}).get("n", 0)}
+
+
+@app.get("/api/episodes/{eid}/deliverables.zip")
+def deliverables_zip(eid: int):
+    """Every finished file of this episode, in one folder, as a zip."""
+    ep = _get("episodes", eid)
+    show = _get("shows", ep["show_id"])
+    files = deliver.deliverables(show, ep, None)
+    folder = f"{show['code']}_ep{ep['number']}"
+    fd, name = tempfile.mkstemp(suffix=".zip")
+    os.close(fd)
+    try:
+        n = deliver.write_zip(files, name, folder)
+    except Exception:
+        os.unlink(name)
+        raise
+    if not n:
+        os.unlink(name)
+        raise HTTPException(409, "nothing to download yet")
+    return FileResponse(name, media_type="application/zip", filename=f"{folder}.zip",
+                        background=BackgroundTask(os.unlink, name))
 
 
 @app.get("/api/episodes/{eid}/final-check.jpg")
