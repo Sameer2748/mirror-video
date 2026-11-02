@@ -253,3 +253,67 @@ utilisation**. A CPU-only serverless endpoint would cost a fraction of that. Idl
 (`currentSpendPerHr: 0` with 4 idle), so the waste is only while jobs run — but it is the single easiest saving
 available. Also found: RunPod **retried 3 jobs by itself** during the full-episode lip scan, which explains part of
 the gap between 1,736 s of wall clock and 1,085 s of reported execution.
+
+## 9. Deployed on Render (2026-11-02)
+
+**Live: https://dubstudio-yg5s.onrender.com** — the owner's existing `DUBSTUDIO` service
+(`srv-dar686jncjis73c9rr90`), repointed at our repo as he asked ("we dont need this app now can we replace its
+github"). It was already a Docker web service on 2 CPU / 8 GB, so only the repo, the build paths and the
+environment changed.
+
+| | |
+| --- | --- |
+| repo / branch | `Sameer2748/mirror-video`, `handover-doc-review`, auto-deploy on push |
+| built from | `app/backend/Dockerfile`, context `app/backend` (API + the built screens; no pipeline, no models) |
+| database | `dubstudio-db`, Postgres 16, **singapore** — the same region, so the internal connection string works |
+| disk | the service's existing 20 GB at `/app/output`; `DUBSTUDIO_LIBRARY=/app/output/library` reuses it rather than destroying it to mount a new one |
+| health check | `/api/info` |
+| secrets | copied from `app/.env` by `app/scripts/deploy_render.py` — never printed, never committed |
+
+The old app's 27 environment variables (its ElevenLabs key, its own R2 and RunPod settings) were replaced by our
+22. Nothing else of it was touched; its disk is reused, not deleted.
+
+### The first deploy crashed, and it was my bug
+
+`update_failed`, "Application exited early". The build was fine. Render sets `WEB_CONCURRENCY` from the CPU count,
+so uvicorn started **two** processes, and both built the schema at the same moment —
+`CREATE TABLE IF NOT EXISTS` is **not atomic** against another session doing the same. Both look, both see nothing,
+both create, and the loser dies with `duplicate key value violates unique constraint "pg_type_typname_nsp_index"`.
+My local smoke test ran one process, so it never showed.
+
+Fixed properly rather than by turning concurrency off: the schema, the migration and the first account are made
+under a Postgres **advisory lock**, so any number of replicas can start together. Proved on the real thing — the
+next deploy ran with `WEB_CONCURRENCY=2`, the exact condition that crashed, and came up **live**. It is now set to
+**1**, for a different reason: a second process in the same container means a second job runner polling for the same
+steps. More than one needs `REDIS_URL` for shared events first.
+
+### Checked on the live site, not assumed
+
+- the API answers, the screens load, an API call with no session is 401, a wrong password is 401;
+- signing in as the owner works, and the deployed database is its own (0 shows — the Mac's library is not shared);
+- **R2 is reachable from Singapore** (`ok=true`, bucket `dubstudioprod`) and **OpenRouter is configured**;
+- a show made with no Mac folder gets `uploads: true` and its own staging folder on the disk;
+- **the real web upload works end to end**: the API signs a link, the bytes go **straight to R2**, `confirm`
+  registers the file, and the episode then has its `src_video`. (That test was server-side, which needs no CORS.)
+
+### The one thing left for the owner
+
+**Add `https://dubstudio-yg5s.onrender.com` to the R2 bucket's CORS `AllowedOrigins`** (Cloudflare dashboard → R2 →
+`dubstudioprod` → Settings → CORS). Our R2 token is object-scoped, so it cannot read or change bucket CORS itself
+(`403 Access Denied` on `GET /?cors`) — this one needs the dashboard. Without it, uploading from a real **browser**
+on the deployed site will fail even though everything else works.
+
+```json
+[{"AllowedOrigins": ["http://localhost:8766", "https://dubstudio-yg5s.onrender.com"],
+  "AllowedMethods": ["PUT", "GET", "HEAD"], "AllowedHeaders": ["*"],
+  "ExposeHeaders": ["ETag"], "MaxAgeSeconds": 3600}]
+```
+
+### What the deployed site can and cannot do
+
+**Can**: accounts and sign-in, shows and episodes, uploads straight to R2, the queue, the editor (it plays and
+saves — §7), review, the deliverables.
+**Cannot yet**: process an episode. Only the lip scan has a worker image live; the pipeline worker image that would
+run the other 13 cloud-capable steps (§8) is built but **not pushed** — the Docker VM on the Mac ran out of disk
+mid-export (`failed to create temp dir: input/output error`) and corrupted its own content store. Processing stays
+on the Mac until that image is up.
