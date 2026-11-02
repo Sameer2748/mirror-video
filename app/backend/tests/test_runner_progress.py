@@ -79,6 +79,22 @@ def test_a_local_command_does_not_require_the_mac_scripts_folder(tmp_path, monke
     assert Runner._local_cwd() == str(here)
 
 
+def test_retrying_transitions_rebuilds_the_video_first(tmp_path):
+    """A failed render does not send the videos back. Retrying Transitions alone used to start on an
+    empty machine and stop with 'no clean master'."""
+    from dubstudio import cloud
+    r = Runner.__new__(Runner)
+    by = {s: {"id": i, "step": s, "params": {"cmd": ["{py}", s]}} for i, s in enumerate(cloud.CHAIN)}
+    named, _ = r._tail_commands({"id": 99, "step": "transitions"}, by, tmp_path)
+    names = [n for n, _ in named]
+    assert names[0] == "render"
+    assert names[names.index("transitions") - 1] == "clean_master"
+    (tmp_path / "video_groups_nosubs.mp4").write_bytes(b"v")
+    named, _ = r._tail_commands({"id": 99, "step": "transitions"}, by, tmp_path)
+    names = [n for n, _ in named]
+    assert names[0] == "bookends"
+
+
 def test_library_warnings_are_not_the_last_line():
     assert NOISE.search("box_utils.py:103: UserWarning: An output with one or more elements was resized")
     assert NOISE.search("  torch.index_select(x1, 0, idx, out=xx1)")

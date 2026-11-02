@@ -665,6 +665,64 @@ class Runner:
                 mark.append(cj)
         return named, mark
 
+    @staticmethod
+    def _clean_master_cmd():
+        """Point the config at the clean video bookends just wrote.
+
+        When the episode has no opening and no ending, bookends copies the render and records it as
+        clean_final, and leaves clean_nofx alone. Transitions trusts clean_nofx first, even when that
+        file is not on the machine."""
+        return ["{py}", "-c",
+                "import json, os, sys\n"
+                "p, w = sys.argv[1], sys.argv[2]\n"
+                "c = json.load(open(p, encoding='utf-8'))\n"
+                "cands = [os.path.join(w, 'clean_noglow.mp4'), c.get('clean_final') or '',\n"
+                "         c.get('video_out') or '', c.get('clean_nofx') or '']\n"
+                "src = next((x for x in cands if x and os.path.isfile(x)), '')\n"
+                "if not src:\n"
+                "    raise SystemExit('no clean master after bookends')\n"
+                "c['clean_nofx'] = os.path.abspath(src)\n"
+                "if not (c.get('clean_final') and os.path.isfile(c['clean_final'])):\n"
+                "    c['clean_final'] = c['clean_nofx']\n"
+                "json.dump(c, open(p, 'w'), indent=1)\n"
+                "print('clean master', c['clean_nofx'])\n",
+                "{WORK}/config.json", "{WORK}"]
+
+    @staticmethod
+    def _tail_from(step, work):
+        """Where a render-tail retry has to start.
+
+        A failed visit does not send the videos back, so retrying Transitions alone arrives on an empty
+        machine and bookends has not run there. Rebuild from the render, or from bookends if the render
+        is already on disk."""
+        work = Path(work)
+        if step in ("bookends", "transitions", "subs_dub", "subs_en") and not (work / "video_groups_nosubs.mp4").is_file():
+            return "render"
+        if step in ("transitions", "subs_dub", "subs_en") and not (work / "clean_noglow.mp4").is_file():
+            return "bookends"
+        return step
+
+    def _tail_commands(self, j, by, work):
+        """The commands for this visit, starting early enough that the clean master exists on that machine."""
+        start = self._tail_from(j["step"], work)
+        named, to_mark, started = [], [], False
+        for step in cloud.CHAIN:
+            sj = by.get(step)
+            if not sj:
+                continue
+            if step == start or sj["id"] == j["id"]:
+                started = True
+            if not started:
+                continue
+            cmd = (sj["params"] or {}).get("cmd")
+            if not cmd:
+                continue
+            if step == "transitions":
+                named.append(("clean_master", self._clean_master_cmd()))
+            named.append((step, self._expand(cmd)))
+            to_mark.append(sj)
+        return named, to_mark
+
     def _run_cloud_tail(self, j):
         """render → verify → bookends → transitions → both subtitle burns, on ONE rented machine.
 
@@ -678,29 +736,16 @@ class Runner:
                          (j["episode_id"], j["run"]))
         by = {x["step"]: x for x in jobs}
 
+        work = (j["params"] or {}).get("ctx", {}).get("W") or ep["work_dir"]
         tp = by.get("trans_plan")
         if tp and tp["status"] not in DONE:
             self._run_cmd(tp, force_local=True)
-            n = timeline.apply_editor_transitions((j["params"] or {}).get("ctx", {}).get("W") or ep["work_dir"])
+            n = timeline.apply_editor_transitions(work)
             if n:
                 with open(j["log_path"], "a", encoding="utf-8") as f:
                     f.write(f"the editor's own transitions on {n} cuts kept on top of the plan\n")
 
-        named, to_mark = [], []
-        started = False
-        for step in cloud.CHAIN:
-            sj = by.get(step)
-            if not sj:
-                continue
-            if sj["id"] == j["id"]:
-                started = True
-            if not started:
-                continue
-            cmd = (sj["params"] or {}).get("cmd")
-            if not cmd:
-                continue
-            named.append((step, self._expand(cmd)))
-            to_mark.append(sj)
+        named, to_mark = self._tail_commands(j, by, work)
         if any(n == "subs_en" for n, _ in named):
             extra, extra_jobs = self._tail_closing(show, ep, by)
             named.extend(extra)
