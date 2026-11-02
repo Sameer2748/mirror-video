@@ -587,6 +587,23 @@ def test_matching_sends_the_dub_audio_that_lives_in_the_input_folder(tmp_path, m
     assert not any(n.startswith("input/") for n in sent["tar"])
 
 
+def test_verify_failing_one_picture_does_not_stop_the_visit(tmp_path):
+    """One weak frame used to exit verify, and the chain then never made the clean master.
+    Transitions reported 'no clean master' even though the render itself had succeeded."""
+    import sys
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "_cloud_chain.json").write_text(json.dumps({"steps": [
+        {"name": "verify", "cmd": [sys.executable, "-c", "import sys; print('BAD FRAME'); sys.exit(1)"]},
+        {"name": "bookends", "cmd": [sys.executable, "-c", "print('BOOKENDS_RAN')"]},
+    ]}))
+    (work / "_cloud_chain.py").write_text(cloud.CHAIN_DRIVER)
+    import subprocess
+    p = subprocess.run([sys.executable, str(work / "_cloud_chain.py")], cwd=str(work), capture_output=True, text=True)
+    assert p.returncode == 0, p.stdout + p.stderr
+    assert "BAD FRAME" in p.stdout and "BOOKENDS_RAN" in p.stdout and "CHAIN OK" in p.stdout
+
+
 def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     """The cut is mkdec, the sheet, the edit list, lip-sync, groups, the library, then captions.
     The face map is not in that list. The final check is on the render machine, after the sheet it reads."""
