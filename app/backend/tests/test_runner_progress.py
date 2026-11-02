@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from dubstudio.db import DB
 from dubstudio.runner import Runner, NOISE
 
@@ -93,6 +95,37 @@ def test_retrying_transitions_rebuilds_the_video_first(tmp_path):
     named, _ = r._tail_commands({"id": 99, "step": "transitions"}, by, tmp_path)
     names = [n for n, _ in named]
     assert names[0] == "bookends"
+
+
+def test_run_notes_are_written_without_the_mac_scripts_folder(tmp_path, monkeypatch):
+    """The notes are plain text. Only the optional cost table needs run_report.py, which lives in the
+    Mac scripts folder. Missing that folder must not fail the step."""
+    import shutil
+    from dubstudio.config import cfg
+    from dubstudio.db import DB
+    mac = Path("/Users/manish/conductor/workspaces/dub-studioo/hamburg/app/library/work/TGS_ep34")
+    work = tmp_path / "work"
+    out = tmp_path / "out"
+    work.mkdir(); out.mkdir(); (work / "logs").mkdir()
+    if (mac / "decisions.json").is_file():
+        shutil.copy(mac / "decisions.json", work / "decisions.json")
+    if (mac / "run_times.tsv").is_file():
+        shutil.copy(mac / "run_times.tsv", work / "run_times.tsv")
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    monkeypatch.setattr(type(cfg), "scripts", property(lambda self: tmp_path / "no-such-scripts"))
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TGS", code="TGS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=34, status="processing", work_dir=str(work), output_dir=str(out))
+    jid = db.insert("jobs", episode_id=eid, run=1, step="notes", ord=1, status="running", needs=[], resource="none",
+                    params={"fn": "run_notes", "ctx": {"W": str(work), "OUT": str(out)}},
+                    log_path=str(work / "logs" / "notes.log"))
+    r = Runner(db)
+    r._fn_run_notes(db.one("SELECT * FROM jobs WHERE id=?", (jid,)))
+    text = (out / "run_notes.md").read_text(encoding="utf-8")
+    assert "TGS ep34" in text
+    assert "france-team" not in text
+    row = db.one("SELECT status FROM jobs WHERE id=?", (jid,))
+    assert row["status"] == "done"
 
 
 def test_library_warnings_are_not_the_last_line():

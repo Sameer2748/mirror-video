@@ -999,8 +999,13 @@ class Runner:
             say = lambda m: (log.write(m + "\n"), log.flush(), self._set(j, message=m[-300:]))
             say(f"Google translation failed ({first[-160:]}); translating with the AI instead")
             def run(extra):
-                log.write("\n$ " + " ".join(cmd + extra) + "\n"); log.flush()
-                p = subprocess.run(cmd + extra, cwd=str(cfg.scripts), capture_output=True, text=True)
+                full = cmd + extra
+                log.write("\n$ " + " ".join(full) + "\n"); log.flush()
+                if not (cfg.scripts / "dubstitch.py").is_file():
+                    if not self._worker_cmd(j, full):
+                        raise RuntimeError("translate needs the pipeline scripts, and they are not on this machine")
+                    return
+                p = subprocess.run(full, cwd=self._local_cwd(), capture_output=True, text=True)
                 log.write(p.stdout + p.stderr); log.flush()
                 if p.returncode != 0:
                     raise RuntimeError(f"translate {' '.join(extra)}: exit {p.returncode}: {(p.stdout + p.stderr).strip()[-200:]}")
@@ -1089,10 +1094,13 @@ class Runner:
         """Step 2 ends as the skill says: W/spec.py -> `mkdec.py W W/spec.py` -> decisions.json (every index checked
         against its text by the skill's own tool)."""
         w = Path(work); spec = self._write_spec(work)
-        if self._worker_cmd(j, [str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)]):
+        mkdec = cfg.scripts / "mkdec.py"
+        if self._worker_cmd(j, [str(cfg.pipeline_python), str(mkdec), str(w), str(spec)]):
             return "mkdec on a rented machine"
-        r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "mkdec.py"), str(w), str(spec)],
-                           capture_output=True, text=True, cwd=str(cfg.scripts), timeout=300)
+        if not mkdec.is_file():
+            raise RuntimeError("mkdec.py is not on this machine")
+        r = subprocess.run([str(cfg.pipeline_python), str(mkdec), str(w), str(spec)],
+                           capture_output=True, text=True, cwd=self._local_cwd(), timeout=300)
         with open(j["log_path"], "a", encoding="utf-8") as log:
             log.write(f"$ mkdec.py {w} {spec}\n{r.stdout}{r.stderr}")
         if r.returncode:
@@ -1108,8 +1116,11 @@ class Runner:
             text = (w / "merged.txt").read_text(encoding="utf-8") if (w / "merged.txt").exists() else ""
             self._set(j, status="done", progress=1, finished=now(), message=f"merged.txt: {text.count(chr(10))} lines")
             return
-        r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "merged.py"), str(w), "95"],
-                           capture_output=True, text=True, cwd=str(cfg.scripts), timeout=300)
+        merged = cfg.scripts / "merged.py"
+        if not merged.is_file():
+            raise RuntimeError("merged.py is not on this machine")
+        r = subprocess.run([str(cfg.pipeline_python), str(merged), str(w), "95"],
+                           capture_output=True, text=True, cwd=self._local_cwd(), timeout=300)
         with open(j["log_path"], "a", encoding="utf-8") as log:
             log.write(f"$ merged.py {w} 95 > {w / 'merged.txt'}\n{r.stderr}")
         if r.returncode:
@@ -1156,10 +1167,11 @@ class Runner:
             t = f"{x['finished'] - x['started']:.0f} s" if x["started"] and x["finished"] else ""
             L.append(f"| {x['step']} | {x['status']} | {t} |")
         out.mkdir(parents=True, exist_ok=True)
-        if (w / "run_times.tsv").exists():           # the owner's time + Claude-cost table (run_report.py, as run_episode.sh)
+        report = cfg.scripts / "run_report.py"
+        if (w / "run_times.tsv").exists() and report.is_file():
             rt = out / f"{show['code'].lower()}_ep{ep['number']}_run_times.md"
-            r = subprocess.run([str(cfg.pipeline_python), str(cfg.scripts / "run_report.py"), str(w), str(rt)],
-                               capture_output=True, text=True, cwd=str(cfg.scripts), timeout=120)
+            r = subprocess.run([str(cfg.pipeline_python), str(report), str(w), str(rt)],
+                               capture_output=True, text=True, cwd=self._local_cwd(), timeout=120)
             if r.returncode == 0 and rt.exists():
                 L += ["", "## Time and Claude cost of every step", "", rt.read_text(encoding="utf-8").strip()]
         (out / "run_notes.md").write_text("\n".join(L) + "\n", encoding="utf-8")
