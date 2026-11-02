@@ -46,16 +46,34 @@ def steps():
 # that means sending it an OpenRouter key, which is the owner's call, not ours -- so unless CLOUD_AI is on they
 # stay here. Running them in the cloud without a key does not fail: it quietly gives a *worse* answer (facemap:
 # "groups without a clear vote stay 'unknown'"), and a quietly worse answer is the thing to avoid.
-NEEDS_AI_KEY = {"facemap", "qc"}
+NEEDS_AI_KEY = {"facemap", "qc", "library"}
+
+# The render tail chains **big videos**: `render` writes the cut, `verify` measures it, `bookends` makes the clean
+# master from it, `transitions` reads that, `subs` burns captions onto it, `qc` and `check` look at all three. Each
+# step reads the previous step's multi-GB file, and the work folder records where it is. One step per rented
+# machine therefore does not work: the machine that runs `verify` is not the machine that ran `render`, and the
+# file would have to travel up and down -- gigabytes each way, per step. That chain belongs on ONE machine.
+# Measured, not assumed: the only work files over 1 MB in a finished episode are videos; everything else (the lip
+# scan's 42 range files, the meshes, the manifests) is a few kB and travels fine.
+ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "dynsrt", "check"}
 
 
 def ai_key_allowed():
     return envfile.flag("CLOUD_AI", False)
 
 
+def capable(step):
+    """Can this step run on its own, on a machine that has only the episode's files and the small work files?"""
+    if step in ONE_MACHINE:
+        return False
+    return step not in NEEDS_AI_KEY or ai_key_allowed()
+
+
 def enabled_for(step, kind="cpu"):
+    """`CLOUD_STEPS` asks; `capable` decides. "all" means every step that can actually work there -- so turning it
+    on cannot break a run half way through."""
     want = steps()
-    if step in NEEDS_AI_KEY and not ai_key_allowed():
+    if not capable(step):
         return False
     return available(kind) and ("all" in want or step in want)
 
@@ -223,6 +241,21 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
 #   {WORK}       the episode's work folder      {OUT}     the show's output folder
 #   {F0} {F1} …  one big input file each (the source video, the dub audio, the font): a signed link
 SMALL = 1 << 20                  # a file this size or under travels in the work tar, not on its own
+# Where the worker image puts things (it is our image, so this is known, not guessed).
+WORKER = {"{WORK}": "/work", "{OUT}": "/out", "{FILES}": "/files"}
+# The work folder's own `config.json` records **absolute paths on this Mac** -- the source video, the dub audio,
+# the models, the sheets, the big intermediates -- and many pipeline stages read file paths out of it instead of
+# from the command line (dubstitch.py: `cfg["src_video"]`, `cfg.get("video_out")`, ...). So it is translated on the
+# way out and translated back on the way in. Only paths change; nothing else in the file is touched.
+CONFIG = "config.json"
+
+
+def _swap(text, pairs):
+    """Replace each (from, to) in a JSON text, longest `from` first so a prefix never eats a longer one."""
+    for a, b in sorted(pairs, key=lambda kv: len(kv[0]), reverse=True):
+        if a:
+            text = text.replace(json.dumps(a)[1:-1], json.dumps(b)[1:-1])
+    return text
 
 
 def tokenise(cmd, work_dir, out_dir, cfg):
@@ -253,15 +286,24 @@ def tokenise(cmd, work_dir, out_dir, cfg):
     return out, files
 
 
-def _tar(paths, root, dest):
-    """Tar a list of paths (relative to root). -> how many went in."""
+def _tar(paths, root, dest, patch=None):
+    """Tar a list of paths (relative to root), rewriting the text of any file named in `patch`.
+    -> how many went in."""
+    import io
     n = 0
     with tarfile.open(dest, "w:gz") as t:
         for p in paths:
             full = Path(root) / p
-            if full.is_file():
+            if not full.is_file():
+                continue
+            fn = (patch or {}).get(str(p))
+            if fn:
+                data = fn(full.read_text(encoding="utf-8")).encode()
+                info = tarfile.TarInfo(str(p)); info.size = len(data)
+                t.addfile(info, io.BytesIO(data))
+            else:
                 t.add(full, arcname=str(p))
-                n += 1
+            n += 1
     return n
 
 
@@ -276,12 +318,18 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
 
     job = {"step": "command", "name": name, "cmd": cmd_t, "outputs": {}}
 
+    # how this Mac's paths read on the worker, for config.json (and back again afterwards)
+    there = [(str(W), WORKER["{WORK}"]), (str(O), WORKER["{OUT}"]), (str(cfg.models_dir), "/opt/models"),
+             (str(cfg.scripts), "/opt/dubstudio/scripts"), (str(cfg.tools_dir), "/opt/dubstudio")]
+    for token, path in files.items():
+        there.append((path, f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"))
+
     # the work folder: the small files only (the big ones are either inputs, sent as links, or outputs we want back)
     small = [p.relative_to(W) for p in W.rglob("*")
              if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
     if small:
         tar = W.parent / f"_{name}_work_in.tar.gz"
-        n = _tar(small, W, tar)
+        n = _tar(small, W, tar, patch={CONFIG: lambda s: _swap(s, there)} if (W / CONFIG).exists() else None)
         key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
         storage.put_file(tar, key)
         tar.unlink(missing_ok=True)
@@ -332,6 +380,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             with tarfile.open(tar) as t:
                 t.extractall(root)
             tar.unlink(missing_ok=True)
+            back = root / CONFIG                   # the step may have recorded new paths: read them as ours
+            if back.exists():
+                back.write_text(_swap(back.read_text(encoding="utf-8"), [(b, a) for a, b in there]),
+                                encoding="utf-8")
     log(f"{name}: done in {res.get('seconds')} s; "
         f"{sum(v.get('files', 0) for v in sent.values())} files came back")
     return res

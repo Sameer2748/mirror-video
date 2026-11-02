@@ -123,13 +123,13 @@ def test_which_steps_go_to_the_cloud(monkeypatch):
     monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
 
     settings.update(RUNPOD_API_KEY="k", RUNPOD_CPU_ENDPOINT="e", CLOUD_STEPS="lip_gpu")
-    assert cloud.enabled_for("lip_gpu") and not cloud.enabled_for("render")
+    assert cloud.enabled_for("lip_gpu") and not cloud.enabled_for("groups")
 
-    settings["CLOUD_STEPS"] = "lip_gpu, render"               # a list, spaces allowed
-    assert cloud.enabled_for("lip_gpu") and cloud.enabled_for("render")
+    settings["CLOUD_STEPS"] = "lip_gpu, groups"               # a list, spaces allowed
+    assert cloud.enabled_for("lip_gpu") and cloud.enabled_for("groups")
 
     settings["CLOUD_STEPS"] = "all"
-    assert cloud.enabled_for("render")
+    assert cloud.enabled_for("groups")
 
     settings["CLOUD_STEPS"] = ""                              # nothing set = everything runs here, as before
     assert not cloud.enabled_for("lip_gpu") and cloud.steps() == set()
@@ -242,11 +242,82 @@ def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, mon
 
 
 def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(monkeypatch):
-    """facemap and qc ask the app's AI client for a vote. Without a key they do not fail -- they give a worse
-    answer -- so they must not go to a rented machine by accident."""
+    """facemap, qc and library ask the app's AI client. Without a key facemap and qc do not fail -- they give a
+    *worse* answer -- so they must not go to a rented machine by accident."""
     settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all"}
     monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
     monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
-    assert cloud.enabled_for("render") and not cloud.enabled_for("facemap") and not cloud.enabled_for("qc")
+    assert cloud.enabled_for("groups")
+    assert not cloud.enabled_for("facemap") and not cloud.enabled_for("qc") and not cloud.enabled_for("library")
     settings["CLOUD_AI"] = "true"
-    assert cloud.enabled_for("facemap") and cloud.enabled_for("qc")
+    assert cloud.enabled_for("facemap") and cloud.enabled_for("qc") and cloud.enabled_for("library")
+
+
+def test_the_work_folders_config_is_translated_both_ways(tmp_path, monkeypatch):
+    """`config.json` holds absolute paths on this Mac, and pipeline stages read file paths out of it rather than
+    from the command line. So it must arrive at the worker pointing at the worker's own files -- and what comes
+    back must point at ours again, or the next local step looks for /work/… and fails."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    video = tmp_path / "show/US/TGS EPISODE 34.mp4"
+    video.parent.mkdir(parents=True); video.write_bytes(b"v" * 32)
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(video), "models": str(cfg.models_dir),
+        "dub_srt": f"{work}/TGS_EP34_DE.srt", "clean_final": f"{out}/final.mp4"}))
+    bucket = tmp_path / "bucket"
+    seen = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(bucket / "cloud/render_work_in.tar.gz") as t:
+            seen["config"] = json.loads(t.extractfile("config.json").read())
+        # the worker's render records where it put the video -- in the worker's own layout
+        box = tmp_path / "w"; box.mkdir(exist_ok=True)
+        (box / "config.json").write_text(json.dumps({**seen["config"], "video_out": "/work/video_groups.mp4"}))
+        back = bucket / "cloud/render_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "config.json", arcname="config.json")
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1,
+                                 "sent": {"work": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job: "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cloud.run_command({}, show, ep, "render", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render",
+                                               "--work", str(work), "--video", str(video)],
+                      cfg, log=lambda m: None)
+
+    # what the worker saw: its own paths, nothing of this Mac
+    assert seen["config"]["src_video"] == "/files/F0/TGS EPISODE 34.mp4"
+    assert seen["config"]["dub_srt"] == "/work/TGS_EP34_DE.srt"
+    assert seen["config"]["clean_final"] == "/out/final.mp4"
+    assert seen["config"]["models"] == "/opt/models"
+    # what came back: ours again, including the path the step newly recorded
+    now = json.loads((work / "config.json").read_text())
+    assert now["src_video"] == str(video)
+    assert now["dub_srt"] == f"{work}/TGS_EP34_DE.srt"
+    assert now["video_out"] == f"{work}/video_groups.mp4"
+    assert not [v for v in now.values() if isinstance(v, str)
+                and (v.startswith("/work/") or v.startswith("/out/") or v.startswith("/files/"))]
+
+
+def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
+    """`render` onward each read the previous step's multi-GB video, and the work folder records where it is. One
+    step per rented machine cannot work, so "all" must not mean "try it and fail at step 25"."""
+    settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all", "CLOUD_AI": "true"}
+    monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
+    monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
+    for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"):
+        assert not cloud.enabled_for(step), step
+    for step in ("mksrt_dub", "words_src", "analyze", "manifest", "lip_mesh", "lip_merge", "groups", "translate"):
+        assert cloud.enabled_for(step), step
+    # asking for one by name does not get round it either
+    settings["CLOUD_STEPS"] = "render"
+    assert not cloud.enabled_for("render")
