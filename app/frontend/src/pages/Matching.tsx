@@ -41,15 +41,15 @@ function buildSpec(flagged: Decisions["flagged"], choices: Record<number, Choice
       } else if (p.action === "assign" && validSrc(s, ns)) lines.push(`A(${r},${py(D(r))},${py(s)},${py(S(s))},${py(tag)})`);
       else lines.push(`# row ${r}: the AI answer was not usable; decide it by hand`);
     } else if (c.mode === "gap" || (c.mode === "auto" && f.kind === "unmatched")) {
-      lines.push(`GAP(${r},${py(D(r))},${py("no footage (editor, Dub Studio)")})`);
+      lines.push(`GAP(${r},${py(D(r))},${py("no footage (editor, Mirror Video)")})`);
     } else if (c.mode === "auto") {
-      lines.push(`C(${r},${py("automatic match accepted by the editor (Dub Studio)")})`);
+      lines.push(`C(${r},${py("automatic match accepted by the editor (Mirror Video)")})`);
     } else if (c.mode === "src" && c.src != null) {
-      lines.push(`A(${r},${py(D(r))},${c.src},${py(S(c.src))},${py("chosen by the editor (Dub Studio)")})`);
+      lines.push(`A(${r},${py(D(r))},${c.src},${py(S(c.src))},${py("chosen by the editor (Mirror Video)")})`);
     }
     done.add(r);
   }
-  return { spec: `# Step 2 decisions made in Dub Studio\n${lines.join("\n")}\n`, coveredBy };
+  return { spec: `# Step 2 decisions made in Mirror Video\n${lines.join("\n")}\n`, coveredBy };
 }
 
 export default function Matching({ ep, onImported }: { ep: Episode; onImported: () => void }) {

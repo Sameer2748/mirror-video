@@ -20,7 +20,7 @@ export default function ShowPage() {
   useEffect(() => { if (!tick) return; const t = setTimeout(load, 2000); return () => clearTimeout(t); }, [tick, load]);
 
   async function remove() {
-    if (!show || !confirm(`Remove the show ${show.code} from Dub Studio? Files on disk are not touched.`)) return;
+    if (!show || !confirm(`Remove the show ${show.code} from Mirror Video? Files on disk are not touched.`)) return;
     await api.del(`/api/shows/${sid}`); nav("/");
   }
 

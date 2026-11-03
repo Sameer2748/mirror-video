@@ -57,7 +57,7 @@ function Sidebar({ me, onOut }: { me: User | null; onOut: () => void }) {
   useEffect(() => { load(); }, [pathname]);
   return (
     <aside className="side">
-      <Link to="/" className="brand"><BrandMark /><span>Dub Studio<small>review · edit · render</small></span></Link>
+      <Link to="/" className="brand"><BrandMark /><span>Mirror Video<small>review · edit · render</small></span></Link>
       <NavLink to="/" end className="nav-item">◫ All shows</NavLink>
       <NavLink to="/shows/new" className="nav-item">＋ New show</NavLink>
       <NavLink to="/renders" className="nav-item">▤ Render queue{active ? <><span className="grow" /><span className="chip chip-blue" style={{ padding: "1px 7px" }}>{active}</span></> : null}</NavLink>

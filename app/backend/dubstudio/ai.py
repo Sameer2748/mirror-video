@@ -98,7 +98,7 @@ def _req(url, body=None, timeout=120):
     data = json.dumps(body).encode() if body is not None else None
     head = {"Authorization": "Bearer " + s["AI_KEY"], "Content-Type": "application/json"}
     if s["AI_PROVIDER"] == "openrouter":                  # OpenRouter shows these on the account's activity page
-        head["HTTP-Referer"] = "https://dubstudio.local"; head["X-Title"] = "Dub Studio"
+        head["HTTP-Referer"] = "https://dubstudio.local"; head["X-Title"] = "Mirror Video"
     r = urllib.request.Request(url, data=data, headers=head)
     return json.load(urllib.request.urlopen(r, timeout=timeout))
 

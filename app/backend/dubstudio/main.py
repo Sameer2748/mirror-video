@@ -13,7 +13,7 @@ from . import auth, envfile, gen, imports, presets, scan, deliver, names as nm, 
 from .pipeline import steps as pipeline_steps
 from .pipeline import decisions as dec
 
-app = FastAPI(title="Dub Studio", version="0.1.0")
+app = FastAPI(title="Mirror Video", version="0.1.0")
 state = {}
 
 
@@ -144,7 +144,7 @@ async def accounts_guard(request: Request, call_next):
         return await call_next(request)
     user = user_of(request)
     if not user:
-        return JSONResponse({"detail": "sign in to use Dub Studio"}, status_code=401)
+        return JSONResponse({"detail": "sign in to use Mirror Video"}, status_code=401)
     request.state.user = user
     msg = _not_allowed(user, path, request.method)
     if msg:

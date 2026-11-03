@@ -758,7 +758,7 @@ export default function Editor() {
     const name = srcMedia ? impOf(srcMedia)?.name || "imported clip" : S;
     const text = srcMedia ? name : srcTextFor(markIn, markOut, data!.src_sentences);
     setClipboard({ s0: markIn, s1: markOut, src_text: text, from: `${name} ${fmt(markIn)}–${fmt(markOut)}`, speed: 1, media: srcMedia || undefined, fromSource: true });
-    try { navigator.clipboard?.writeText(`${name} ${fmt(markIn)}–${fmt(markOut)} (Dub Studio clip)`).catch(() => {}); } catch { /* no clipboard access */ }
+    try { navigator.clipboard?.writeText(`${name} ${fmt(markIn)}–${fmt(markOut)} (Mirror Video clip)`).catch(() => {}); } catch { /* no clipboard access */ }
     say(`Copied ${name} ${fmt(markIn)}–${fmt(markOut)} (${((markOut - markIn) / 1000).toFixed(2)} s): ${modKey}V pastes it onto the selected clip, into a gap, or on V2 at the playhead`);
   };
   const copyClip = () => { if (!selClip) return; setClipboard({ s0: selClip.s0, s1: selClip.s1, src_text: selClip.src_text, from: label(selClip), speed: speedOf(selClip), media: selClip.media }); say(`Copied the footage of ${label(selClip)} (${fmt(selClip.s0)}–${fmt(selClip.s1)})`); };
@@ -1966,7 +1966,7 @@ function TrackDialog({ lang, name, show, cur, edited, n, onClose, onSave, onImpo
             <button className="ghost" onClick={() => onSave(box ? { style: "box", ...STYLE_DEFAULT.box } : { style: "strip", size: STYLE_DEFAULT.strip.size })}>House default</button>
           </div>
           <hr style={{ border: 0, borderTop: "1px solid var(--line)", margin: 0 }} />
-          <div className="muted small-text">{n} subtitles{edited ? " · edited in Dub Studio" : " · as the pipeline made them"}. Importing an SRT replaces this track (for example a human translation, or when Google translation was blocked); undo with ⌘Z.</div>
+          <div className="muted small-text">{n} subtitles{edited ? " · edited in Mirror Video" : " · as the pipeline made them"}. Importing an SRT replaces this track (for example a human translation, or when Google translation was blocked); undo with ⌘Z.</div>
           <div className="row" style={{ gap: 8 }}>
             <button onClick={() => file.current?.click()}>Import an SRT…</button>
             <input ref={file} type="file" accept=".srt,.txt" hidden onChange={(e) => e.target.files?.[0] && onImport(e.target.files[0])} />

@@ -22,7 +22,7 @@ export default function Login({ onDone }: { onDone: (u: User) => void }) {
   return (
     <div className="signin">
       <form className="signin-card" onSubmit={submit}>
-        <div className="signin-brand"><BrandMark /><span>Dub Studio<small>review · edit · render</small></span></div>
+        <div className="signin-brand"><BrandMark /><span>Mirror Video<small>review · edit · render</small></span></div>
         <label>Your id<input ref={first} value={username} autoCapitalize="off" autoCorrect="off" spellCheck={false}
           onChange={(e) => setUsername(e.target.value)} placeholder="the id the owner gave you" /></label>
         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>

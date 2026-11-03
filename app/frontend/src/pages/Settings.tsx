@@ -87,7 +87,7 @@ export default function Settings() {
     } catch (e: any) { say(e.message, true); } finally { setBusy(""); }
   }
   async function restart() {
-    if (!confirm("Restart Dub Studio now? Nothing is lost; the page reconnects in a few seconds.")) return;
+    if (!confirm("Restart Mirror Video now? Nothing is lost; the page reconnects in a few seconds.")) return;
     try { await api.post("/api/restart"); say("Restarting…"); setTimeout(() => location.reload(), 4000); } catch (e: any) { say(e.message, true); }
   }
 
@@ -99,7 +99,7 @@ export default function Settings() {
       {msg && <div className={msg.err ? "error" : "ok-box"}>{msg.text}</div>}
 
       <h3>Health</h3>
-      <div className={bad.length ? "warn" : "ok-box"}>{bad.length ? `${bad.length} thing${bad.length > 1 ? "s" : ""} to look at` : "Everything Dub Studio needs is in place."}</div>
+      <div className={bad.length ? "warn" : "ok-box"}>{bad.length ? `${bad.length} thing${bad.length > 1 ? "s" : ""} to look at` : "Everything Mirror Video needs is in place."}</div>
       <table className="table"><tbody>
         {s.health.map((h) => <tr key={h.name}><td style={{ width: 24 }}>{h.ok ? <span className="good">✓</span> : <span className="bad">✗</span>}</td><td><b>{h.name}</b></td><td className="muted small-text">{h.detail}</td></tr>)}
       </tbody></table>
@@ -179,14 +179,14 @@ export default function Settings() {
       </div>
 
       <h3>Paths and performance</h3>
-      <div className="muted small-text" style={{ marginBottom: 10 }}>Saved in app/config.json. Used after a restart{s.supervised ? "" : " (stop Dub Studio and start it again)"}.{s.app.from_env.length ? ` Set by the environment (wins over this page): ${s.app.from_env.join(", ")}.` : ""}</div>
+      <div className="muted small-text" style={{ marginBottom: 10 }}>Saved in app/config.json. Used after a restart{s.supervised ? "" : " (stop Mirror Video and start it again)"}.{s.app.from_env.length ? ` Set by the environment (wins over this page): ${s.app.from_env.join(", ")}.` : ""}</div>
       <div className="panel">
         <div className="kv" style={{ gridTemplateColumns: "1fr" }}>
           {APP_FIELDS.map(([k, label, hint]) => <label key={k}>{label}<input value={appV[k] ?? ""} placeholder={hint} onChange={(e) => setAppV({ ...appV, [k]: e.target.value })} /></label>)}
         </div>
         <div className="row" style={{ gap: 8, marginTop: 12 }}>
           <button className="primary" disabled={!!busy} onClick={saveApp}>Save</button>
-          {s.supervised && <button onClick={restart}>Restart Dub Studio</button>}
+          {s.supervised && <button onClick={restart}>Restart Mirror Video</button>}
         </div>
       </div>
     </div>
