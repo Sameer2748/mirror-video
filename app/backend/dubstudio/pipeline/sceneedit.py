@@ -14,11 +14,11 @@ and returns an edit decision list (EDL): back-to-back pieces of shots. The scrip
 shot, speed 0.8-1.25x, piece >= 0.5 s, every dialogue line starts on a moving mouth within 0.3 s, action/talking footage
 only once in the episode, reaction/neutral repeats 8 s apart) and sends leftover story problems back to Claude
 (2 first-pass rounds, then up to 2 whole-episode fix passes of 2 rounds; the second pass runs only if problems remain).
-Speed / short B-roll are fixed in code.
+Speed / short B-roll are fixed in code. Thinking is medium — more than the cheap low setting, not the old high one.
 
 Usage: sceneedit.py <work> <library dir> <from s> <to s> <out manifest json> [--window 30] [--model M] [--parallel N]
   --parallel N: all stretches at the same time, N Claude calls at once (see PARALLEL MODE below); without it: one by one.
-  --first-rounds / --fix-passes / --fix-rounds / --max-tokens / --effort: cost knobs (defaults: 2, 2, 2, 8000, low).
+  --first-rounds / --fix-passes / --fix-rounds / --max-tokens / --effort: cost knobs (defaults: 2, 2, 2, 12000, medium).
 Writes the manifest (segments for render) and <out>.edl.json (every window: EDL with reasons, check rounds).
 """
 import base64, json, os, re, sys
@@ -27,11 +27,11 @@ from pathlib import Path
 W, LIBD, A0, A1, OUTM = Path(sys.argv[1]), Path(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), Path(sys.argv[5])
 opt = lambda k, d: type(d)(sys.argv[sys.argv.index(k) + 1]) if k in sys.argv else d
 WIN = opt("--window", 30.0); MODEL = opt("--model", "")
-ASK_MAX = opt("--max-tokens", 8000)
+ASK_MAX = opt("--max-tokens", 12000)
 FIRST_ROUNDS = opt("--first-rounds", 2)
 FIX_PASSES = opt("--fix-passes", 2)
 FIX_ROUNDS = opt("--fix-rounds", 2)
-EFFORT = sys.argv[sys.argv.index("--effort") + 1] if "--effort" in sys.argv else "low"
+EFFORT = sys.argv[sys.argv.index("--effort") + 1] if "--effort" in sys.argv else "medium"
 def _app_dir(script):
     """Folder on sys.path for `import dubstudio`: parents[2] (Mac), else /opt/app (CPU worker)."""
     script = Path(script).resolve()
