@@ -12,6 +12,21 @@ def test_extract_json_skips_prose():
     assert extract_json('```json\n{"a": 1}\n```') == {"a": 1}
 
 
+def test_extract_json_closes_a_truncated_locations_map():
+    """Shot library: Claude hit max_tokens mid-key ('Night forest, then Albe). Keep the finished pairs."""
+    from dubstudio.ai import extract_json
+    text = (
+        '{"locations": {\n'
+        '"Albert\'s study": "study",\n'
+        '"Alexandre\'s bedroom": "bedchamber",\n'
+        '"Night forest, then Albe'
+    )
+    got = extract_json(text, "locations")
+    assert got["locations"]["Albert's study"] == "study"
+    assert got["locations"]["Alexandre's bedroom"] == "bedchamber"
+    assert "Night forest" not in json.dumps(got)
+
+
 def test_ai_matching_endpoint_with_fake_gateway(env, monkeypatch):
     from dubstudio import ai
     monkeypatch.setattr(ai, "available", lambda: True)

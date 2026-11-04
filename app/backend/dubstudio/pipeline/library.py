@@ -184,15 +184,32 @@ print("scenes:", [(sc["from"], sc["to"], sc["name"]) for sc in cache["scenes"]["
 # locations = one background (the parking garage at the start and later = one location); a description that mixes places
 # (flashback, montage) is "mixed" and never a B-roll
 places = sorted({info.get(k, {}).get("place", "") for k in range(len(shots))} - {""})
-if "locations" not in cache:
+def _ask_locations(part):
     q = ("Here are the place descriptions of the shots of one drama episode. Group them into LOCATIONS: one location = one "
          "background that looks the same on screen (e.g. 'parking garage' and 'parking garage beside the car' are one "
          "location; a car interior, a different room, a street are different locations). A description that mixes several "
          "places (a flashback, a montage: 'bedroom, then inside a dark car, then a city street') belongs to the location "
          "\"mixed\". Answer only JSON: {\"locations\": {\"<place description exactly as given>\": \"<short location name>\"}}\n\n"
-         + "\n".join(f"- {p}" for p in places))
-    text, _ = ai.chat(q, max_tokens=4000)
-    cache["locations"] = ai.extract_json(text, "locations"); json.dump(cache, open(cache_p, "w"), indent=1, ensure_ascii=False)
+         + "\n".join(f"- {p}" for p in part))
+    text, _ = ai.chat(q, max_tokens=8000)
+    return ai.extract_json(text, "locations")["locations"]
+
+
+if "locations" not in cache:
+    loc = {}
+    for i in range(0, len(places), 30):
+        part = places[i:i + 30]
+        try:
+            loc.update(_ask_locations(part))
+        except ValueError:
+            text, _ = ai.chat(
+                "Your last reply was cut off. Reply again with the FULL JSON only.\n\n"
+                "Answer only JSON: {\"locations\": {\"<place description exactly as given>\": \"<short location name>\"}}\n\n"
+                + "\n".join(f"- {p}" for p in part),
+                max_tokens=12000)
+            loc.update(ai.extract_json(text, "locations")["locations"])
+    cache["locations"] = {"locations": loc}
+    json.dump(cache, open(cache_p, "w"), indent=1, ensure_ascii=False)
 loc_of_place = cache["locations"]["locations"]
 print("locations:", sorted(set(loc_of_place.values())))
 rows = []

@@ -138,10 +138,33 @@ def chat(prompt, model=None, max_tokens=4000, system=None, retries=4, temperatur
             raise
 
 
+def _close_truncated_json(text):
+    """A reply cut off at max_tokens, e.g. `{"locations": {"A": "study", "Night forest, then Albe`.
+    Drop the unfinished last field and close open braces. -> object or None."""
+    i = next((k for k, c in enumerate(text) if c in "{["), None)
+    if i is None:
+        return None
+    s = text[i:]
+    if s.count('"') % 2 == 1:                          # unfinished string: drop back to the last complete field
+        last_q = s.rfind('"')
+        cut = max(s.rfind(",", 0, last_q), s.rfind("{", 0, last_q), s.rfind("[", 0, last_q))
+        if cut <= 0:
+            return None
+        s = s[:cut]
+    s = s.rstrip().rstrip(",")
+    # counts ignore quotes, good enough for the location/scene maps this step asks for
+    s += "]" * max(s.count("[") - s.count("]"), 0)
+    s += "}" * max(s.count("{") - s.count("}"), 0)
+    try:
+        return json.loads(s)
+    except ValueError:
+        return None
+
+
 def extract_json(text, key=None):
     """Claude sometimes writes prose (which may contain things like "[13]") before the JSON. Return the first JSON
-    object found; with `key`, the first object that has that key."""
-    text = re.sub(r"```(?:json)?", "", text)
+    object found; with `key`, the first object that has that key. A reply cut off mid-object is closed and used."""
+    text = re.sub(r"```(?:json)?", "", text or "")
     first = None
     for i, ch in enumerate(text):
         if ch in "[{":
@@ -156,6 +179,9 @@ def extract_json(text, key=None):
             first = first if first is not None else v
     if key is None and first is not None:
         return first
+    repaired = _close_truncated_json(text)
+    if repaired is not None and (key is None or (isinstance(repaired, dict) and key in repaired)):
+        return repaired
     raise ValueError("no JSON in model reply: " + text[:200])
 
 
