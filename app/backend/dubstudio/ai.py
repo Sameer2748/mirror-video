@@ -103,8 +103,9 @@ def _req(url, body=None, timeout=120):
     return json.load(urllib.request.urlopen(r, timeout=timeout))
 
 
-def chat(prompt, model=None, max_tokens=4000, system=None, retries=4, temperature=None):
-    """One call. `prompt` is a string or an OpenAI-style content list. Returns (text, usage)."""
+def chat(prompt, model=None, max_tokens=4000, system=None, retries=4, temperature=None, reasoning=None):
+    """One call. `prompt` is a string or an OpenAI-style content list. Returns (text, usage).
+    `reasoning` is forwarded as-is (e.g. {"effort": "low"} on OpenRouter Claude 5.5)."""
     s = settings(); model = model_id(model or s["AI_MODEL"])
     msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
     body = dict(model=model, messages=msgs, max_tokens=max_tokens)
@@ -112,6 +113,8 @@ def chat(prompt, model=None, max_tokens=4000, system=None, retries=4, temperatur
         body["metadata"] = {"user_email": s.get("AI_EMAIL", "")}
     if temperature is not None:          # the Claude 5.5 models refuse `temperature` (deprecated); leave it out
         body["temperature"] = temperature
+    if reasoning:
+        body["reasoning"] = reasoning
     for a in range(retries + 1):
         try:
             d = _req(_url("chat"), body, timeout=300)

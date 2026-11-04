@@ -12,10 +12,13 @@ The dub range is cut into windows of about 30 s (at a pause between lines). For 
   - the footage already used by the earlier windows, and the last pieces before this window (continuity);
 and returns an edit decision list (EDL): back-to-back pieces of shots. The script checks it (tiling, footage inside its
 shot, speed 0.8-1.25x, piece >= 0.5 s, every dialogue line starts on a moving mouth within 0.3 s, action/talking footage
-only once in the episode, reaction/neutral repeats 8 s apart) and sends the problems back to Claude (up to 4 rounds).
+only once in the episode, reaction/neutral repeats 8 s apart) and sends leftover story problems back to Claude
+(2 first-pass rounds, then up to 2 whole-episode fix passes of 2 rounds; the second pass runs only if problems remain).
+Speed / short B-roll are fixed in code.
 
 Usage: sceneedit.py <work> <library dir> <from s> <to s> <out manifest json> [--window 30] [--model M] [--parallel N]
   --parallel N: all stretches at the same time, N Claude calls at once (see PARALLEL MODE below); without it: one by one.
+  --first-rounds / --fix-passes / --fix-rounds / --max-tokens / --effort: cost knobs (defaults: 2, 2, 2, 8000, low).
 Writes the manifest (segments for render) and <out>.edl.json (every window: EDL with reasons, check rounds).
 """
 import base64, json, os, re, sys
@@ -24,6 +27,11 @@ from pathlib import Path
 W, LIBD, A0, A1, OUTM = Path(sys.argv[1]), Path(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), Path(sys.argv[5])
 opt = lambda k, d: type(d)(sys.argv[sys.argv.index(k) + 1]) if k in sys.argv else d
 WIN = opt("--window", 30.0); MODEL = opt("--model", "")
+ASK_MAX = opt("--max-tokens", 8000)
+FIRST_ROUNDS = opt("--first-rounds", 2)
+FIX_PASSES = opt("--fix-passes", 2)
+FIX_ROUNDS = opt("--fix-rounds", 2)
+EFFORT = sys.argv[sys.argv.index("--effort") + 1] if "--effort" in sys.argv else "low"
 def _app_dir(script):
     """Folder on sys.path for `import dubstudio`: parents[2] (Mac), else /opt/app (CPU worker)."""
     script = Path(script).resolve()
@@ -585,6 +593,37 @@ def fix_short_broll(edl):
     return edl, notes
 
 
+def fix_speed(edl):
+    """Clamp each piece to 0.8–1.25x by changing only its source span, staying inside the shot."""
+    notes = []
+    for e in edl:
+        r = SH.get(int(e.get("shot") or 0))
+        dur = max(float(e.get("t1", 0)) - float(e.get("t0", 0)), 1e-6)
+        if not r or dur < 0.05:
+            continue
+        a, b = float(e["from"]), float(e["to"])
+        sp = (b - a) / dur
+        if SPEED_LO - 0.001 <= sp <= SPEED_HI + 0.001:
+            continue
+        want = min(max(sp, SPEED_LO), SPEED_HI) * dur
+        na, nb = a, a + want
+        if nb > r["end"]:
+            nb = r["end"]
+            na = max(r["start"], nb - want)
+        if nb - na < SPEED_LO * dur - 0.02:
+            continue
+        e["from"], e["to"] = round(na, 3), round(nb, 3)
+        notes.append(f"piece at dub {e['t0']:.2f} s speed {sp:.2f}x -> {(nb - na) / dur:.2f}x")
+    return edl, notes
+
+
+def polish(edl):
+    """Mechanical repairs the checker already knows how to describe — do not spend a Claude round on them."""
+    edl, n1 = fix_short_broll(edl)
+    edl, n2 = fix_speed(edl)
+    return edl, n1 + n2
+
+
 def line_tag(d):
     if d.get("swap"):
         w = d["_wrong"][0]; own = fmt_iv0(d["_own"])
@@ -774,7 +813,7 @@ def cut_window(T0, T1, before, cache, wkey):
         content += [{"type": "text", "text": f"shot {r['n']}:"}, {"type": "image_url", "image_url": {"url": b64(r["n"])}}]
     content = cacheable(content)                      # the rounds below re-send exactly this: bill it once
     extra, rounds, edl = "", [], []
-    for rnd in range(4):
+    for rnd in range(FIRST_ROUNDS):
         key = f"{wkey}|round{rnd}"
         if key in cache:
             ans = cache[key]
@@ -792,6 +831,7 @@ def cut_window(T0, T1, before, cache, wkey):
             print(f"  window {T0:.1f}-{T1:.1f}: using the automatic edit ({len(edl)} pieces); Claude returned no JSON", flush=True)
             rounds.append(dict(round=rnd, problems=["Claude returned no JSON; used the automatic edit"], notes=""))
             break
+        edl, _fx = polish(edl)
         probs = check(edl, T0, T1, lines, before)
         rounds.append(dict(round=rnd, problems=probs, notes=ans.get("notes", "")))
         print(f"  window {T0:.1f}-{T1:.1f}: round {rnd}: {len(edl)} pieces, {len(probs)} problems" + (": " + " | ".join(probs[:4]) if probs else ""), flush=True)
@@ -824,7 +864,10 @@ fmt_iv = lambda iv: ", ".join(f"{a:.2f}-{b:.2f}" for a, b in iv)
 
 def ask_claude(c):
     t = time.time()
-    text, u = ai.chat(c, model=MODEL or None, max_tokens=32000)
+    kw = dict(model=MODEL or None, max_tokens=ASK_MAX)
+    if EFFORT:
+        kw["reasoning"] = {"effort": EFFORT}
+    text, u = ai.chat(c, **kw)
     with LOCK:
         USAGE["calls"] += 1; USAGE["call_seconds"] += time.time() - t
         USAGE["prompt_tokens"] += int((u or {}).get("prompt_tokens") or 0); USAGE["completion_tokens"] += int((u or {}).get("completion_tokens") or 0)
@@ -1105,10 +1148,14 @@ def run_par(A0, A1):
                         else " | ALL its footage belongs to other stretches: do NOT use it")
         line_txt = "\n".join(f"line {d['idx']}: {d['start_ms'] / 1000:.2f}-{d['end_ms'] / 1000:.2f} s  "
                              f"{('DIALOGUE said by ' + d['speaker']) if d['dialogue'] and d.get('speaker') else 'DIALOGUE' if d['dialogue'] else 'narration'}{' [scene: ' + str(d.get('scene')) + ', location: ' + d['loc'] + ']' if d.get('loc') else ''}{line_tag(d)}: {d['text']}" for d in LINES[k])
+        start = auto_window(T0, T1)
+        start_txt = "\n".join(f"- {e['t0']:.2f}-{e['t1']:.2f} s shot {e['shot']} source {e['from']:.2f}-{e['to']:.2f}"
+                              for e in start) or "- none"
         rule8 = (f"\n11. The other stretches of the episode are cut AT THE SAME TIME as this one. For talking / action / object shots use "
                  f"ONLY the footage marked 'for THIS stretch' (the rest is shown by other stretches). SHARED shots (reaction / "
                  f"neutral / establishing) may be used by any stretch; the software marks repeats.")
         head = (prompt(T0, T1) + rule8 + "\n\nDUB LINES (voice times):\n" + line_txt +
+                "\n\nSTARTING CUT (automatic edit). Improve this; keep what already works:\n" + start_txt +
                 "\n\nTHE AUTOMATIC EDIT'S PIECES JUST BEFORE THIS STRETCH (rough guide for a smooth join; the real cut there is made at the same time):\n" +
                 ("\n".join(auto_pc(s) for s in before) or "- this is the start of the episode") +
                 "\nAND JUST AFTER IT:\n" + ("\n".join(auto_pc(s) for s in after) or "- this is the end") +
@@ -1144,7 +1191,7 @@ def run_par(A0, A1):
                     rounds.append(dict(round=len(rounds), stage=tag, problems=["Claude returned no JSON; used the automatic edit"], notes=""))
                     break
             new = parse_edl(ans)
-            if new: edl, _fx = fix_short_broll(new)
+            if new: edl, _fx = polish(new)
             probs = check_par(edl, T0, T1, LINES[k], k, own, others, prev_last)
             rounds.append(dict(round=len(rounds), stage=tag, problems=probs, notes=ans.get("notes", "")))
             if best is None or len(probs) <= best[0]: best = (len(probs), edl, f"{tag}{rnd}", probs)
@@ -1162,13 +1209,13 @@ def run_par(A0, A1):
         return edl, rounds, time.time() - t
 
     with ThreadPoolExecutor(PAR) as ex:
-        out = list(ex.map(lambda k: run(k, "a", 3), range(len(wins))))
+        out = list(ex.map(lambda k: run(k, "a", FIRST_ROUNDS), range(len(wins))))
     res = [o[0] for o in out]; rounds = [o[1] for o in out]; wsec = [o[2] for o in out]
     t_first = time.time() - t_start
-    print(f"first pass: {len(wins)} stretches in {t_first:.0f} s", flush=True)
+    print(f"first pass: {len(wins)} stretches in {t_first:.0f} s ({FIRST_ROUNDS} rounds, effort={EFFORT}, max_tokens={ASK_MAX})", flush=True)
 
     fixes = []
-    for g in range(2):
+    for g in range(FIX_PASSES):
         gp, _ = global_check(res)
         for k in range(len(res)):                          # a stretch still failing its own check goes back too
             if rounds[k] and rounds[k][-1]["problems"]:
@@ -1195,7 +1242,7 @@ def run_par(A0, A1):
                       "\nFootage of these shots shown by the other stretches:\n" + shown +
                       "\n\nYour EDL for this stretch:\n" + json.dumps([{x: e[x] for x in ("t0", "t1", "shot", "from", "to", "line", "why") if x in e} for e in res[k]], ensure_ascii=False) +
                       "\n\nThe whole-episode check found these problems; fix them all (keep what is fine) and answer the complete corrected JSON:\n- " + "\n- ".join(gp[k]))
-            return run(k, f"g{g}_", 3, extra0, others, pl, res[k])
+            return run(k, f"g{g}_", FIX_ROUNDS, extra0, others, pl, res[k])
 
         with ThreadPoolExecutor(PAR) as ex:
             fo = list(ex.map(fix, bad))

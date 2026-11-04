@@ -76,8 +76,9 @@ def test_a_chat_call_is_shaped_for_each_provider(monkeypatch, tmp_path):
         return {"choices": [{"message": {"content": "ok"}}], "usage": {"cost": 0.001}}
     monkeypatch.setattr(ai, "_req", fake)
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test"); monkeypatch.delenv("AI_PROVIDER", raising=False)
-    ai.chat("hello", model="claude-sonnet-5-5")
+    ai.chat("hello", model="claude-sonnet-5-5", reasoning={"effort": "low"})
     assert seen["body"]["model"] == "anthropic/claude-sonnet-5.5" and "metadata" not in seen["body"]
+    assert seen["body"]["reasoning"] == {"effort": "low"}
     monkeypatch.setenv("AI_PROVIDER", "gateway")
     monkeypatch.setenv("AI_BASE", "https://gw.example"); monkeypatch.setenv("AI_KEY", "k"); monkeypatch.setenv("AI_EMAIL", "a@b.c")
     ai.chat("hello", model="claude-sonnet-5-5")
