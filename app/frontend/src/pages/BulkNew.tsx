@@ -29,9 +29,9 @@ export default function BulkNew() {
   const rangeOk = Number.isInteger(a) && Number.isInteger(b) && a >= 1 && b >= a && b - a < 100;
   const nums = rangeOk ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [];
 
-  const videoMap = useMemo(() => keepRange(matchFolder(videos, VIDEO_EXTS), nums), [videos, nums]);
-  const audioMap = useMemo(() => keepRange(matchFolder(audios, AUDIO_EXTS), nums), [audios, nums]);
-  const scriptMap = useMemo(() => keepRange(matchFolder(scripts, SCRIPT_EXTS), nums), [scripts, nums]);
+  const videoMap = useMemo(() => keepRange(matchFolder(videos, VIDEO_EXTS, nums), nums), [videos, nums]);
+  const audioMap = useMemo(() => keepRange(matchFolder(audios, AUDIO_EXTS, nums), nums), [audios, nums]);
+  const scriptMap = useMemo(() => keepRange(matchFolder(scripts, SCRIPT_EXTS, nums), nums), [scripts, nums]);
   const videoUse = useMemo(() => folderUse(videos, VIDEO_EXTS, nums), [videos, nums]);
   const audioUse = useMemo(() => folderUse(audios, AUDIO_EXTS, nums), [audios, nums]);
   const scriptUse = useMemo(() => folderUse(scripts, SCRIPT_EXTS, nums), [scripts, nums]);
@@ -83,16 +83,15 @@ export default function BulkNew() {
 
       <div className="name-rules">
         <b>How to name the files</b>
-        <p>Each folder holds one file per episode, named with the episode number only:</p>
+        <p>Each folder holds one file per episode. The name just has to contain that episode number — you do not have to rename to <code>11.mp4</code>:</p>
         <ul>
-          <li>Source videos folder → <code>1.mp4</code>, <code>2.mp4</code>, … (also <code>.mov</code> / <code>.mkv</code>)</li>
-          <li>Dub audio folder → <code>1.mp3</code>, <code>2.mp3</code>, … (also <code>.wav</code> / <code>.m4a</code>)</li>
-          <li>Dub script folder → <code>1.docx</code>, <code>2.docx</code>, … (also <code>.txt</code>)</li>
+          <li>Source videos → <code>TAB FR eo 14 .mp4</code>, <code>TAB_FR_S01E11.mp4</code>, <code>11.mp4</code></li>
+          <li>Dub audio → <code>TAB_Italy_Ep11.mp3</code>, <code>11.mp3</code>, <code>puntata 11.m4a</code></li>
+          <li>Dub script → <code>TAB_IT_11.docx</code>, <code>11.docx</code>, <code>episode 11.txt</code></li>
         </ul>
-        <p className="hint" style={{ margin: 0 }}>If you type 32–33, only <code>32.mp4</code> + <code>33.mp4</code>
-          (and the matching audio / script) are used. Other videos, audio, or scripts in those folders —
-          <code>31.mp4</code>, <code>34.mp4</code>, random names — stay on disk and are not uploaded.
-          Leading zeros (<code>032.mp4</code>) and an optional <code>ep</code> prefix are accepted.</p>
+        <p className="hint" style={{ margin: 0 }}>If you type 11–12, only files whose name is episode 11 or 12 are used.
+          Extra episodes (<code>10</code>, <code>13</code>), trailers, and names with no number stay on disk.
+          <code>S01E11</code> is episode 11, not 1. Years and 1080p are ignored.</p>
       </div>
 
       <div className="form">
@@ -116,11 +115,11 @@ export default function BulkNew() {
           </>
         ) : (
           <>
-            <LocalDir label="Source videos folder" hint="Folder of {N}.mp4 files on this Mac" value={dirs.src_video_dir}
+            <LocalDir label="Source videos folder" hint="Any names that contain the episode number, e.g. TAB_FR_S01E11.mp4" value={dirs.src_video_dir}
               onPick={() => setPicking("src_video_dir")} />
-            <LocalDir label="Dub audio folder" hint="Folder of {N}.mp3 files on this Mac" value={dirs.dub_audio_dir}
+            <LocalDir label="Dub audio folder" hint="Any names that contain the episode number, e.g. TAB_Italy_Ep11.mp3" value={dirs.dub_audio_dir}
               onPick={() => setPicking("dub_audio_dir")} />
-            <LocalDir label="Dub script folder (optional)" hint="Folder of {N}.docx files on this Mac" value={dirs.dub_script_dir}
+            <LocalDir label="Dub script folder (optional)" hint="Any names that contain the episode number, e.g. TAB_IT_11.docx" value={dirs.dub_script_dir}
               onPick={() => setPicking("dub_script_dir")} />
           </>
         )}

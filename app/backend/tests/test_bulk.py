@@ -4,6 +4,29 @@ from conftest import wait_for
 from test_m1 import make_show
 from test_storage import r2  # noqa: F401 — cloud-upload fixture
 from test_uploads_queue import cloud_show, upload
+from dubstudio.main import episode_from_name
+
+
+def test_episode_from_name_reads_common_titles():
+    """The user should not have to rename TAB_FR_S01E11.mp4 to 11.mp4."""
+    assert episode_from_name("TAB FR eo 14 .mp4") == 14
+    assert episode_from_name("TAB FR eo 14 .mp4", {14, 15}) == 14
+    assert episode_from_name("TAB FR ep 14.mp4") == 14
+    assert episode_from_name("11.mp4") == 11
+    assert episode_from_name("011.mp3") == 11
+    assert episode_from_name("ep12.docx") == 12
+    assert episode_from_name("TAB_FR_S01E11.mp4") == 11
+    assert episode_from_name("TAB_Italy_Ep11.mp3") == 11
+    assert episode_from_name("Italy episode 12 - title.mp3") == 12
+    assert episode_from_name("puntata 11.docx") == 11
+    assert episode_from_name("Show 1080p ep11.mp4") == 11
+    assert episode_from_name("trailer.mp4") is None
+    assert episode_from_name("2024_recap.mp4") is None
+    assert episode_from_name("TAB_FR_S01E11.mp4", {11, 12}) == 11
+    assert episode_from_name("TAB_FR_S01E11.mp4", {1, 2}) is None
+    assert episode_from_name("Show 11 and 12.mp4", {11, 12}) is None
+    assert episode_from_name("TGS_EPISODE_31.mp4", {32, 33}) is None
+    assert episode_from_name("TGS_EPISODE_32.mp4", {32, 33}) == 32
 
 
 def numbered_dirs(tmp, video_bytes, audio_bytes, numbers=(31, 34)):
@@ -86,6 +109,41 @@ def test_bulk_ignores_files_outside_the_range(env):
         assert names["src_video"] == f"{e['number']}.mp4"
         assert names["dub_audio"] == f"{e['number']}.mp3"
         assert names["dub_script"] == f"{e['number']}.docx"
+
+
+def test_bulk_matches_long_file_names_in_the_range(env):
+    """TAB FR / Italy titles that already contain 11 and 12, without renaming to 11.mp4."""
+    c = env["client"]; s = make_show(c, env["show"])
+    video = (env["show"] / "US" / "SHOW Ep - 17.mp4").read_bytes()
+    audio = (env["show"] / "italy" / "Episode 17 - Prova.mp3").read_bytes()
+    src = env["tmp"] / "tab-src"; dub = env["tmp"] / "tab-dub"; scripts = env["tmp"] / "tab-doc"
+    src.mkdir(); dub.mkdir(); scripts.mkdir()
+    (src / "TAB_FR_S01E11.mp4").write_bytes(video)
+    (src / "TAB_FR_S01E12.mp4").write_bytes(video)
+    (src / "TAB_FR_S01E10.mp4").write_bytes(video)
+    (dub / "TAB_Italy_Ep11.mp3").write_bytes(audio)
+    (dub / "TAB Italy episode 12.mp3").write_bytes(audio)
+    (scripts / "TAB_IT_11.docx").write_text("s11")
+    (scripts / "puntata 12.docx").write_text("s12")
+    prev = c.post(f"/api/shows/{s['id']}/batches/preview", json={
+        "start": 11, "end": 12, "src_video_dir": str(src), "dub_audio_dir": str(dub),
+        "dub_script_dir": str(scripts)}).json()
+    by = {r["number"]: r for r in prev["episodes"]}
+    assert by[11]["src_video"].endswith("TAB_FR_S01E11.mp4") and not by[11]["missing"]
+    assert by[12]["dub_audio"].endswith("TAB Italy episode 12.mp3")
+    assert prev["ready"] == 2
+    assert prev["skipped"]["src_video"] == ["TAB_FR_S01E10.mp4"]
+
+    b = c.post(f"/api/shows/{s['id']}/batches", json={
+        "start": 11, "end": 12, "src_video_dir": str(src), "dub_audio_dir": str(dub),
+        "dub_script_dir": str(scripts)}).json()
+    names = {}
+    for e in b["episodes"]:
+        names[e["number"]] = {a["kind"]: Path(a["path"]).name
+                              for a in c.get(f"/api/episodes/{e['id']}").json()["assets"] if a.get("role") == "input"}
+    assert names[11]["src_video"] == "TAB_FR_S01E11.mp4"
+    assert names[11]["dub_audio"] == "TAB_Italy_Ep11.mp3"
+    assert names[12]["dub_script"] == "puntata 12.docx"
 
 
 def test_preview_and_create_attach_numbered_files(env):

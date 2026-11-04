@@ -501,21 +501,71 @@ def _episode_range(body):
     return start, end
 
 
+# Resolutions / years that look like episode numbers inside a long file name.
+_NOT_EPISODE = {360, 480, 720, 1080, 1440, 2160, 1920, 1280, 3840, 4096}
+_SEASON_EP = re.compile(r"(?i)s\d{1,2}e0*([1-9]\d{0,2})(?!\d)")
+_MARKED_EP = re.compile(r"(?i)(?:^|[^a-z0-9])(?:ep(?:isode)?|épisode|puntata|folge|eo|e|#)[\s._-]*0*([1-9]\d{0,2})(?!\d)")
+_BARE_EP = re.compile(r"(?:^|\D)0*([1-9]\d{0,2})(?!\d)")
+
+
+def _name_stem(name):
+    """`TAB FR eo 14 .mp4` -> `tab fr eo 14` (spaces, underscores and dots collapse)."""
+    base = Path(str(name)).name.strip()
+    if "." in base:
+        base = base.rsplit(".", 1)[0]
+    return re.sub(r"[\s._\-]+", " ", base).strip().lower()
+
+
+def episode_from_name(name, allowed=None):
+    """Episode number in a file name. `11.mp4` still works; so does `TAB FR eo 14 .mp4` or `S01E11`.
+    `allowed` is the range the user typed — only those numbers count, so `S01E11` is 11, not 1."""
+    stem = _name_stem(name)
+    hits = []
+    for m in _SEASON_EP.finditer(stem):
+        hits.append((int(m.group(1)), "season_ep"))
+    for m in _MARKED_EP.finditer(stem):
+        hits.append((int(m.group(1)), "marked"))
+    # S01E11: do not also treat the "01" as episode 1
+    bare_src = _SEASON_EP.sub(" ", stem)
+    for m in _BARE_EP.finditer(bare_src):
+        n = int(m.group(1))
+        if n in _NOT_EPISODE or 1900 <= n <= 2099:
+            continue
+        hits.append((n, "bare"))
+    if allowed is not None:
+        want = {int(x) for x in allowed}
+        hits = [(n, k) for n, k in hits if n in want]
+    if not hits:
+        return None
+    for kind in ("season_ep", "marked", "bare"):
+        ns = {n for n, k in hits if k == kind}
+        if len(ns) == 1:
+            return ns.pop()
+        if len(ns) > 1:
+            return None
+    ns = {n for n, _ in hits}
+    return ns.pop() if len(ns) == 1 else None
+
+
 def find_numbered(folder, n, exts):
-    """`1.mp4` (also `01.mp4` / `ep1.mp4`) inside a folder. First matching extension wins."""
+    """A file for episode `n` in a folder. Exact `11.mp4` / `ep11.mp4` win; otherwise any name that
+    clearly holds that number (`TAB_FR_S01E11.mp4`). First matching extension wins among ties."""
     if not folder:
         return None
     p = Path(str(folder)).expanduser()
     if not p.is_dir():
         return None
-    names = {c.name.lower(): c for c in p.iterdir() if c.is_file()}
-    stems = (str(n), f"{n:02d}", f"ep{n}", f"ep{n:02d}")
-    for ext in exts:
-        for stem in stems:
-            hit = names.get(f"{stem}{ext}")
-            if hit:
-                return str(hit)
-    return None
+    n = int(n)
+    ext_rank = {e.lower() if e.startswith(".") else f".{e.lower()}": i for i, e in enumerate(exts)}
+    hits = []
+    for c in p.iterdir():
+        if not c.is_file() or c.suffix.lower() not in ext_rank:
+            continue
+        if episode_from_name(c.name, {n}) == n:
+            stem = c.stem.lower()
+            exact = stem in {str(n), f"{n:02d}", f"{n:03d}", f"ep{n}", f"ep{n:02d}"}
+            hits.append((0 if exact else 1, ext_rank[c.suffix.lower()], c.name.lower(), str(c)))
+    return min(hits)[-1] if hits else None
 
 
 def unused_in_folder(folder, start, end, exts):
