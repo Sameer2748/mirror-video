@@ -1,4 +1,4 @@
-"""lipmerge: a 1-frame ffmpeg drift on 29.97 video is trimmed; a real gap still fails."""
+"""lipmerge: 1-frame drift and last-piece EOF gaps are trimmed; an empty half still fails."""
 import sys
 from pathlib import Path
 
@@ -35,13 +35,21 @@ def test_matching_counts_pass_through():
     assert out["method"]["mesh"] == "lipmesh.py"
 
 
-def test_big_gap_still_fails():
-    d = {"frames": 90, "window": [675, 690]}
-    m = {"frames": 376, "mouth": [0] * 376, "aperture": [0] * 376}
+def test_last_piece_eof_gap_is_trimmed():
+    """TAB ep12 600-615: one half stops at the video end (258), the other wrote a full 15 s window (376)."""
+    d = {"frames": 376, "scores": [1] * 376, "visual": [1] * 376, "method": {}}
+    m = {"frames": 258, "mouth": [0.1] * 258, "aperture": [0.2] * 258}
+    out, note = merge_pair(d, m, "600-615")
+    assert out["frames"] == 258
+    assert len(out["mouth"]) == 258 == len(out["scores"])
+    assert "trimmed" in note
+
+
+def test_empty_half_still_fails():
     try:
-        merge_pair(d, m, "675-690")
+        merge_pair({"frames": 0, "scores": []}, {"frames": 376, "mouth": [0] * 376, "aperture": [0] * 376}, "0-15")
     except ValueError as ex:
-        assert "nets 90" in str(ex) and "mesh 376" in str(ex)
+        assert "empty" in str(ex)
     else:
         raise AssertionError("expected a ValueError")
 
@@ -52,3 +60,13 @@ def test_lip_merge_uses_the_app_script_not_the_rented_one():
     assert got[0] == sys.executable
     assert got[1].endswith("dubstudio/pipeline/lipmerge.py")
     assert Path(got[1]).is_file()
+
+
+def test_groups_and_merged_use_shipped_scripts_not_the_mac_desktop():
+    dub = Runner._app_pipeline_script("dubstitch.py")
+    merged = Runner._app_pipeline_script("merged.py")
+    assert dub and merged
+    assert "france-team" not in str(dub) and "Desktop" not in str(merged)
+    cmd = ["{py}", "{scripts}/dubstitch.py", "groups", "--work", "/w"]
+    got = Runner._use_app_script(cmd, "dubstitch.py", dub)
+    assert got[1] == str(dub)

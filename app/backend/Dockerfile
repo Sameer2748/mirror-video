@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir
 
 COPY dubstudio ./dubstudio
 COPY tools ./tools
+COPY pipeline_tools ./pipeline_tools
 
 # the built screens are served by the API at / (Render can also host them as a static site; this keeps one origin,
 # which means no CORS and the session cookie just works)

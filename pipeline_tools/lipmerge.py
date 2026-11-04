@@ -18,14 +18,20 @@ def _cut(seq, n):
     return seq[:n] if isinstance(seq, list) else seq
 
 
+def _nlist(seq, fallback):
+    return len(seq) if isinstance(seq, list) and seq else fallback
+
+
 def merge_pair(d, m, label=""):
-    """Copy mouth/aperture onto the nets file. Trim a 1–2 frame ffmpeg drift. -> (out, note|None)."""
-    n, nm = int(d["frames"]), int(m["frames"])
+    """Copy mouth/aperture onto the nets file. Align both halves to the shorter count."""
+    n, nm = int(d.get("frames") or 0), int(m.get("frames") or 0)
+    n = min(n or 10**9, _nlist(d.get("scores"), n), _nlist(d.get("visual"), n))
+    nm = min(nm or 10**9, _nlist(m.get("mouth"), nm), _nlist(m.get("aperture"), nm))
+    if n < 1 or nm < 1:
+        raise ValueError(f"empty lip scan in {label}: nets {n} mesh {nm}")
     note = None
+    keep = min(n, nm)
     if n != nm:
-        if abs(n - nm) > 2:
-            raise ValueError(f"frame count differs in {label}: nets {n} mesh {nm}")
-        keep = min(n, nm)
         note = f"trimmed to {keep} frames (nets {n}, mesh {nm})"
         d = dict(d)
         d["frames"] = keep

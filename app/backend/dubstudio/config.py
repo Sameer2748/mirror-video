@@ -31,6 +31,14 @@ class Config:
         self.tools_dir = Path(env("DUBSTUDIO_TOOLS") or f.get("tools_dir") or _first_existing([
             HOME / "Desktop/france-team/adaptation-tool", ROOT.parent / "adaptation-tool", HOME / "mnt/adaptation-tool"])
             or HOME / "Desktop/france-team/adaptation-tool").expanduser()
+        # Render has no Mac Desktop folder. Scripts that must run on this box (groups, reading view, lip merge)
+        # live in app/backend/pipeline_tools and ship in the API image.
+        bundled = Path(__file__).resolve().parents[1] / "pipeline_tools"
+        self._scripts = Path(env("DUBSTUDIO_SCRIPTS") or "").expanduser() if env("DUBSTUDIO_SCRIPTS") else _first_existing([
+            self.tools_dir / "scripts" if (self.tools_dir / "scripts" / "dubstitch.py").is_file() else None,
+            bundled if (bundled / "dubstitch.py").is_file() else None,
+            self.tools_dir / "scripts",
+        ]) or (self.tools_dir / "scripts")
         # the app's own pipeline environment (scripts/setup_pipeline.sh) first: the tools' .venv on the Mac is empty
         own_py, venv_py = ROOT / "pipeline_env/bin/python", self.tools_dir / ".venv/bin/python"
         self.pipeline_python = env("DUBSTUDIO_PIPELINE_PY") or f.get("pipeline_python") or (
@@ -56,7 +64,7 @@ class Config:
 
     @property
     def scripts(self):
-        return self.tools_dir / "scripts"
+        return self._scripts
 
     @property
     def db_path(self):

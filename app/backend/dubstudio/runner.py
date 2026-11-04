@@ -444,6 +444,27 @@ class Runner:
         return out
 
     @staticmethod
+    def _app_pipeline_script(name):
+        """A pipeline script that ships in the API image, not the Mac Desktop folder."""
+        here = Path(__file__).resolve()
+        for p in (here.parent / "pipeline" / name, here.parents[1] / "pipeline_tools" / name,
+                  here.parents[3] / "pipeline_tools" / name if len(here.parents) > 3 else None):
+            if p is not None and p.is_file():
+                return p
+        s = cfg.scripts / name
+        return s if s.is_file() else None
+
+    @staticmethod
+    def _use_app_script(cmd, name, script):
+        out = []
+        for c in cmd or []:
+            if str(c).endswith(name) or str(c).endswith("{scripts}/" + name):
+                out.append(str(script))
+            else:
+                out.append(c)
+        return out
+
+    @staticmethod
     def _lipmerge_local_cmd(cmd):
         """Point lip_merge at this image's lipmerge.py and this process's Python (stdlib only)."""
         script = str(Path(__file__).resolve().parent / "pipeline" / "lipmerge.py")
@@ -460,7 +481,11 @@ class Runner:
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
         if j["step"] == "groups":
-            force_local = True   # clash trim is on this Mac; the rented image still raises on shared footage
+            # Clash trim lives in our dubstitch.py. Never run the Mac Desktop path on Render.
+            script = self._app_pipeline_script("dubstitch.py")
+            if script:
+                force_local = True
+                cmd = self._use_app_script(cmd or prm["cmd"], "dubstitch.py", script)
         if j["step"] == "lip_merge":
             # The rented image's lipmerge still dies on a 1-frame 29.97→25 fps gap (376 vs 375).
             # This merge is a JSON join; run the app's copy here so Retry trims that gap.
@@ -1189,10 +1214,10 @@ class Runner:
         prep.json. It only rides to the cloud as part of the match visit (`_run_match`). Sending it alone
         used to hang (TGS ep31: status stayed 'starting' while the work folder was packed for a rented machine)."""
         w = Path(j["params"]["ctx"]["W"])
-        merged = cfg.scripts / "merged.py"
-        if not merged.is_file():
+        merged = self._app_pipeline_script("merged.py")
+        if not merged:
             raise RuntimeError("merged.py is not on this machine")
-        r = subprocess.run([str(cfg.pipeline_python), str(merged), str(w), "95"],
+        r = subprocess.run([sys.executable, str(merged), str(w), "95"],
                            capture_output=True, text=True, cwd=self._local_cwd(), timeout=300)
         Path(j["log_path"]).parent.mkdir(parents=True, exist_ok=True)
         with open(j["log_path"], "a", encoding="utf-8") as log:
