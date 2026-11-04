@@ -36,6 +36,16 @@ def test_flags_and_checks(tmp_path):
     assert not any("outside" in p for p in tlm.validate(hair, src_duration_ms=50_000))
 
 
+def test_fit_episode_trims_a_clip_past_the_dub():
+    tl = dict(total_ms=8000, clips=[
+        dict(id="c0", row=0, t0=0, t1=6000, s0=0, s1=6000, dub_text="", src_text=""),
+        dict(id="c1", row=-1, t0=6000, t1=8003, s0=1000, s1=3003, dub_text="", src_text="")], v2=[])
+    tlm.fit_episode(tl)
+    c = tl["clips"][1]
+    assert c["t1"] == 8000 and abs(c["s1"] - 3000) < 1e-6
+    assert tlm.validate(tl) == []
+
+
 def test_write_manifest_keeps_the_pipeline_copy(tmp_path):
     w = tmp_path / "w"; write_manifest(w, [(0, 1000, 0, 1000), (1000, 2000, 5000, 6000)], 2000)
     tl = tlm.build_v1(w); base = tl["base"]

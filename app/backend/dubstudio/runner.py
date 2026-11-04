@@ -1252,9 +1252,13 @@ class Runner:
             shutil.copy(f"{W}/manifest_groups.json", f"{W}/manifest_groups.auto.json")
         a = json.load(open(f"{W}/manifest_groups.auto.json")); s = json.load(open(f"{W}/scene/scene_manifest.json"))
         s["total_ms"] = a["total_ms"]; L = s["segments"][-1]
-        if L["it_end_ms"] < a["total_ms"] - 1:
-            k = (a["total_ms"] - L["it_start_ms"]) / (L["it_end_ms"] - L["it_start_ms"])
-            L["us_end_ms"] = L["us_start_ms"] + (L["us_end_ms"] - L["us_start_ms"]) * k; L["it_end_ms"] = a["total_ms"]
+        span = L["it_end_ms"] - L["it_start_ms"]
+        # Claude writes seconds to 2 decimals (prompt is {T1:.2f}), so the last piece is often 1–10 ms
+        # short or long of the dub. Stretch a short tail; trim a long one. Same speed either way.
+        if span > 0 and abs(L["it_end_ms"] - a["total_ms"]) > 1:
+            k = (a["total_ms"] - L["it_start_ms"]) / span
+            L["us_end_ms"] = L["us_start_ms"] + (L["us_end_ms"] - L["us_start_ms"]) * k
+            L["it_end_ms"] = a["total_ms"]
         json.dump(s, open(f"{W}/manifest_groups.json", "w"), indent=1, ensure_ascii=False)
         return len(s["segments"])
 

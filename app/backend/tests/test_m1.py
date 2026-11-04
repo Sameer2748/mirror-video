@@ -245,3 +245,19 @@ def test_use_scene_keeps_the_automatic_edit_and_stretches_the_last_piece(tmp_pat
     assert m["total_ms"] == 10000 and L["it_end_ms"] == 10000 and abs(L["us_end_ms"] - 2700) < 1e-6 and L["broll"] is True
     Runner.use_scene(W)                                                  # again: the automatic edit is not overwritten
     assert json.loads((W / "manifest_groups.auto.json").read_text()) == auto
+
+
+def test_use_scene_trims_a_last_piece_past_the_dub(tmp_path):
+    """Claude writes hundredths of a second, so the last piece can sit a few ms past the dub. Trim it."""
+    import json
+    from dubstudio.runner import Runner
+    W = tmp_path; (W / "scene").mkdir()
+    auto = {"total_ms": 10000, "segments": [{"it_start_ms": 0, "it_end_ms": 10000, "us_start_ms": 0, "us_end_ms": 10000}]}
+    (W / "manifest_groups.json").write_text(json.dumps(auto))
+    (W / "scene" / "scene_manifest.json").write_text(json.dumps({
+        "total_ms": 10003, "segments": [
+            {"it_start_ms": 0, "it_end_ms": 8000, "us_start_ms": 100, "us_end_ms": 8100},
+            {"it_start_ms": 8000, "it_end_ms": 10003, "us_start_ms": 200, "us_end_ms": 2203, "broll": True}]}))
+    assert Runner.use_scene(W) == 2
+    L = json.loads((W / "manifest_groups.json").read_text())["segments"][-1]
+    assert L["it_end_ms"] == 10000 and abs(L["us_end_ms"] - 2200) < 1e-6

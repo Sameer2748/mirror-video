@@ -356,6 +356,29 @@ def open_counts(fl):
     return dict(red=red, yellow=yellow)
 
 
+def fit_episode(tl, src_duration_ms=None, media_ms=None):
+    """Trim any clip that starts before 0 or ends after the dub (and any source span past the
+    video). Keeps the same speed. Scene edit often writes the last t1 1–10 ms past total_ms
+    because Claude answers in hundredths of a second."""
+    total = tl.get("total_ms")
+    for c in all_clips(tl):
+        t0, t1 = c["t0"], c["t1"]
+        span = t1 - t0
+        if span > 0 and total is not None:
+            nt0, nt1 = max(t0, 0.0), min(t1, float(total))
+            if nt1 > nt0 and (nt0 != t0 or nt1 != t1):
+                c["s0"] = _src_at(c, nt0)
+                c["s1"] = _src_at(c, nt1)
+                c["t0"], c["t1"] = nt0, nt1
+        dur = (media_ms or {}).get(c["media"], -1) if c.get("media") else src_duration_ms
+        if dur and dur > 0:
+            if c["s0"] < 0:
+                c["s0"] = 0
+            if c["s1"] > dur:
+                c["s1"] = dur
+    return tl
+
+
 def label(c):
     return f"IT#{c.get('row')}" if c.get("row") is not None else f"clip {fmt(c['s0'])}"
 

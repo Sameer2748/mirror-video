@@ -1258,6 +1258,23 @@ def run_par(A0, A1):
     return [dict(e) for e in allp], report, stats
 
 
+def snap_segs(segs, a0, a1):
+    """Keep every piece inside the asked range. Claude writes hundredths of a second; A1 is often ms."""
+    lo, hi = round(a0 * 1000), round(a1 * 1000)
+    for s in segs:
+        t0, t1 = s["it_start_ms"], s["it_end_ms"]
+        span = t1 - t0
+        if span <= 0:
+            continue
+        nt0, nt1 = max(t0, lo), min(t1, hi)
+        if nt1 <= nt0 or (nt0 == t0 and nt1 == t1):
+            continue
+        u0, u1 = s["us_start_ms"], s["us_end_ms"]
+        s["us_start_ms"] = u0 + (u1 - u0) * (nt0 - t0) / span
+        s["us_end_ms"] = u0 + (u1 - u0) * (nt1 - t0) / span
+        s["it_start_ms"], s["it_end_ms"] = nt0, nt1
+
+
 if PAR:
     allE, report, stats = run_par(A0, A1)
     segs = []
@@ -1269,6 +1286,7 @@ if PAR:
                          it_text=d["text"] if d else "", us_text="", stretch_factor=round((e["t1"] - e["t0"]) / max(e["to"] - e["from"], 1e-6), 3),
                          note="scene edit: " + e.get("why", "")[:200], **({"zoom": 1.08} if e.get("reuse") else {}),
                      **({"broll": True} if is_broll(e, piece_lines(e)) else {})))
+    snap_segs(segs, A0, A1)
     json.dump(dict(total_ms=round(A1 * 1000), segments=segs, bleed_report=[], groups=[]), open(OUTM, "w"), indent=1, ensure_ascii=False)
     json.dump(dict(range=[A0, A1], windows=report, stats=stats), open(OUTM.with_suffix(".edl.json"), "w"), indent=1, ensure_ascii=False)
     left = sum(len(w["rounds"][-1]["problems"]) for w in report)
@@ -1294,6 +1312,7 @@ for e in allE:
                      it_text=d["text"] if d else "", us_text="", stretch_factor=round((e["t1"] - e["t0"]) / max(e["to"] - e["from"], 1e-6), 3),
                      note="scene edit: " + e.get("why", "")[:200], **({"zoom": 1.08} if e.get("reuse") else {}),
                      **({"broll": True} if is_broll(e, piece_lines(e)) else {})))
+snap_segs(segs, A0, A1)
 json.dump(dict(total_ms=round(A1 * 1000), segments=segs, bleed_report=[], groups=[]), open(OUTM, "w"), indent=1, ensure_ascii=False)
 json.dump(dict(range=[A0, A1], windows=report), open(OUTM.with_suffix(".edl.json"), "w"), indent=1, ensure_ascii=False)
 left = sum(len(w["rounds"][-1]["problems"]) for w in report)

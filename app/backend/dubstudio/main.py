@@ -1278,8 +1278,9 @@ def _check(eid, body, work):
     tl = {"clips": body["clips"], "v2": body.get("v2") or [], "tracks": body.get("tracks") or {},
           "approved": body.get("approved") or [], "total_ms": body["total_ms"], "holes": tlm.holes(work)}
     show = _get("shows", _get("episodes", eid)["show_id"])
-    fl = tlm.flags(tl, tlm.context(work), (show["profile"] or {}).get("flags"), _markers(eid))
     media_ms = {x["id"]: x["duration_ms"] for x in imports.items(work)}
+    tlm.fit_episode(tl, _src_duration_ms(eid), media_ms)
+    fl = tlm.flags(tl, tlm.context(work), (show["profile"] or {}).get("flags"), _markers(eid))
     return tl, fl, tlm.open_counts(fl), tlm.validate(tl, _src_duration_ms(eid), media_ms)
 
 
