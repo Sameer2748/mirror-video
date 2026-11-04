@@ -480,8 +480,8 @@ class Runner:
 
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
-        if j["step"] == "groups":
-            # Clash trim lives in our dubstitch.py. Never run the Mac Desktop path on Render.
+        if j["step"] in ("groups", "lipsync"):
+            # Clash trim + last-piece lip coverage live in our dubstitch.py. Never the Mac Desktop path on Render.
             script = self._app_pipeline_script("dubstitch.py")
             if script:
                 force_local = True
@@ -648,10 +648,8 @@ class Runner:
             sj = by.get(step)
             if not sj or sj["status"] in DONE:
                 continue
-            if step == "groups":
-                continue          # clash trim lives on this Mac; rented image still raises
-            if step == "library" and (not cloud.ai_key_allowed() or not (work / "manifest_groups.json").is_file()):
-                continue
+            if step in ("groups", "lipsync", "library"):
+                continue          # our copies (clash trim, last-piece lips, truncated JSON); rented image is older
             cmd = (sj["params"] or {}).get("cmd")
             if not cmd:
                 continue

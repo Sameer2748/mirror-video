@@ -652,14 +652,15 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     runner._run_cut(sheet)
     assert sent["name"] == "cut"
     # groups stays on this Mac (shared-footage trim); library waits until that file exists
-    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "captions"]
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "captions"]
     assert "facemap" not in sent["steps"] and "groups" not in sent["steps"]
-    assert [s for s, st in marked if st == "done"] == ["captions", "lipsync", "manifest", "sheet"]
+    assert "lipsync" not in sent["steps"] and "library" not in sent["steps"]
+    assert [s for s, st in marked if st == "done"] == ["captions", "manifest", "sheet"]
 
     (work / "manifest_groups.json").write_text("{}")
     marked.clear(); sent.clear()
     runner._run_cut(sheet)
-    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "library", "captions"]
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "captions"]
 
     marked.clear()
     runner._run_match(by["analyze"])

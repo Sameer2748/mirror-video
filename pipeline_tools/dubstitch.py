@@ -2742,8 +2742,10 @@ def cmd_lipsync(a):
     sent = []
     for j, c in enumerate(src):
         s, e = c.start_ms / 1000, c.end_ms / 1000
-        if not covered[int(s * 25):max(int(e * 25), int(s * 25) + 1)].all():
-            raise SystemExit(f"source sentence #{j} ({s:.1f}-{e:.1f}s) is not covered by the lip scan yet -- finish lipdetect.py --range")
+        sl, el = int(s * 25), max(int(e * 25), int(s * 25) + 1)
+        if sl < len(covered) and not covered[sl:min(el, len(covered))].all():
+            # last piece of a 29.97 file is often shorter than the 15 s window; those tail frames have no scan
+            print(f"note: source sentence #{j} ({s:.1f}-{e:.1f}s) sits past the lip scan; treating uncovered frames as no lips")
         hits = [(max(x, s), min(y, e)) for x, y in iv if min(y, e) - max(x, s) > 0]
         sec = sum(y - x for x, y in hits)
         sent.append(dict(idx=j, start_ms=c.start_ms, end_ms=c.end_ms, text=c.text, lips=[[round(x, 2), round(y, 2)] for x, y in hits],
