@@ -443,10 +443,29 @@ class Runner:
                 out[i + 1] = presets.asr_lang(out[i + 1])
         return out
 
+    @staticmethod
+    def _lipmerge_local_cmd(cmd):
+        """Point lip_merge at this image's lipmerge.py and this process's Python (stdlib only)."""
+        script = str(Path(__file__).resolve().parent / "pipeline" / "lipmerge.py")
+        out = []
+        for c in cmd or []:
+            if c in ("{py}", "{PY}"):
+                out.append(sys.executable)
+            elif str(c).endswith("lipmerge.py"):
+                out.append(script)
+            else:
+                out.append(c)
+        return out
+
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
         if j["step"] == "groups":
             force_local = True   # clash trim is on this Mac; the rented image still raises on shared footage
+        if j["step"] == "lip_merge":
+            # The rented image's lipmerge still dies on a 1-frame 29.97→25 fps gap (376 vs 375).
+            # This merge is a JSON join; run the app's copy here so Retry trims that gap.
+            force_local = True
+            cmd = self._lipmerge_local_cmd(cmd or prm["cmd"])
         if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
