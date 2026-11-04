@@ -319,6 +319,8 @@ def trim_words_to_voice(words, x, t0, min_sil=0.10):
 
 def transcribe_words(media, cache_dir, lang, models, t_from, t_to, chunk=60.0, pad=2.0, max_seconds=1e9, model_name="small"):
     """Every word Whisper hears in [t_from, t_to) of the media, with times. Resumable: one cached file per chunk."""
+    lang = str(lang or "en").strip().lower().replace("_", "-").split("-")[0] or "en"
+    lang = {"us": "en", "uk": "en", "jp": "ja", "deu": "de", "fra": "fr", "ita": "it"}.get(lang, lang)
     os.makedirs(cache_dir, exist_ok=True); model = None; stop = time.time() + max_seconds; words = []; todo = 0
     k = 0
     while t_from + k * chunk < t_to:

@@ -29,7 +29,7 @@ def plan(show, episode, assets):
     prof = show["profile"]; code = show["code"].upper(); N = episode["number"]
     W = Path(episode["work_dir"]); OUT = Path(episode["output_dir"])
     names = presets.names(code, N, prof)
-    dl, sl = prof["dub_lang"], prof["src_lang"]
+    dl, sl = presets.asr_lang(prof["dub_lang"], "it"), presets.asr_lang(prof["src_lang"], "en")
     D = prof.get("dub_label") or prof["labels"].split(",")[0]
     S_lab = prof["labels"].split(",")[1]
     M = str(cfg.models_dir)
@@ -189,7 +189,7 @@ def plan(show, episode, assets):
                      ctx["name_dub_subs"], "--max-lead", "0"] + font, [last] + (["dynsrt"] if dynamic else []), label=f"{D} subtitle video",
         duration=dur_dub)
     add("translate", [py, T("dubstitch.py"), "translate", "--work", str(W), "--srt", dub_sub, "--sl", dl, "--tl",
-                      prof.get("translate_to", "en"), "--out", ctx["name_en_srt"]], ["dynsrt"] if dynamic else ["analyze"], resource="cpu",
+                      presets.asr_lang(prof.get("translate_to", "en")), "--out", ctx["name_en_srt"]], ["dynsrt"] if dynamic else ["analyze"], resource="cpu",
         label="English translation", fn="translate")       # Google first; Claude when Google is blocked (runner)
     add("subs_en", [py, T("dubstitch.py"), "subs", "--work", str(W)] + style_args("en") + ["--srt", ctx["en_srt_burn"],
                     "--out", ctx["name_en_subs"], "--max-lead", "0"] + font, ["subs_dub", "translate"],

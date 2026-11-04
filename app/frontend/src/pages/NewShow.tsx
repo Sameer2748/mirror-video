@@ -6,8 +6,8 @@ import { ErrorBox, Picker, uploadFile } from "../ui";
 // The profile fields the editor sets here; everything else keeps the preset's value. Sentences, groups, max drift,
 // subtitle rows and the ending are the same for every show (owner, 2026-10-20) and are not set here.
 const FIELDS: { key: string; label: string; type: "text" | "number" | "bool" | "select"; options?: string[]; hint?: string }[] = [
-  { key: "dub_lang", label: "Dub language", type: "text", hint: "it, de, fr…" },
-  { key: "src_lang", label: "Source language", type: "text" },
+  { key: "dub_lang", label: "Dub language", type: "text", hint: "it or IT, fr or FR, de…" },
+  { key: "src_lang", label: "Source language", type: "text", hint: "fr or FR, en, de…" },
   { key: "labels", label: "Labels (dub,source)", type: "text", hint: "used in file names, e.g. IT,US" },
   { key: "episode_offset", label: "Episode offset", type: "number", hint: "source episode = dub episode + this (MVS: 2)" },
   { key: "transitions", label: "Transitions", type: "select", options: ["auto", "manual"],

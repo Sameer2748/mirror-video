@@ -22,8 +22,9 @@ def test_presets_and_show_crud(env):
     assert s["profile"]["max_drift_ms"] == 500
     assert c.post("/api/shows", json={"name": "x", "code": "SHOW", "folder": str(env["show"])}).status_code == 409
     assert c.post("/api/shows", json={"name": "x", "code": "OTHER", "folder": "/nope"}).status_code == 400
-    s2 = c.patch(f"/api/shows/{s['id']}", json={"profile": {"group_size": 6}}).json()
+    s2 = c.patch(f"/api/shows/{s['id']}", json={"profile": {"group_size": 6, "dub_lang": "IT", "src_lang": "FR"}}).json()
     assert s2["profile"]["group_size"] == 6 and s2["profile"]["clauses"] == 0   # stored; the run uses the fixed values
+    assert s2["profile"]["dub_lang"] == "it" and s2["profile"]["src_lang"] == "fr"
     assert len(c.get("/api/shows").json()) == 1
 
 
@@ -111,6 +112,24 @@ def test_spec_import_and_cancel_retry(env):
             x = c.get(f"/api/episodes/{e['id']}").json()
             raise AssertionError("not done: " + str([(j["step"], j["status"], j.get("message")) for j in x["jobs"]]))
     assert ep["status"] == "done"
+
+
+def test_uppercase_langs_become_whisper_codes():
+    """A new show often stores IT / FR (labels). Whisper only accepts it / fr."""
+    from dubstudio.pipeline.steps import plan
+    from dubstudio import presets
+    assert presets.asr_lang("IT") == "it" and presets.asr_lang("FR") == "fr" and presets.asr_lang("US") == "en"
+    show = {"code": "TAB", "profile": {**presets.preset("NEW"), "dub_lang": "IT", "src_lang": "FR", "labels": "IT,FR"}}
+    ep = {"number": 13, "work_dir": "/w", "output_dir": "/o"}
+    _, st = plan(show, ep, {"src_video": "/v.mp4", "dub_audio": "/a.mp3"})
+    dub = next(s for s in st if s["step"] == "mksrt_dub")["cmd"]
+    src = next(s for s in st if s["step"] == "mksrt_src")["cmd"]
+    assert dub[dub.index("--lang") + 1] == "it"
+    assert src[src.index("--lang") + 1] == "fr"
+    words_d = next(s for s in st if s["step"] == "words_dub")["cmd"]
+    words_s = next(s for s in st if s["step"] == "words_src")["cmd"]
+    assert words_d[words_d.index("--lang") + 1] == "it"
+    assert words_s[words_s.index("--lang") + 1] == "fr"
 
 
 def test_tolr_plan_has_lip_and_transitions(env):

@@ -132,6 +132,8 @@ def _translate_batch(b, sl, tl, model, log, tries=3):
 
 def translate(texts, sl="it", tl="en", model=None, batch=16, log=print):
     """[text] -> [translation] (same order). Several calls in parallel; a bad batch is split, not dropped."""
+    from .. import presets
+    sl, tl = presets.asr_lang(sl, "it"), presets.asr_lang(tl, "en")
     batches = [texts[k:k + batch] for k in range(0, len(texts), batch)]
 
     def run(b):
@@ -192,6 +194,8 @@ def fill_todo(todo_tsv, out_tsv, sl="it", tl="en", model=None, log=print):
 
 def one(text, sl="it", tl="en", model=None, before="", after=""):
     """One subtitle line (the editor's re-translate), with its neighbours as context."""
+    from .. import presets
+    sl, tl = presets.asr_lang(sl, "it"), presets.asr_lang(tl, "en")
     ctx = (f"\nContext only (do not translate): before: {before!r}; after: {after!r}" if before or after else "")
     text_out, _ = ai.chat(f"Translate this {LANG.get(sl, sl)} subtitle line of a drama into natural spoken "
                           f"{LANG.get(tl, tl)}. Keep character names as written. Answer ONLY with JSON "

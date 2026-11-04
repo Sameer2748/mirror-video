@@ -43,6 +43,37 @@ PRESETS = {
 }
 
 
+# Whisper / Google want ISO codes in lowercase. A new show often stores the on-screen label (IT, FR, US).
+_ASR_ALIAS = {
+    "us": "en", "uk": "en", "en-us": "en", "en-gb": "en",
+    "deu": "de", "ger": "de", "fra": "fr", "fre": "fr", "ita": "it",
+    "spa": "es", "por": "pt", "jpn": "ja", "jp": "ja", "kor": "ko",
+    "chi": "zh", "cmn": "zh", "zho": "zh",
+}
+
+
+def asr_lang(code, default="en"):
+    """`IT` / `FR` / `US` -> `it` / `fr` / `en`. Empty -> default."""
+    raw = str(code or "").strip()
+    if not raw:
+        return default
+    s = raw.lower().replace("_", "-")
+    return _ASR_ALIAS.get(s, s.split("-")[0]) or default
+
+
+def normalize_profile_langs(prof):
+    """Keep file-name labels as typed; store Whisper languages in lowercase."""
+    if not prof:
+        return prof
+    if "dub_lang" in prof:
+        prof["dub_lang"] = asr_lang(prof.get("dub_lang"), "it")
+    if "src_lang" in prof:
+        prof["src_lang"] = asr_lang(prof.get("src_lang"), "en")
+    if "translate_to" in prof:
+        prof["translate_to"] = asr_lang(prof.get("translate_to"), "en")
+    return prof
+
+
 def clause_mode(prof):
     """Every show: whole sentences (owner, 2026-10-20; was clauses only for sentences of 20+ words).
     -> (clause words, long-sentence words); (0, 0) = no splitting."""

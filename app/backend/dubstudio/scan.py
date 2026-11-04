@@ -55,7 +55,8 @@ def scan_episode(show_folder, number, profile):
     """Candidates per kind for one episode. Source files use number + episode_offset."""
     folder = Path(show_folder)
     dub_n, src_n = int(number), int(number) + int(profile.get("episode_offset", 0))
-    dl, sl = profile["dub_lang"], profile["src_lang"]
+    from . import presets
+    dl, sl = presets.asr_lang(profile["dub_lang"], "it"), presets.asr_lang(profile["src_lang"], "en")
     found = {k: [] for k in ("src_video", "dub_audio", "dub_srt", "src_srt", "dub_script", "src_script", "names_csv")}
     for root, dirs, files in os.walk(folder):
         dirs[:] = [d for d in dirs if d.lower() not in SKIP_DIRS and not d.startswith(".")]

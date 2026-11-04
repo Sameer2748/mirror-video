@@ -39,6 +39,8 @@ def media_length(path):
 
 def heard_words(a):
     """[(start, end, word)] for the whole media."""
+    a.lang = str(a.lang or "en").strip().lower().replace("_", "-").split("-")[0] or "en"
+    a.lang = {"us": "en", "uk": "en", "jp": "ja", "deu": "de", "fra": "fr", "ita": "it"}.get(a.lang, a.lang)
     if a.engine == "mlx":
         import dubstitch as D
         tag = re.sub(r"[^A-Za-z0-9.-]", "_", a.model)

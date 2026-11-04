@@ -433,9 +433,15 @@ class Runner:
 
     @staticmethod
     def _expand(cmd):
-        """{py} = the pipeline python, {fpy} = the face map's python, {scripts} = the tools' scripts folder."""
-        return [str(cfg.pipeline_python) if c == "{py}" else str(cfg.face_python) if c == "{fpy}"
-                else c.replace("{scripts}", str(cfg.scripts)) for c in cmd]
+        """{py} = the pipeline python, {fpy} = the face map's python, {scripts} = the tools' scripts folder.
+        Whisper wants `it` / `fr`, so `--lang IT` stored from an old plan is rewritten here."""
+        from . import presets
+        out = [str(cfg.pipeline_python) if c == "{py}" else str(cfg.face_python) if c == "{fpy}"
+               else c.replace("{scripts}", str(cfg.scripts)) for c in cmd]
+        for i, a in enumerate(out[:-1]):
+            if a in ("--lang", "--sl", "--tl"):
+                out[i + 1] = presets.asr_lang(out[i + 1])
+        return out
 
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]

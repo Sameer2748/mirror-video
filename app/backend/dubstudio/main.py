@@ -318,6 +318,7 @@ def create_show(request: Request, body: dict = Body(...)):
                             f"a show with code {code} belongs to another account")
     prof = presets.preset(body.get("preset") or "NEW")
     prof.update(body.get("profile") or {})
+    presets.normalize_profile_langs(prof)
     prof["uploads"] = uploads                                # the screens ask for uploads instead of folders
     if not prof.get("names_sheet") and not uploads:          # the localisation sheet, found in the show folder
         found = nm.find(Path(folder).expanduser())
@@ -348,7 +349,9 @@ def patch_show(sid: int, body: dict = Body(...)):
             cur = prof.get("sub_styles") or {}
             new = {**new, "sub_styles": {lang: _sub_style({**(cur.get(lang) or {}), **(v or {})})
                                          for lang, v in {**cur, **(new["sub_styles"] or {})}.items() if lang in ("dub", "en")}}
-        prof.update(new); vals["profile"] = prof
+        prof.update(new)
+        presets.normalize_profile_langs(prof)
+        vals["profile"] = prof
     db().update("shows", sid, updated=now(), **vals)
     return _get("shows", sid)
 
