@@ -44,7 +44,9 @@ export default function EpisodePage() {
 
   return (
     <div className="page">
-      <div className="crumbs"><Link to="/">Shows</Link> / <Link to={`/shows/${ep.show_id}`}>{ep.show.code}</Link> / EP {ep.number}</div>
+      <div className="crumbs"><Link to="/">Shows</Link> / <Link to={`/shows/${ep.show_id}`}>{ep.show.code}</Link>
+        {ep.batch_id ? <> / <Link to={`/shows/${ep.show_id}/bulk/${ep.batch_id}`}>Bulk run</Link></> : null}
+        {" / "}EP {ep.number}</div>
       <div className="page-head">
         <h1>{ep.show.name} <span className="muted" style={{ fontWeight: 500 }}>Episode {ep.number}</span> <Chip status={ep.status} extra={ep.status === "processing" ? `${Math.round(prog * 100)}%` : undefined} /></h1>
       </div>

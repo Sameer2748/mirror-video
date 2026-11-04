@@ -605,7 +605,8 @@ def test_verify_failing_one_picture_does_not_stop_the_visit(tmp_path):
 
 
 def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
-    """The cut is mkdec, the sheet, the edit list, lip-sync, groups, the library, then captions.
+    """The cut is mkdec, the sheet, the edit list, lip-sync, then captions.
+    Groups stay on this Mac. The library rides along once groups has written its file.
     The face map is not in that list. The final check is on the render machine, after the sheet it reads."""
     from dubstudio.runner import Runner
     work = tmp_path / "work"
@@ -650,9 +651,15 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
 
     runner._run_cut(sheet)
     assert sent["name"] == "cut"
-    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "groups", "library", "captions"]
-    assert "facemap" not in sent["steps"]
-    assert [s for s, st in marked if st == "done"] == ["captions", "library", "groups", "lipsync", "manifest", "sheet"]
+    # groups stays on this Mac (shared-footage trim); library waits until that file exists
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "captions"]
+    assert "facemap" not in sent["steps"] and "groups" not in sent["steps"]
+    assert [s for s, st in marked if st == "done"] == ["captions", "lipsync", "manifest", "sheet"]
+
+    (work / "manifest_groups.json").write_text("{}")
+    marked.clear(); sent.clear()
+    runner._run_cut(sheet)
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "library", "captions"]
 
     marked.clear()
     runner._run_match(by["analyze"])

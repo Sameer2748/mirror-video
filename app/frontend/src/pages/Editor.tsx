@@ -215,6 +215,7 @@ export default function Editor() {
   const [flags, setFlags] = useState<Record<string, Flag[]>>({});
   const [counts, setCounts] = useState({ red: 0, yellow: 0 });
   const [problems, setProblems] = useState<string[]>([]);
+  const [hideProblems, setHideProblems] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
   const [tool, setTool] = useState<Tool>("select");
   const [zoom, setZoom] = useState(36);                 // px per second
@@ -290,7 +291,7 @@ export default function Editor() {
       if (v) tl = await api.get<Timeline>(`/api/episodes/${eid}/timeline/versions/${v}`);
       setData(d); setClips(tl.clips); setV2(tl.v2 || []); setTracks(tl.tracks || {}); setApproved(tl.approved || []); setFlags(d.flags); setCounts(d.counts);
       setSubs(d.subs); savedSubs.current = d.subs; setSubsEdited(d.subs_edited); setMarkers(d.markers); setProxy(d.proxy);
-      setProblems(d.problems); setVersion(tl.version || 0); setSaveState(tl.draft ? "draft" : "saved");
+      setProblems(d.problems); setHideProblems(false); setVersion(tl.version || 0); setSaveState(tl.draft ? "draft" : "saved");
       hist.current = { undo: [], redo: [] };
       if (v) dirtyN.current++;
     } catch (e: any) { setErr(e.message); }
@@ -1024,7 +1025,7 @@ export default function Editor() {
       {/* ---------- top bar ---------- */}
       <div className="ed-top">
         <Link to={`/episodes/${eid}`} title="Back to the episode"><BrandMark /></Link>
-        <div className="ed-title"><b>{data.show.code} · Ep {data.episode.number}</b><span className="wide-only">{fmt(total, 1)} · locked to the {D} dub</span></div>
+        <div className="ed-title"><b>{data.show.code} · Ep {data.episode.number}</b><span className="wide-only">{fmt(total, 1)} · locked to the {D} dub</span><span className="built-by">Built by Sameer</span></div>
         <div className="tools">
           <button className={`tool ${tool === "select" ? "on" : ""}`} onClick={() => setTool("select")} title="Select, drag a clip onto another to swap footage, drag an edge to move a cut">Select <kbd>V</kbd></button>
           <button className={`tool ${tool === "razor" ? "on" : ""}`} onClick={() => setTool("razor")} title="Click a clip to cut it in two">Razor <kbd>C</kbd></button>
@@ -1294,7 +1295,13 @@ export default function Editor() {
         onSnapshot={snap} pushUndo={(s) => { pushUndo(s); dirtyN.current++; setSaveState("editing"); }} />
       </div>
 
-      {problems.length > 0 && <div className="toast err" style={{ bottom: tlH + 20 }}>⚠ {problems[0]}</div>}
+      {problems.length > 0 && !hideProblems && (
+        <div className="toast err toast-closable" style={{ bottom: tlH + 20 }} role="status">
+          <span>⚠ {problems[0]}{problems.length > 1 ? ` · ${problems.length} issues` : ""}</span>
+          <button type="button" className="toast-x" title="Dismiss" aria-label="Dismiss"
+            onClick={() => setHideProblems(true)}>×</button>
+        </div>
+      )}
       {toast && <div className={`toast ${toast.err ? "err" : ""}`}>{toast.text}</div>}
       {showKeys && <KeysHelp onClose={() => setShowKeys(false)} />}
       {trackDlg && <TrackDialog lang={trackDlg} name={trackDlg === "dub" ? `S1 ${D}` : "S2 EN"} show={data.show.code} cur={styleOf(trackDlg)}

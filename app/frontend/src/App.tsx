@@ -5,6 +5,8 @@ import Shows from "./pages/Shows";
 import NewShow from "./pages/NewShow";
 import ShowPage from "./pages/Show";
 import NewEpisode from "./pages/NewEpisode";
+import BulkNew from "./pages/BulkNew";
+import BulkStatus from "./pages/BulkStatus";
 import EpisodePage from "./pages/Episode";
 import Editor from "./pages/Editor";
 import Renders from "./pages/Renders";
@@ -75,7 +77,7 @@ function Sidebar({ me, onOut }: { me: User | null; onOut: () => void }) {
           </NavLink>
         );
       })}
-      <div className="side-foot"><AiBadge /><WhoAmI me={me} onOut={onOut} /></div>
+      <div className="side-foot"><AiBadge /><WhoAmI me={me} onOut={onOut} /><div className="built-by">Built by Sameer</div></div>
     </aside>
   );
 }
@@ -105,18 +107,23 @@ export default function App() {
     <div className="app">
       <Sidebar me={me} onOut={signOut} />
       <main className="main">
-        <Routes>
-          <Route path="/" element={<Shows />} />
-          <Route path="/shows/new" element={<NewShow />} />
-          <Route path="/renders" element={<Renders />} />
-          <Route path="/account" element={<Accounts me={me} onMe={setMe} />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/shows/:sid" element={<ShowPage />} />
-          <Route path="/shows/:sid/new-episode" element={<NewEpisode />} />
-          <Route path="/episodes/:eid" element={<EpisodePage />} />
-          <Route path="/episodes/:eid/:tab" element={<EpisodePage />} />
-          <Route path="*" element={<div className="page"><h1>Not found</h1><Link to="/">Back to shows</Link></div>} />
-        </Routes>
+        <div className="main-body">
+          <Routes>
+            <Route path="/" element={<Shows />} />
+            <Route path="/shows/new" element={<NewShow />} />
+            <Route path="/renders" element={<Renders />} />
+            <Route path="/account" element={<Accounts me={me} onMe={setMe} />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/shows/:sid" element={<ShowPage />} />
+            <Route path="/shows/:sid/new-episode" element={<NewEpisode />} />
+            <Route path="/shows/:sid/bulk/:bid" element={<BulkStatus />} />
+            <Route path="/shows/:sid/bulk" element={<BulkNew />} />
+            <Route path="/episodes/:eid" element={<EpisodePage />} />
+            <Route path="/episodes/:eid/:tab" element={<EpisodePage />} />
+            <Route path="*" element={<div className="page"><h1>Not found</h1><Link to="/">Back to shows</Link></div>} />
+          </Routes>
+        </div>
+        <div className="built-by page-built">Built by Sameer</div>
       </main>
     </div>
   );

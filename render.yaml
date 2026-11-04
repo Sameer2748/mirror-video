@@ -42,7 +42,7 @@ services:
       - key: UPLOAD_MODE                 # the browser PUTs straight to R2 (add this service's URL to the bucket's CORS)
         value: direct
       - key: MAX_ACTIVE_EPISODES
-        value: "2"
+        value: "8"
       - key: PYTHONUNBUFFERED
         value: "1"
 

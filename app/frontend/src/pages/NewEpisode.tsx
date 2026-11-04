@@ -28,7 +28,8 @@ export default function NewEpisode() {
       <p className="muted">{show.profile.uploads
         ? "Enter the episode number. On the next screen you upload its source video, dub audio and script; they go to cloud storage and the workers take them from there."
         : <>Enter the episode number. Mirror Video looks in <code>{show.folder}</code> for its video, audio, SRTs and scripts
-          {show.profile.episode_offset ? ` (source episode = ${num || "N"} + ${show.profile.episode_offset})` : ""}; you confirm them on the next screen.</>}</p>
+          {show.profile.episode_offset ? ` (source episode = ${num || "N"} + ${show.profile.episode_offset})` : ""}; you confirm them on the next screen.</>}
+        {" "}Several episodes at once? <Link to={`/shows/${sid}/bulk`}>Use bulk generation</Link>.</p>
       <div className="form">
         <label>Episode number<input type="number" min={1} value={num} autoFocus onChange={(e) => setNum(e.target.value)} onKeyDown={(e) => e.key === "Enter" && num && create()} /></label>
         <label>Output folder (optional)

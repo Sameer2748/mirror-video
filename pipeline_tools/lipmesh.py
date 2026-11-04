@@ -39,6 +39,10 @@ def main():
         raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{s:.3f}", "-t", f"{e - s:.3f}", "-i", a.video, "-vf",
                               f"fps=25,scale={size}:{size}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
         fr = np.frombuffer(raw, np.uint8).reshape(-1, size, size, 3)
+        # 29.97 fps sources sometimes emit one extra 25 fps frame for the same -t window.
+        want = max(1, int(round((e - s) * 25)))
+        if len(fr) > want:
+            fr = fr[:want]
         mo, ap, _ = LF.mesh_pass(fr)
         json.dump(dict(window=[s, e], frames=len(fr), mouth=[round(float(v), 4) for v in mo], aperture=[round(float(v), 4) for v in ap]),
                   open(fp + ".part", "w")); os.replace(fp + ".part", fp)

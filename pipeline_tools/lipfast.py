@@ -104,6 +104,9 @@ def run_range(t0, t1, video, nets, det_kind, every, batch, size, yunet_path, yco
                           f"fps={FPS},scale={size}:{size}:force_original_aspect_ratio=decrease,pad={size}:{size}:(ow-iw)/2:(oh-ih)/2",
                           "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
     frames = np.frombuffer(raw, np.uint8).reshape(-1, size, size, 3)
+    want = max(1, int(round(dur * FPS)))
+    if len(frames) > want:
+        frames = frames[:want]
     au = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0:.3f}", "-t", f"{dur:.3f}", "-i", video, "-vn", "-ac", "1", "-ar", "16000",
                          "-f", "s16le", "-"], capture_output=True).stdout
     audio = np.frombuffer(au, np.int16); n = len(frames)

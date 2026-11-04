@@ -73,7 +73,12 @@ CREATE TABLE IF NOT EXISTS uploads (
   id INTEGER PRIMARY KEY, episode_id INTEGER REFERENCES episodes(id) ON DELETE CASCADE, kind TEXT, name TEXT,
   path TEXT, bucket TEXT, key TEXT, size INTEGER, sent INTEGER DEFAULT 0, status TEXT DEFAULT 'waiting',
   error TEXT, user_id INTEGER, created REAL, started REAL, finished REAL);
+CREATE TABLE IF NOT EXISTS batches (
+  id INTEGER PRIMARY KEY, show_id INTEGER NOT NULL REFERENCES shows(id) ON DELETE CASCADE,
+  start_num INTEGER NOT NULL, end_num INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'new',
+  created_by INTEGER, created REAL, updated REAL);
 CREATE INDEX IF NOT EXISTS ix_gen_threads ON gen_threads(episode_id, slot);
+CREATE INDEX IF NOT EXISTS ix_batches_show ON batches(show_id);
 CREATE INDEX IF NOT EXISTS ix_jobs_ep ON jobs(episode_id, run);
 CREATE INDEX IF NOT EXISTS ix_events_ep ON events(episode_id, id);
 CREATE INDEX IF NOT EXISTS ix_sessions_token ON sessions(token);
@@ -88,7 +93,8 @@ ADDED_COLUMNS = (("shows", "owner_id", "INTEGER REFERENCES users(id)"),
                  ("assets", "origin", "TEXT DEFAULT 'local'"),      # 'local' = a file on this Mac, 'r2' = uploaded
                  ("assets", "uploaded", "REAL"),
                  ("shows", "sheet_key", "TEXT"),                    # the localisation sheet in R2
-                 ("episodes", "queued", "REAL"))                    # when it went in the line (one episode at a time)
+                 ("episodes", "queued", "REAL"),                    # when it went in the line (one episode at a time)
+                 ("episodes", "batch_id", "INTEGER REFERENCES batches(id)"))  # set when the episode was made in a bulk run
 
 JSON_COLS = {"profile", "probe", "needs", "params", "data", "body", "cues", "style", "outputs", "check_result", "clip", "frames",
              "images", "result"}

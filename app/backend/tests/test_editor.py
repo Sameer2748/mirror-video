@@ -32,6 +32,8 @@ def test_flags_and_checks(tmp_path):
     assert any("overlap" in p or "gap" in p for p in tlm.validate(bad))
     bad = json.loads(json.dumps(tl)); bad["clips"][2]["s1"] = 99_000
     assert any("outside" in p for p in tlm.validate(bad, src_duration_ms=50_000))
+    hair = json.loads(json.dumps(tl)); hair["clips"][2]["s1"] = 50_020   # 20 ms past the end: one frame, not a miss
+    assert not any("outside" in p for p in tlm.validate(hair, src_duration_ms=50_000))
 
 
 def test_write_manifest_keeps_the_pipeline_copy(tmp_path):

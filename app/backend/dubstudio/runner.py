@@ -261,6 +261,11 @@ class Runner:
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
         chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
         for j in jobs:
+            if j["status"] == "running" and (j.get("message") or "") == "starting" and j.get("started") \
+                    and now() - j["started"] > 120:
+                # The worker thread died before it logged anything (TGS ep31 reading view). Queue it again.
+                self._set(j, status="waiting", progress=0, message="the worker thread died; trying again")
+                continue
             if j["status"] in ("running", "needs_input"):
                 continue
             latest = self.latest_run(j["episode_id"])
@@ -434,6 +439,8 @@ class Runner:
 
     def _run_cmd(self, j, cmd=None, force_local=False):
         prm = j["params"]
+        if j["step"] == "groups":
+            force_local = True   # clash trim is on this Mac; the rented image still raises on shared footage
         if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
@@ -588,7 +595,9 @@ class Runner:
             sj = by.get(step)
             if not sj or sj["status"] in DONE:
                 continue
-            if step == "library" and not cloud.ai_key_allowed():
+            if step == "groups":
+                continue          # clash trim lives on this Mac; rented image still raises
+            if step == "library" and (not cloud.ai_key_allowed() or not (work / "manifest_groups.json").is_file()):
                 continue
             cmd = (sj["params"] or {}).get("cmd")
             if not cmd:
@@ -1151,19 +1160,16 @@ class Runner:
         return (r.stdout.strip().splitlines() or [""])[-1]
 
     def _fn_merged(self, j):
-        """`merged.py W 95 > W/merged.txt`: the reading view for Step 2 (the dub rows with their source lines)."""
+        """`merged.py W 95 > W/merged.txt`: the reading view. Always on this Mac — it is one script over
+        prep.json. It only rides to the cloud as part of the match visit (`_run_match`). Sending it alone
+        used to hang (TGS ep31: status stayed 'starting' while the work folder was packed for a rented machine)."""
         w = Path(j["params"]["ctx"]["W"])
-        # `sh`, not `/bin/sh`: an absolute path that exists on this machine is sent as a file, and the worker
-        # then tries to run that uploaded file.
-        if self._worker_cmd(j, list(cloud.MERGED_CMD)):
-            text = (w / "merged.txt").read_text(encoding="utf-8") if (w / "merged.txt").exists() else ""
-            self._set(j, status="done", progress=1, finished=now(), message=f"merged.txt: {text.count(chr(10))} lines")
-            return
         merged = cfg.scripts / "merged.py"
         if not merged.is_file():
             raise RuntimeError("merged.py is not on this machine")
         r = subprocess.run([str(cfg.pipeline_python), str(merged), str(w), "95"],
                            capture_output=True, text=True, cwd=self._local_cwd(), timeout=300)
+        Path(j["log_path"]).parent.mkdir(parents=True, exist_ok=True)
         with open(j["log_path"], "a", encoding="utf-8") as log:
             log.write(f"$ merged.py {w} 95 > {w / 'merged.txt'}\n{r.stderr}")
         if r.returncode:
@@ -1234,7 +1240,8 @@ class Runner:
         tot = ctx.get("scene_until_s") or json.load(open(src))["total_ms"] / 1000     # a test window (e.g. 5 min) or all
         PL = cfg.scene_dir
         self._run_cmd(j, ["{py}", str(PL / "sceneedit.py"), str(SW), str(LIB), "0", str(tot), str(SW / "scene_manifest.json"),
-                          "--parallel", str(ctx.get("scene_parallel") or 8)])
+                          "--parallel", str(ctx.get("scene_parallel") or 8)],
+                      force_local=True)   # this Mac has the empty-reply cap; the rented image still retried $0.32 calls
 
     @staticmethod
     def use_scene(W):

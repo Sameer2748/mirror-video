@@ -19,6 +19,19 @@ export type Episode = {
   id: number; show_id: number; number: number; status: string; work_dir: string; output_dir: string;
   updated?: number; progress?: number; assets: Asset[]; jobs: Job[]; run?: number; show: Show;
   output_existing: string[]; candidates?: Record<string, string[]>; queue_position?: number;
+  batch_id?: number | null; have?: string[]; ready?: boolean;
+  step?: string | null; step_label?: string | null; steps_done?: number; steps?: number;
+};
+export type BatchEpisode = {
+  id: number; show_id: number; number: number; status: string; progress?: number | null;
+  queue_position?: number; have?: string[]; ready?: boolean; step?: string | null; step_label?: string | null;
+  steps_done?: number; steps?: number; run?: number | null; batch_id?: number | null; updated?: number;
+};
+export type Batch = {
+  id: number; show_id: number; start_num: number; end_num: number; status: string;
+  created?: number; updated?: number; show?: Show; episodes: BatchEpisode[];
+  counts?: Record<string, number>;
+  results?: { id: number; number: number; ok: boolean; error?: string; skipped?: string }[];
 };
 export type QueueItem = {
   id: number; number: number; status: string; code: string; name: string; working: boolean;
@@ -68,13 +81,21 @@ async function call<T>(method: string, url: string, body?: any): Promise<T> {
   }
   const r = await fetch(url, init);
   const text = await r.text();
+  const ct = (r.headers.get("content-type") || "").toLowerCase();
   let data: any = null;
-  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (text && (ct.includes("json") || text.startsWith("{") || text.startsWith("["))) {
+    try { data = JSON.parse(text); } catch { data = text; }
+  } else if (text) {
+    data = text;
+  }
   if (r.status === 401 && !url.startsWith("/api/auth/")) signedOut?.();
   if (!r.ok) {
     const d = data && data.detail;
     throw new Error(typeof d === "string" ? d : d ? JSON.stringify(d) : `${r.status} ${r.statusText}`);
   }
+  // An unknown /api path on an old server falls through to the SPA and returns HTML 200.
+  // Treating that as JSON used to crash the show page (string.map is not a function).
+  if (typeof data === "string") throw new Error(`${r.status} unexpected response`);
   return data as T;
 }
 

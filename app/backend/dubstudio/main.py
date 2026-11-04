@@ -79,7 +79,8 @@ def _shutdown():
 def _get(table, id_):
     row = db().one(f"SELECT * FROM {table} WHERE id=?", (id_,))
     if not row:
-        raise HTTPException(404, f"{table[:-1]} {id_} not found")
+        name = {"batches": "batch"}.get(table, table[:-1])
+        raise HTTPException(404, f"{name} {id_} not found")
     return row
 
 
@@ -89,7 +90,7 @@ def _get(table, id_):
 PUBLIC_API = {"/api/info", "/api/auth/login", "/api/auth/logout", "/api/auth/me"}
 ADMIN_API = (re.compile(r"^/api/users"), re.compile(r"^/api/settings/"), re.compile(r"^/api/restart$"),
              re.compile(r"^/api/storage/db"))
-OWNED_API = re.compile(r"^/api/(shows|episodes|jobs|markers|uploads)/(\d+)")
+OWNED_API = re.compile(r"^/api/(shows|episodes|jobs|markers|uploads|batches)/(\d+)")
 OWNER_SQL = {
     "shows": "SELECT owner_id FROM shows WHERE id=?",
     "episodes": "SELECT s.owner_id AS owner_id FROM episodes e JOIN shows s ON s.id=e.show_id WHERE e.id=?",
@@ -99,6 +100,7 @@ OWNER_SQL = {
                "JOIN shows s ON s.id=e.show_id WHERE m.id=?",
     "uploads": "SELECT s.owner_id AS owner_id FROM uploads u JOIN episodes e ON e.id=u.episode_id "
                "JOIN shows s ON s.id=e.show_id WHERE u.id=?",
+    "batches": "SELECT s.owner_id AS owner_id FROM batches b JOIN shows s ON s.id=b.show_id WHERE b.id=?",
 }
 
 
@@ -471,17 +473,168 @@ def _episode_full(eid):
     return e
 
 
+NUMBERED_EXTS = {
+    "src_video": (".mp4", ".mov", ".mkv", ".m4v"),
+    "dub_audio": (".mp3", ".wav", ".m4a", ".aac"),
+    "dub_script": (".docx", ".doc", ".txt"),
+}
+BATCH_MAX = 100
+
+
+def _episode_range(body):
+    """Accept either {start, end} or {range: '1-20'}."""
+    raw = str(body.get("range") or "").strip()
+    if raw:
+        m = re.fullmatch(r"(\d+)\s*[-–—:to]+\s*(\d+)", raw, re.I)
+        if not m:
+            raise HTTPException(400, "range must look like 1-20")
+        start, end = int(m.group(1)), int(m.group(2))
+    else:
+        try:
+            start, end = int(body.get("start")), int(body.get("end"))
+        except Exception:
+            raise HTTPException(400, "start and end episode numbers are required (or a range like 1-20)")
+    if start < 1 or end < start:
+        raise HTTPException(400, "the range must go from a first episode to a later one (e.g. 1-20)")
+    if end - start + 1 > BATCH_MAX:
+        raise HTTPException(400, f"a bulk run can cover at most {BATCH_MAX} episodes")
+    return start, end
+
+
+def find_numbered(folder, n, exts):
+    """`1.mp4` (also `01.mp4` / `ep1.mp4`) inside a folder. First matching extension wins."""
+    if not folder:
+        return None
+    p = Path(str(folder)).expanduser()
+    if not p.is_dir():
+        return None
+    names = {c.name.lower(): c for c in p.iterdir() if c.is_file()}
+    stems = (str(n), f"{n:02d}", f"ep{n}", f"ep{n:02d}")
+    for ext in exts:
+        for stem in stems:
+            hit = names.get(f"{stem}{ext}")
+            if hit:
+                return str(hit)
+    return None
+
+
+def unused_in_folder(folder, start, end, exts):
+    """Media in the folder that is not for start..end. Extra 31.mp4 / trailer.mp4 stay on disk."""
+    if not folder:
+        return []
+    p = Path(str(folder)).expanduser()
+    if not p.is_dir():
+        return []
+    used = set()
+    for n in range(start, end + 1):
+        hit = find_numbered(folder, n, exts)
+        if hit:
+            used.add(Path(hit).name.lower())
+    extra = [c.name for c in p.iterdir()
+             if c.is_file() and c.suffix.lower() in exts and c.name.lower() not in used]
+    return sorted(extra, key=str.lower)
+
+
+def _new_episode(request, show, n, batch_id=None, output_dir=None):
+    """Create one episode row and pick up any files already in the show folder. Same path as a single New episode."""
+    sid = show["id"]
+    if db().one("SELECT id FROM episodes WHERE show_id=? AND number=?", (sid, n)):
+        raise HTTPException(409, f"episode {n} exists")
+    out = Path(show["folder"]) / show["profile"].get("output_dir", "output/ep{N}").format(N=n)
+    if (output_dir or "").strip():
+        out = Path(output_dir.strip()).expanduser()
+        if not out.is_absolute():
+            out = Path(show["folder"]) / out
+    work = cfg.work_dir(show["code"], n)
+    if work.exists() and any(work.iterdir()):
+        # a work folder left by a deleted episode: moved aside (never deleted), so every step runs again for real
+        # instead of finding the old results (e.g. a lip scan "done" in 0 s)
+        work.rename(work.with_name(f"{work.name}_old_{time.strftime('%Y%m%d_%H%M%S')}"))
+    vals = dict(show_id=sid, number=n, status="new", work_dir=str(work), output_dir=str(out),
+                created_by=me(request).get("id"), created=now(), updated=now())
+    if batch_id:
+        vals["batch_id"] = batch_id
+    eid = db().insert("episodes", **vals)
+    found = scan.scan_episode(show["folder"], n, show["profile"])
+    for kind, paths in found.items():
+        if paths:
+            db().insert("assets", episode_id=eid, kind=kind, path=paths[0], role="input", created=now())
+    return eid, found
+
+
+def _set_input(eid, kind, path):
+    db().ex("DELETE FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
+    if path:
+        db().insert("assets", episode_id=eid, kind=kind, path=path, role="input", created=now())
+
+
+def _decorate_episode(e):
+    """Progress, current step and which input files are already there — used by the show table and bulk status."""
+    if e.get("status") == "queued":
+        e["queue_position"] = runner().queue_position(e["id"])
+    run = runner().latest_run(e["id"])
+    e["run"] = run
+    e["progress"] = None
+    e["step"] = None
+    e["step_label"] = None
+    e["steps_done"] = 0
+    e["steps"] = 0
+    if run:
+        js = db().q("SELECT step, status, progress, params FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
+                    (e["id"], run))
+        e["steps"] = len(js)
+        e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)
+                              / max(len(js), 1), 3)
+        e["steps_done"] = sum(1 for j in js if j["status"] in ("done", "skipped"))
+        cur = next((j for j in js if j["status"] == "running"), None) \
+            or next((j for j in js if j["status"] == "needs_input"), None) \
+            or next((j for j in js if j["status"] == "failed"), None)
+        if cur:
+            e["step"] = cur["step"]
+            e["step_label"] = (cur.get("params") or {}).get("label", cur["step"])
+    have = {a["kind"] for a in db().q("SELECT kind FROM assets WHERE episode_id=? AND role='input'", (e["id"],))}
+    e["have"] = sorted(have)
+    e["ready"] = "src_video" in have and "dub_audio" in have
+    return e
+
+
+def _batch_status(eps):
+    if not eps:
+        return "new"
+    sts = [e["status"] for e in eps]
+    if all(s == "new" for s in sts):
+        return "new"
+    if any(s in ("processing", "queued") for s in sts):
+        return "processing"
+    if any(s == "needs_input" for s in sts):
+        return "needs_input"
+    if any(s == "review" for s in sts):
+        return "review"
+    if all(s == "done" for s in sts):
+        return "done"
+    if any(s == "failed" for s in sts):
+        return "failed"
+    if all(s in ("cancelled", "new") for s in sts):
+        return "cancelled"
+    return "processing"
+
+
+def _batch_full(bid):
+    b = _get("batches", bid)
+    b["show"] = _get("shows", b["show_id"])
+    eps = db().q("SELECT * FROM episodes WHERE batch_id=? ORDER BY number", (bid,))
+    b["episodes"] = [_decorate_episode(e) for e in eps]
+    b["status"] = _batch_status(b["episodes"])
+    b["counts"] = {}
+    for e in b["episodes"]:
+        b["counts"][e["status"]] = b["counts"].get(e["status"], 0) + 1
+    return b
+
+
 @app.get("/api/shows/{sid}/episodes")
 def list_episodes(sid: int):
     eps = db().q("SELECT * FROM episodes WHERE show_id=? ORDER BY number", (sid,))
-    for e in eps:
-        if e["status"] == "queued":
-            e["queue_position"] = runner().queue_position(e["id"])
-        run = runner().latest_run(e["id"])
-        if run:
-            js = db().q("SELECT status, progress FROM jobs WHERE episode_id=? AND run=?", (e["id"], run))
-            e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js) / max(len(js), 1), 3)
-    return eps
+    return [_decorate_episode(e) for e in eps]
 
 
 @app.post("/api/shows/{sid}/episodes")
@@ -491,26 +644,111 @@ def create_episode(request: Request, sid: int, body: dict = Body(...)):
         n = int(body.get("number"))
     except Exception:
         raise HTTPException(400, "number is required")
-    if db().one("SELECT id FROM episodes WHERE show_id=? AND number=?", (sid, n)):
-        raise HTTPException(409, f"episode {n} exists")
-    out = Path(s["folder"]) / s["profile"].get("output_dir", "output/ep{N}").format(N=n)
-    if (body.get("output_dir") or "").strip():
-        out = Path(body["output_dir"].strip()).expanduser()
-        if not out.is_absolute():
-            out = Path(s["folder"]) / out
-    work = cfg.work_dir(s["code"], n)
-    if work.exists() and any(work.iterdir()):
-        # a work folder left by a deleted episode: moved aside (never deleted), so every step runs again for real
-        # instead of finding the old results (e.g. a lip scan "done" in 0 s)
-        work.rename(work.with_name(f"{work.name}_old_{time.strftime('%Y%m%d_%H%M%S')}"))
-    eid = db().insert("episodes", show_id=sid, number=n, status="new", work_dir=str(work),
-                      output_dir=str(out), created_by=me(request).get("id"), created=now(), updated=now())
-    found = scan.scan_episode(s["folder"], n, s["profile"])
-    for kind, paths in found.items():
-        if paths:
-            db().insert("assets", episode_id=eid, kind=kind, path=paths[0], role="input", created=now())
+    eid, found = _new_episode(request, s, n, output_dir=body.get("output_dir"))
     e = _episode_full(eid); e["candidates"] = found
     return e
+
+
+# ---------------- bulk generation: many episodes in one go, same queue as a single episode ----------------
+@app.post("/api/shows/{sid}/batches/preview")
+def preview_batch(sid: int, body: dict = Body(...)):
+    """Match numbered files in three folders against the range, without creating anything."""
+    _get("shows", sid)
+    start, end = _episode_range(body)
+    dirs = {k: (body.get(k) or "").strip() or None for k in ("src_video_dir", "dub_audio_dir", "dub_script_dir")}
+    existing = {r["number"] for r in db().q(
+        "SELECT number FROM episodes WHERE show_id=? AND number BETWEEN ? AND ?", (sid, start, end))}
+    rows = []
+    for n in range(start, end + 1):
+        files = {kind: find_numbered(dirs[f"{kind}_dir"], n, exts) for kind, exts in NUMBERED_EXTS.items()}
+        missing = [k for k in ("src_video", "dub_audio") if not files[k]]
+        rows.append({"number": n, **files, "missing": missing, "exists": n in existing})
+    skipped = {kind: unused_in_folder(dirs[f"{kind}_dir"], start, end, exts)
+               for kind, exts in NUMBERED_EXTS.items()}
+    return {"start": start, "end": end, "episodes": rows,
+            "ready": sum(1 for r in rows if not r["missing"] and not r["exists"]),
+            "blocked": [r["number"] for r in rows if r["exists"]],
+            "skipped": skipped}
+
+
+@app.post("/api/shows/{sid}/batches")
+def create_batch(request: Request, sid: int, body: dict = Body(...)):
+    """Make every episode in the range. Optional folders (`1.mp4` / `1.mp3` / `1.docx`) are attached as inputs."""
+    s = _get("shows", sid)
+    start, end = _episode_range(body)
+    existing = [r["number"] for r in db().q(
+        "SELECT number FROM episodes WHERE show_id=? AND number BETWEEN ? AND ?", (sid, start, end))]
+    if existing:
+        raise HTTPException(409, f"episode{'s' if len(existing) > 1 else ''} already exist: "
+                                 + ", ".join(str(n) for n in existing))
+    dirs = {k: (body.get(f"{k}_dir") or "").strip() or None for k in NUMBERED_EXTS}
+    bid = db().insert("batches", show_id=sid, start_num=start, end_num=end, status="new",
+                      created_by=me(request).get("id"), created=now(), updated=now())
+    for n in range(start, end + 1):
+        eid, _ = _new_episode(request, s, n, batch_id=bid, output_dir=body.get("output_dir"))
+        for kind, exts in NUMBERED_EXTS.items():
+            path = find_numbered(dirs[kind], n, exts)
+            if path:
+                _set_input(eid, kind, path)
+    return _batch_full(bid)
+
+
+@app.get("/api/shows/{sid}/batches")
+def list_batches(sid: int):
+    _get("shows", sid)
+    rows = db().q("SELECT * FROM batches WHERE show_id=? ORDER BY id DESC", (sid,))
+    for b in rows:
+        eps = db().q("SELECT id, number, status FROM episodes WHERE batch_id=? ORDER BY number", (b["id"],))
+        b["episodes"] = eps
+        b["status"] = _batch_status(eps)
+        b["counts"] = {}
+        for e in eps:
+            b["counts"][e["status"]] = b["counts"].get(e["status"], 0) + 1
+    return rows
+
+
+@app.get("/api/batches/{bid}")
+def get_batch(bid: int):
+    return _batch_full(bid)
+
+
+@app.post("/api/batches/{bid}/process")
+def process_batch(bid: int):
+    """Queue every episode in the batch that has its source video and dub audio. Same line as a single episode."""
+    b = _batch_full(bid)
+    results = []
+    for e in b["episodes"]:
+        if e["status"] in ("processing", "queued"):
+            results.append({"id": e["id"], "number": e["number"], "ok": True, "skipped": "already in the queue"})
+            continue
+        if not e["ready"]:
+            results.append({"id": e["id"], "number": e["number"], "ok": False,
+                            "error": "missing " + ", ".join(k for k in ("src_video", "dub_audio") if k not in e["have"])})
+            continue
+        try:
+            out = runner().submit(e["id"])
+            results.append({"id": e["id"], "number": e["number"], "ok": True, **out})
+        except ValueError as ex:
+            results.append({"id": e["id"], "number": e["number"], "ok": False, "error": str(ex)})
+    db().update("batches", bid, status="processing", updated=now())
+    return {**_batch_full(bid), "results": results}
+
+
+@app.post("/api/batches/{bid}/cancel")
+def cancel_batch(bid: int):
+    b = _batch_full(bid)
+    for e in b["episodes"]:
+        if e["status"] == "queued":
+            db().update("episodes", e["id"], status="cancelled" if runner().latest_run(e["id"]) else "new",
+                        queued=None, updated=now())
+            bus.publish("episode_status", e["id"], status="left the queue")
+        elif e["status"] == "processing":
+            runner().cancel_run(e["id"])
+            db().update("episodes", e["id"], status="cancelled", queued=None, updated=now())
+            bus.publish("episode_status", e["id"], status="cancelled")
+    runner().start_next()
+    db().update("batches", bid, status="cancelled", updated=now())
+    return _batch_full(bid)
 
 
 @app.get("/api/episodes/{eid}")

@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { api, Episode, Show, useLive } from "../api";
+import { api, Batch, Episode, Show, useLive } from "../api";
 import { Chip, ErrorBox, fmtWhen, Picker } from "../ui";
 
 export default function ShowPage() {
   const { sid } = useParams(); const nav = useNavigate();
   const [show, setShow] = useState<Show | null>(null);
   const [eps, setEps] = useState<Episode[] | null>(null);
+  const [batches, setBatches] = useState<Batch[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
   const load = useCallback(() => {
     api.get<Show>(`/api/shows/${sid}`).then(setShow).catch((e) => setErr(e.message));
     api.get<Episode[]>(`/api/shows/${sid}/episodes`).then(setEps).catch((e) => setErr(e.message));
+    api.get<Batch[]>(`/api/shows/${sid}/batches`).then((rows) => setBatches(Array.isArray(rows) ? rows : [])).catch(() => setBatches([]));
   }, [sid]);
   useEffect(load, [load]);
   // progress changes arrive as events; reload the table at most every 2 s
@@ -24,8 +26,19 @@ export default function ShowPage() {
     await api.del(`/api/shows/${sid}`); nav("/");
   }
 
-  if (!show) return <div className="page"><ErrorBox error={err} /></div>;
-  const p = show.profile;
+  if (!show) return (
+    <div className="page">
+      {err ? (
+        <div className="empty">
+          <p>{err}</p>
+          <div className="row" style={{ justifyContent: "center", marginTop: 12 }}>
+            <Link to="/" className="button">Back to shows</Link>
+          </div>
+        </div>
+      ) : <div className="muted">Loading…</div>}
+    </div>
+  );
+  const p = show.profile || {};
   return (
     <div className="page">
       <div className="crumbs"><Link to="/">Shows</Link> / {show.code}</div>
@@ -41,10 +54,31 @@ export default function ShowPage() {
         </div>
         <div className="row">
           <Link to={`/shows/${sid}/new-episode`} className="button primary">+ New episode</Link>
+          <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
         </div>
       </div>
       <ErrorBox error={err} />
-      {eps && !eps.length && <div className="empty"><p>No episodes yet.</p><Link to={`/shows/${sid}/new-episode`} className="button primary">Add the first episode</Link></div>}
+      {eps && !eps.length && (
+        <div className="empty">
+          <p>No episodes yet.</p>
+          <div className="row" style={{ justifyContent: "center", marginTop: 12 }}>
+            <Link to={`/shows/${sid}/new-episode`} className="button primary">Add one episode</Link>
+            <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
+          </div>
+        </div>
+      )}
+      {!!batches.length && (
+        <div className="panel" style={{ marginBottom: 16 }}>
+          <div className="panel-row"><b>Bulk runs</b><span className="muted small-text">Click a run to watch every episode's steps.</span></div>
+          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+            {batches.map((b) => (
+              <Link key={b.id} to={`/shows/${sid}/bulk/${b.id}`} className="button small">
+                EP {b.start_num}–{b.end_num} · {b.status}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
       {eps && !!eps.length && (
         <table className="table">
           <thead><tr><th>Episode</th><th>Status</th><th>Progress</th><th>Last change</th><th>Output folder</th><th></th></tr></thead>
@@ -55,7 +89,7 @@ export default function ShowPage() {
                 <td><Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} /></td>
                 <td style={{ width: 160 }}>{e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
                 <td className="muted">{fmtWhen(e.updated)}</td>
-                <td className="muted small-text">{e.output_dir.replace(show.folder + "/", "")}</td>
+                <td className="muted small-text">{(e.output_dir || "").replace((show.folder || "") + "/", "")}</td>
                 <td className="right" onClick={(ev) => ev.stopPropagation()}>
                   {["review", "done"].includes(e.status) && <Link to={`/episodes/${e.id}/editor`} className={`button small ${e.status === "review" ? "primary" : ""}`}>Open editor</Link>}
                 </td>
@@ -84,7 +118,7 @@ const LIMITS: { key: string; label: string; hint: string; unit?: string }[] = [
 ];
 
 function FlagLimits({ show, onSaved }: { show: Show; onSaved: (s: Show) => void }) {
-  const cur = (show.profile.flags || {}) as Record<string, number>;
+  const cur = ((show.profile || {}).flags || {}) as Record<string, number>;
   const [v, setV] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<{ text: string; err?: boolean } | null>(null);
   useEffect(() => { setV(Object.fromEntries(LIMITS.map((l) => [l.key, cur[l.key] != null ? String(cur[l.key]) : ""]))); }, [show.id]); // eslint-disable-line
@@ -127,7 +161,7 @@ function NamesSheet({ show }: { show: Show }) {
   const load = () => api.get<Names>(`/api/shows/${show.id}/names`).then(setN).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [show.id]); // eslint-disable-line
   const choose = (path: string | null) => api.put<Names>(`/api/shows/${show.id}/names`, { path }).then((x) => { setN(x); setErr(null); }).catch((e) => setErr(e.message));
-  const [src, tgt] = (show.profile.labels || "SRC,DUB").split(",").reverse();
+  const [src, tgt] = ((show.profile || {}).labels || "SRC,DUB").split(",").reverse();
   return (
     <div className="card" style={{ marginTop: 22 }}>
       <h3 style={{ marginTop: 0 }}>Localisation sheet</h3>
@@ -159,7 +193,7 @@ function NamesSheet({ show }: { show: Show }) {
 // How cuts get transitions in this show: automatically at Render, or only where the editor adds one.
 export function TransitionMode({ show, onSaved }: { show: Show; onSaved: (s: Show) => void }) {
   const [err, setErr] = useState<string | null>(null);
-  const auto = !!show.profile.transitions;
+  const auto = !!(show.profile || {}).transitions;
   const set = (v: boolean) => api.patch<Show>(`/api/shows/${show.id}`, { profile: { transitions: v } }).then(onSaved).catch((e) => setErr(e.message));
   return (
     <div className="card" style={{ marginTop: 22 }}>

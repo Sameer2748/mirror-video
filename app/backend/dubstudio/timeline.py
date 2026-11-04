@@ -459,7 +459,9 @@ def validate(tl, src_duration_ms=None, media_ms=None):
         dur = (media_ms or {}).get(c["media"], -1) if c.get("media") else src_duration_ms
         if dur == -1:
             probs.append(f"{label(c)} at {fmt(c['t0'])}: its imported clip is missing")
-        elif c["s0"] < 0 or (dur and c["s1"] > dur + 1):
+        elif c["s0"] < 0 or (dur and c["s1"] > dur + 40):
+            # 40 ms = one frame at 25 fps. Scene-edit rounding can sit 1–2 ms past ffprobe's duration
+            # (TGS ep32 last fade: 779.113 s vs 779.112 s) and that is not a real overshoot.
             probs.append(f"{label(c)} at {fmt(c['t0'])} points outside the source video")
         if c["t0"] < -1 or c["t1"] > tl["total_ms"] + 1:
             probs.append(f"{label(c)} runs outside the episode")

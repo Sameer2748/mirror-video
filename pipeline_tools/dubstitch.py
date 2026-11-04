@@ -1980,6 +1980,61 @@ def clamp_to_fade(segs, fade, margin=100):
     return n
 
 
+def group_footage_clash(out, gi, repeat_rows):
+    """Segments in different groups that share more than 1 ms of source time."""
+    hits = []
+    for k, x in enumerate(out):
+        for y in out[k + 1:]:
+            if gi[id(x)] == gi[id(y)]:
+                continue
+            if x["it_idx"] in repeat_rows or y["it_idx"] in repeat_rows:
+                continue
+            if min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > 1:
+                hits.append((x, y))
+    return hits
+
+
+def trim_shared_footage(out, gi, repeat_rows, lip=None):
+    """Two groups sharing source time (a lip window spilled into the next row, or the dub
+    plays source lines out of order) used to kill the episode. TGS ep33 IT#156/157 overlapped
+    113 ms after lipsync padded 157 into 156. Keep the lip-sync row (or the earlier dub line)
+    and trim the other. Never fail the run for this."""
+    lip = lip or {}
+    n = 0
+    while n < 50:
+        clash = group_footage_clash(out, gi, repeat_rows)
+        if not clash:
+            return n
+        x, y = clash[0]
+        keep, cut = (x, y) if (x["it_idx"] in lip) != (y["it_idx"] in lip) and x["it_idx"] in lip \
+            else (y, x) if (x["it_idx"] in lip) != (y["it_idx"] in lip) \
+            else (x, y) if x["it_start_ms"] <= y["it_start_ms"] else (y, x)
+        shared = min(keep["us_end_ms"], cut["us_end_ms"]) - max(keep["us_start_ms"], cut["us_start_ms"])
+        if cut["us_start_ms"] < keep["us_end_ms"] <= cut["us_end_ms"]:
+            cut["us_start_ms"] = keep["us_end_ms"]
+        elif cut["us_end_ms"] > keep["us_start_ms"] >= cut["us_start_ms"]:
+            cut["us_end_ms"] = keep["us_start_ms"]
+        else:
+            left = keep["us_start_ms"] - cut["us_start_ms"]
+            right = cut["us_end_ms"] - keep["us_end_ms"]
+            if right >= left:
+                cut["us_start_ms"] = keep["us_end_ms"]
+            else:
+                cut["us_end_ms"] = keep["us_start_ms"]
+        if cut["us_end_ms"] - cut["us_start_ms"] < 80:
+            if cut["us_start_ms"] >= keep["us_end_ms"]:
+                cut["us_end_ms"] = cut["us_start_ms"] + 80
+            elif cut["us_end_ms"] <= keep["us_start_ms"]:
+                cut["us_start_ms"] = cut["us_end_ms"] - 80
+            else:
+                cut["us_start_ms"] = keep["us_end_ms"]
+                cut["us_end_ms"] = keep["us_end_ms"] + 80
+        cut["stretch_factor"] = round((cut["it_end_ms"] - cut["it_start_ms"]) / max(cut["us_end_ms"] - cut["us_start_ms"], 1), 3)
+        cut["note"] = ((cut.get("note") or "") + f"; trimmed {shared / 1000:.2f}s that IT#{keep['it_idx']} already plays").lstrip("; ")
+        n += 1
+    return n
+
+
 def cmd_groups(a):
     cfg = cfg_get(a)
     M = load(a.work, "manifest.json"); segs = M["segments"]; total_ms = M["total_ms"]
@@ -2229,10 +2284,12 @@ def cmd_groups(a):
         assert abs(x["it_end_ms"] - y["it_start_ms"]) < 1, "group timeline not contiguous"
     assert abs(out[0]["it_start_ms"]) < 1 and abs(out[-1]["it_end_ms"] - total_ms) < 1
     gi = {id(s): i for i, g in enumerate(groups) for s in g["segments"]}
-    clash = [(x["it_idx"], y["it_idx"]) for k, x in enumerate(out) for y in out[k + 1:]
-             if gi[id(x)] != gi[id(y)] and x["it_idx"] not in repeat_rows and y["it_idx"] not in repeat_rows
-             and min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > 1]
-    if clash: raise SystemExit(f"two groups would play the same US footage: {clash[:5]}")
+    n_trim = trim_shared_footage(out, gi, repeat_rows, lip)
+    if n_trim:
+        print(f"groups: trimmed {n_trim} shared-footage overlap(s) (lip window or out-of-order lines); not failing")
+    leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows)]
+    if leftover:
+        print(f"groups: leftover overlap after trim {leftover[:5]} (kept the first owner)")
     save(a.work, "manifest_groups.json", dict(total_ms=total_ms, segments=out, bleed_report=[],
          groups=[{k: v for k, v in g.items() if k != "segments"} for g in groups]))
     review = a.review or (re.sub(r"_[a-z]{2}_[a-z]{2}_mapping[^/]*\.xlsx$", "_dynamic_groups_review.xlsx", cfg["sheet_out"])

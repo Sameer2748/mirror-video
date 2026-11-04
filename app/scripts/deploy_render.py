@@ -52,7 +52,7 @@ SETTINGS = {
     "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2
-    "MAX_ACTIVE_EPISODES": "2",
+    "MAX_ACTIVE_EPISODES": "8",
     "PYTHONUNBUFFERED": "1",
     # One uvicorn process per container. Render picks WEB_CONCURRENCY from the CPU count (2 here), and a second
     # process means a second job runner in the same container, both polling for the same steps. When we really want

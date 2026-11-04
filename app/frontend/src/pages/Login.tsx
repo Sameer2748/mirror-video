@@ -30,6 +30,7 @@ export default function Login({ onDone }: { onDone: (u: User) => void }) {
         <button className="primary" type="submit" disabled={busy || !username.trim() || !password}>{busy ? "Signing in…" : "Sign in"}</button>
         <div className="muted small-text">Your shows and episodes are yours: nobody else signed in here sees them.</div>
       </form>
+      <div className="built-by signin-built">Built by Sameer</div>
     </div>
   );
 }

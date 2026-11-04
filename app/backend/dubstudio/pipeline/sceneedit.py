@@ -216,7 +216,7 @@ Rules:
    only on a NOT FOUND (gap) line may it also be the action / object shot that shows exactly what that line tells.
    Every B-roll piece lasts at least {MIN_BROLL:.0f} s (shorter cutaways look jumpy). A B-roll you plan shorter is lengthened
    to {MIN_BROLL:.0f} s by the software, taking the time from the clip before it (that clip then plays faster). A slow line
-   that needs less than {MIN_BROLL:.0f} s of B-roll takes either one {MIN_BROLL:.0f}-s B-roll or none (its own footage slower, down to 0.65x).
+   that needs less than {MIN_BROLL:.0f} s of B-roll takes either one {MIN_BROLL:.0f}-s B-roll or none (its own footage no slower than {SLOW_FLOOR}x).
 10. SPEAKER: a moving mouth during a dialogue line must be the mouth of the person who SAYS it (every dialogue line says
    who; every talking shot says who talks). Never show another person talking over it. A WRONG-SPEAKER line (its matched
    footage shows the wrong person talking) is shown with its speaker talking -- a SPEAKER shot of the same location, the
@@ -255,13 +255,13 @@ def b64(n):
 # the line's place, repeats 8 s apart) apply to the B-roll pieces.
 SLOW, OWN_FRAC, OWN_PAD = 0.8, 0.5, 0.5
 # owner, 2026-10-29: a B-roll of a few hundred ms or 1 s looks jumpy. Every B-roll piece lasts at least MIN_BROLL; a slow
-# line that needs less either takes one B-roll of MIN_BROLL (its own footage then plays faster, up to 1.25x) or no B-roll
-# and its own footage a little slower, down to SLOW_FLOOR.
+# line that needs less either takes one B-roll of MIN_BROLL (its own footage then plays faster, up to 1.25x) or no B-roll.
+# The slowest a piece may play is the same number as the slow-line line (SLOW_FLOOR = SPEED_LO). There is no lower floor.
 # owner, 2026-10-29 (later): at least 2 s (was 1.3). A B-roll that comes out shorter is LENGTHENED to 2 s by code
 # (fix_short_broll): the missing time (2 s - its length) is taken from the clip just before it, which keeps its footage
 # and plays faster (example: clip 1-3 s + B-roll 3-4.3 s -> clip 1-2.3 s + B-roll 2.3-4.3 s). Faster than SPEED_HI that
 # clip shows a shorter part of its footage (its start is kept: a mouth or an action begins there), like a fast line.
-MIN_BROLL, SLOW_FLOOR = 2.0, 0.65
+MIN_BROLL, SLOW_FLOOR = 2.0, SPEED_LO
 
 
 def merge_iv(iv):
@@ -779,20 +779,19 @@ def cut_window(T0, T1, before, cache, wkey):
         if key in cache:
             ans = cache[key]
         else:
-            c = content + ([{"type": "text", "text": extra}] if extra else [])
-            ans = {}
-            for attempt in range(3):                       # a cut-off or broken reply is asked again
-                try:
-                    text, _ = ai.chat(c, model=MODEL or None, max_tokens=24000)
-                    ans = ai.extract_json(text, "edl") or {}
-                    if ans.get("edl"): break
-                except Exception as ex:
-                    print(f"  window {T0:.1f}-{T1:.1f}: reply not readable ({str(ex)[:80]}), asking again", flush=True)
-            cache[key] = ans; json.dump(cache, open(OUTM.with_suffix(".cache.json"), "w"), indent=1, ensure_ascii=False)
+            ans = read_edl(content, extra, f"window {T0:.1f}-{T1:.1f}")
+            if ans.get("edl"):
+                cache[key] = ans
+                json.dump(cache, open(OUTM.with_suffix(".cache.json"), "w"), indent=1, ensure_ascii=False)
         try:
             edl = [dict(e, t0=float(e["t0"]), t1=float(e["t1"]), **{"from": float(e["from"]), "to": float(e["to"])}) for e in ans.get("edl") or []]
-        except Exception as ex:
+        except Exception:
             edl = []
+        if not edl:
+            edl = auto_window(T0, T1)
+            print(f"  window {T0:.1f}-{T1:.1f}: using the automatic edit ({len(edl)} pieces); Claude returned no JSON", flush=True)
+            rounds.append(dict(round=rnd, problems=["Claude returned no JSON; used the automatic edit"], notes=""))
+            break
         probs = check(edl, T0, T1, lines, before)
         rounds.append(dict(round=rnd, problems=probs, notes=ans.get("notes", "")))
         print(f"  window {T0:.1f}-{T1:.1f}: round {rnd}: {len(edl)} pieces, {len(probs)} problems" + (": " + " | ".join(probs[:4]) if probs else ""), flush=True)
@@ -830,6 +829,47 @@ def ask_claude(c):
         USAGE["calls"] += 1; USAGE["call_seconds"] += time.time() - t
         USAGE["prompt_tokens"] += int((u or {}).get("prompt_tokens") or 0); USAGE["completion_tokens"] += int((u or {}).get("completion_tokens") or 0)
     return text
+
+
+def read_edl(content, extra="", where=""):
+    """One Claude call. An empty or unreadable reply is NOT asked again: thinking models
+    spend the whole token budget on reasoning (`finish_reason=length`, ~$0.32) and the
+    next try does the same. TGS ep31 stretch 21 burned three of those in a row."""
+    c = content + ([{"type": "text", "text": extra}] if extra else [])
+    try:
+        text = ask_claude(c)
+    except Exception as ex:
+        print(f"  {where}: Claude call failed ({str(ex)[:80]}); not asking again", flush=True)
+        return {}
+    if not (text or "").strip():
+        print(f"  {where}: empty reply (token budget used on reasoning); not asking again", flush=True)
+        return {}
+    try:
+        return ai.extract_json(text, "edl") or {}
+    except Exception as ex:
+        print(f"  {where}: reply not readable ({str(ex)[:80]}); not asking again", flush=True)
+        return {}
+
+
+def auto_window(T0, T1):
+    """The automatic edit for this stretch — used when Claude returns no JSON, so one bad
+    stretch cannot fail the episode or keep spending."""
+    out = []
+    for s in auto:
+        t0, t1 = s["it_start_ms"] / 1000, s["it_end_ms"] / 1000
+        if ov(t0, t1, T0, T1) <= 0:
+            continue
+        a0, a1 = max(t0, T0), min(t1, T1)
+        if a1 - a0 < 0.05:
+            continue
+        us0, us1 = s["us_start_ms"] / 1000, s["us_end_ms"] / 1000
+        span = max(t1 - t0, 1e-6)
+        f0 = us0 + (us1 - us0) * (a0 - t0) / span
+        f1 = us0 + (us1 - us0) * (a1 - t0) / span
+        shot = next((r["n"] for r in LIB["shots"] if r["start"] - 0.05 <= (f0 + f1) / 2 < r["end"] + 0.05), 0)
+        out.append(dict(t0=a0, t1=a1, shot=shot, **{"from": f0, "to": f1},
+                        line=s.get("it_idx"), why="automatic edit (Claude returned no JSON)"))
+    return out
 
 
 def scene_at(t):
@@ -1090,19 +1130,19 @@ def run_par(A0, A1):
             key = f"par|{T0:.2f}-{T1:.2f}|{tag}{rnd}"
             with LOCK: ans = cache.get(key)
             if not (ans or {}).get("edl"):                    # an empty answer saved by an older run is asked again
-                c = content + ([{"type": "text", "text": extra}] if extra else [])
-                ans = {}
-                for attempt in range(3):
-                    try:
-                        ans = ai.extract_json(ask_claude(c), "edl") or {}
-                        if ans.get("edl"): break
-                    except Exception as ex:
-                        print(f"  stretch {k} {T0:.1f}-{T1:.1f}: reply not readable ({str(ex)[:80]}), asking again", flush=True)
+                ans = read_edl(content, extra, f"stretch {k} {T0:.1f}-{T1:.1f}")
                 if ans.get("edl"):                          # never cache a failed call (gateway down): it is asked again next run
                     with LOCK:
                         cache[key] = ans; json.dump(cache, open(cache_p, "w"), indent=1, ensure_ascii=False)
+                elif edl or prev_edl:
+                    print(f"  stretch {k} {T0:.1f}-{T1:.1f}: keeping the previous cut; Claude returned no JSON", flush=True)
+                    edl = edl or prev_edl
+                    break
                 else:
-                    raise RuntimeError(f"stretch {k} {T0:.1f}-{T1:.1f}: no usable answer from Claude after 3 tries (gateway down?)")
+                    edl = auto_window(T0, T1)
+                    print(f"  stretch {k} {T0:.1f}-{T1:.1f}: using the automatic edit ({len(edl)} pieces); Claude returned no JSON", flush=True)
+                    rounds.append(dict(round=len(rounds), stage=tag, problems=["Claude returned no JSON; used the automatic edit"], notes=""))
+                    break
             new = parse_edl(ans)
             if new: edl, _fx = fix_short_broll(new)
             probs = check_par(edl, T0, T1, LINES[k], k, own, others, prev_last)
