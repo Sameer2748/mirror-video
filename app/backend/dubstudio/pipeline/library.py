@@ -227,7 +227,18 @@ for k, (x, y) in enumerate(shots):
                      in_first=k in first_shots, text=text_at(x, y, 0)[:300]))
 for r in rows:
     if r["location"] == "mixed": r["broll"] = "no"
-json.dump(dict(cast=cast, first_shots=first_shots, shots=rows), open(OUT / "broll_library.json", "w"), indent=1, ensure_ascii=False)
+def _plain(o):
+    """Claude sometimes puts raw control characters in a label; those break json.load on the face-map worker."""
+    if isinstance(o, str):
+        return "".join(c if ord(c) >= 32 or c in "\n\t" else " " for c in o)
+    if isinstance(o, list):
+        return [_plain(x) for x in o]
+    if isinstance(o, dict):
+        return {(_plain(k) if isinstance(k, str) else k): _plain(v) for k, v in o.items()}
+    return o
+
+
+json.dump(_plain(dict(cast=cast, first_shots=first_shots, shots=rows)), open(OUT / "broll_library.json", "w"), indent=1, ensure_ascii=False)
 
 # ---- 3. the characters of the first FIRST seconds: their folders ----
 chars = []
