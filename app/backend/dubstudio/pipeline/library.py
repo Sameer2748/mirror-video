@@ -43,7 +43,7 @@ def camera_cuts(work, video):
 
 
 import atexit, threading  # noqa: E402
-_U = dict(calls=0, prompt_tokens=0, completion_tokens=0); _L = threading.Lock(); _chat = ai.chat
+_U = dict(calls=0, prompt_tokens=0, completion_tokens=0); _L = threading.Lock(); _CACHE_LOCK = threading.Lock(); _chat = ai.chat
 def _count_chat(*a, **k):
     text, u = _chat(*a, **k)
     with _L:
@@ -129,20 +129,26 @@ Answer only JSON: {"shots": [{"n": <shot number>, "people": [...], "place": "...
 
 def label(batch):
     key = ",".join(map(str, batch))
-    if key in cache: return cache[key]
+    with _CACHE_LOCK:
+        if key in cache:
+            return cache[key]
     content = [{"type": "text", "text": f"Cast of the episode:\n{cast_txt}\n\n{RULES}\n\nThe shots (3 frames each, left to right):"}]
     for k in batch:
         x, y = shots[k]
         content += [{"type": "text", "text": f"shot {k}: {fmt(x)}-{fmt(y)} ({y - x:.1f} s). Narration around it: \"{text_at(x, y)[:400]}\""},
                     {"type": "image_url", "image_url": {"url": b64(strip(k))}}]
+    r = None
     for attempt in range(3):
         try:
             text, _ = ai.chat(content, max_tokens=4000)
             r = ai.extract_json(text, "shots")
-            if r and len(r.get("shots", [])) >= len(batch): break
-        except Exception as e:
+            if r and len(r.get("shots", [])) >= len(batch):
+                break
+        except Exception:
             r = None; time.sleep(3)
-    cache[key] = r; json.dump(cache, open(cache_p, "w"), indent=1, ensure_ascii=False)
+    with _CACHE_LOCK:
+        cache[key] = r
+        json.dump(dict(cache), open(cache_p, "w"), indent=1, ensure_ascii=False)
     return r
 
 
