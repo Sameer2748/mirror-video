@@ -491,9 +491,7 @@ class Runner:
             # This merge is a JSON join; run the app's copy here so Retry trims that gap.
             force_local = True
             cmd = self._lipmerge_local_cmd(cmd or prm["cmd"])
-        if j["step"] == "library":
-            # Worker ai.py still dies on a truncated locations JSON. This box has the closer + batched ask.
-            force_local = True
+        # library is not force_local: W/_app carries this box's ai.py (truncated-JSON closer) with the cloud job.
         if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):

@@ -328,6 +328,35 @@ def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, mon
         cloud.run_command({}, show, ep, "manifest", ["{py}", "x"], FakeCfg(tmp_path), log=lambda m: None)
 
 
+def test_library_job_ships_this_boxes_ai_not_the_baked_image(tmp_path):
+    """The rented /opt/app still dies on truncated locations JSON. The job takes THIS ai.py/library.py in W/_app
+    so a Retry of library on a worker uses the closer without rebuilding the image."""
+    import importlib.util
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/scene/pipeline/library.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), str(work), str(work / "broll_library")]
+    out = cloud.point_library_at_staged_app(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_app" / "dubstudio" / "pipeline" / "library.py" and staged.is_file()
+    assert out[2:] == [str(work), str(work / "broll_library")]
+    spec = importlib.util.spec_from_file_location("shipped_ai", work / "_app" / "dubstudio" / "ai.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    text = '{"locations": {\n"Albert\'s study": "study",\n"Night forest, then Albe'
+    got = mod.extract_json(text, "locations")
+    assert got["locations"]["Albert's study"] == "study"
+    assert "Night forest" not in json.dumps(got)
+
+
+def test_library_is_claimed_by_the_cut_visit_so_it_goes_as_its_own_cloud_job(monkeypatch):
+    """force_local is off; CLOUD_STEPS includes cut, so library is not enabled_for (would be skipped as a visit
+    rider) but claimed_by_stretch is True — the runner sends it via _run_cmd_cloud with the staged app."""
+    settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "cut", "CLOUD_AI": "true"}
+    monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
+    monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
+    assert cloud.claimed_by_stretch("library") and not cloud.enabled_for("library")
+
+
 def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(monkeypatch):
     """facemap, qc and library ask the app's AI client. Without a key facemap and qc do not fail -- they give a
     *worse* answer -- so they must not go to a rented machine by accident."""

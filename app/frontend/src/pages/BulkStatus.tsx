@@ -36,12 +36,18 @@ export default function BulkStatus() {
   useEffect(load, [load]);
 
   const [tick, setTick] = useState(0);
+  const lastLoad = useRef(0);
   useLive((e) => {
     if (!batch) return;
     if (!batch.episodes.some((x) => x.id === e.episode_id)) return;
     if (e.kind === "job" || e.kind === "episode_status" || e.kind === "run_created") setTick((t) => t + 1);
   });
-  useEffect(() => { if (!tick) return; const t = setTimeout(load, 1200); return () => clearTimeout(t); }, [tick, load]);
+  useEffect(() => {
+    if (!tick) return;
+    const wait = Math.max(0, 2000 - (Date.now() - lastLoad.current));
+    const t = window.setTimeout(() => { lastLoad.current = Date.now(); load(); }, wait);
+    return () => window.clearTimeout(t);
+  }, [tick, load]);
 
   useEffect(() => {
     if (!open) { setFull(null); return; }

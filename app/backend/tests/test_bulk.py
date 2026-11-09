@@ -57,7 +57,9 @@ def test_bulk_creates_every_episode_in_the_range(env):
     listed = c.get(f"/api/shows/{s['id']}/episodes").json()
     assert [e["number"] for e in listed] == [31, 32, 33, 34]
     assert c.get(f"/api/shows/{s['id']}/batches").json()[0]["id"] == b["id"]
-    assert c.get(f"/api/batches/{b['id']}").json()["id"] == b["id"]
+    got = c.get(f"/api/batches/{b['id']}").json()
+    assert got["id"] == b["id"]
+    assert all("have" in e and "ready" in e and "steps" in e for e in got["episodes"])
 
 
 def test_bulk_does_not_overwrite_an_existing_episode(env):

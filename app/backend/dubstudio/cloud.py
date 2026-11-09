@@ -24,7 +24,7 @@ Settings (app/.env):
                         "match", "cut", "scene" and "tail" are whole visits (one machine each); "all" is every visit
   CLOUD_PIECES          how many pieces a long step is split into (default 8)
 """
-import json, tarfile, time, urllib.error, urllib.request
+import json, shutil, tarfile, time, urllib.error, urllib.request
 from pathlib import Path
 
 from . import envfile, storage
@@ -519,6 +519,42 @@ def _tar(paths, root, dest, patch=None):
     return n
 
 
+def stage_current_app(work):
+    """Copy this process's `dubstudio` (ai.py + library.py) into W/_app.
+
+    The baked worker image has an older `/opt/app`. library.py's `_app_dir` is parents[2] of the script, so
+    `{WORK}/_app/dubstudio/pipeline/library.py` imports THIS closer / cache lock, not the image's. -> the script path."""
+    pkg = Path(__file__).resolve().parent
+    dest = Path(work) / "_app" / "dubstudio"
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    for name in ("__init__.py", "ai.py"):
+        src = pkg / name
+        if src.is_file():
+            shutil.copy2(src, dest / name)
+    pipe = dest / "pipeline"
+    pipe.mkdir()
+    src_pipe = pkg / "pipeline"
+    for name in ("__init__.py", "library.py"):
+        src = src_pipe / name
+        if src.is_file():
+            shutil.copy2(src, pipe / name)
+    return pipe / "library.py"
+
+
+def point_library_at_staged_app(cmd, work):
+    """Rewrite a library command so the worker runs the copy we just staged under W/_app."""
+    script = stage_current_app(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("library.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu"):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
@@ -527,6 +563,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one.
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
+    if name == "library":
+        cmd = point_library_at_staged_app(cmd, W)
+        log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)

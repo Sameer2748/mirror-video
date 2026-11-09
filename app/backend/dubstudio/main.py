@@ -621,34 +621,63 @@ def _set_input(eid, kind, path):
         db().insert("assets", episode_id=eid, kind=kind, path=path, role="input", created=now())
 
 
+def _decorate_episodes(eps):
+    """Progress / current step / input files for many episodes: two queries, not two per row.
+
+    The 35-episode bulk page was calling this once per episode (70 round-trips) and 502'ing when library
+    jobs also sat on the API process."""
+    if not eps:
+        return eps
+    ids = [e["id"] for e in eps]
+    ph = ",".join("?" * len(ids))
+    runs = {r["episode_id"]: r["r"] for r in db().q(
+        f"SELECT episode_id, MAX(run) AS r FROM jobs WHERE episode_id IN ({ph}) GROUP BY episode_id", ids)}
+    jobs_by_ep = {}
+    if runs:
+        for j in db().q(
+                f"SELECT episode_id, run, step, status, progress, params FROM jobs "
+                f"WHERE episode_id IN ({ph}) ORDER BY episode_id, ord", ids):
+            if j["run"] != runs.get(j["episode_id"]):
+                continue
+            jobs_by_ep.setdefault(j["episode_id"], []).append(j)
+    have_by_ep = {}
+    for a in db().q(
+            f"SELECT episode_id, kind FROM assets WHERE episode_id IN ({ph}) AND role='input'", ids):
+        have_by_ep.setdefault(a["episode_id"], set()).add(a["kind"])
+    rnr = None
+    for e in eps:
+        if e.get("status") == "queued":
+            if rnr is None:
+                rnr = runner()
+            e["queue_position"] = rnr.queue_position(e["id"])
+        run = runs.get(e["id"])
+        e["run"] = run
+        e["progress"] = None
+        e["step"] = None
+        e["step_label"] = None
+        e["steps_done"] = 0
+        e["steps"] = 0
+        js = jobs_by_ep.get(e["id"]) or []
+        if run:
+            e["steps"] = len(js)
+            e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)
+                                  / max(len(js), 1), 3)
+            e["steps_done"] = sum(1 for j in js if j["status"] in ("done", "skipped"))
+            cur = next((j for j in js if j["status"] == "running"), None) \
+                or next((j for j in js if j["status"] == "needs_input"), None) \
+                or next((j for j in js if j["status"] == "failed"), None)
+            if cur:
+                e["step"] = cur["step"]
+                e["step_label"] = (cur.get("params") or {}).get("label", cur["step"])
+        have = have_by_ep.get(e["id"]) or set()
+        e["have"] = sorted(have)
+        e["ready"] = "src_video" in have and "dub_audio" in have
+    return eps
+
+
 def _decorate_episode(e):
     """Progress, current step and which input files are already there — used by the show table and bulk status."""
-    if e.get("status") == "queued":
-        e["queue_position"] = runner().queue_position(e["id"])
-    run = runner().latest_run(e["id"])
-    e["run"] = run
-    e["progress"] = None
-    e["step"] = None
-    e["step_label"] = None
-    e["steps_done"] = 0
-    e["steps"] = 0
-    if run:
-        js = db().q("SELECT step, status, progress, params FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
-                    (e["id"], run))
-        e["steps"] = len(js)
-        e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)
-                              / max(len(js), 1), 3)
-        e["steps_done"] = sum(1 for j in js if j["status"] in ("done", "skipped"))
-        cur = next((j for j in js if j["status"] == "running"), None) \
-            or next((j for j in js if j["status"] == "needs_input"), None) \
-            or next((j for j in js if j["status"] == "failed"), None)
-        if cur:
-            e["step"] = cur["step"]
-            e["step_label"] = (cur.get("params") or {}).get("label", cur["step"])
-    have = {a["kind"] for a in db().q("SELECT kind FROM assets WHERE episode_id=? AND role='input'", (e["id"],))}
-    e["have"] = sorted(have)
-    e["ready"] = "src_video" in have and "dub_audio" in have
-    return e
+    return _decorate_episodes([e])[0]
 
 
 def _batch_status(eps):
@@ -676,7 +705,7 @@ def _batch_full(bid):
     b = _get("batches", bid)
     b["show"] = _get("shows", b["show_id"])
     eps = db().q("SELECT * FROM episodes WHERE batch_id=? ORDER BY number", (bid,))
-    b["episodes"] = [_decorate_episode(e) for e in eps]
+    b["episodes"] = _decorate_episodes(eps)
     b["status"] = _batch_status(b["episodes"])
     b["counts"] = {}
     for e in b["episodes"]:
@@ -687,7 +716,7 @@ def _batch_full(bid):
 @app.get("/api/shows/{sid}/episodes")
 def list_episodes(sid: int):
     eps = db().q("SELECT * FROM episodes WHERE show_id=? ORDER BY number", (sid,))
-    return [_decorate_episode(e) for e in eps]
+    return _decorate_episodes(eps)
 
 
 @app.post("/api/shows/{sid}/episodes")
