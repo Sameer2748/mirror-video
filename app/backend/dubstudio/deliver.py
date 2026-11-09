@@ -32,6 +32,18 @@ def start_render(db, eid, version, note=None):
 def render_state(db, runner, r):
     """{status, progress, step, eta, started} of one render from its episode's latest run (and saves the end once)."""
     if r["status"] not in ("waiting", "running"):
+        # A rented-machine tail used to save passed=False because check.log was empty. Re-read the
+        # render log once so a finished episode does not keep a red empty banner.
+        cr = r.get("check_result") or {}
+        if r["status"] == "done" and cr.get("passed") is not True:
+            run = runner.latest_run(r["episode_id"])
+            jobs = db.q("SELECT step, log_path FROM jobs WHERE episode_id=? AND run=?",
+                        (r["episode_id"], run)) if run else []
+            chk_res = runner.final_check_result(jobs)
+            if chk_res.get("passed") is True:
+                cr = dict(cr, passed=True, lines=chk_res["lines"][-12:])
+                db.update("renders", r["id"], check_result=cr)
+                r = dict(r, check_result=cr)
         return r
     run = runner.latest_run(r["episode_id"])
     jobs = [j for j in db.q("SELECT step, status, progress, eta, started, finished, log_path FROM jobs "
@@ -55,10 +67,9 @@ def render_state(db, runner, r):
     out = dict(r, status=status, progress=round(prog, 3), step=STEP_LABEL.get(cur["step"]) if cur and status != "done" else None,
                eta=cur["eta"] if cur and status == "running" else None, started=started)
     if status in ("done", "failed", "cancelled"):
-        chk = next((j for j in jobs if j["step"] == "check"), None)
-        lines = runner.log_tail(chk["log_path"], 40) if chk else []
-        res = dict(r.get("check_result") or {}, passed=any("FINAL CHECK PASSED" in ln for ln in lines),
-                   lines=[ln for ln in lines if ln.startswith(("OK ", "BAD", "FINAL"))][-12:],
+        chk_res = runner.final_check_result(jobs)
+        res = dict(r.get("check_result") or {}, passed=chk_res["passed"],
+                   lines=chk_res["lines"][-12:],
                    seconds={j["step"]: round(j["finished"] - j["started"], 1) for j in jobs if j["started"] and j["finished"]})
         fin = max((j["finished"] for j in jobs if j["finished"]), default=time.time())
         db.update("renders", r["id"], status=status, check_result=res, finished=fin)

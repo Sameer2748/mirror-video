@@ -120,6 +120,26 @@ From `CLAUDE.md` "Rules" and `01_PROJECT_CONTEXT.md` — short list:
   cost $0.92. `examples/tgs_ep34_5min/expected/` still holds the OLD-rules answer (not updated).
 - WBM ep9 (id 5) and ep18 (id 6) wait at "Ready for review".
 
+## 7b. State at 2026-11-04 (bulk, live, TAB, cost)
+
+Read `docs/03_PROGRESS.md` section **“Bulk upload, scene-edit cost, TAB FR→IT, and live hardening”** for the full log.
+Short version for a new chat:
+
+- **Live**: https://dubstudio-yg5s.onrender.com — Docker API on Render, Postgres, R2, RunPod CPU+GPU.
+- **Local Mac** is a separate catalog (`hamburg/app/library` SQLite, `R2_PREFIX=dub-studio-mac`). Not the live DB.
+- **Bulk** of a range of episodes works; loose file names (`TAB FR eo 14 .mp4`) match the episode number.
+- **Scene edit** ~$2–4/ep (medium thinking, 2+2 rounds), not ~$18. Last clip is auto-trimmed to episode length.
+- **API image** now carries `app/backend/pipeline_tools/dubstitch.py` + `merged.py` and `pipeline/lipmerge.py` so
+  Render does not look for `/root/Desktop/france-team/adaptation-tool`. Groups, lipsync, merge, reading view and
+  shot library run on the API box until the worker image is rebuilt.
+- **TAB PGC IT** (IT dub, FR source, episodes 11–15) was the first real bulk of that kind. Failures that were
+  turned into general rules: Whisper `IT`/`FR` → `it`/`fr`; 1-frame and last-piece lip merge; truncated/control-char
+  shot-library JSON; lipsync sentence past EOF coverage; thread-safe library cache.
+- **Do not** retry old TGS EP31/34 scene edit unless asked. **Do not** overwrite editor EP32/EP33 cuts with test
+  outputs in `opt_sonnet` / `opt_medium`.
+- **2026-11-09:** if scene edit leaves a hole and matching had a clip, use the matching clip (`use_scene` retry
+  repairs it, no Claude). `cpu_slots` default 8. TAB EP11 editor is the pipeline cut, ready for a person.
+
 ## 8. Open items / waiting on the owner
 
 1. **Owner runs one episode of another show end to end and renders it himself** (milestone 7 done-test). Fix whatever he

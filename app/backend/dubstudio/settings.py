@@ -93,8 +93,8 @@ def write_app(values):
                 v = int(v)
             except (TypeError, ValueError):
                 raise ValueError(f"{k} must be a whole number")
-            if k == "cpu_slots" and not 1 <= v <= 8:
-                raise ValueError("CPU slots must be 1 to 8")
+            if k == "cpu_slots" and not 1 <= v <= 16:
+                raise ValueError("CPU slots must be 1 to 16")
             if k == "port" and not 1024 <= v <= 65535:
                 raise ValueError("the port must be 1024 to 65535")
         else:

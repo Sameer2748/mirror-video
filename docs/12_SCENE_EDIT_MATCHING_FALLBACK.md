@@ -29,4 +29,4 @@ Tiny leftover at the end (1–10 ms because Claude writes hundredths of a second
 
 `cpu_slots` is how many CPU jobs the **API** may have in flight, including a render tail that is only *waiting* on a rented machine. Default **8** (was 2). One episode’s render tail still uses **one** rented CPU box (the video is too big to split). Several episodes can render at once, up to `cpu_slots` and the idle RunPod CPU workers.
 
-Deployed 2026-11-09 (owner): live Render `handover-doc-review`, CPU worker image rebuild, Stargate dest. TAB EP11 Retry of `use_scene` applies the fill with no new Claude spend.
+Deployed 2026-11-09 (owner): matching-fill commit `a404920` is live on Render; cpu_slots + final-check banner go with the follow-up deploy; CPU worker image rebuilt (`workflow_dispatch`, tag `pipeline`). TAB EP11 Retry of `use_scene` applies the fill with no new Claude spend.

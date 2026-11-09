@@ -465,9 +465,9 @@ def _episode_full(eid):
     for j in e["jobs"]:
         j["label"] = (j.get("params") or {}).get("label", j["step"]); j.pop("params", None)
         if j["step"] == "check" and j["status"] in ("done", "failed"):
-            tail = runner().log_tail(j["log_path"], 60)
-            j["check_passed"] = any("FINAL CHECK PASSED" in ln for ln in tail)
-            j["check_lines"] = tail[-15:]
+            res = runner().final_check_result(e["jobs"])
+            j["check_passed"] = res["passed"]
+            j["check_lines"] = res["lines"] or runner().log_tail(j["log_path"], 15)
     e["show"] = _get("shows", e["show_id"])
     out = Path(e["output_dir"] or "")
     e["output_existing"] = sorted(c.name for c in out.iterdir() if not c.name.startswith(".")) if e["output_dir"] and out.is_dir() else []

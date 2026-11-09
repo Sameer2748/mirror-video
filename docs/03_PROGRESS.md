@@ -1432,6 +1432,96 @@ endpoint wearing a CPU name.
 - **Real no-cache `mksrt_src` on the CPU endpoint** (asr/ not sent up; Whisper listened to all 11 minutes):
   **75 s** of work, 95 s wall. Mac was 682 s. It heard every 60 s chunk (171, 162, … 61 words).
   Cleaned SRT vs the Mac: every Mac word is there (1,621/1,621) plus the same eleven words the earlier cloud
-  run heard and the Mac missed (`know that you might want to work on that aiden blinked`). Cleaned SRT vs
+  run heard and the Mac missed (`know that you might want to work on that aiden blinked`).   Cleaned SRT vs
   the previous cloud run: **1,632/1,632, identical**. So this CPU box gives the same Whisper answer as the
   old GPU-priced worker, 9× faster than the Mac.
+
+## Bulk upload, scene-edit cost, TAB FR→IT, and live hardening (2026-11-02 to 2026-11-04)
+
+Live site: **https://dubstudio-yg5s.onrender.com** (Render service `srv-dar686jncjis73c9rr90`, branch
+`handover-doc-review`, repo `Sameer2748/mirror-video`). Episode pool `MAX_ACTIVE_EPISODES=8`. Scene edit and groups
+run on the API box (`force_local`); Whisper / lip scan / face map / many CPU steps run on RunPod.
+
+### Bulk generation
+- A range of episodes can be uploaded and queued together (`BulkNew` / `BulkStatus`).
+- Only files whose episode number is inside the typed range are taken.
+- File names no longer have to be exact `14.mp4` / `14.mp3` / `14.docx`. The matcher reads the episode number
+  inside a long title: `TAB FR eo 14 .mp4`, `TAB_FR_S01E11.mp4`, `Show ep 11.mov`, `puntata 12.docx`. Years and
+  1080p-style numbers are ignored. Spaces before the extension are fine. `eo` counts as an episode marker.
+
+### Scene-edit cost (the $18 problem)
+- Old path: Claude Sonnet 5.5 with **high** thinking, 3+3+3 rounds, empty `finish_reason=length` replies retried
+  (~$0.32 each). ~148 calls, ~26 min, **~$18/ep**.
+- Now: `reasoning.effort=medium`, **2 first rounds + 2 fix passes**, empty replies are not retried (keep previous
+  or auto cut), speed clamp 0.8–1.25× and short B-roll polish in code. Live typical **~$2–4/ep**, a few minutes.
+- One-line explanation: we stopped sending high thinking (that was most of the output tokens) and stopped paying
+  for empty retries; the same images and rules still go to Claude.
+- Haiku was tried and rejected (cheaper, worse cut). A third fix pass was tried (~$5, leftover not better) and dropped.
+
+### Clips past the episode end
+- Editor banner “IT#-1 runs outside the episode” blocked Render. Last B-roll could overshoot by a few ms because
+  Claude writes hundredths of a second.
+- `use_scene` now stretches a short last clip and **trims a long one** to `total_ms`. `timeline.fit_episode` clamps
+  t0/t1. Source overshoot still has 40 ms slop. The banner is closable.
+
+### Groups overlap
+- Two groups must not share more than 1 ms of source footage. Lip windows can spill. Shared footage is **trimmed**
+  instead of raising. Lives in our `dubstitch.py` (API image); the rented worker image is older, so groups run
+  locally on the API box.
+
+### Whisper language codes
+- A new show often stores labels `IT` / `FR` / `US`. faster-whisper only accepts `it` / `fr` / `en`.
+- `presets.asr_lang` lowercases and aliases (`US`→`en`). Applied when creating/patching a show, when planning
+  mksrt/words/translate, and when expanding `--lang` / `--sl` / `--tl` on retry. TAB PGC IT vs FR source works.
+
+### Lip scan merge (29.97 → 25 fps)
+- Each 15 s piece is resampled to 25 fps. The same window can land on 375 vs 376 frames. That is rounding, not a
+  failed scan. Merge trims 1–2 extra frames.
+- The **last** piece of the file is often shorter than 15 s: one half stops at EOF (e.g. 258 frames), the other
+  wrote a full window (376). Merge now keeps the **shorter** side. Empty halves still fail.
+- Merge runs on the API box (`pipeline/lipmerge.py`) so Retry does not use the rented worker’s old script.
+- Lipsync: a sentence that sits past the last scanned frames is treated as **no lips**, not a hard stop.
+
+### Render was looking for a Mac path
+- Groups / reading view used `/root/Desktop/france-team/adaptation-tool/scripts/...` on the live box. That folder
+  does not exist on Render → `can't open file` / `merged.py is not on this machine`.
+- `dubstitch.py` and `merged.py` ship in `app/backend/pipeline_tools/` inside the API image. `config.py` prefers
+  those scripts when the Mac tools folder is missing. Groups, lipsync, merge, reading view, and shot library run
+  from this image on purpose until the worker image is rebuilt.
+
+### Shot library (Claude labels)
+- Locations JSON could be cut off at max_tokens (`"Night forest, then Albe`). Parser closes finished pairs;
+  leftover places are asked in batches of 30.
+- Six label threads writing `_claude_cache.json` crashed with `dictionary changed size during iteration` — cache
+  dump is locked.
+- Claude can put raw control characters in a shot label; `broll_library.json` is sanitised so face map can
+  `json.load` it.
+
+### Live knobs and workers
+- Render API image is rebuilt on push (autoDeploy). Worker images (`sameer27488/dubstudio-worker:pipeline` and
+  `:face-gpu`) are **workflow_dispatch only** — overwriting a Docker Hub tag does **not** restart every RunPod
+  worker; the next cold start may pull the new tag.
+- Scene edit stays `force_local=True` until the CPU image is confirmed to have the empty-reply cap and medium
+  thinking.
+- RunPod account quota 20 total workers; CPU 14 + GPU 6 is the current split.
+
+### TAB PGC IT (Italian dub vs French source, bulk 11–15)
+- Show code `TABPGCIT`. Files like `TAB FR eo 14 .mp4` match episode 14.
+- After the fixes above: EP12 and EP14 reached **Review**; EP11 scene edit ran; EP13 face map / EP15 library
+  continued on rented machines. Review is the editor gate — press Render there, it is not a hang.
+
+## Final-check banner on a finished episode (2026-11-09, live)
+
+TAB EP13 Deliverables showed “The final check did not pass:” with a blank box while the episode was Done and all videos were there. The check **did pass** (`FINAL CHECK PASSED` in the render-tail log). The check job’s own log is empty because that step rode the rented-machine visit. Deliverables now reads the render log too, and a done render with a false empty result is re-read once. QC FAIL rows in the xlsx are a separate sheet and do not fail this check.
+
+## Scene-edit hole → matching clip; more parallel renders (2026-11-09, live)
+
+TAB EP11/12 Review: Claude’s scene edit left a `placeholder` (no source footage) and a 26 s / 32 s black hole even though matching had clips. New rule: if matching had a clip and scene edit did not, use the matching clip. If matching also had none, keep the hole. Same fill in `use_scene` so a retry of that step repairs an already-run episode without calling Claude. Default `cpu_slots` 2 → 8 (cap 16) so several render tails can wait on idle RunPod CPUs at once. Matching-fill is on Render (`a404920`); cpu_slots + final-check banner follow on this deploy. CPU worker image rebuilt (does not auto-restart RunPod workers). Doc: `docs/12_SCENE_EDIT_MATCHING_FALLBACK.md`.
+
+TAB EP11 editor was reset to that pipeline cut (Retry `use_scene`, no new Claude). The old 04:55–05:22 hole is matching clips. Editor can start from there.
+
+**Still the owner’s / next chat:**
+1. After the new CPU image is confirmed, scene/groups can leave `force_local` if desired.
+2. R2 CORS `ExposeHeaders: ["ETag"]` for browser multipart of multi-GB videos.
+3. Do not overwrite live editor cuts of TGS EP32/33 with old test folders (`opt_sonnet` etc.).
+4. TAB EP12 still has a matching-fill hole until someone Retries `use_scene` there (not done unless asked).

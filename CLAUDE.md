@@ -8,7 +8,8 @@ episode, and report what works in plain words.
 Read these, in this order, before writing code:
 
 0. `docs/07_HANDOVER.md` — **start here in a new chat**: the map, the full step list, final decisions, the owner's
-   questions so far and the open items (2026-10-30).
+   questions so far and the open items (2026-10-30). §7b is the 2026-11-04 live/bulk/TAB state.
+   `docs/10_STARGATE_SNAPSHOT.md` — if this folder is a disconnected copy for another team.
 1. `docs/01_PROJECT_CONTEXT.md` — what the pipeline does, the shows, every decision made so far and why.
 2. `docs/02_PLATFORM_DESIGN.md` — the approved design (architecture, data model, editor, flags, milestones).
 3. `docs/03_PROGRESS.md` — what is built, what is next. **Update it after every piece of work.**

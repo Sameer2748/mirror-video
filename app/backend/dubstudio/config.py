@@ -52,7 +52,9 @@ class Config:
         self.scene_dir = Path(env("DUBSTUDIO_SCENE_DIR") or f.get("scene_dir") or Path(__file__).resolve().parent / "pipeline")
         self.models_dir = Path(env("DUBSTUDIO_MODELS") or f.get("models_dir") or self.tools_dir / "data/models").expanduser()
         self.port = int(env("DUBSTUDIO_PORT") or f.get("port") or 8765)
-        self.cpu_slots = int(env("DUBSTUDIO_CPU_SLOTS") or f.get("cpu_slots") or 2)
+        # how many CPU jobs (incl. a render tail waiting on RunPod) this API may have in flight. One slot is held
+        # until the rented machine finishes, so 2 blocked two episode renders even with idle RunPod workers.
+        self.cpu_slots = int(env("DUBSTUDIO_CPU_SLOTS") or f.get("cpu_slots") or 8)
         self.gpu_slots = int(f.get("gpu_slots") or 1)
         self.step_max_seconds = float(env("DUBSTUDIO_STEP_MAX_SECONDS") or f.get("step_max_seconds") or 0)   # 0 = run to the end
         # subtitle font (Poppins Bold, the house style); the pipeline only looks in Linux font folders by itself

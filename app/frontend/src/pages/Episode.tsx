@@ -302,7 +302,7 @@ function Outputs({ ep }: { ep: Episode }) {
       {busy && <div className="panel"><b>Rendering v{r!.version}</b> <span className="muted">· {r!.step || "waiting for a free slot"}</span>
         <div className="bar" style={{ marginTop: 8 }}><div className="bar-fill" style={{ width: `${Math.round((r!.progress || 0) * 100)}%` }} /></div></div>}
       {!busy && passed === true && <div className="ok-box">✓ FINAL CHECK PASSED{d.rendered_version ? ` · rendered from timeline version ${d.rendered_version}` : ""}{r?.finished ? ` · ${new Date(r.finished * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : ""}</div>}
-      {!busy && passed === false && <div className="error">The final check did not pass:<pre className="log">{(r?.check_result?.lines || check?.check_lines || []).join("\n")}</pre></div>}
+      {!busy && passed === false && <div className="error">The final check did not pass:<pre className="log">{(r?.check_result?.lines || check?.check_lines || []).join("\n") || "the check log is empty — open Processing and read the render step"}</pre></div>}
       {d.unrendered && <div className="warn">The editor has changes that are not in these files yet (timeline version {d.latest_version}{d.rendered_version ? `, rendered ${d.rendered_version}` : ""}). <Link to={`/episodes/${ep.id}/editor`}>Open the editor</Link> and press Render.</div>}
       {d.qc_open > 0 && <div className="warn">{d.qc_open} QC note{d.qc_open > 1 ? "s are" : " is"} still open in the editor.</div>}
       <div className="panel-row">
