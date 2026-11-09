@@ -12,6 +12,34 @@ def test_extract_json_skips_prose():
     assert extract_json('```json\n{"a": 1}\n```') == {"a": 1}
 
 
+def test_json_cache_keeps_finished_keys_from_a_truncated_file(tmp_path):
+    """Scene-edit Retry died on json.load of a half-written par_cache (kill / disk full mid-dump). Keep the
+    stretches that made it, rewrite the file, so Retry only re-asks the rest."""
+    from dubstudio import ai
+    p = tmp_path / "scene_manifest.par_cache.json"
+    good = {
+        "par|0.00-12.00|a0": {"edl": [{"t0": 0, "t1": 2, "shot": 1, "from": 0.0, "to": 2.0}], "notes": "ok"},
+        "par|12.00-30.00|a0": {"edl": [{"t0": 12, "t1": 14, "shot": 2, "from": 3.0, "to": 5.0}], "notes": "also fine"},
+    }
+    raw = json.dumps(good, indent=1, ensure_ascii=False)
+    p.write_text(raw[: raw.rfind("also fine")] + "al")          # cut mid-string, same class of error as EP16
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(p.read_text())
+    got = ai.load_json_cache(p)
+    assert got["par|0.00-12.00|a0"]["edl"][0]["shot"] == 1
+    assert got["par|12.00-30.00|a0"]["edl"][0]["shot"] == 2     # finished EDL kept; cut-off notes dropped
+    assert json.loads(p.read_text()) == got                     # file is valid again for the next Retry
+
+
+def test_json_cache_roundtrip_is_atomic(tmp_path):
+    from dubstudio import ai
+    p = tmp_path / "scene_manifest.par_cache.json"
+    ai.save_json_cache(p, {"par|0.00-1.00|a0": {"edl": [{"shot": 7}]}})
+    assert (p.parent / (p.name + ".tmp")).exists() is False
+    assert ai.load_json_cache(p)["par|0.00-1.00|a0"]["edl"][0]["shot"] == 7
+    assert ai.load_json_cache(tmp_path / "missing.json") == {}
+
+
 def test_extract_json_closes_a_truncated_locations_map():
     """Shot library: Claude hit max_tokens mid-key ('Night forest, then Albe). Keep the finished pairs."""
     from dubstudio.ai import extract_json

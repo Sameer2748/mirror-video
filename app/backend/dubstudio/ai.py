@@ -138,6 +138,79 @@ def chat(prompt, model=None, max_tokens=4000, system=None, retries=4, temperatur
             raise
 
 
+def save_json_cache(path, data):
+    """Write a JSON object atomically (temp file, then replace) so a kill or a full disk never leaves a half file."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=1, ensure_ascii=False)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+
+
+def _salvage_object_cache(text):
+    """Keep complete top-level `"key": value` pairs from a truncated JSON object. -> dict (maybe empty)."""
+    i = text.find("{")
+    if i < 0:
+        return {}
+    s, n, out = text[i + 1:], 0, {}
+    dec = json.JSONDecoder()
+    while n < len(s):
+        while n < len(s) and s[n] in " \t\r\n,":
+            n += 1
+        if n >= len(s) or s[n] == "}":
+            break
+        try:
+            key, n = dec.raw_decode(s, n)
+        except ValueError:
+            break
+        while n < len(s) and s[n] in " \t\r\n":
+            n += 1
+        if n >= len(s) or s[n] != ":":
+            break
+        n += 1
+        while n < len(s) and s[n] in " \t\r\n":
+            n += 1
+        try:
+            val, n = dec.raw_decode(s, n)
+        except ValueError:
+            break
+        if isinstance(key, str):
+            out[key] = val
+    return out
+
+
+def load_json_cache(path):
+    """Load a JSON object cache (scene-edit / library answers). A truncated write is closed; finished keys stay.
+
+    Retry of scene_edit used to die on `json.load` of a half-written `par_cache.json` (kill or disk full mid-dump).
+    -> dict. Rewrites the file when it had to repair, so the next Retry does not hit the same error."""
+    path = Path(path)
+    if not path.exists():
+        return {}
+    raw = path.read_text(encoding="utf-8")
+    if not raw.strip():
+        return {}
+    try:
+        data = json.loads(raw)
+        return data if isinstance(data, dict) else {}
+    except json.JSONDecodeError:
+        pass
+    data = _close_truncated_json(raw)
+    if not isinstance(data, dict):
+        data = _salvage_object_cache(raw)
+    if not isinstance(data, dict):
+        data = {}
+    print(f"cache {path.name}: kept {len(data)} finished answers from a truncated file", flush=True)
+    try:
+        save_json_cache(path, data)
+    except OSError as ex:
+        print(f"cache {path.name}: could not rewrite the repaired file ({ex})", flush=True)
+    return data
+
+
 def _close_truncated_json(text):
     """A reply cut off at max_tokens, e.g. `{"locations": {"A": "study", "Night forest, then Albe`.
     Drop the unfinished last field and close open braces. -> object or None."""

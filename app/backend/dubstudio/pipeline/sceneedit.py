@@ -822,7 +822,7 @@ def cut_window(T0, T1, before, cache, wkey):
             ans = read_edl(content, extra, f"window {T0:.1f}-{T1:.1f}")
             if ans.get("edl"):
                 cache[key] = ans
-                json.dump(cache, open(OUTM.with_suffix(".cache.json"), "w"), indent=1, ensure_ascii=False)
+                ai.save_json_cache(OUTM.with_suffix(".cache.json"), cache)
         try:
             edl = [dict(e, t0=float(e["t0"]), t1=float(e["t1"]), **{"from": float(e["from"]), "to": float(e["to"])}) for e in ans.get("edl") or []]
         except Exception:
@@ -1120,7 +1120,7 @@ def run_par(A0, A1):
     info = [cands_for(T0, T1) for T0, T1 in wins]
     cand = [{r["n"] for r in x[2]} for x in info]; used = [x[1] for x in info]
     own = ownership(wins, cand, used)
-    cache_p = OUTM.with_suffix(".par_cache.json"); cache = json.load(open(cache_p)) if cache_p.exists() else {}
+    cache_p = OUTM.with_suffix(".par_cache.json"); cache = ai.load_json_cache(cache_p)
     LINES = [[d for d in dub if d["end_ms"] / 1000 > T0 and d["start_ms"] / 1000 < T1] for T0, T1 in wins]
     print(f"parallel: {len(wins)} stretches ({len({line_scene(d) for d in dub})} scenes), {PAR} calls at a time", flush=True)
 
@@ -1181,7 +1181,8 @@ def run_par(A0, A1):
                 ans = read_edl(content, extra, f"stretch {k} {T0:.1f}-{T1:.1f}")
                 if ans.get("edl"):                          # never cache a failed call (gateway down): it is asked again next run
                     with LOCK:
-                        cache[key] = ans; json.dump(cache, open(cache_p, "w"), indent=1, ensure_ascii=False)
+                        cache[key] = ans
+                        ai.save_json_cache(cache_p, cache)
                 elif edl or prev_edl:
                     print(f"  stretch {k} {T0:.1f}-{T1:.1f}: keeping the previous cut; Claude returned no JSON", flush=True)
                     edl = edl or prev_edl
@@ -1301,7 +1302,7 @@ if PAR:
     sys.exit(0)
 
 
-cache_p = OUTM.with_suffix(".cache.json"); cache = json.load(open(cache_p)) if cache_p.exists() else {}
+cache_p = OUTM.with_suffix(".cache.json"); cache = ai.load_json_cache(cache_p)
 allE, report = [], []
 for T0, T1 in windows(A0, A1):
     edl, rounds, lines, shots = cut_window(T0, T1, allE, cache, f"{T0:.2f}-{T1:.2f}")
