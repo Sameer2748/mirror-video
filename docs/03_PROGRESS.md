@@ -1525,3 +1525,7 @@ TAB EP11 editor was reset to that pipeline cut (Retry `use_scene`, no new Claude
 2. R2 CORS `ExposeHeaders: ["ETag"]` for browser multipart of multi-GB videos.
 3. Do not overwrite live editor cuts of TGS EP32/33 with old test folders (`opt_sonnet` etc.).
 4. TAB EP12 still has a matching-fill hole until someone Retries `use_scene` there (not done unless asked).
+
+## Editor transitions while Automatic is on (2026-11-09)
+
+Show-level Automatic still means Render rotates a style on every picture jump. That used to light every cut as if it already had a transition, and the inspector hid the list unless the clip was a source jump. Now: click any clip except the first → Inspector always has Light leak / Blur dissolve / Zoom blur / Glow / Automatic / None. A pick is kept even if the footage continues from the clip before. Timeline ✦ is bright only for a pick you made; Automatic default is a faint mark.

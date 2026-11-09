@@ -418,6 +418,17 @@ export default function Editor() {
     flat.forEach((q, k) => { const pr = flat[k - 1]; if (k && !q.gap && pr && !pr.gap && Math.abs(q.s0! - pr.s1!) > 50 && Math.abs((byId.get(q.id!)?.t0 ?? -1) - q.t0) < 1) out.add(q.id!); });
     return out;
   }, [flat, byId]);
+  // any clip after the first piece can take a transition from the inspector (Automatic still lets you pick a style)
+  const transInto = useMemo(() => {
+    const out = new Set<string>();
+    let seen = false;
+    for (const q of flat) {
+      if (q.gap || !q.id) continue;
+      if (seen) out.add(q.id);
+      seen = true;
+    }
+    return out;
+  }, [flat]);
   const selIdx = useMemo(() => clips.findIndex((c) => c.id === sel), [clips, sel]);
   const selV2 = useMemo(() => v2.findIndex((c) => c.id === sel), [v2, sel]);
   const selClip = selIdx >= 0 ? clips[selIdx] : selV2 >= 0 ? v2[selV2] : null;
@@ -1233,11 +1244,23 @@ export default function Editor() {
               • Razor (C) cuts a clip in two<br />• pick a sentence or mark In/Out on the source, then Replace (F)<br />• Delete leaves a gap (click it to fill, or drop a sentence on it)<br />• V2 is over V1: drop a sentence, drag a clip up, or press . for the marked In→Out<br />
               • ⌘C / ⌘V copies one clip's footage onto another<br />• ⇧L locks a clip; Lock approved locks them all<br />
               • click a subtitle on S1 / S2 to edit its words and times<br />• M adds a QC note at the playhead</div>}
-            {!cueSel && selClip && cutIds.has(selClip.id) && (
+            {!cueSel && selClip && !transInto.has(selClip.id) && (
+              <div className="insp muted small-text" style={{ paddingBottom: 8 }}>First clip of the episode — no transition into it.</div>
+            )}
+            {!cueSel && selClip && transInto.has(selClip.id) && (
               <div className="insp" style={{ paddingBottom: 0 }}>
                 <label className="trans-row">Transition into this clip
                   <TransSelect info={data.transitions} value={selClip.tin} onChange={(v) => setTransition(selClip.id, v)} />
                 </label>
+                <div className="muted small-text" style={{ padding: "0 0 8px", textTransform: "none", letterSpacing: 0, fontSize: 12 }}>
+                  {selClip.tin
+                    ? `${TLABEL[selClip.tin] || selClip.tin} on this clip (overrides ${TLABEL[data.transitions.default]}).`
+                    : data.transitions.default === "auto"
+                      ? "Automatic for this show: Render picks a style on picture jumps. Choose one here to use it on this clip."
+                      : !cutIds.has(selClip.id)
+                        ? "The picture continues from the clip before. A transition here still plays at this clip's start."
+                        : "Manual: this clip is a hard cut until you pick a style."}
+                </div>
               </div>
             )}
             {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={selClip.row != null && lipSet.has(selClip.row)}
@@ -1751,9 +1774,15 @@ function TimelineView(p: {
         {w > 46 && <span className="cs" style={{ color: sp < 0.67 || sp > 1.5 ? "var(--yellow)" : undefined }}>×{sp.toFixed(2)}</span>}
         {w > 80 && c.row != null && p.lipSet.has(c.row) && <span className="lipi">👄</span>}
         {p.tool === "select" && <span className="edge l" onPointerDown={(e) => trimDown(e, track, i, "l")} />}
-        {p.cutIds.has(c.id) && (() => { const st = c.tin || p.trans.default; return (
-          <span className={`cut-fx ${st !== "none" ? "on" : ""} ${c.tin ? "own" : ""}`} title={`Transition at this cut: ${TLABEL[st] || st}${c.tin ? "" : " (show default)"} — click to change`}
-            onPointerDown={(e) => { e.stopPropagation(); setTmenu(tmenu === c.id ? null : c.id); }}>{st !== "none" ? "✦" : "│"}</span>); })()}
+        {(p.cutIds.has(c.id) || c.tin) && (() => {
+          const picked = c.tin;
+          const st = picked || p.trans.default;
+          const inheritAuto = !picked && p.trans.default === "auto";
+          const hard = picked === "none" || (!picked && p.trans.default !== "auto");
+          return (
+          <span className={`cut-fx ${picked && picked !== "none" ? "on" : ""} ${picked ? "own" : ""} ${inheritAuto ? "def" : ""}`}
+            title={`Transition at this cut: ${TLABEL[st] || st}${picked ? "" : " (show default)"} — click to change`}
+            onPointerDown={(e) => { e.stopPropagation(); setTmenu(tmenu === c.id ? null : c.id); }}>{hard ? "│" : "✦"}</span>); })()}
         {p.tool === "select" && <span className="edge r" onPointerDown={(e) => trimDown(e, track, i, "r")} />}
       </div>
     );
@@ -1939,11 +1968,11 @@ function BinPanel({ eid, bin, clips, srcMedia, labels, onShow, onImport, onImpor
 
 function TransSelect({ info, value, onChange }: { info: TransInfo; value?: string; onChange: (v: string | null) => void }) {
   return (
-    <select value={value || ""} onChange={(e) => onChange(e.target.value || null)}>
+    <select value={value ?? ""} onChange={(e) => onChange(e.target.value || null)}>
+      <option value="">{`Show default (${TLABEL[info.default]})`}</option>
       {info.styles.map((x, k) => <option key={x.id} value={x.id}>{x.label}{k === 0 && x.uses ? " (most used)" : ""}</option>)}
       <option value="auto">Automatic (rotation)</option>
       <option value="none">None (hard cut)</option>
-      <option value="">Show default ({TLABEL[info.default]})</option>
     </select>
   );
 }

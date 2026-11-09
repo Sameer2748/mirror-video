@@ -14,9 +14,11 @@ def test_plan_file_and_cuts(tmp_path):
     tl = tlm.build_v1(w)
     assert tlm.cuts(tl) == ["c1"]
     assert tlm.write_transition_plan(w, tl, "none") is None and not (w / tlm.TPLAN).exists()
-    tl["clips"][1]["tin"] = "light_leak"; tl["clips"][2]["tin"] = "glow"            # c2 is no cut: ignored
+    tl["clips"][0]["tin"] = "zoom_blur"                                            # first clip: nothing to transition into
+    tl["clips"][1]["tin"] = "light_leak"; tl["clips"][2]["tin"] = "glow"            # c2 continues footage: still kept
     tlm.write_transition_plan(w, tl, "none")
-    assert json.loads((w / tlm.TPLAN).read_text()) == {"default": "none", "cuts": {"1000": "light_leak"}}
+    assert json.loads((w / tlm.TPLAN).read_text()) == {"default": "none", "cuts": {"1000": "light_leak", "2000": "glow"}}
+    del tl["clips"][0]["tin"]; del tl["clips"][2]["tin"]
     tl["clips"][1]["tin"] = "none"
     assert tlm.write_transition_plan(w, tl, "none") is None and not (w / tlm.TPLAN).exists()   # back to no step
     tlm.write_transition_plan(w, tl, "auto")                                          # TOLR: a hard cut is a choice
@@ -50,6 +52,18 @@ def test_scene_plan_then_the_editors_own_picks(env):
     m = json.loads((w / "manifest_groups.json").read_text())["segments"]
     assert m[-1].get("broll") is True and m[-1].get("zoom") == 1.08    # still B-roll + zoomed in what render reads
     assert plan_[str(round(m[-1]["it_start_ms"]))] == "none"   # straight cut into the B-roll
+
+
+def test_scene_edit_keeps_an_inspector_pick_on_a_clip_that_is_not_a_jump(tmp_path):
+    """Automatic mode still lets the editor pick a style on a selected clip, even if the footage continues."""
+    w = tmp_path / "w"
+    write_manifest(w, [(0, 1000, 0, 1000), (1000, 2000, 1000, 2000), (2000, 3000, 2000, 3000)], 3000)
+    (w / "manifest_groups.auto.json").write_text((w / "manifest_groups.json").read_text())
+    tl = tlm.build_v1(w)
+    assert tlm.cuts(tl) == []
+    tl["clips"][1]["tin"] = "blur_dissolve"
+    assert tlm.write_transition_plan(w, tl, "auto") is None
+    assert json.loads((w / tlm.TPLAN_EDITOR).read_text())["cuts"] == {"1000": "blur_dissolve"}
 
 
 def test_old_run_never_gains_a_lip_scan(env):

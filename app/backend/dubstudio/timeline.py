@@ -423,12 +423,25 @@ def apply_editor_transitions(work):
     return len(picks)
 
 
+def _editor_transition_picks(tl):
+    """Styles the editor set on clips. Any clip after the start of the episode can have one — not only source jumps —
+    so a pick in the inspector is kept even when the footage continues from the clip before."""
+    out = {}
+    for c in all_clips(tl):
+        tin = c.get("tin")
+        if not tin or (tin not in TRANSITIONS and tin not in ("auto", "none")):
+            continue
+        if float(c.get("t0") or 0) <= 1:
+            continue
+        out[str(round(c["t0"]))] = tin
+    return out
+
+
 def write_transition_plan(work, tl, default):
     """The editor's choices for the pipeline's `transitions --plan`: {"default", "cuts": {dub ms of the cut: style}}.
     No choices on a show without transitions = no file (and no transitions step)."""
-    ok = set(cuts(tl)); f = Path(work) / TPLAN
-    chosen = {str(round(c["t0"])): c["tin"] for c in all_clips(tl) if c["id"] in ok and c.get("tin")
-              and (c["tin"] in TRANSITIONS or c["tin"] in ("auto", "none"))}
+    f = Path(work) / TPLAN
+    chosen = _editor_transition_picks(tl)
     if is_scene_edit(work):
         # a scene-edited episode: the `trans_plan` step makes the plan (scene_transitions.py, as run_episode.sh) and then
         # puts the editor's OWN picks on top -- they are kept here for it
