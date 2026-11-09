@@ -835,7 +835,7 @@ def cancel_batch(bid: int):
 
 def _render_review_list(eps, note):
     """Start render for every episode waiting in review. Processing / queued / new are left alone.
-    A black gap or open red flags skips that episode (open the editor for those)."""
+    A black gap skips that episode. Flags do not: first upload can go out, an editor can fix later."""
     results = []
     for e in eps:
         if e["status"] != "review":
@@ -1547,13 +1547,15 @@ def _kick_render(eid, body, note=None, force=False):
 
 
 def _render_as_is(eid, note=None, force=False):
-    """Render the current timeline without opening the editor. Only an episode waiting in review."""
+    """Render the current timeline without opening the editor. Only an episode waiting in review.
+    Flags never block this path (urgent first upload); only a gap / broken timeline does.
+    An editor can still open the cut later, fix flags, and render again."""
     e = _get("episodes", eid)
     if e["status"] != "review":
         raise HTTPException(409, "only an episode waiting in review can be rendered from the list")
     _ep_ctx(eid)
     tl = _current_timeline(eid, e["work_dir"])
-    return _kick_render(eid, tl, note or "rendered from the list", force)
+    return _kick_render(eid, tl, note or "rendered from the list", True)
 
 
 @app.post("/api/episodes/{eid}/timeline/render")

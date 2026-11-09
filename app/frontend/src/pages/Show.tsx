@@ -46,7 +46,7 @@ export default function ShowPage() {
   async function renderReview(eid?: number, number?: number) {
     const one = eid != null;
     if (one && !confirm(`Render EP ${number} from its current timeline (no editor)?`)) return;
-    if (!one && !confirm(`Render ${inReview} episode${inReview === 1 ? "" : "s"} waiting in review?\n\nEpisodes still processing are left alone. Any with a black gap or open red flags are skipped — open the editor for those.`)) return;
+    if (!one && !confirm(`Render ${inReview} episode${inReview === 1 ? "" : "s"} waiting in review?\n\nEpisodes still processing are left alone. Only a black gap is skipped. Flags stay on the timeline so an editor can fix them later and render again.`)) return;
     setBusy(one ? `render-${eid}` : "render"); setErr(null); setRenderNote(null);
     try {
       if (one) {

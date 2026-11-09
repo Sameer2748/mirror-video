@@ -150,6 +150,10 @@ def test_a_broll_repeat_is_a_note_not_a_blocker(tmp_path):
     msgs = [f["msg"] for fs in after.values() for f in fs if f["kind"] == "repeat"]
     assert msgs and all(f["sev"] == "yellow" for fs in after.values() for f in fs if f["kind"] == "repeat")
     assert "B-roll" in msgs[0]
+    fill = {**plain, "clips": [clip(0, 0, 1000), clip(1, 4000, 1000, note="matching clip (scene edit left a hole)")]}
+    fill_fl = tlm.flags(fill, ctx, None, [])
+    assert tlm.open_counts(fill_fl)["red"] == 0
+    assert all(f["sev"] == "yellow" for fs in fill_fl.values() for f in fs if f["kind"] == "repeat")
 
 
 def test_render_from_the_list_refuses_anything_not_in_review(env):
@@ -181,3 +185,24 @@ def test_render_from_the_list_starts_a_complete_timeline(env):
     r = c.post(f"/api/episodes/{eid}/timeline/render", json={})
     assert r.status_code == 200, r.text
     assert r.json()["version"] == 1 and r.json()["steps"] == ["review"]
+
+
+def test_list_render_goes_ahead_when_flags_are_open_but_there_is_no_gap(env):
+    """Urgent first upload: slow/repeat flags stay for an editor later. Only a black gap blocks the list Render."""
+    from pathlib import Path
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json(); eid = e["id"]
+    work = Path(e["work_dir"]); work.mkdir(parents=True, exist_ok=True)
+    # middle clip plays ×0.1 (red slow) but covers its slot — no black gap
+    write_manifest(work, [(0, 1000, 0, 1000), (1000, 2000, 1000, 1100), (2000, 3000, 2000, 3000)], 3000)
+    db = main.state["db"]
+    db.update("episodes", eid, status="review")
+    db.insert("jobs", episode_id=eid, run=1, step="groups", ord=1, status="done", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="review", ord=2, status="needs_input",
+              needs=["groups"], resource="none")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=3, status="waiting", needs=["review"], resource="cpu")
+    d = c.get(f"/api/episodes/{eid}/timeline").json()
+    assert d["counts"]["red"] >= 1 and d["problems"] == []
+    r = c.post(f"/api/episodes/{eid}/timeline/render", json={})
+    assert r.status_code == 200, r.text

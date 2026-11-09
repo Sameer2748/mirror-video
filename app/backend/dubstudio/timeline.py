@@ -241,6 +241,9 @@ def flags(tl, ctx, limits, markers=None):
         if src <= 0:
             f.append(dict(kind="gap", sev="red", msg="no footage in this slot"))
         else:
+            # Scene edit keeps pieces in 0.8–1.25x. Flag yellow/red start at 0.67 / 1.5, so a clip that
+            # already sits in that range is not flagged; leftovers (matching-fill, a hole Claude left)
+            # still show for the later editor pass and do not block a list render.
             sp = src / max(slot, 1)
             if sp < L["slow_red"]:
                 f.append(dict(kind="slow", sev="red", msg=f"plays ×{sp:.2f} (very slow motion)"))
@@ -260,9 +263,11 @@ def flags(tl, ctx, limits, markers=None):
             continue
         # same footage twice. A B-roll piece is *meant* to show a shot again (zoomed, at most 3 times, 8 s apart --
         # sceneedit.py's own rules, checked again by the Final QC), so that is a note, not something to fix.
+        # A matching-clip fill (scene edit left a hole; we reused the matched neighbour) is the same: planned.
+        matching = lambda x: str(x.get("note") or "").startswith("matching clip")
         for j, d in enumerate(clips):
             if j != i and not d.get("media") and src > 0 and shown.get(d["id"], 0) >= 34 and _overlap(c["s0"], c["s1"], d["s0"], d["s1"]) > 300:
-                planned = c.get("broll") or d.get("broll")
+                planned = c.get("broll") or d.get("broll") or matching(c) or matching(d)
                 f.append(dict(kind="repeat", sev="yellow" if planned else "red",
                               msg=(f"B-roll: the same shot as {label(d)} at {fmt(d['t0'])}" if planned
                                    else f"same footage as {label(d)} at {fmt(d['t0'])}")))
@@ -277,7 +282,7 @@ def flags(tl, ctx, limits, markers=None):
             if _overlap(c["t0"], c["t1"], g["t0"], g["t1"]) > min(300, (g["t1"] - g["t0"]) / 2):
                 if edited:
                     f.append(dict(kind="not_found", sev="info", msg=f"IT#{g['row']} had no matching footage; changed in the editor"))
-                elif c.get("broll"):             # the scene edit's gap plan chose this footage for that line on purpose
+                elif c.get("broll") or str(c.get("note") or "").startswith("matching clip"):
                     f.append(dict(kind="not_found", sev="info",
                                   msg=f"IT#{g['row']} had no footage of its own; the scene edit placed this shot here"))
                 else:

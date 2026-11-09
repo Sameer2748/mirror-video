@@ -259,3 +259,22 @@ def test_bulk_render_skips_a_review_episode_with_a_gap(env):
     assert len(skipped) == 1 and skipped[0]["ok"] is False
     assert "gap" in skipped[0]["error"]
     assert c.get(f"/api/episodes/{eid}").json()["status"] == "review"
+
+
+def test_bulk_render_starts_a_flagged_episode_when_there_is_no_gap(env):
+    """Flags (slow, repeat) do not skip a list render. A later editor pass can still fix them."""
+    from pathlib import Path
+    from test_editor import write_manifest
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    b = c.post(f"/api/shows/{s['id']}/batches", json={"range": "17-17"}).json()
+    eid = b["episodes"][0]["id"]
+    ep = c.get(f"/api/episodes/{eid}").json()
+    work = Path(ep["work_dir"]); work.mkdir(parents=True, exist_ok=True)
+    write_manifest(work, [(0, 1000, 0, 1000), (1000, 2000, 1000, 1100), (2000, 3000, 2000, 3000)], 3000)
+    db = main.state["db"]
+    db.update("episodes", eid, status="review")
+    db.insert("jobs", episode_id=eid, run=1, step="review", ord=1, status="needs_input", needs=[], resource="none")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=2, status="waiting", needs=["review"], resource="cpu")
+    started = c.post(f"/api/batches/{b['id']}/render").json()["results"]
+    assert len(started) == 1 and started[0]["ok"] is True
