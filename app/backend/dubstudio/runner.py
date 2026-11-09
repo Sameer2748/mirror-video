@@ -871,6 +871,35 @@ class Runner:
             return self._run_cloud_tail(j)
         msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
         self._mark_visit(to_mark, msg)
+        self._copy_chain_logs(j["log_path"], to_mark)
+
+    def _copy_chain_logs(self, chain_log, jobs):
+        """The visit writes one log. Copy each `=== step ===` section into that job's log so check/qc
+        Deliverables can read FINAL CHECK PASSED from the check job after a rented-machine tail."""
+        try:
+            text = Path(chain_log).read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            return
+        by_name, cur, buf = {}, "_head", []
+        for ln in text.splitlines():
+            m = re.match(r"^=== ([a-z_]+) ===\s*$", ln)
+            if m:
+                by_name[cur] = "\n".join(buf)
+                cur, buf = m.group(1), [ln]
+            else:
+                buf.append(ln)
+        by_name[cur] = "\n".join(buf)
+        for sj in jobs or []:
+            chunk = by_name.get(sj["step"])
+            if not chunk:
+                continue
+            p = Path(sj["log_path"])
+            try:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                with open(p, "a", encoding="utf-8") as f:
+                    f.write(chunk.rstrip() + "\n")
+            except Exception:
+                continue
 
     @staticmethod
     def _parse_progress(line, dur):
@@ -894,6 +923,26 @@ class Runner:
                 return f.read().splitlines()[-n:]
         except FileNotFoundError:
             return []
+
+    @staticmethod
+    def final_check_result(jobs):
+        """Whether the package check passed, and the OK/BAD/FINAL lines.
+
+        The render tail writes those lines into the *render* job log (`=== check ===`), not the check
+        job's own file. Looking only at check.log then shows a red empty banner on a finished episode."""
+        by = {j["step"]: j for j in jobs or []}
+        tails = []
+        for step, n in (("check", 80), ("render", 150)):
+            j = by.get(step)
+            if not j or not j.get("log_path"):
+                continue
+            tails.extend(Runner.log_tail(j["log_path"], n))
+        lines = [ln for ln in tails if ln.startswith(("OK ", "BAD", "FINAL"))]
+        if any("FINAL CHECK PASSED" in ln for ln in tails):
+            return {"passed": True, "lines": lines[-20:]}
+        if any("FINAL CHECK FAILED" in ln for ln in tails):
+            return {"passed": False, "lines": lines[-20:]}
+        return {"passed": None, "lines": lines[-20:]}
 
     # ---------- internal steps ----------
     # ---------- the three storage steps (docs/09 §3): get the files, put the results back, clean up ----------
@@ -1302,7 +1351,15 @@ class Runner:
         if not os.path.exists(f"{W}/manifest_groups.auto.json"):
             shutil.copy(f"{W}/manifest_groups.json", f"{W}/manifest_groups.auto.json")
         a = json.load(open(f"{W}/manifest_groups.auto.json")); s = json.load(open(f"{W}/scene/scene_manifest.json"))
-        s["total_ms"] = a["total_ms"]; L = s["segments"][-1]
+        # Claude may leave a hole or a placeholder with no footage. If matching already had a clip there, use it
+        # (TAB EP11/12: 26–32 s black after a "placeholder" piece). Matching-not-found stays a hole.
+        from . import timeline as tlm
+        s["segments"] = tlm.fill_scene_from_matching(s.get("segments") or [], a.get("segments") or [],
+                                                     a["total_ms"])
+        s["total_ms"] = a["total_ms"]
+        if not s["segments"]:
+            s["segments"] = list(a.get("segments") or [])
+        L = s["segments"][-1]
         span = L["it_end_ms"] - L["it_start_ms"]
         # Claude writes seconds to 2 decimals (prompt is {T1:.2f}), so the last piece is often 1–10 ms
         # short or long of the dub. Stretch a short tail; trim a long one. Same speed either way.

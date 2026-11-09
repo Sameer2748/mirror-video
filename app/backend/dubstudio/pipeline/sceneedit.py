@@ -42,6 +42,7 @@ def _app_dir(script):
     return script.parents[2]
 sys.path.insert(0, str(_app_dir(__file__)))          # app/backend, or /opt/app on the CPU worker
 from dubstudio import ai  # noqa: E402
+from dubstudio import timeline as tlm  # noqa: E402
 
 SPEED_LO, SPEED_HI, MIN_PIECE, LIP_TOL, REUSE_GAP = 0.8, 1.25, 0.5, 0.3, 8.0
 MAX_BROLL_USES = 3        # owner 2026-10-30: one B-roll shot at most 3 times in the episode (QC case 1)
@@ -1287,9 +1288,13 @@ if PAR:
                          note="scene edit: " + e.get("why", "")[:200], **({"zoom": 1.08} if e.get("reuse") else {}),
                      **({"broll": True} if is_broll(e, piece_lines(e)) else {})))
     snap_segs(segs, A0, A1)
+    segs = tlm.fill_scene_from_matching(segs, auto, round(A1 * 1000))
+    n_fill = sum(1 for x in segs if str(x.get("note") or "").startswith("matching clip"))
     json.dump(dict(total_ms=round(A1 * 1000), segments=segs, bleed_report=[], groups=[]), open(OUTM, "w"), indent=1, ensure_ascii=False)
     json.dump(dict(range=[A0, A1], windows=report, stats=stats), open(OUTM.with_suffix(".edl.json"), "w"), indent=1, ensure_ascii=False)
     left = sum(len(w["rounds"][-1]["problems"]) for w in report)
+    if n_fill:
+        print(f"filled {n_fill} matching clips where the scene edit left a hole", flush=True)
     print(f"saved {OUTM} {len(segs)} pieces in {len(report)} stretches; problems left in stretches: {left}, whole-episode: "
           f"{sum(len(v) for v in stats['global_problems_left'].values())}; wall {stats['wall_seconds']} s; Claude calls {USAGE['calls']}, "
           f"tokens in {USAGE['prompt_tokens']} out {USAGE['completion_tokens']}", flush=True)
@@ -1313,7 +1318,11 @@ for e in allE:
                      note="scene edit: " + e.get("why", "")[:200], **({"zoom": 1.08} if e.get("reuse") else {}),
                      **({"broll": True} if is_broll(e, piece_lines(e)) else {})))
 snap_segs(segs, A0, A1)
+segs = tlm.fill_scene_from_matching(segs, auto, round(A1 * 1000))
+n_fill = sum(1 for x in segs if str(x.get("note") or "").startswith("matching clip"))
 json.dump(dict(total_ms=round(A1 * 1000), segments=segs, bleed_report=[], groups=[]), open(OUTM, "w"), indent=1, ensure_ascii=False)
 json.dump(dict(range=[A0, A1], windows=report), open(OUTM.with_suffix(".edl.json"), "w"), indent=1, ensure_ascii=False)
 left = sum(len(w["rounds"][-1]["problems"]) for w in report)
+if n_fill:
+    print(f"filled {n_fill} matching clips where the scene edit left a hole", flush=True)
 print("saved", OUTM, len(segs), "pieces in", len(report), "windows;", "all checks OK" if not left else f"{left} problems left")

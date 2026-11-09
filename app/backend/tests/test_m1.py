@@ -254,14 +254,16 @@ def test_use_scene_keeps_the_automatic_edit_and_stretches_the_last_piece(tmp_pat
     W = tmp_path; (W / "scene").mkdir()
     auto = {"total_ms": 10000, "segments": [{"it_start_ms": 0, "it_end_ms": 10000, "us_start_ms": 0, "us_end_ms": 10000}]}
     (W / "manifest_groups.json").write_text(json.dumps(auto))
-    scene = {"total_ms": 9000, "segments": [{"it_start_ms": 0, "it_end_ms": 5000, "us_start_ms": 100, "us_end_ms": 5100},
-                                            {"it_start_ms": 5000, "it_end_ms": 9000, "us_start_ms": 200, "us_end_ms": 2200, "broll": True}]}
+    # 10 ms short of the dub: rounding, not a hole — stretch the last piece (a 1 s hole would be filled from matching).
+    scene = {"total_ms": 9990, "segments": [{"it_start_ms": 0, "it_end_ms": 5000, "us_start_ms": 100, "us_end_ms": 5100},
+                                            {"it_start_ms": 5000, "it_end_ms": 9990, "us_start_ms": 200, "us_end_ms": 2200, "broll": True}]}
     (W / "scene" / "scene_manifest.json").write_text(json.dumps(scene))
     assert Runner.use_scene(W) == 2
     m = json.loads((W / "manifest_groups.json").read_text())
     assert json.loads((W / "manifest_groups.auto.json").read_text()) == auto
     L = m["segments"][-1]
-    assert m["total_ms"] == 10000 and L["it_end_ms"] == 10000 and abs(L["us_end_ms"] - 2700) < 1e-6 and L["broll"] is True
+    want_us = 200 + 2000 * 5000 / 4990
+    assert m["total_ms"] == 10000 and L["it_end_ms"] == 10000 and abs(L["us_end_ms"] - want_us) < 1e-6 and L["broll"] is True
     Runner.use_scene(W)                                                  # again: the automatic edit is not overwritten
     assert json.loads((W / "manifest_groups.auto.json").read_text()) == auto
 
@@ -280,3 +282,57 @@ def test_use_scene_trims_a_last_piece_past_the_dub(tmp_path):
     assert Runner.use_scene(W) == 2
     L = json.loads((W / "manifest_groups.json").read_text())["segments"][-1]
     assert L["it_end_ms"] == 10000 and abs(L["us_end_ms"] - 2200) < 1e-6
+
+
+def test_use_scene_fills_a_hole_from_matching(tmp_path):
+    """Scene edit left a hole (and a placeholder with no footage). Matching already had a clip → use it, not black."""
+    import json
+    from dubstudio.runner import Runner
+    W = tmp_path; (W / "scene").mkdir()
+    auto = {"total_ms": 10000, "segments": [
+        {"it_start_ms": 0, "it_end_ms": 4000, "us_start_ms": 0, "us_end_ms": 4000, "it_idx": 1},
+        {"it_start_ms": 4000, "it_end_ms": 7000, "us_start_ms": 8000, "us_end_ms": 11000, "it_idx": 2},
+        {"it_start_ms": 7000, "it_end_ms": 10000, "us_start_ms": 12000, "us_end_ms": 15000, "it_idx": 3}]}
+    (W / "manifest_groups.json").write_text(json.dumps(auto))
+    (W / "scene" / "scene_manifest.json").write_text(json.dumps({
+        "total_ms": 10000, "segments": [
+            {"it_start_ms": 0, "it_end_ms": 4000, "us_start_ms": 0, "us_end_ms": 4000, "note": "scene edit: ok"},
+            {"it_start_ms": 4000, "it_end_ms": 4300, "us_start_ms": 8000, "us_end_ms": 8000, "note": "scene edit: placeholder"},
+            {"it_start_ms": 7000, "it_end_ms": 10000, "us_start_ms": 12000, "us_end_ms": 15000, "note": "scene edit: ok"}]}))
+    n = Runner.use_scene(W)
+    segs = json.loads((W / "manifest_groups.json").read_text())["segments"]
+    assert n >= 3
+    # no black from 4.0–7.0 s: matching clip (rows 2) fills it
+    t = 0
+    for s in segs:
+        assert s["it_start_ms"] <= t + 1
+        assert s["us_end_ms"] - s["us_start_ms"] >= 34
+        t = s["it_end_ms"]
+    assert abs(t - 10000) < 2
+    mid = [s for s in segs if s["it_start_ms"] >= 3999 and s["it_end_ms"] <= 7001]
+    assert any("matching clip" in str(s.get("note") or "") for s in mid)
+    assert json.loads((W / "manifest_groups.auto.json").read_text()) == auto
+
+
+def test_final_check_reads_the_render_tail_log(tmp_path):
+    """Check rode the render visit: FINAL CHECK PASSED is in the render log, not check.log."""
+    from dubstudio.runner import Runner
+    chk, rnd = tmp_path / "check.log", tmp_path / "render.log"
+    rnd.write_text("=== check ===\nOK  a.mp4: 10s, streams ['audio', 'video']\nFINAL CHECK PASSED\nCHAIN OK\n")
+    jobs = [{"step": "check", "log_path": str(chk)}, {"step": "render", "log_path": str(rnd)}]
+    r = Runner.final_check_result(jobs)
+    assert r["passed"] is True
+    assert any("FINAL CHECK PASSED" in x for x in r["lines"])
+    assert Runner.final_check_result([{"step": "check", "log_path": str(chk)}])["passed"] is None
+
+
+def test_fill_scene_leaves_a_matching_not_found_hole(tmp_path):
+    """If matching also had no clip there, do not invent footage — the editor gap banner is then correct."""
+    from dubstudio.timeline import fill_scene_from_matching
+    scene = [{"it_start_ms": 0, "it_end_ms": 4000, "us_start_ms": 0, "us_end_ms": 4000},
+             {"it_start_ms": 7000, "it_end_ms": 10000, "us_start_ms": 1000, "us_end_ms": 4000}]
+    auto = [{"it_start_ms": 0, "it_end_ms": 4000, "us_start_ms": 0, "us_end_ms": 4000},
+            {"it_start_ms": 7000, "it_end_ms": 10000, "us_start_ms": 1000, "us_end_ms": 4000}]
+    out = fill_scene_from_matching(scene, auto, 10000)
+    covered = sum(s["it_end_ms"] - s["it_start_ms"] for s in out)
+    assert covered <= 7001  # 4s + 3s; the 3s matching-not-found hole stays empty

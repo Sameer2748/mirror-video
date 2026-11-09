@@ -463,6 +463,83 @@ def transition_use(bodies, configs):
     return n
 
 
+# ---------------- scene edit: fall back to matching when Claude leaves a hole ----------------
+_MIN_FILL_MS = 50       # smaller than this is rounding, not a real hole
+_MIN_FOOTAGE_MS = 34    # one frame at 25 fps — a piece with no source is a placeholder
+
+
+def _slice_matching(seg, t0, t1):
+    """One matching/automatic clip cropped to dub range [t0, t1]. None if nothing usable is left."""
+    a0, a1 = float(seg.get("it_start_ms") or 0), float(seg.get("it_end_ms") or 0)
+    o0, o1 = max(a0, t0), min(a1, t1)
+    span = a1 - a0
+    if span <= 0 or o1 - o0 < _MIN_FILL_MS:
+        return None
+    u0, u1 = float(seg.get("us_start_ms") or 0), float(seg.get("us_end_ms") or 0)
+    nu0 = u0 + (u1 - u0) * (o0 - a0) / span
+    nu1 = u0 + (u1 - u0) * (o1 - a0) / span
+    if nu1 - nu0 < _MIN_FOOTAGE_MS:
+        return None
+    out = dict(seg)
+    out["it_start_ms"] = round(o0, 3)
+    out["it_end_ms"] = round(o1, 3)
+    out["us_start_ms"] = round(nu0, 3)
+    out["us_end_ms"] = round(nu1, 3)
+    out["stretch_factor"] = round((o1 - o0) / max(nu1 - nu0, 1), 3)
+    out["note"] = "matching clip (scene edit left a hole)"
+    out.pop("broll", None)
+    out.pop("zoom", None)
+    return out
+
+
+def fill_scene_from_matching(scene_segs, auto_segs, total_ms, min_ms=_MIN_FILL_MS):
+    """If the scene edit left a hole (or a placeholder with no source footage) and matching already had a clip
+    there, use that matching clip. Never leave black screen when matching had picture.
+
+    Matching-not-found stays a hole (the editor banner is then correct). Tiny leftover at the end (Claude writing
+    hundredths of a second) is left for `use_scene` to stretch/trim."""
+    kept = []
+    for s in scene_segs or []:
+        if float(s.get("it_end_ms") or 0) - float(s.get("it_start_ms") or 0) < min_ms:
+            continue
+        if float(s.get("us_end_ms") or 0) - float(s.get("us_start_ms") or 0) < _MIN_FOOTAGE_MS:
+            continue
+        kept.append(dict(s))
+    kept.sort(key=lambda s: s["it_start_ms"])
+    auto = sorted([a for a in (auto_segs or []) if not a.get("video")],
+                  key=lambda s: s.get("it_start_ms") or 0)
+    out = []
+    t = 0.0
+    total = float(total_ms or 0)
+
+    def splice(t0, t1):
+        for a in auto:
+            piece = _slice_matching(a, t0, t1)
+            if piece:
+                out.append(piece)
+
+    for s in kept:
+        t0, t1 = float(s["it_start_ms"]), float(s["it_end_ms"])
+        if t0 > t + min_ms:
+            splice(t, t0)
+        if t1 <= t:
+            continue
+        if t0 < t:
+            span = t1 - t0
+            if span <= 0:
+                continue
+            u0, u1 = float(s.get("us_start_ms") or 0), float(s.get("us_end_ms") or 0)
+            s = dict(s)
+            s["us_start_ms"] = u0 + (u1 - u0) * (t - t0) / span
+            s["it_start_ms"] = t
+            t0 = t
+        out.append(s)
+        t = max(t, t1)
+    if total - t > min_ms:
+        splice(t, total)
+    return out
+
+
 # ---------------- checks and writing ----------------
 def validate(tl, src_duration_ms=None, media_ms=None):
     """Problems that would break the render or the sync: [] when the timeline is good. V1 and V2 each must not
