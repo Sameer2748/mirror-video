@@ -34,6 +34,37 @@ def test_the_decision_check_uses_a_worker_when_the_scripts_are_not_here(tmp_path
     assert (seen["scratch"] / "decisions.json").is_file()
 
 
+def test_a_running_retry_is_processing_even_if_a_later_step_is_still_failed(tmp_path, monkeypatch):
+    """Retrying render used to keep the table on Failed because the old transitions row was still
+    failed, even while the new tail was on a rented machine."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=20, status="failed",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=1, status="running",
+              needs=[], resource="cpu", message="render tail on a rented machine")
+    db.insert("jobs", episode_id=eid, run=1, step="verify", ord=2, status="waiting",
+              needs=["render"], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="transitions", ord=3, status="failed",
+              needs=["verify"], resource="cpu", message="old upload race")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._episode_status()
+    assert db.one("SELECT status FROM episodes WHERE id=?", (eid,))["status"] == "processing"
+
+    db.update("jobs", db.one("SELECT id FROM jobs WHERE step='render'")["id"], status="waiting")
+    db.update("episodes", eid, status="failed")
+    r._episode_status()
+    assert db.one("SELECT status FROM episodes WHERE id=?", (eid,))["status"] == "processing"
+
+    db.update("jobs", db.one("SELECT id FROM jobs WHERE step='render'")["id"], status="failed")
+    db.update("jobs", db.one("SELECT id FROM jobs WHERE step='verify'")["id"], status="blocked")
+    db.update("episodes", eid, status="processing")
+    r._episode_status()
+    assert db.one("SELECT status FROM episodes WHERE id=?", (eid,))["status"] == "failed"
+
+
 def test_a_blocked_step_starts_when_the_failed_one_has_finished(tmp_path, monkeypatch):
     """A failed German SRT blocks matching. Retrying the SRT used to leave matching blocked even after the
     SRT and the sentence times had finished. The next tick should start matching on its own."""

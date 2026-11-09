@@ -309,11 +309,16 @@ class Runner:
             st = [x["status"] for x in js]
             if st and all(s in DONE for s in st):
                 new = "done"
-            elif "failed" in st:
-                new = "failed"
-            elif "needs_input" in st and "running" not in st:
+            elif "running" in st:
+                # A retried render is on a machine even if an old transitions row is still failed.
+                new = "processing"
+            elif "needs_input" in st:
                 waiting = [x["step"] for x in js if x["status"] == "needs_input"]
                 new = "review" if waiting == ["review"] else "needs_input"
+            elif "waiting" in st:
+                new = "processing"
+            elif "failed" in st:
+                new = "failed"
             elif all(s in DONE | {"cancelled", "blocked"} for s in st):
                 new = "cancelled"
             else:

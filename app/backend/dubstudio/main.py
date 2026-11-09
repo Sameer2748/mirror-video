@@ -462,6 +462,7 @@ def _episode_full(eid):
     run = runner().latest_run(eid)
     e["run"] = run
     e["jobs"] = db().q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord", (eid, run)) if run else []
+    e["status"] = _status_if_in_flight(e["status"], e["jobs"])
     for j in e["jobs"]:
         j["label"] = (j.get("params") or {}).get("label", j["step"]); j.pop("params", None)
         if j["step"] == "check" and j["status"] in ("done", "failed"):
@@ -621,6 +622,16 @@ def _set_input(eid, kind, path):
         db().insert("assets", episode_id=eid, kind=kind, path=path, role="input", created=now())
 
 
+def _status_if_in_flight(status, jobs):
+    """The table must not stay on Failed while a retried step is running or queued.
+
+    Retrying render leaves the old transitions row failed; that is not the episode's current state."""
+    st = {j["status"] for j in jobs or []}
+    if "running" in st or (status == "failed" and "waiting" in st):
+        return "processing"
+    return status
+
+
 def _decorate_episodes(eps):
     """Progress / current step / input files for many episodes: two queries, not two per row.
 
@@ -658,6 +669,7 @@ def _decorate_episodes(eps):
         e["steps_done"] = 0
         e["steps"] = 0
         js = jobs_by_ep.get(e["id"]) or []
+        e["status"] = _status_if_in_flight(e["status"], js)
         if run:
             e["steps"] = len(js)
             e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)

@@ -156,6 +156,22 @@ def test_a_broll_repeat_is_a_note_not_a_blocker(tmp_path):
     assert all(f["sev"] == "yellow" for fs in fill_fl.values() for f in fs if f["kind"] == "repeat")
 
 
+def test_the_table_shows_processing_while_a_retried_render_is_running(env):
+    """A leftover failed transitions row must not paint the episode Failed in the show table."""
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 20}).json(); eid = e["id"]
+    db = main.state["db"]
+    db.update("episodes", eid, status="failed")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=1, status="running",
+              needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="transitions", ord=2, status="failed",
+              needs=["render"], resource="cpu")
+    row = next(x for x in c.get(f"/api/shows/{s['id']}/episodes").json() if x["id"] == eid)
+    assert row["status"] == "processing"
+    assert c.get(f"/api/episodes/{eid}").json()["status"] == "processing"
+
+
 def test_render_from_the_list_refuses_anything_not_in_review(env):
     """The table's Render button only works on an episode waiting in review, never a new or processing one."""
     c = env["client"]; s = make_show(c, env["show"])
