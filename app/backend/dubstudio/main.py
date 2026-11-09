@@ -1185,6 +1185,17 @@ def queue():
     return runner().queue_view(db())
 
 
+@app.post("/api/episodes/{eid}/retry-check")
+def retry_check(eid: int):
+    """Run final check again after translate, without sending the render tail. Videos already on disk stay."""
+    _get("episodes", eid)
+    try:
+        out = runner().retry_check_without_rerender(eid)
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+    return {**_episode_full(eid), **out}
+
+
 @app.post("/api/episodes/{eid}/restore-previous-run")
 def restore_previous_run(eid: int):
     """Undo Process again when it restarted from the first step after a later run already did the work.

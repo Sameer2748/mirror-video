@@ -271,6 +271,28 @@ class Runner:
         self.wake.set()
         return {"restored_run": latest - 1, "retried": None}
 
+    def retry_check_without_rerender(self, ep_id):
+        """After translate has rewritten config.json, run check only. The videos from the failed tail stay."""
+        run = self.latest_run(ep_id)
+        if not run:
+            raise ValueError("this episode has not been processed")
+        jobs = {j["step"]: j for j in self.db.q(
+            "SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord", (ep_id, run))}
+        tr, chk = jobs.get("translate"), jobs.get("check")
+        if not tr or not chk:
+            raise ValueError("this episode has no translate or check step")
+        if tr["status"] != "done":
+            raise ValueError("translate has not finished yet")
+        if any((jobs.get(s) or {}).get("status") == "running" for s in cloud.CHAIN):
+            raise ValueError("a render tail is still running")
+        for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "scene_sheet", "qc"):
+            sj = jobs.get(step)
+            if sj and sj["status"] not in DONE:
+                self._set(sj, status="done", progress=1, finished=now(),
+                          message="kept the videos already made; only the translated SRT is checked again")
+        self.retry(chk["id"])
+        return {"retried": "check"}
+
     # ---------- loop ----------
     def _loop(self):
         while not self.stop.is_set():

@@ -34,6 +34,34 @@ def test_the_decision_check_uses_a_worker_when_the_scripts_are_not_here(tmp_path
     assert (seen["scratch"] / "decisions.json").is_file()
 
 
+def test_retry_check_without_rerender_waits_for_translate_and_does_not_start_render(tmp_path, monkeypatch):
+    """A tail that died on a missing English SRT must not render again. Translate first, then check."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=17, status="failed",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    db.insert("jobs", episode_id=eid, run=1, step="translate", ord=1, status="waiting", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=2, status="failed", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="qc", ord=3, status="blocked", needs=["render"], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="check", ord=4, status="blocked", needs=["qc"], resource="cpu")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    try:
+        r.retry_check_without_rerender(eid)
+        assert False, "should refuse until translate is done"
+    except ValueError as ex:
+        assert "translate" in str(ex)
+    db.update("jobs", db.one("SELECT id FROM jobs WHERE step='translate'")["id"], status="done")
+    out = r.retry_check_without_rerender(eid)
+    assert out == {"retried": "check"}
+    by = {j["step"]: j for j in db.q("SELECT * FROM jobs WHERE episode_id=?", (eid,))}
+    assert by["render"]["status"] == "done"
+    assert by["qc"]["status"] == "done"
+    assert by["check"]["status"] == "waiting"
+    assert db.one("SELECT status FROM episodes WHERE id=?", (eid,))["status"] == "processing"
+
+
 def test_abandon_scratch_run_retries_the_failed_step_of_the_previous_run(tmp_path, monkeypatch):
     """Process again after a failed render used to start lip-scan from zero. Drop that new run and
     retry the old render instead."""
