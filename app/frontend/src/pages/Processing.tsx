@@ -49,8 +49,12 @@ export default function Processing({ ep, reload, goMatching }: { ep: Episode; re
         )}
         {needs && needs.step === "review" && (
           <div className="callout" style={{ margin: "10px 0 0" }}>
-            <span className="grow"><b>Ready for review.</b> <span className="muted">Nothing is rendered yet: open the editor, check the clips, then press Render.</span></span>
-            <Link className="button primary" to={`/episodes/${ep.id}/editor`}>Open editor →</Link>
+            <span className="grow"><b>Ready for review.</b> <span className="muted">Render as-is if there is no gap, or open the editor to check first.</span></span>
+            <button className="primary" onClick={() => {
+              if (!confirm(`Render EP ${ep.number} from its current timeline (no editor)?`)) return;
+              act(() => api.post(`/api/episodes/${ep.id}/timeline/render`));
+            }}>Render</button>
+            <Link className="button" to={`/episodes/${ep.id}/editor`}>Open editor →</Link>
           </div>
         )}
       </div>

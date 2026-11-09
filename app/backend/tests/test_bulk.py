@@ -225,3 +225,37 @@ def test_bulk_cancel_leaves_the_queue(env):
     wait_for(lambda: all(e["status"] in ("new", "cancelled")
                          for e in c.get(f"/api/batches/{b['id']}").json()["episodes"]
                          if e["number"] in (31, 34)))
+
+
+def test_bulk_render_leaves_processing_episodes_alone(env):
+    """The bulk Render button only starts episodes waiting in review, never ones still processing."""
+    c = env["client"]; s = make_show(c, env["show"])
+    b = c.post(f"/api/shows/{s['id']}/batches", json={"range": "17-17"}).json()
+    eid = b["episodes"][0]["id"]
+    c.post(f"/api/batches/{b['id']}/process")
+    wait_for(lambda: c.get(f"/api/episodes/{eid}").json()["status"] == "processing")
+    r = c.post(f"/api/batches/{b['id']}/render")
+    assert r.status_code == 200, r.text
+    assert r.json()["results"] == []
+    assert c.get(f"/api/episodes/{eid}").json()["status"] == "processing"
+    r2 = c.post(f"/api/shows/{s['id']}/render-review")
+    assert r2.status_code == 200 and r2.json()["results"] == []
+
+
+def test_bulk_render_skips_a_review_episode_with_a_gap(env):
+    """A review episode with a black hole is skipped; processing ones are not in the result list at all."""
+    from pathlib import Path
+    from test_editor import write_manifest
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    b = c.post(f"/api/shows/{s['id']}/batches", json={"range": "17-17"}).json()
+    eid = b["episodes"][0]["id"]
+    ep = c.get(f"/api/episodes/{eid}").json()
+    work = Path(ep["work_dir"]); work.mkdir(parents=True, exist_ok=True)
+    # clips cover 0–2 s of a 3 s episode → a 1 s black gap at the end
+    write_manifest(work, [(0, 1000, 0, 1000), (1000, 2000, 1000, 2000)], 3000)
+    main.state["db"].update("episodes", eid, status="review")
+    skipped = c.post(f"/api/batches/{b['id']}/render").json()["results"]
+    assert len(skipped) == 1 and skipped[0]["ok"] is False
+    assert "gap" in skipped[0]["error"]
+    assert c.get(f"/api/episodes/{eid}").json()["status"] == "review"

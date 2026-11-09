@@ -150,3 +150,34 @@ def test_a_broll_repeat_is_a_note_not_a_blocker(tmp_path):
     msgs = [f["msg"] for fs in after.values() for f in fs if f["kind"] == "repeat"]
     assert msgs and all(f["sev"] == "yellow" for fs in after.values() for f in fs if f["kind"] == "repeat")
     assert "B-roll" in msgs[0]
+
+
+def test_render_from_the_list_refuses_anything_not_in_review(env):
+    """The table's Render button only works on an episode waiting in review, never a new or processing one."""
+    c = env["client"]; s = make_show(c, env["show"])
+    e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json(); eid = e["id"]
+    r = c.post(f"/api/episodes/{eid}/timeline/render", json={})
+    assert r.status_code == 409 and "review" in r.json()["detail"]
+    c.post(f"/api/episodes/{eid}/process")
+    wait_for(lambda: c.get(f"/api/episodes/{eid}").json()["status"] == "processing")
+    r = c.post(f"/api/episodes/{eid}/timeline/render", json={})
+    assert r.status_code == 409 and "review" in r.json()["detail"]
+
+
+def test_render_from_the_list_starts_a_complete_timeline(env):
+    """No clips in the POST: the current timeline is used, same as the editor's Render."""
+    from pathlib import Path
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json(); eid = e["id"]
+    work = Path(e["work_dir"]); work.mkdir(parents=True, exist_ok=True)
+    write_manifest(work, [(0, 1000, 0, 1000), (1000, 2000, 1000, 2000), (2000, 3000, 2000, 3000)], 3000)
+    db = main.state["db"]
+    db.update("episodes", eid, status="review")
+    db.insert("jobs", episode_id=eid, run=1, step="groups", ord=1, status="done", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="review", ord=2, status="needs_input",
+              needs=["groups"], resource="none")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=3, status="waiting", needs=["review"], resource="cpu")
+    r = c.post(f"/api/episodes/{eid}/timeline/render", json={})
+    assert r.status_code == 200, r.text
+    assert r.json()["version"] == 1 and r.json()["steps"] == ["review"]

@@ -9,6 +9,8 @@ export default function ShowPage() {
   const [eps, setEps] = useState<Episode[] | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState("");
+  const [renderNote, setRenderNote] = useState<string | null>(null);
 
   const load = useCallback(() => {
     api.get<Show>(`/api/shows/${sid}`).then(setShow).catch((e) => setErr(e.message));
@@ -39,6 +41,32 @@ export default function ShowPage() {
     </div>
   );
   const p = show.profile || {};
+  const inReview = (eps || []).filter((e) => e.status === "review").length;
+
+  async function renderReview(eid?: number, number?: number) {
+    const one = eid != null;
+    if (one && !confirm(`Render EP ${number} from its current timeline (no editor)?`)) return;
+    if (!one && !confirm(`Render ${inReview} episode${inReview === 1 ? "" : "s"} waiting in review?\n\nEpisodes still processing are left alone. Any with a black gap or open red flags are skipped — open the editor for those.`)) return;
+    setBusy(one ? `render-${eid}` : "render"); setErr(null); setRenderNote(null);
+    try {
+      if (one) {
+        await api.post(`/api/episodes/${eid}/timeline/render`);
+        setRenderNote(`Rendering EP ${number}.`);
+      } else {
+        const r = await api.post<{ results: { number: number; ok: boolean; error?: string }[] }>(`/api/shows/${sid}/render-review`);
+        const rows = r.results || [];
+        const ok = rows.filter((x) => x.ok);
+        const bad = rows.filter((x) => !x.ok);
+        if (!rows.length) setRenderNote("Nothing in review to render — processing episodes were left alone.");
+        else setRenderNote([
+          ok.length ? `Rendering EP ${ok.map((x) => x.number).join(", ")}` : "",
+          bad.length ? `Skipped EP ${bad.map((x) => `${x.number} (${x.error})`).join("; EP ")}` : "",
+        ].filter(Boolean).join(". ") + ".");
+      }
+      load();
+    } catch (e: any) { setErr(e.message); } finally { setBusy(""); }
+  }
+
   return (
     <div className="page">
       <div className="crumbs"><Link to="/">Shows</Link> / {show.code}</div>
@@ -53,10 +81,16 @@ export default function ShowPage() {
           </div>
         </div>
         <div className="row">
+          {inReview > 0 && (
+            <button className="primary" disabled={!!busy} onClick={() => renderReview()}>
+              {busy === "render" ? "Starting…" : `Render ${inReview} in review`}
+            </button>
+          )}
           <Link to={`/shows/${sid}/new-episode`} className="button primary">+ New episode</Link>
           <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
         </div>
       </div>
+      {renderNote && <div className="ok-box">{renderNote}</div>}
       <ErrorBox error={err} />
       {eps && !eps.length && (
         <div className="empty">
@@ -91,7 +125,13 @@ export default function ShowPage() {
                 <td className="muted">{fmtWhen(e.updated)}</td>
                 <td className="muted small-text">{(e.output_dir || "").replace((show.folder || "") + "/", "")}</td>
                 <td className="right" onClick={(ev) => ev.stopPropagation()}>
-                  {["review", "done"].includes(e.status) && <Link to={`/episodes/${e.id}/editor`} className={`button small ${e.status === "review" ? "primary" : ""}`}>Open editor</Link>}
+                  {e.status === "review" && (
+                    <button className="small primary" disabled={!!busy}
+                      onClick={() => renderReview(e.id, e.number)}>
+                      {busy === `render-${e.id}` ? "Starting…" : "Render"}
+                    </button>
+                  )}
+                  {["review", "done"].includes(e.status) && <Link to={`/episodes/${e.id}/editor`} className="button small">Open editor</Link>}
                 </td>
               </tr>
             ))}

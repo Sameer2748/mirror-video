@@ -28,6 +28,7 @@ export default function BulkStatus() {
   const [up, setUp] = useState<Up>(null);
   const [upErr, setUpErr] = useState<string | null>(null);
   const [busy, setBusy] = useState("");
+  const [renderNote, setRenderNote] = useState<string | null>(null);
   const started = useRef(false);
 
   const load = useCallback(() => {
@@ -72,7 +73,18 @@ export default function BulkStatus() {
   const eps = batch.episodes;
   const ready = eps.filter((e) => e.ready && ["new", "cancelled", "failed"].includes(e.status)).length;
   const working = eps.filter((e) => e.status === "processing" || e.status === "queued").length;
+  const inReview = eps.filter((e) => e.status === "review").length;
   const uploading = !!up;
+
+  function summarizeRender(results: { number: number; ok: boolean; error?: string }[]) {
+    const ok = results.filter((r) => r.ok);
+    const bad = results.filter((r) => !r.ok);
+    if (!results.length) return "Nothing in review to render — processing episodes were left alone.";
+    const bits: string[] = [];
+    if (ok.length) bits.push(`Rendering EP ${ok.map((r) => r.number).join(", ")}`);
+    if (bad.length) bits.push(`Skipped EP ${bad.map((r) => `${r.number} (${r.error})`).join("; EP ")}`);
+    return bits.join(". ") + ".";
+  }
 
   return (
     <div className="page">
@@ -90,6 +102,18 @@ export default function BulkStatus() {
           {!uploading && ready > 0 && (
             <button className="primary" disabled={!!busy} onClick={() => act(() => api.post(`/api/batches/${bid}/process`), "start")}>
               {busy === "start" ? "Queuing…" : `Start ${ready} ready episode${ready === 1 ? "" : "s"}`}
+            </button>
+          )}
+          {!uploading && inReview > 0 && (
+            <button className="primary" disabled={!!busy} onClick={() => {
+              if (!confirm(`Render ${inReview} episode${inReview === 1 ? "" : "s"} waiting in review?\n\nEpisodes still processing are left alone. Any with a black gap or open red flags are skipped — open the editor for those.`)) return;
+              setRenderNote(null);
+              act(async () => {
+                const r = await api.post<Batch>(`/api/batches/${bid}/render`);
+                setRenderNote(summarizeRender(r.results || []));
+              }, "render");
+            }}>
+              {busy === "render" ? "Starting…" : `Render ${inReview} in review`}
             </button>
           )}
           {working > 0 && (
@@ -113,6 +137,7 @@ export default function BulkStatus() {
         </div>
       )}
       {upErr && <div className="error">{upErr}</div>}
+      {renderNote && <div className="ok-box">{renderNote}</div>}
       <ErrorBox error={err} />
 
       <table className="table">
@@ -124,6 +149,11 @@ export default function BulkStatus() {
               <EpisodeBlock key={e.id} e={e} expanded={expanded} uploading={uploading && up?.number === e.number}
                 onToggle={() => setOpen(expanded ? null : e.id)}
                 onOpen={() => nav(`/episodes/${e.id}`)}
+                onRender={() => {
+                  if (!confirm(`Render EP ${e.number} from its current timeline (no editor)?`)) return;
+                  act(() => api.post(`/api/episodes/${e.id}/timeline/render`), "render");
+                }}
+                rendering={busy === "render"}
                 full={expanded ? full : null}
                 reload={() => { load(); if (e.id === open) api.get<Episode>(`/api/episodes/${e.id}`).then(setFull); }}
                 goMatching={() => nav(`/episodes/${e.id}/matching`)} />
@@ -135,8 +165,9 @@ export default function BulkStatus() {
   );
 }
 
-function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, full, reload, goMatching }:
+function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, rendering, full, reload, goMatching }:
   { e: BatchEpisode; expanded: boolean; uploading: boolean; onToggle: () => void; onOpen: () => void;
+    onRender: () => void; rendering: boolean;
     full: Episode | null; reload: () => void; goMatching: () => void }) {
   const files = (e.have || []).length
     ? `${e.have!.includes("src_video") ? "video" : ""}${e.have!.includes("dub_audio") ? " · audio" : ""}${e.have!.includes("dub_script") ? " · script" : ""}`.replace(/^ · /, "")
@@ -153,6 +184,9 @@ function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, full, reload, 
         <td style={{ width: 160 }}>{e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
         <td className="muted small-text">{e.ready ? <span className="good">{files}</span> : files}</td>
         <td className="right" onClick={(ev) => ev.stopPropagation()}>
+          {e.status === "review" && (
+            <button className="small primary" disabled={rendering} onClick={onRender}>Render</button>
+          )}
           <button className="small ghost" onClick={onToggle}>{expanded ? "Hide steps" : "Steps"}</button>
           <button className="small" onClick={onOpen}>Open</button>
         </td>

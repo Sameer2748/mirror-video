@@ -31,7 +31,7 @@ export type Batch = {
   id: number; show_id: number; start_num: number; end_num: number; status: string;
   created?: number; updated?: number; show?: Show; episodes: BatchEpisode[];
   counts?: Record<string, number>;
-  results?: { id: number; number: number; ok: boolean; error?: string; skipped?: string }[];
+  results?: { id: number; number: number; ok: boolean; error?: string; skipped?: string; version?: number }[];
 };
 export type QueueItem = {
   id: number; number: number; status: string; code: string; name: string; working: boolean;

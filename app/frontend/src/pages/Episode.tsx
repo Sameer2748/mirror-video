@@ -20,6 +20,7 @@ export default function EpisodePage() {
   const { eid, tab } = useParams(); const nav = useNavigate();
   const [ep, setEp] = useState<Episode | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState("");
   const timer = useRef<number | undefined>(undefined);
 
   const load = useCallback(() => api.get<Episode>(`/api/episodes/${eid}`).then(setEp).catch((e) => setErr(e.message)), [eid]);
@@ -59,8 +60,13 @@ export default function EpisodePage() {
       )}
       {ep.status === "review" && (
         <div className="callout">
-          <div className="grow"><b>Ready for review.</b> <span className="muted">Every clip is on the timeline. Check it, fix what needs fixing, then press Render in the editor.</span></div>
-          <Link to={`/episodes/${eid}/editor`} className="button primary">Open editor →</Link>
+          <div className="grow"><b>Ready for review.</b> <span className="muted">Every clip is on the timeline. Render as-is if there is no gap, or open the editor to check first.</span></div>
+          <button className="primary" disabled={!!busy} onClick={() => {
+            if (!confirm(`Render episode ${ep.number} from its current timeline (no editor)?`)) return;
+            setBusy("render");
+            api.post(`/api/episodes/${eid}/timeline/render`).then(() => load()).catch((e: any) => setErr(e.message)).finally(() => setBusy(""));
+          }}>{busy === "render" ? "Starting…" : "Render"}</button>
+          <Link to={`/episodes/${eid}/editor`} className="button">Open editor →</Link>
         </div>
       )}
       <div className="tabs">

@@ -833,6 +833,41 @@ def cancel_batch(bid: int):
     return _batch_full(bid)
 
 
+def _render_review_list(eps, note):
+    """Start render for every episode waiting in review. Processing / queued / new are left alone.
+    A black gap or open red flags skips that episode (open the editor for those)."""
+    results = []
+    for e in eps:
+        if e["status"] != "review":
+            continue
+        try:
+            out = _render_as_is(e["id"], note=note)
+            results.append({"id": e["id"], "number": e["number"], "ok": True, "version": out["version"]})
+        except HTTPException as ex:
+            detail = ex.detail
+            results.append({"id": e["id"], "number": e["number"], "ok": False,
+                            "error": detail if isinstance(detail, str) else json.dumps(detail)})
+        except Exception as ex:
+            results.append({"id": e["id"], "number": e["number"], "ok": False, "error": str(ex)})
+    return results
+
+
+@app.post("/api/batches/{bid}/render")
+def render_batch_review(bid: int):
+    """Render every episode in this bulk that is waiting in review. Does not touch processing ones."""
+    b = _batch_full(bid)
+    results = _render_review_list(b["episodes"], "rendered from the bulk list")
+    return {**_batch_full(bid), "results": results}
+
+
+@app.post("/api/shows/{sid}/render-review")
+def render_show_review(sid: int):
+    """Same as the bulk Render-all: only episodes of this show whose status is review."""
+    _get("shows", sid)
+    eps = db().q("SELECT * FROM episodes WHERE show_id=? AND status='review' ORDER BY number", (sid,))
+    return {"results": _render_review_list(eps, "rendered from the show list")}
+
+
 @app.get("/api/episodes/{eid}")
 def get_episode(eid: int):
     return _episode_full(eid)
@@ -1468,9 +1503,8 @@ def get_version(eid: int, v: int):
     return tl
 
 
-@app.post("/api/episodes/{eid}/timeline/render")
-def render_timeline(eid: int, body: dict = Body(...)):
-    """Save the editor's timeline as a version, write it as manifest_groups.json, and run render → final check."""
+def _kick_render(eid, body, note=None, force=False):
+    """Write this timeline as the edit list and run render → final check. Same path the editor's Render uses."""
     e = _get("episodes", eid); work = e["work_dir"]
     v1 = tlm.build_v1(work)
     if v1 is None:
@@ -1478,13 +1512,13 @@ def render_timeline(eid: int, body: dict = Body(...)):
     tl, fl, counts, probs = _check(eid, body, work)
     if probs:
         raise HTTPException(400, "the timeline cannot be rendered: " + "; ".join(probs[:5]))
-    if counts["red"] and not body.get("force"):
+    if counts["red"] and not force:
         raise HTTPException(409, f"{counts['red']} red flags are open: fix or approve them first")
     st = _review_state(eid)
     if any(st.get(k) == "running" for k in ("render", "check")):
         raise HTTPException(409, "a render is running now")
     tl["base"] = v1["base"]
-    v = _new_version(eid, tl, "render", body.get("note") or "rendered")
+    v = _new_version(eid, tl, "render", note or "rendered")
     tlm.write_manifest(work, tl, v)
     (Path(work) / "timeline_draft.json").unlink(missing_ok=True)
     _, _, _, ctx = _ep_ctx(eid)
@@ -1492,7 +1526,7 @@ def render_timeline(eid: int, body: dict = Body(...)):
     show_ = _get("shows", e["show_id"])
     tlm.write_transition_plan(work, tl, "auto" if show_["profile"].get("transitions") else "none")
     runner().ensure_steps(eid)
-    rid = deliver.start_render(db(), eid, v, body.get("note"))
+    rid = deliver.start_render(db(), eid, v, note)
     try:
         _write_premiere(eid, tl, v)
     except Exception as ex:                                   # the XML is a convenience: never block a render on it
@@ -1510,6 +1544,26 @@ def render_timeline(eid: int, body: dict = Body(...)):
     except ValueError as ex:
         raise HTTPException(409, str(ex))
     return {"version": v, "steps": steps, "render": rid}
+
+
+def _render_as_is(eid, note=None, force=False):
+    """Render the current timeline without opening the editor. Only an episode waiting in review."""
+    e = _get("episodes", eid)
+    if e["status"] != "review":
+        raise HTTPException(409, "only an episode waiting in review can be rendered from the list")
+    _ep_ctx(eid)
+    tl = _current_timeline(eid, e["work_dir"])
+    return _kick_render(eid, tl, note or "rendered from the list", force)
+
+
+@app.post("/api/episodes/{eid}/timeline/render")
+def render_timeline(eid: int, body: dict = Body(None)):
+    """Save the editor's timeline as a version, write it as manifest_groups.json, and run render → final check.
+    No clips in the body: use the current timeline as it is (the list's Render button)."""
+    body = body or {}
+    if "clips" not in body:
+        return _render_as_is(eid, body.get("note"), bool(body.get("force")))
+    return _kick_render(eid, body, body.get("note") or "rendered", bool(body.get("force")))
 
 
 # ---------------- milestone 6: render queue, deliverables, Premiere XML ----------------
