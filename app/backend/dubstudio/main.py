@@ -1185,6 +1185,18 @@ def queue():
     return runner().queue_view(db())
 
 
+@app.post("/api/episodes/{eid}/restore-previous-run")
+def restore_previous_run(eid: int):
+    """Undo Process again when it restarted from the first step after a later run already did the work.
+    Drops the new run and retries the failed step of the previous one."""
+    _get("episodes", eid)
+    try:
+        out = runner().abandon_scratch_run(eid)
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+    return {**_episode_full(eid), **out}
+
+
 @app.post("/api/episodes/{eid}/cancel")
 def cancel_episode(eid: int):
     ep = _get("episodes", eid)

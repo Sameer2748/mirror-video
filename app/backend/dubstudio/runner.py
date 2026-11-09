@@ -239,6 +239,38 @@ class Runner:
     def poke(self):
         self.wake.set()
 
+    @staticmethod
+    def _reached_late(jobs):
+        """True when a run already got to review/render (the work a from-scratch Process again would throw away)."""
+        late = {"review", "render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"}
+        return any(j["step"] in late and j["status"] in DONE | {"failed"} for j in jobs)
+
+    def abandon_scratch_run(self, ep_id):
+        """Drop a Process-again run that restarted from the top, and retry the failed step of the previous run.
+
+        Latest run is latest by number; retrying a job on the old run while the new one exists marks it
+        superseded. So the new jobs have to go."""
+        latest = self.latest_run(ep_id)
+        if not latest or latest < 2:
+            raise ValueError("this episode has no previous run to go back to")
+        latest_jobs = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord", (ep_id, latest))
+        prev_jobs = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord", (ep_id, latest - 1))
+        if not prev_jobs:
+            raise ValueError("this episode has no previous run to go back to")
+        if not self._reached_late(prev_jobs):
+            raise ValueError("the previous run never reached review or render")
+        if self._reached_late(latest_jobs):
+            raise ValueError("the latest run already reached review or render; it is not a from-scratch restart")
+        self.cancel_run(ep_id)
+        self.db.ex("DELETE FROM jobs WHERE episode_id=? AND run=?", (ep_id, latest))
+        failed = next((j for j in prev_jobs if j["status"] == "failed"), None)
+        if failed:
+            self.retry(failed["id"])
+            return {"restored_run": latest - 1, "retried": failed["step"]}
+        self._episode_status()
+        self.wake.set()
+        return {"restored_run": latest - 1, "retried": None}
+
     # ---------- loop ----------
     def _loop(self):
         while not self.stop.is_set():

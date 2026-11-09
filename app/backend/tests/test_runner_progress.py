@@ -34,6 +34,34 @@ def test_the_decision_check_uses_a_worker_when_the_scripts_are_not_here(tmp_path
     assert (seen["scratch"] / "decisions.json").is_file()
 
 
+def test_abandon_scratch_run_retries_the_failed_step_of_the_previous_run(tmp_path, monkeypatch):
+    """Process again after a failed render used to start lip-scan from zero. Drop that new run and
+    retry the old render instead."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=17, status="processing",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    db.insert("jobs", episode_id=eid, run=1, step="review", ord=1, status="done", needs=[], resource="none")
+    rid = db.insert("jobs", episode_id=eid, run=1, step="render", ord=2, status="failed",
+                    needs=["review"], resource="cpu", message="translated SRT missing")
+    db.insert("jobs", episode_id=eid, run=1, step="transitions", ord=3, status="failed",
+              needs=["render"], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=2, step="fetch", ord=0, status="done", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=2, step="lip_gpu", ord=1, status="running",
+              needs=["fetch"], resource="gpu")
+    db.insert("jobs", episode_id=eid, run=2, step="render", ord=2, status="cancelled",
+              needs=["lip_gpu"], resource="cpu")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    out = r.abandon_scratch_run(eid)
+    assert out == {"restored_run": 1, "retried": "render"}
+    assert r.latest_run(eid) == 1
+    assert db.one("SELECT COUNT(*) AS n FROM jobs WHERE episode_id=? AND run=2", (eid,))["n"] == 0
+    assert db.one("SELECT status FROM jobs WHERE id=?", (rid,))["status"] == "waiting"
+    assert db.one("SELECT status FROM episodes WHERE id=?", (eid,))["status"] == "processing"
+
+
 def test_a_running_retry_is_processing_even_if_a_later_step_is_still_failed(tmp_path, monkeypatch):
     """Retrying render used to keep the table on Failed because the old transitions row was still
     failed, even while the new tail was on a rented machine."""

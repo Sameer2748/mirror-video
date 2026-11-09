@@ -156,6 +156,27 @@ def test_a_broll_repeat_is_a_note_not_a_blocker(tmp_path):
     assert all(f["sev"] == "yellow" for fs in fill_fl.values() for f in fs if f["kind"] == "repeat")
 
 
+def test_restore_previous_run_drops_a_from_scratch_process_again(env):
+    """After a failed render, Process again must not be the only way back — restore retries the old render."""
+    import dubstudio.main as main
+    c = env["client"]; s = make_show(c, env["show"])
+    e = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json(); eid = e["id"]
+    db = main.state["db"]
+    db.update("episodes", eid, status="processing")
+    db.insert("jobs", episode_id=eid, run=1, step="review", ord=1, status="done", needs=[], resource="none")
+    db.insert("jobs", episode_id=eid, run=1, step="render", ord=2, status="failed",
+              needs=["review"], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=2, step="fetch", ord=0, status="done", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=2, step="lip_gpu", ord=1, status="waiting",
+              needs=["fetch"], resource="gpu")
+    r = c.post(f"/api/episodes/{eid}/restore-previous-run")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["retried"] == "render" and body["run"] == 1
+    assert body["status"] == "processing"
+    assert {j["step"]: j["status"] for j in body["jobs"]}["render"] == "waiting"
+
+
 def test_the_table_shows_processing_while_a_retried_render_is_running(env):
     """A leftover failed transitions row must not paint the episode Failed in the show table."""
     import dubstudio.main as main
