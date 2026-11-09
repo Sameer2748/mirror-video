@@ -555,6 +555,13 @@ def point_library_at_staged_app(cmd, work):
     return out
 
 
+def _scratch_tar(work, ep, name, part):
+    """Local tar used while talking to R2. W.parent is the shared library/work folder, so the name must include
+    the episode: eleven render tails used to write `_render_tail_work_in.tar.gz` at once, and the PUT
+    (Content-Length of one file, body of another) failed with Too much/little data."""
+    return Path(work).parent / f"_{ep['id']}_{name}_{part}.tar.gz"
+
+
 def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu"):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
@@ -590,7 +597,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     small = [p.relative_to(W) for p in W.rglob("*")
              if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
     if small:
-        tar = W.parent / f"_{name}_work_in.tar.gz"
+        tar = _scratch_tar(W, ep, name, "work_in")
         n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
         key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
         storage.put_file(tar, key)
@@ -600,7 +607,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if O.is_dir():
         osmall = [p.relative_to(O) for p in O.rglob("*") if p.is_file() and p.stat().st_size <= SMALL]
         if osmall:
-            tar = W.parent / f"_{name}_out_in.tar.gz"
+            tar = _scratch_tar(W, ep, name, "out_in")
             _tar(osmall, O, tar)
             key = storage.work_key(show, ep, f"cloud/{name}_out_in.tar.gz")
             storage.put_file(tar, key)
@@ -640,7 +647,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     sent = res.get("sent") or {}
     for which, key, root in (("work", back_work, W), ("out", back_out, O)):
         if sent.get(which):
-            tar = W.parent / f"_{name}_{which}_back.tar.gz"
+            tar = _scratch_tar(W, ep, name, f"{which}_back")
             storage.download(key, tar)
             root.mkdir(parents=True, exist_ok=True)
             with tarfile.open(tar) as t:

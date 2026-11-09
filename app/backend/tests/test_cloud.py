@@ -179,6 +179,35 @@ def _episode(tmp_path):
     return {"code": "TGS"}, {"id": 1, "number": 34, "work_dir": str(work), "output_dir": str(out)}
 
 
+def test_two_episodes_do_not_share_a_scratch_tar(tmp_path, monkeypatch):
+    """A bulk Render used to write every episode's work tar to the same `_render_tail_work_in.tar.gz` in the
+    shared work parent. The PUT then sent the wrong number of bytes (Too much/little data for Content-Length)."""
+    show = {"code": "TAB"}
+    seen = []
+    def fake_put(p, key):
+        seen.append(Path(p).name)
+        Path(p).write_bytes(b"x")  # keep the file so unlink in run_command is fine
+    monkeypatch.setattr(cloud.storage, "put_file", fake_put)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: f"{e['id']}/{rel}")
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
+    monkeypatch.setattr(cloud, "wait", lambda ids, **kw: ({"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: "input/v.mp4")
+    cfg = FakeCfg(tmp_path)
+    paths = []
+    for n, eid in ((16, 20), (17, 21)):
+        work = tmp_path / f"work/TAB_ep{n}"; out = tmp_path / f"out/ep{n}"
+        work.mkdir(parents=True); out.mkdir(parents=True)
+        (work / "manifest_groups.json").write_text("{}")
+        ep = {"id": eid, "number": n, "work_dir": str(work), "output_dir": str(out)}
+        cloud.run_command({}, show, ep, "render_tail", [cfg.pipeline_python, "x"], cfg, log=lambda m: None)
+        paths.append(cloud._scratch_tar(work, ep, "render_tail", "work_in").name)
+    assert paths[0] != paths[1]
+    assert "20_render_tail_work_in.tar.gz" in paths[0]
+    assert "21_render_tail_work_in.tar.gz" in paths[1]
+    assert seen[0] != seen[1]
+
+
 def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path, monkeypatch):
     show, ep = _episode(tmp_path)
     work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
