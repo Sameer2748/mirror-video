@@ -263,6 +263,7 @@ export default function Editor() {
   const [proxy, setProxy] = useState<Proxy>({ ready: false, progress: 0 });
   const [trackDlg, setTrackDlg] = useState<Lang | null>(null);
   const [monH, setMonH] = useState(400);
+  const [srcAR, setSrcAR] = useState(16 / 9);            // final-video aspect: the program frame stays this size when you zoom
   const [clipboard, setClipboard] = useState<{ s0: number; s1: number; src_text: string; from: string; speed: number; media?: string; fromSource?: boolean } | null>(null);
   const lastPane = useRef<"src" | "tl">("tl");             // where the editor last clicked: ⌘C copies from there
   const [bin, setBin] = useState<{ imports: Imp[]; files: BinFile[] }>({ imports: [], files: [] });
@@ -1233,20 +1234,27 @@ export default function Editor() {
             </div>
           </div>
           <div className="monitor" onClick={togglePlay} ref={(el) => { if (el && !monRO.current) { monRO.current = new ResizeObserver(() => setMonH(el.clientHeight)); monRO.current.observe(el); } }}>
-            <video ref={vids[0]} src={videoUrl} preload="auto" muted playsInline onLoadedData={() => { vClip.current[0] = ""; if (act.current === 0) showFrame(tRef.current, playing); }} />
-            <video ref={vids[1]} className="hidden" src={videoUrl} preload="auto" muted playsInline onLoadedData={() => { vClip.current[1] = ""; if (act.current === 1) showFrame(tRef.current, playing); }} />
-            <video ref={impV} className="hidden" preload="auto" muted playsInline onLoadedData={() => showFrame(tRef.current, !!audio.current && !audio.current.paused)} />
+            <div className={`prog-frame ${cur?.zoom && cur.zoom > 1.001 ? "zoomed" : ""}`}
+              style={{ ["--src-ar" as string]: String(srcAR) }}
+              title="This box is the final video frame. Zoom crops the picture inside it; the black around it is not in the file.">
+              <video ref={vids[0]} src={videoUrl} preload="auto" muted playsInline onLoadedData={(e) => {
+                const v = e.currentTarget; if (v.videoWidth) setSrcAR(v.videoWidth / v.videoHeight);
+                vClip.current[0] = ""; if (act.current === 0) showFrame(tRef.current, playing);
+              }} />
+              <video ref={vids[1]} className="hidden" src={videoUrl} preload="auto" muted playsInline onLoadedData={() => { vClip.current[1] = ""; if (act.current === 1) showFrame(tRef.current, playing); }} />
+              <video ref={impV} className="hidden" preload="auto" muted playsInline onLoadedData={() => showFrame(tRef.current, !!audio.current && !audio.current.paused)} />
+              <div className="mon-fx" ref={fxRef} />
+              {sub && (() => {
+                const lang: Lang = subMode === "en" ? "en" : "dub"; const st = styleOf(lang); const k = monH / 1080;
+                return st.style === "strip"
+                  ? <div className="mon-sub strip" style={{ bottom: `${8 * k}px`, fontSize: `${st.size * k}px` }}><span>{sub.text}</span></div>
+                  : <div className="mon-sub" style={{ bottom: `${st.bottom * k}px` }}><span style={{ fontSize: `${st.size * k}px`, background: `rgba(0,0,0,${st.alpha})` }}>{sub.text}</span></div>;
+              })()}
+            </div>
             <audio ref={audio} src={`/api/episodes/${eid}/media/dub_preview`} preload="auto" />
-            <div className="mon-fx" ref={fxRef} />
             {cur && <span className="mon-badge">{label(cur)} ← {S} {fmt(srcAt(cur, tShow))}</span>}
             {cur && <span className="mon-badge right">×{speedOf(cur).toFixed(2)}</span>}
             {held && <span className="mon-hold">picture catching up — the voice waits…</span>}
-            {sub && (() => {
-              const lang: Lang = subMode === "en" ? "en" : "dub"; const st = styleOf(lang); const k = monH / 1080;
-              return st.style === "strip"
-                ? <div className="mon-sub strip" style={{ bottom: `${8 * k}px`, fontSize: `${st.size * k}px` }}><span>{sub.text}</span></div>
-                : <div className="mon-sub" style={{ bottom: `${st.bottom * k}px` }}><span style={{ fontSize: `${st.size * k}px`, background: `rgba(0,0,0,${st.alpha})` }}>{sub.text}</span></div>;
-            })()}
           </div>
           <div className="mon-bar">
             <button className="icon-btn" onClick={() => seek(tRef.current - 5000)} title="Back 5 s">⏪</button>
@@ -1415,7 +1423,7 @@ function MotionBlock({ c, locked, onMotion }: { c: Clip; locked: boolean; onMoti
         </div>
       </div>
       {zoomed && <button className="small ghost" type="button" onClick={() => put(1, 0, 0, true)}>Reset zoom</button>}
-      <div className="muted small-text" style={{ textTransform: "none", letterSpacing: 0 }}>Zoom in, then drag the square (or X / Y) to keep the left, right, top or bottom of the picture. The program monitor shows it now; Render burns it into the clip.</div>
+      <div className="muted small-text" style={{ textTransform: "none", letterSpacing: 0 }}>The program monitor's box is the final video frame. Zoom crops inside that box (black around it is not in the file). Drag the square to pick left / right / top / bottom. Render burns it into the clip.</div>
     </fieldset>
   );
 }
