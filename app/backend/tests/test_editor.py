@@ -99,6 +99,23 @@ def test_review_gate_render_and_render_again(env):
     assert c.get(f"/api/episodes/{eid}/timeline?pipeline=1").json()["timeline"]["clips"][1]["s0"] == 900
 
 
+def test_inspector_zoom_and_pan_reach_the_render_list(tmp_path):
+    """A selected clip's Motion (zoom + X/Y) is what render reads, including pan 0."""
+    w = tmp_path / "w"
+    write_manifest(w, [(0, 1000, 0, 1000), (1000, 2000, 5000, 6000)], 2000)
+    tl = tlm.build_v1(w)
+    tl["clips"][1]["zoom"] = 1.5
+    tl["clips"][1]["pan_x"] = -0.8
+    tl["clips"][1]["pan_y"] = 0.0
+    m = tlm.to_manifest(tl, w, 1)
+    s = m["segments"][1]
+    assert s["zoom"] == 1.5 and s["pan_x"] == -0.8 and s["pan_y"] == 0.0
+    assert "zoom" not in m["segments"][0] and "pan_x" not in m["segments"][0]
+    (w / "manifest_groups.json").write_text(json.dumps(dict(total_ms=2000, segments=m["segments"], groups=[])))
+    back = tlm.build_v1(w)["clips"][1]
+    assert back["zoom"] == 1.5 and back["pan_x"] == -0.8 and back["pan_y"] == 0.0
+
+
 def test_unedited_v1_writes_the_pipeline_times_exactly(tmp_path):
     w = tmp_path / "w"; w.mkdir()
     segs = [dict(kind="clip", it_idx=0, it_start_ms=0.0, it_end_ms=1234.567, us_start_ms=5000.123, us_end_ms=6260.617,

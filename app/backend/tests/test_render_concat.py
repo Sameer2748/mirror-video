@@ -116,6 +116,28 @@ EP28_STDERR = (
 )
 
 
+def test_crop_filter_legacy_zoom_stays_bottom_anchored():
+    """Scene-edit B-roll (zoom, no pan) keeps the old bottom-center crop."""
+    assert D.crop_filter({}) == ""
+    assert D.crop_filter({"zoom": 1}) == ""
+    f = D.crop_filter({"zoom": 1.08})
+    assert "crop=iw/1.0800:ih/1.0800" in f and "(iw-iw/1.0800)/2" in f and "ih-ih/1.0800" in f
+    assert "pan" not in f
+
+
+def test_crop_filter_inspector_pan_picks_a_side():
+    left = D.crop_filter({"zoom": 2, "pan_x": -1, "pan_y": 0})
+    right = D.crop_filter({"zoom": 2, "pan_x": 1, "pan_y": 0})
+    top = D.crop_filter({"zoom": 2, "pan_x": 0, "pan_y": -1})
+    bottom = D.crop_filter({"zoom": 2, "pan_x": 0, "pan_y": 1})
+    assert "*0.0000:(ih-ih/2.0000)*0.5000" in left
+    assert "*1.0000:(ih-ih/2.0000)*0.5000" in right
+    assert "*0.5000:(ih-ih/2.0000)*0.0000" in top
+    assert "*0.5000:(ih-ih/2.0000)*1.0000" in bottom
+    sig = D.seg_sig({"us_start_ms": 0, "us_end_ms": 1000, "zoom": 2, "pan_x": -1, "pan_y": 0.4}, 25, None, 64, 64, 25)
+    assert "|z2" in sig and "|px-1" in sig and "|py0.4" in sig
+
+
 def test_ep28_nal_stderr_is_truncated():
     assert D.ffmpeg_err_is_truncated(EP28_STDERR) is True
     assert D.ffmpeg_err_is_truncated("") is False

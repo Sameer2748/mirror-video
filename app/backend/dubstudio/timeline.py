@@ -52,8 +52,8 @@ def build_v1(work):
         c = dict(id=f"c{k}", row=s.get("it_idx"), t0=round(s["it_start_ms"], 3), t1=round(s["it_end_ms"], 3),
                  s0=round(s["us_start_ms"], 3), s1=round(s["us_end_ms"], 3), dub_text=s.get("it_text") or "",
                  src_text=s.get("us_text") or "", note=s.get("note") or "")
-        for k2 in ("broll", "zoom"):                  # scene edit: a B-roll piece, a repeat shown zoomed in
-            if s.get(k2):
+        for k2 in ("broll", "zoom", "pan_x", "pan_y"):  # scene edit zoom; inspector Motion pan
+            if s.get(k2) is not None and s.get(k2) is not False:
                 c[k2] = s[k2]
         c["orig"] = dict(t0=c["t0"], t1=c["t1"], s0=c["s0"], s1=c["s1"])
         clips.append(c)
@@ -210,7 +210,8 @@ def flatten(tl):
         out.append(dict(t0=a, t1=b, s0=_src_at(c, a), s1=_src_at(c, b), id=c["id"], track=2 if c in v2 else 1,
                         row=c.get("row"), dub_text=c.get("dub_text", ""), src_text=c.get("src_text", ""),
                         note=c.get("note") or "", tin=c.get("tin") if abs(a - c["t0"]) < 1 else None,
-                        media=c.get("media"), broll=c.get("broll"), zoom=c.get("zoom")))
+                        media=c.get("media"), broll=c.get("broll"), zoom=c.get("zoom"),
+                        pan_x=c.get("pan_x"), pan_y=c.get("pan_y")))
     return out
 
 
@@ -507,6 +508,8 @@ def _slice_matching(seg, t0, t1):
     out["note"] = "matching clip (scene edit left a hole)"
     out.pop("broll", None)
     out.pop("zoom", None)
+    out.pop("pan_x", None)
+    out.pop("pan_y", None)
     return out
 
 
@@ -609,8 +612,8 @@ def to_manifest(tl, work, version):
                          us_start_ms=round(c["s0"], 3), us_end_ms=round(c["s1"], 3), it_text=c.get("dub_text", ""),
                          us_text=c.get("src_text", ""), stretch_factor=round(slot / max(src, 1), 3),
                          note=c.get("note") or ""))
-        for k2 in ("broll", "zoom"):                     # the scene edit's marks: transitions plan + the render's zoom
-            if c.get(k2):
+        for k2 in ("broll", "zoom", "pan_x", "pan_y"):   # scene edit zoom + inspector Motion (pan 0 is a real value)
+            if c.get(k2) is not None and c.get(k2) is not False:
                 segs[-1][k2] = c[k2]
         if c.get("media"):                              # an imported clip: the pipeline renders it from its own file
             from . import imports

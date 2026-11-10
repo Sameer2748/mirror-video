@@ -1123,11 +1123,43 @@ def detect_subtitle_band(video, sample_every_s=2, white_thresh=200, width_frac=0
     if len(close) < 5 or close.std() > 15: return None
     return max(int(close.min()) - 30, 0)
 
+def crop_filter(s):
+    """ffmpeg crop for a clip's zoom + pan (inspector Motion). Empty string = no crop.
+
+    Scene-edit B-roll sets zoom with no pan: keep the old bottom-anchored crop so burned-in
+    captions stay under the subtitle strip. Inspector pan_x / pan_y (-1 left/top … +1 right/bottom)
+    pick which part of the frame stays in view, like Premiere's Motion position."""
+    try:
+        z = float(s.get("zoom") or 1)
+    except (TypeError, ValueError):
+        z = 1.0
+    z = max(1.0, min(z, 8.0))
+    px, py = s.get("pan_x"), s.get("pan_y")
+    if z <= 1.001 and px is None and py is None:
+        return ""
+    if z <= 1.001:
+        return ""
+    if px is None and py is None:
+        return f"crop=iw/{z:.4f}:ih/{z:.4f}:(iw-iw/{z:.4f})/2:ih-ih/{z:.4f}"
+    try:
+        px = max(-1.0, min(1.0, float(px or 0)))
+    except (TypeError, ValueError):
+        px = 0.0
+    try:
+        py = max(-1.0, min(1.0, float(py or 0)))
+    except (TypeError, ValueError):
+        py = 0.0
+    return (f"crop=iw/{z:.4f}:ih/{z:.4f}:"
+            f"(iw-iw/{z:.4f})*{(px + 1) / 2:.4f}:(ih-ih/{z:.4f})*{(py + 1) / 2:.4f}")
+
+
 def seg_sig(s, nf, crop_h, W, H, FPS):
     """A rendered segment's cache key. A segment may name its own video ("video": an imported clip from the editor);
     the source video's segments keep the old key, so their cache stays valid."""
     sig = f"{s['us_start_ms']:.3f}|{s['us_end_ms']:.3f}|{nf}|{crop_h}|{W}x{H}@{FPS}"
     if s.get("zoom"): sig += f"|z{s['zoom']}"          # reused footage shown zoomed in (slow-clip B-roll)
+    if s.get("pan_x") is not None: sig += f"|px{s['pan_x']}"
+    if s.get("pan_y") is not None: sig += f"|py{s['pan_y']}"
     return sig + f"|{s['video']}" if s.get("video") else sig
 
 
@@ -1178,9 +1210,9 @@ def cmd_render(a):
         k = (nf / FPS) / max((s["us_end_ms"] - s["us_start_ms"]) / 1000, 0.04)
         frame = (f"crop={W}:{crop_h}:0:0,pad={W}:{H}:0:0:black" if crop_h and not s.get("video") else
                  f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2")
-        if s.get("zoom"):                               # a segment may ask for a centred zoom-in (reused B-roll)
-            # anchored at the bottom: burned-in source captions stay where the subtitle strip covers them
-            z = float(s["zoom"]); frame = f"crop=iw/{z:.4f}:ih/{z:.4f}:(iw-iw/{z:.4f})/2:ih-ih/{z:.4f},{frame}"
+        cf = crop_filter(s)
+        if cf:
+            frame = f"{cf},{frame}"
         vf = f"setpts={k:.6f}*PTS,{frame},fps={FPS},tpad=stop_mode=clone:stop_duration=2"
         r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{s['us_start_ms'] / 1000:.3f}",
                             "-to", f"{s['us_end_ms'] / 1000:.3f}", "-i", s.get("video") or cfg["src_video"], "-vf", vf, "-frames:v", str(nf),
@@ -1236,9 +1268,9 @@ def cmd_verify(a):
     vd, ad = probe_duration_ms(final), probe_duration_ms(cfg["dub_audio"])
     print(f"final video {vd / 1000:.3f}s vs dub audio {ad / 1000:.3f}s (diff {abs(vd - ad)}ms)")
     ok_dur = abs(vd - ad) <= 2 * 1000 / FPS + 50
-    def grab(path, t, zoom=None):
-        z_ = float(zoom or 1)                                     # a zoomed-in segment: compare zoomed (bottom-anchored)
-        zf = f"crop=iw/{z_:.4f}:ih/{z_:.4f}:(iw-iw/{z_:.4f})/2:ih-ih/{z_:.4f}," if zoom else ""
+    def grab(path, t, seg=None):
+        cf = crop_filter(seg) if seg else ""
+        zf = (cf + ",") if cf else ""
         raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(t, 0):.3f}", "-i", path, "-frames:v", "1",
                               "-vf", zf + "scale=64:64,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
         return np.frombuffer(raw, np.uint8).astype(float) if len(raw) == 4096 else None
@@ -1249,9 +1281,9 @@ def cmd_verify(a):
         t = (f0 + (f1 - f0) // 2 + 0.5) / FPS
         ts = (s["us_start_ms"] + (t - f0 / FPS) / ((f1 - f0) / FPS) * (s["us_end_ms"] - s["us_start_ms"])) / 1000
         v = s.get("video") or cfg["src_video"]                  # an imported clip is checked against its own file
-        z = s.get("zoom"); x = grab(final, t); c = corr(x, grab(v, ts, z))
+        x = grab(final, t); c = corr(x, grab(v, ts, s))
         if c < 0.9:
-            c = max(corr(x, grab(v, ts + k / FPS, z)) for k in range(-6, 7))
+            c = max(corr(x, grab(v, ts + k / FPS, s)) for k in range(-6, 7))
         return s["it_idx"], round(t, 2), round(c, 3)
     with ThreadPoolExecutor(a.workers) as ex: res = list(ex.map(check, segs))
     bad = [r for r in res if r[2] < 0.9]

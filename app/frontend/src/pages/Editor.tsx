@@ -10,7 +10,7 @@ import { api } from "../api";
 import GenPanel, { GenClip } from "./GenPanel";
 import { BrandMark } from "../App";
 
-type Clip = { id: string; row: number | null; t0: number; t1: number; s0: number; s1: number; dub_text: string; src_text: string; note?: string; locked?: boolean; tin?: string; media?: string; broll?: boolean; zoom?: number; orig?: { t0: number; t1: number; s0: number; s1: number } };
+type Clip = { id: string; row: number | null; t0: number; t1: number; s0: number; s1: number; dub_text: string; src_text: string; note?: string; locked?: boolean; tin?: string; media?: string; broll?: boolean; zoom?: number; pan_x?: number; pan_y?: number; orig?: { t0: number; t1: number; s0: number; s1: number } };
 // the project bin: clips imported for this episode + the episode's own files
 type Imp = { id: string; name: string; duration_ms: number; width: number; height: number; size: number; preview: string };
 type BinFile = { kind: string; label: string; name: string; size: number };
@@ -77,6 +77,27 @@ const fmt = (ms: number, dec = 1) => {
 const speedOf = (c: Clip) => (c.s1 - c.s0) / Math.max(c.t1 - c.t0, 1);
 const label = (c: Clip) => (c.row != null ? `IT#${c.row}` : c.media ? `${(c.src_text || "imported").slice(0, 18)}` : `clip ${fmt(c.s0)}`);
 const clamp = (x: number, a: number, b: number) => Math.min(Math.max(x, a), b);
+const MOTION_Z_MAX = 4;
+function applyMotion(c: Clip, zoom: number, pan_x: number, pan_y: number): Clip {
+  const z = Math.round(clamp(zoom, 1, MOTION_Z_MAX) * 100) / 100;
+  const out: Clip = { ...c };
+  if (z <= 1.001) { delete out.zoom; delete out.pan_x; delete out.pan_y; return out; }
+  out.zoom = z;
+  out.pan_x = Math.round(clamp(pan_x, -1, 1) * 100) / 100;
+  out.pan_y = Math.round(clamp(pan_y, -1, 1) * 100) / 100;
+  return out;
+}
+function paintMotion(el: HTMLVideoElement | null, clip: Clip | undefined, extra = 1) {
+  if (!el) return;
+  const z = Math.max(1, Math.min(Number(clip?.zoom) || 1, 8));
+  const scale = z * extra;
+  if (scale <= 1.001) { el.style.transform = ""; el.style.transformOrigin = ""; return; }
+  const hasPan = clip?.pan_x != null || clip?.pan_y != null;
+  const px = clamp(Number(clip?.pan_x) || 0, -1, 1);
+  const py = clamp(Number(clip?.pan_y) || 0, -1, 1);
+  el.style.transformOrigin = hasPan ? `${50 + px * 50}% ${50 + py * 50}%` : "50% 100%";
+  el.style.transform = `scale(${scale})`;
+}
 const uid = () => "e" + Math.random().toString(36).slice(2, 8);
 const worst = (fl?: Flag[]) => {
   if (!fl) return "";
@@ -489,6 +510,7 @@ export default function Editor() {
       const url = `/api/episodes/${eid}/imports/${c.media}/media`;
       if (I.dataset.m !== c.media) { I.dataset.m = c.media; I.src = url; return; }   // onLoadedData shows the frame
       I.classList.remove("hidden");
+      paintMotion(I, byIdRef.current.get(c.id!));
       const sp = (c.s1! - c.s0!) / Math.max(c.t1 - c.t0, 1); const want = (c.s0! + (t - c.t0) * sp) / 1000 + (play ? leadOf(I) : 0);
       const base = clamp(sp, 0.0625, 16); let rate = base;
       if (play) {
@@ -504,6 +526,7 @@ export default function Editor() {
     }
     if (c.gap) {                                       // nothing on V1 or V2 here: black (it would render black)
       lag.current = { s: 0, stalled: false };
+      paintMotion(A, undefined); paintMotion(B, undefined);
       A.classList.add("hidden"); B.classList.add("hidden"); if (!A.paused) A.pause(); if (!B.paused) B.pause();
       if (fxRef.current) fxRef.current.style.opacity = "0";
       if (nextReal) { const k = `${nextReal.id}@${Math.round(nextReal.t0)}`; if (vClip.current[a] !== k) { vClip.current[a] = k; A.currentTime = nextReal.s0! / 1000; } }
@@ -547,7 +570,9 @@ export default function Editor() {
     const w = fx ? (1 - Math.abs(fx.x)) ** 2 * (3 - 2 * (1 - Math.abs(fx.x))) : 0;
     const filt = !fx ? "" : fx.st === "zoom_blur" ? `blur(${2 * w}px)` : fx.st === "glow" ? `brightness(${1 + 0.6 * w}) blur(${3 * w}px)`
       : fx.st === "light_leak" ? `brightness(${1 + 0.25 * w})` : `blur(${7 * w}px)`;
-    V.style.filter = filt; V.style.transform = fx && fx.st === "zoom_blur" ? `scale(${1 + 0.15 * w})` : "";
+    V.style.filter = filt;
+    paintMotion(V, byIdRef.current.get(c.id!), fx && fx.st === "zoom_blur" ? 1 + 0.15 * w : 1);
+    paintMotion(S, undefined);
     if (fxRef.current) {
       fxRef.current.style.opacity = fx && (fx.st === "light_leak" || fx.st === "glow" || fx.st === "auto") ? String(0.85 * w) : "0";
       fxRef.current.style.backgroundPosition = fx ? `${50 + 60 * fx.x}% 35%` : "";
@@ -691,6 +716,16 @@ export default function Editor() {
     const out = v2.slice(); out[k] = c; commitV2(out);
   };
   const updateSel = (c: Clip) => { if (selV2 >= 0) updateV2(c.id, c); else if (selIdx >= 0) update(selIdx, c); };
+  const motionBase = useRef<Snap | null>(null);
+  const setSelMotion = (c: Clip, done: boolean) => {
+    const onV2 = selV2 >= 0; const i = onV2 ? selV2 : selIdx; if (i < 0) return;
+    const list = onV2 ? v2 : clips; if (list[i]?.locked) return;
+    if (!motionBase.current) motionBase.current = snap();
+    const out = list.slice(); out[i] = c;
+    if (onV2) setV2(out); else setClips(out);
+    dirtyN.current++; setSaveState("editing");
+    if (done && motionBase.current) { pushUndo(motionBase.current); motionBase.current = null; }
+  };
   const doRazor = (t = tRef.current) => {
     const k = v2.findIndex((x) => x.t0 < t && t < x.t1);            // a V2 clip at the playhead is cut first (it is on top)
     if (k >= 0) { if (v2[k].locked) { locked(-1); say(`${label(v2[k])} is locked`, true); return; } const out = razor(v2, k, t); if (out === v2) say("Too close to an edge to split here"); else { commitV2(out); setSel(out[k + 1].id); } return; }
@@ -710,7 +745,7 @@ export default function Editor() {
   const withMedia = (c: Clip, a: number, b: number, md: string | null): Clip => {
     const o: Clip = { ...c, s0: a, s1: b, src_text: md ? impOf(md)?.name || "imported clip" : srcTextFor(a, b, data!.src_sentences) || (c.media ? "" : c.src_text) };
     if (md) o.media = md; else delete o.media;
-    delete o.broll; delete o.zoom;                       // new footage: no longer the scene edit's B-roll / zoomed repeat
+    delete o.broll; delete o.zoom; delete o.pan_x; delete o.pan_y;  // new footage: no longer the scene edit's B-roll / zoomed repeat
     return o;
   };
   const doReplace = (s0?: number, s1?: number, why = "marked source", i = selIdx, media?: string | null) => {
@@ -1265,7 +1300,7 @@ export default function Editor() {
             )}
             {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={selClip.row != null && lipSet.has(selClip.row)}
               D={D} S={S} srcDur={durOf(selClip.media)}
-              onChange={(c) => updateSel(c)} onApprove={() => toggleApprove()} onReset={resetClip}
+              onChange={(c) => updateSel(c)} onMotion={setSelMotion} onApprove={() => toggleApprove()} onReset={resetClip}
               track={selV2 >= 0 ? 2 : 1} onCopyToV2={() => selClip && copyToV2(selClip)}
               onGenerate={() => {
                 const ord = [...clips].sort((x, y) => x.t0 - y.t0); const k = ord.findIndex((x) => x.id === selClip.id);
@@ -1336,9 +1371,58 @@ export default function Editor() {
 }
 
 // ---------------- inspector ----------------
-function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, onApprove, onReset, onPlay, onDelete, onFitSentence, onLock, onCopy, onPaste, track, onCopyToV2, onGenerate }: {
+function MotionBlock({ c, locked, onMotion }: { c: Clip; locked: boolean; onMotion: (c: Clip, done: boolean) => void }) {
+  const z = c.zoom && c.zoom > 1 ? c.zoom : 1;
+  const px = c.pan_x ?? 0, py = c.pan_y ?? 0;
+  const zoomed = z > 1.001;
+  const put = (nz: number, nx: number, ny: number, done: boolean) => onMotion(applyMotion(c, nz, nx, ny), done);
+  const pad = useRef<HTMLDivElement>(null);
+  const fromPtr = (e: React.PointerEvent, done: boolean) => {
+    const r = pad.current?.getBoundingClientRect(); if (!r) return;
+    put(Math.max(z, 1.2), clamp((e.clientX - r.left) / r.width, 0, 1) * 2 - 1,
+      clamp((e.clientY - r.top) / r.height, 0, 1) * 2 - 1, done);
+  };
+  return (
+    <fieldset className="motion" disabled={locked}>
+      <div className="lbl muted small-text">Motion · zoom and position</div>
+      <label className="motion-row">Zoom {Math.round(z * 100)}%
+        <input type="range" min={1} max={MOTION_Z_MAX} step={0.05} value={z}
+          onChange={(e) => put(parseFloat(e.target.value), px, py, false)}
+          onPointerUp={() => put(z, px, py, true)} onPointerCancel={() => put(z, px, py, true)} />
+      </label>
+      <div className="motion-xy" style={{ opacity: zoomed ? 1 : 0.55 }}>
+        <div className="pad" ref={pad} title="Drag: which part of the picture stays in frame (left / right / top / bottom)"
+          onPointerDown={(e) => { (e.target as HTMLElement).setPointerCapture(e.pointerId); fromPtr(e, false); }}
+          onPointerMove={(e) => { if (e.buttons) fromPtr(e, false); }}
+          onPointerUp={(e) => fromPtr(e, true)}>
+          <span className="pad-dot" style={{ left: `${50 + px * 50}%`, top: `${50 + py * 50}%` }} />
+        </div>
+        <div className="motion-sliders">
+          <label>Position X · {px < -0.05 ? "left" : px > 0.05 ? "right" : "center"}
+            <input type="range" min={-1} max={1} step={0.05} value={px} disabled={!zoomed}
+              onChange={(e) => put(z, parseFloat(e.target.value), py, false)}
+              onPointerUp={() => put(z, px, py, true)} onPointerCancel={() => put(z, px, py, true)} />
+          </label>
+          <label>Position Y · {py < -0.05 ? "top" : py > 0.05 ? "bottom" : "center"}
+            <input type="range" min={-1} max={1} step={0.05} value={py} disabled={!zoomed}
+              onChange={(e) => put(z, px, parseFloat(e.target.value), false)}
+              onPointerUp={() => put(z, px, py, true)} onPointerCancel={() => put(z, px, py, true)} />
+          </label>
+          <div className="nudge">
+            {([[0, 0, "Center"], [-1, 0, "Left"], [1, 0, "Right"], [0, -1, "Top"], [0, 1, "Bottom"]] as const).map(([x, y, l]) =>
+              <button key={l} type="button" disabled={!zoomed} onClick={() => put(z, x, y, true)}>{l}</button>)}
+          </div>
+        </div>
+      </div>
+      {zoomed && <button className="small ghost" type="button" onClick={() => put(1, 0, 0, true)}>Reset zoom</button>}
+      <div className="muted small-text" style={{ textTransform: "none", letterSpacing: 0 }}>Zoom in, then drag the square (or X / Y) to keep the left, right, top or bottom of the picture. The program monitor shows it now; Render burns it into the clip.</div>
+    </fieldset>
+  );
+}
+
+function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, onMotion, onApprove, onReset, onPlay, onDelete, onFitSentence, onLock, onCopy, onPaste, track, onCopyToV2, onGenerate }: {
   c: Clip; fl: Flag[]; approved: boolean; lip: boolean; D: string; S: string; srcDur: number; clipboard: string | null;
-  onChange: (c: Clip) => void; onApprove: () => void; onReset: () => void; onPlay: () => void; onDelete: () => void; onFitSentence: () => void;
+  onChange: (c: Clip) => void; onMotion: (c: Clip, done: boolean) => void; onApprove: () => void; onReset: () => void; onPlay: () => void; onDelete: () => void; onFitSentence: () => void;
   onLock: () => void; onCopy: () => void; onPaste: (keepSpeed: boolean) => void; track: 1 | 2; onCopyToV2: () => void; onGenerate: () => void;
 }) {
   const lk = !!c.locked;
@@ -1373,6 +1457,7 @@ function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, on
             <button key={l as string} onClick={() => onChange(slip(c, d as number, srcDur))}>{l}</button>)}
         </div>
       </fieldset>
+      <MotionBlock c={c} locked={lk} onMotion={onMotion} />
       {fl.length > 0 && <div className="insp-flags">
         {fl.map((f, k) => <div key={k} className="insp-flag"><span className={`fdot ${f.approved ? "ok" : f.sev}`} style={{ width: 8, height: 8, borderRadius: 4, display: "inline-block" }} />{f.msg}</div>)}
       </div>}

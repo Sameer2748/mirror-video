@@ -296,6 +296,15 @@ label.check { display: inline-flex; gap: 8px; align-items: center; margin: 8px 0
 .speed.red { color: var(--red); } .speed.yellow { color: var(--yellow); } .speed.ok { color: var(--green); }
 .nudge { display: flex; gap: 4px; flex-wrap: wrap; }
 .nudge button { padding: 3px 8px; font-size: 11.5px; font-family: var(--mono); }
+.motion { display: flex; flex-direction: column; gap: 8px; }
+.motion-row { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; }
+.motion-row input[type=range] { width: 100%; accent-color: var(--accent); padding: 0; border: 0; box-shadow: none; }
+.motion-xy { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 10px; align-items: start; }
+.pad { width: 88px; height: 88px; position: relative; background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; cursor: crosshair; touch-action: none; }
+.pad-dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--accent); pointer-events: none; }
+.motion-sliders { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.motion-sliders label { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; }
+.motion-sliders input[type=range] { width: 100%; accent-color: var(--accent); padding: 0; border: 0; box-shadow: none; }
 .insp-flags { display: flex; flex-direction: column; gap: 5px; }
 .insp-flag { display: flex; gap: 8px; align-items: center; font-size: 12.5px; }
 .insp-actions { display: flex; gap: 8px; flex-wrap: wrap; }
