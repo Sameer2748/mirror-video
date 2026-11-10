@@ -25,6 +25,55 @@ def _app_dir(script):
 sys.path.insert(0, str(_app_dir(__file__)))          # app/backend, or /opt/app on the CPU worker
 from dubstudio import ai  # noqa: E402
 
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def video_seconds(path):
+    """Seconds of pictures. Container duration follows the longest stream (often audio), so the last
+    shot would be cut to 615 s on a file whose pictures stop at 390 s, and frame grabs return empty PNGs."""
+    fmt = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
+                         capture_output=True, text=True).stdout.strip()
+    stream = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=duration",
+                             "-of", "csv=p=0", path], capture_output=True, text=True).stdout.strip()
+    try:
+        a = float(fmt) if fmt else 0.0
+    except ValueError:
+        a = 0.0
+    try:
+        b = float(stream) if stream and stream not in ("N/A", "n/a") else 0.0
+    except ValueError:
+        b = 0.0
+    if a > 0 and b > 0:
+        return min(a, b)
+    return a or b
+
+
+def grab_png(video, t, size=256):
+    """One PNG at t seconds. Fast seek first; if empty (past the pictures / a GOP hole), accurate seek."""
+    def run(accurate):
+        cmd = ["ffmpeg", "-v", "error"]
+        if accurate:
+            cmd += ["-i", video, "-ss", f"{t:.3f}"]
+        else:
+            cmd += ["-ss", f"{t:.3f}", "-i", video]
+        cmd += ["-frames:v", "1", "-vf", f"scale={size}:{size}", "-f", "image2pipe", "-vcodec", "png", "-"]
+        return subprocess.run(cmd, capture_output=True).stdout or b""
+    png = run(False)
+    if not png.startswith(PNG_MAGIC):
+        png = run(True)
+    return png
+
+
+def image_from_png(png, size=256):
+    """A 256×256 RGB image. Empty or garbage PNG (seek past EOF) becomes black, not a crash."""
+    from PIL import Image
+    if png.startswith(PNG_MAGIC):
+        try:
+            return Image.open(io.BytesIO(png)).convert("RGB")
+        except Exception:
+            pass
+    return Image.new("RGB", (size, size), "black")
+
 
 def camera_cuts(work, video):
     """Camera cuts of the source video (s), cached in W/scenes.json (same as fastfix.scenes): ffmpeg scene score > 0.28
@@ -53,8 +102,7 @@ ai.chat = _count_chat
 atexit.register(lambda: print("Claude usage:", _U, flush=True))
 
 cfg = json.load(open(W / "config.json")); video = cfg["src_video"]; OP = cfg.get("opening_s", 0)
-dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video],
-                           capture_output=True, text=True).stdout)
+dur = video_seconds(video)
 cuts = [c for c in camera_cuts(W, video) if 0 < c < dur]
 b = [0.0] + cuts + [dur]
 shots = []
@@ -76,9 +124,10 @@ def strip(k):
         from PIL import Image
         for f in (0.2, 0.5, 0.8):
             t = x + (y - x) * f
-            png = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", video, "-frames:v", "1", "-vf", "scale=256:256",
-                                  "-f", "image2pipe", "-vcodec", "png", "-"], capture_output=True).stdout
-            ims.append(Image.open(io.BytesIO(png)).convert("RGB"))
+            png = grab_png(video, t)
+            if not png.startswith(PNG_MAGIC):
+                print(f"shot {k} at {t:.2f}s: empty frame (past the pictures); using black", flush=True)
+            ims.append(image_from_png(png))
         s = Image.new("RGB", (768, 256)); [s.paste(im, (i * 256, 0)) for i, im in enumerate(ims)]
         s.save(p, quality=80)
     return p

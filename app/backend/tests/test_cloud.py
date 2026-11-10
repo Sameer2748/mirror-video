@@ -423,6 +423,8 @@ def test_library_job_ships_this_boxes_ai_not_the_baked_image(tmp_path):
     out = cloud.point_library_at_staged_app(cmd, work)
     staged = Path(out[1])
     assert staged == work / "_app" / "dubstudio" / "pipeline" / "library.py" and staged.is_file()
+    lib = staged.read_text()
+    assert "grab_png" in lib and "image_from_png" in lib
     assert out[2:] == [str(work), str(work / "broll_library")]
     spec = importlib.util.spec_from_file_location("shipped_ai", work / "_app" / "dubstudio" / "ai.py")
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
