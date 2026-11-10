@@ -857,14 +857,20 @@ _thumb_sem = threading.Semaphore(4)
 def thumb(work, video, ms, height=120):
     """One small frame of the source video at `ms` (rounded to 0.1 s), cached as a jpg."""
     ms = int(round(ms / 100.0) * 100)
-    d = Path(work) / "thumbs"; d.mkdir(exist_ok=True)
+    d = Path(work) / "thumbs"
+    d.mkdir(parents=True, exist_ok=True)
     p = d / f"{ms:08d}_{height}.jpg"
     if not p.exists():
         with _thumb_sem:
             if not p.exists():
                 tmp = p.with_suffix(".part.jpg")
-                subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{ms / 1000:.3f}", "-i", video, "-frames:v", "1",
-                                "-vf", f"scale=-2:{height}", "-q:v", "5", str(tmp)], capture_output=True)
-                if tmp.exists():
+                r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{ms / 1000:.3f}", "-i", str(video),
+                                    "-frames:v", "1", "-vf", f"scale=-2:{height}", "-q:v", "5", str(tmp)],
+                                   capture_output=True)
+                if tmp.exists() and r.returncode == 0:
                     tmp.replace(p)
+                else:
+                    tmp.unlink(missing_ok=True)
+                    if r.returncode != 0 and b"No space left" in (r.stderr or b""):
+                        raise OSError(28, "No space left on device")
     return p if p.exists() else None

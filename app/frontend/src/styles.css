@@ -342,8 +342,8 @@ label.check { display: inline-flex; gap: 8px; align-items: center; margin: 8px 0
 .fmark.red { background: var(--red); box-shadow: 0 0 6px var(--red); } .fmark.yellow { background: var(--yellow); }
 .clip { position: absolute; top: 3px; bottom: 3px; border-radius: 7px; overflow: hidden; cursor: pointer; background: #222225; border: 1px solid #3a3a3f;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .02); transition: box-shadow .12s, border-color .12s; user-select: none; }
-.clip .thumbs { position: absolute; inset: 0; display: flex; opacity: .55; }
-.clip .thumbs img { height: 100%; flex: none; object-fit: cover; }
+.clip .thumbs { position: absolute; inset: 0; display: flex; opacity: .9; background: #111; }
+.clip .thumbs img { height: 100%; flex: 1 0 0; min-width: 0; object-fit: cover; pointer-events: none; }
 .clip .cl { position: absolute; left: 6px; right: 6px; top: 4px; font-size: 10.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #000; }
 .clip .cs { position: absolute; left: 6px; bottom: 4px; font-family: var(--mono); font-size: 9.5px; padding: 0 4px; border-radius: 4px; background: rgba(0, 0, 0, .55); }
 .clip .lipi { position: absolute; right: 6px; bottom: 4px; font-size: 9.5px; background: rgba(0, 0, 0, .55); border-radius: 4px; padding: 0 4px; }
@@ -461,8 +461,8 @@ select.trans-mode { font-size: 12px; padding: 5px 8px; max-width: 250px; }
 .src-piece.used { opacity: .6; }
 .src-piece:hover { box-shadow: 0 0 0 2px var(--accent2); opacity: 1; }
 .src-piece.dragging { opacity: .35; }
-.src-piece .thumbs { position: absolute; inset: 0; display: flex; opacity: .5; }
-.src-piece .thumbs img { height: 100%; flex: none; object-fit: cover; }
+.src-piece .thumbs { position: absolute; inset: 0; display: flex; opacity: .85; background: #0d1715; }
+.src-piece .thumbs img { height: 100%; flex: 1 0 0; min-width: 0; object-fit: cover; pointer-events: none; }
 .src-piece .cl { position: absolute; left: 5px; right: 5px; top: 3px; font-size: 10px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #000; }
 .src-piece .cs { position: absolute; left: 5px; bottom: 3px; font-size: 9px; padding: 0 4px; border-radius: 4px; background: rgba(0, 0, 0, .55); color: var(--muted); }
 .row-btns { margin-left: auto; display: inline-flex; gap: 2px; }

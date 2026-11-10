@@ -644,7 +644,9 @@ def publish_outputs(db, show, ep, files, user_id=None, work_dir=None, log=print)
     return {"uploads": len(sent), "work_files": kept}
 
 
-RENDER_SCRATCH_DIRS = ("segs", "segs_groups", "segs_groups.auto", "bookends", "pieces", "thumbs")
+# Segment caches only. `thumbs/` is the editor's clip previews — drop those and the timeline goes blank until
+# ffmpeg remakes every frame (TAB editor after a visit).
+RENDER_SCRATCH_DIRS = ("segs", "segs_groups", "segs_groups.auto", "bookends", "pieces")
 
 
 def _dir_bytes(p):

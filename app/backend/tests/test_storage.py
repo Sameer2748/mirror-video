@@ -522,6 +522,8 @@ def test_clean_scratch_always_drops_segment_caches(tmp_path):
     (work / "proxy.mp4").write_bytes(b"proxy")
     (work / "config.json").write_text("{}")
     (work / "silent_groups.mp4").write_bytes(b"silent")
+    (work / "thumbs" / "00000000_80.jpg").parent.mkdir()
+    (work / "thumbs" / "00000000_80.jpg").write_bytes(b"jpg")
 
     class FakeDb:
         def q(self, *a, **k):
@@ -535,6 +537,7 @@ def test_clean_scratch_always_drops_segment_caches(tmp_path):
     assert not (work / "silent_groups.mp4").exists()
     assert (work / "proxy.mp4").exists()
     assert (work / "config.json").exists()
+    assert (work / "thumbs" / "00000000_80.jpg").exists()
 
 
 def test_drop_render_scratch_tree_clears_neighbour_episodes(tmp_path):

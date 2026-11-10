@@ -1883,11 +1883,11 @@ function TimelineView(p: {
 
   const thumbsFor = (c: Clip, w: number, laneH = H.v1) => {
     if (c.media) return null;                                       // an imported clip: no frames from the source video
-    const th = laneH - 8; const n = w < 24 ? 0 : clamp(Math.ceil(w / th), 1, 14);
-    if (!n) return null;
+    const n = w < 16 ? 1 : clamp(Math.ceil(w / Math.max(laneH * 1.2, 40)), 1, 16);
+    const span = Math.max((c.s1 || 0) - (c.s0 || 0), 1);
     return Array.from({ length: n }, (_, k) => {
-      const ms = Math.round((c.s0 + ((k + 0.5) / n) * (c.s1 - c.s0)) / 500) * 500;
-      return <img key={k} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80`} loading="lazy" style={{ width: th }} alt="" draggable={false} />;
+      const ms = Math.round(((c.s0 || 0) + ((k + 0.5) / n) * span) / 500) * 500;
+      return <img key={k} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80`} loading="lazy" alt="" draggable={false} />;
     });
   };
 

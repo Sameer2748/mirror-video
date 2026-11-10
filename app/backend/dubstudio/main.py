@@ -2212,14 +2212,26 @@ def gen_file(eid: int, tid: int, path: str):
 
 
 def _frames_from(eid):
-    """The file thumbnails are cut from: the preview copy if there is one (here or in R2), else the source video."""
+    """The file thumbnails are cut from: the preview copy if there is one (here or in R2), else the source video.
+
+    ffmpeg can take a signed URL, so a deployed box whose scratch was cleaned still shows the timeline filmstrip
+    without copying the whole source back first."""
     e = _get("episodes", eid)
     show = _get("shows", e["show_id"])
     p = tlm.proxy_path(e["work_dir"]) or storage.ensure_local(show, e, tlm.PROXY)
     if p:
-        return e, p
-    a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
-    return e, (a["path"] if a and Path(a["path"]).exists() else None)
+        return e, str(p)
+    a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    if a and Path(a["path"]).exists():
+        return e, a["path"]
+    url = storage.media_link(show, e, tlm.PROXY)
+    if url:
+        return e, url
+    if a:
+        key = a.get("r2_key") or _input_in_cloud(show, e, a, "src_video")
+        if key:
+            return e, storage.presign(key, 3600)
+    return e, None
 
 
 @app.get("/api/episodes/{eid}/thumb")
@@ -2227,7 +2239,23 @@ def thumb(eid: int, ms: float, h: int = 120):
     e, src = _frames_from(eid)
     if not src:
         raise HTTPException(404, "no source video")
-    p = tlm.thumb(e["work_dir"], str(src), ms, max(60, min(h, 360)))
+    work = e["work_dir"]
+    try:
+        if shutil.disk_usage(work).free < 2 * 10**9:
+            storage.drop_render_scratch(work)
+            storage.drop_render_scratch_tree(Path(work).parent)
+    except OSError:
+        pass
+    h = max(60, min(h, 360))
+    try:
+        p = tlm.thumb(work, str(src), ms, h)
+    except OSError as ex:
+        if ex.errno != 28:
+            raise
+        # TAB EP52/53: segs_groups filled the 50 GB disk, so writing a jpg 500'd and the timeline went blank.
+        storage.drop_render_scratch(work)
+        storage.drop_render_scratch_tree(Path(work).parent)
+        p = tlm.thumb(work, str(src), ms, h)
     if not p:
         raise HTTPException(404, "no frame")
     return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
