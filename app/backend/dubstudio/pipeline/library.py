@@ -75,6 +75,36 @@ def image_from_png(png, size=256):
     return Image.new("RGB", (size, size), "black")
 
 
+def as_text(v, default=""):
+    """Claude fields that should be strings. A dict or list must not reach ', '.join."""
+    if v is None or v == "":
+        return default
+    if isinstance(v, str):
+        return v
+    if isinstance(v, dict):
+        for k in ("name", "place", "text", "who", "person"):
+            if v.get(k):
+                return as_text(v.get(k), default)
+        return default
+    if isinstance(v, (list, tuple)):
+        return ", ".join(t for t in (as_text(x) for x in v) if t) or default
+    return str(v)
+
+
+def names_of(people):
+    """Claude sometimes returns people as dicts ({name, look}) instead of strings (TAB shot library)."""
+    if people is None or people == "":
+        return []
+    if isinstance(people, (str, dict)):
+        people = [people]
+    out = []
+    for p in people or []:
+        n = as_text(p)
+        if n and n not in out:
+            out.append(n)
+    return out
+
+
 def camera_cuts(work, video):
     """Camera cuts of the source video (s), cached in W/scenes.json (same as fastfix.scenes): ffmpeg scene score > 0.28
     on a 12.5 fps, 192-px-wide copy."""
@@ -206,6 +236,13 @@ with ThreadPoolExecutor(6) as ex: res = list(ex.map(label, batches))
 info = {}
 for r in res:
     for s in (r or {}).get("shots", []):
+        s = dict(s)
+        s["people"] = names_of(s.get("people"))
+        s["place"] = as_text(s.get("place"))
+        s["action"] = as_text(s.get("action"))
+        s["type"] = as_text(s.get("type"), "?")
+        s["broll"] = as_text(s.get("broll"), "?")
+        s["why"] = as_text(s.get("why"))
         info[int(s["n"])] = s
 
 # ---- 2. the table: every shot ----

@@ -53,6 +53,21 @@ def test_grab_png_retries_accurate_seek_when_fast_seek_is_empty(monkeypatch):
     assert calls[1].index("-i") < calls[1].index("-ss")
 
 
+def test_people_dicts_join_as_names():
+    """Claude returned people as dicts; ', '.join crashed the shot library after 23 Claude calls."""
+    ns = _helpers()
+    assert ns["names_of"]([{"name": "Léo"}, {"name": "Roxane"}]) == ["Léo", "Roxane"]
+    assert ns["names_of"](["Léo", {"name": "Omega"}]) == ["Léo", "Omega"]
+    assert ns["names_of"]("") == []
+    assert ", ".join(ns["names_of"]([{"name": "Léo"}, {"name": "Roxane"}])) == "Léo, Roxane"
+
+
+def test_place_dict_becomes_text():
+    ns = _helpers()
+    assert ns["as_text"]({"place": "castle hall"}) == "castle hall"
+    assert ns["as_text"](None, "") == ""
+
+
 def test_video_seconds_uses_the_shorter_stream(monkeypatch):
     ns = _helpers()
     outs = iter(["615.0", "390.0"])
