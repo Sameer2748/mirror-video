@@ -153,11 +153,34 @@ def test_a_hole_in_the_middle_is_not_scored_as_no_lips(tmp_path, monkeypatch, ep
         cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
 
 
-def test_a_long_empty_tail_is_not_scored_as_no_lips(tmp_path, monkeypatch, ep):
+def test_a_long_empty_tail_is_dropped_not_scored_as_no_lips(tmp_path, monkeypatch, ep):
+    """TAB EP51: container 674 s, pictures stop at 585 s. Drop the empty tail; do not fill it as 'no lips'."""
     show, episode = ep
+    notes = []
     FakeCloud(tmp_path / "bucket", empty_always=[[15.0, 30.0], [30.0, 45.0], [45.0, 60.0]]).install(monkeypatch)
-    with pytest.raises(RuntimeError, match="no pictures after 15"):
-        cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
+    res = cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=notes.append)
+    nets = Path(episode["work_dir"]) / "lips_nets"
+    assert res["files"] == 1
+    assert json.loads((nets / "ranges.json").read_text()) == [[0.0, 15.0]]
+    assert json.loads((nets / "range_0_15.json").read_text())["frames"] == 375
+    assert not (nets / "range_15_30.json").exists()
+    assert not (nets / "range_45_60.json").exists()
+    assert any("dropping the empty tail" in m for m in notes)
+
+
+def test_ep51_empty_tail_after_585s_is_dropped(tmp_path, monkeypatch, ep):
+    """Same numbers as TAB EP51: 45 pieces across 674 s, pictures gone from 585 s."""
+    show, episode = ep
+    cuts = cloud.make_ranges(674.0)
+    empty = [c for c in cuts if c[0] >= 585.0]
+    assert empty[:3] == [[585.0, 600.0], [600.0, 615.0], [615.0, 630.0]] and len(empty) == 6
+    FakeCloud(tmp_path / "bucket", empty_always=empty).install(monkeypatch)
+    res = cloud.lip_scan({}, show, episode, duration_s=674.0, n_pieces=8, log=lambda m: None)
+    kept = [c for c in cuts if c[0] < 585.0]
+    nets = Path(episode["work_dir"]) / "lips_nets"
+    assert res["files"] == len(kept)
+    assert json.loads((nets / "ranges.json").read_text()) == kept
+    assert not (nets / "range_585_600.json").exists()
 
 
 def test_a_share_that_keeps_failing_is_reported_not_hidden(tmp_path, monkeypatch, ep):

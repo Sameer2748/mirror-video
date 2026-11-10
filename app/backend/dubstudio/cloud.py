@@ -286,22 +286,43 @@ def _write_silent_lip_piece(nets, s, e):
 
 
 def _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log):
-    """The last make_ranges window can run past EOF (one 15 s overshoot). Fill that.
+    """After retries, decide what empty range files mean.
 
-    A run of empty pieces from 390 s to the end of a 615 s file is the pictures stopping
-    minutes early. That is not a leftover empty frame and must not be scored as 'no lips'."""
-    last = cuts[-1] if cuts else None
-    if last is not None and empty == [list(last)]:
-        s, e = empty[0]
+    The last make_ranges window can run past EOF (one 15 s overshoot). Fill that.
+
+    A contiguous empty tail (TAB EP28/EP51: container longer than the pictures) is
+    dropped. Those minutes are not scored as 'no lips'.
+
+    A hole in the middle (empty piece with pictures after it) still fails — that is
+    a real scan miss, not a truncated file."""
+    if not empty:
+        return list(cuts)
+    empty_keys = {(float(s), float(e)) for s, e in empty}
+    first_empty_i = None
+    hole = False
+    for i, c in enumerate(cuts):
+        if (float(c[0]), float(c[1])) in empty_keys:
+            if first_empty_i is None:
+                first_empty_i = i
+        elif first_empty_i is not None:
+            hole = True
+    start = empty[0][0]
+    if hole or first_empty_i is None or first_empty_i == 0:
+        raise RuntimeError(
+            f"{len(empty)} piece(s) have no pictures after {start:.0f}s "
+            f"(file duration {float(duration_s):.0f}s, e.g. {empty[:3]}). "
+            f"The source video's pictures stop there — not a leftover empty frame. "
+            f"Re-upload the source video, or check it actually plays past {start:.0f}s.")
+    if first_empty_i == len(cuts) - 1:
+        s, e = cuts[-1]
         want = _write_silent_lip_piece(nets, s, e)
         log(f"{s:g}-{e:g}: past the pictures; wrote {want} silent frames")
-        return
-    start = empty[0][0]
-    raise RuntimeError(
-        f"{len(empty)} piece(s) have no pictures after {start:.0f}s "
-        f"(file duration {float(duration_s):.0f}s, e.g. {empty[:3]}). "
-        f"The source video's pictures stop there — not a leftover empty frame. "
-        f"Re-upload the source video, or check it actually plays past {start:.0f}s.")
+        return list(cuts)
+    kept = cuts[:first_empty_i]
+    log(f"{len(empty)} piece(s) have no pictures after {start:.0f}s "
+        f"(file duration {float(duration_s):.0f}s). Source pictures stop there — "
+        f"keeping the scan through {start:.0f}s and dropping the empty tail.")
+    return kept
 
 
 def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3):
@@ -379,7 +400,7 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
         retries += 1
         empty = _empty_lip_pieces(nets, cuts)
     if empty:
-        _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log)
+        cuts = _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log)
     # lipgpu writes this next to the pieces, and the two steps after the scan read it (`lipmesh --ranges`,
     # `lipmerge` defaults to NETS_DIR/ranges.json). Each worker only knows its own share, so the whole list is
     # written here -- without it the scan "succeeds" and the next step has nothing to work from.
