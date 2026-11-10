@@ -616,6 +616,35 @@ def probe_video(path):
     w, h, r = out.strip().split(",")[:3]; a, b = r.split("/")
     return int(w), int(h), round(int(a) / int(b))
 
+
+TRUNCATED_MARKERS = (
+    "Invalid NAL unit size",
+    "partial file",
+    "Error splitting the input into NAL units",
+    "Invalid data found when processing input",
+)
+
+
+def ffmpeg_err_is_truncated(err):
+    """True when ffmpeg hit a truncated/corrupt H264 file (TAB EP28 ending: partial file / invalid NAL)."""
+    e = err or ""
+    return any(m in e for m in TRUNCATED_MARKERS)
+
+
+def video_decodes(path, ss=None):
+    """One frame from path (at ss seconds). False if the file is truncated or unreadable."""
+    if not path or not os.path.isfile(path):
+        return False
+    cmd = ["ffmpeg", "-v", "error"]
+    if ss is not None:
+        cmd += ["-ss", f"{float(ss):.3f}"]
+    cmd += ["-i", path, "-frames:v", "1", "-f", "null", "-"]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    err = r.stderr or ""
+    if r.returncode != 0 or ffmpeg_err_is_truncated(err):
+        return False
+    return True
+
 OUT_FPS = 25   # owner 2026-10-30: every output video is rendered at 25 fps, whatever the source's rate (TGS: 30)
 
 def out_fps(cfg):
@@ -1597,7 +1626,9 @@ def cmd_bookends(a):
           f"subtitle ends {cues[-1].end_ms / 1000 if cues else 0:.2f}s, source is {src_ms / 1000:.2f}s)")
     if not n_in and not n_out:
         print("nothing to add: the clean master is the render itself"); shutil.copyfile(main, out)
-        cfg.update(clean_final=out, opening_s=0, ending_s=0); save(a.work, "config.json", cfg); return
+        cfg.update(clean_final=out, opening_s=0, ending_s=0, ending_src_s=None, clean_nofx=out)
+        cfg.pop("glow", None); cfg.pop("bookended", None)
+        save(a.work, "config.json", cfg); return
     ar = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=sample_rate,channels",
                          "-of", "csv=p=0", main], capture_output=True, text=True).stdout.strip().split(",")
     sr, ch = ar[0], ar[1]
@@ -1605,23 +1636,63 @@ def cmd_bookends(a):
                                 capture_output=True, text=True).stdout.strip())
     d = os.path.join(a.work, "bookends"); os.makedirs(d, exist_ok=True); fd = a.fade
     def cut(f0, nf, path, fade):
+        """Cut opening/ending from the source. False if that range is truncated (invalid NAL / partial file)."""
         dur = nf / FPS
+        if not video_decodes(src, f0 / FPS):
+            return False
         af = (f"afade=t=out:st={max(dur - fd, 0):.3f}:d={fd}" if fade == "out" else f"afade=t=in:st=0:d={fd}")
         cmd = ["ffmpeg", "-y", "-v", "error", "-ss", f"{f0 / FPS:.6f}", "-i", src]
         if not has_a: cmd += ["-f", "lavfi", "-i", f"anullsrc=r={sr}:cl={'mono' if ch == '1' else 'stereo'}"]
         cmd += ["-map", "0:v:0", "-map", "0:a:0" if has_a else "1:a:0", "-vf", f"fps={FPS},format=yuv420p", "-frames:v", str(nf),
                 "-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
                 "-af", f"aresample={sr},{af}", "-ac", ch, "-c:a", "aac", "-b:a", "192k", "-t", f"{dur:.6f}", path]
-        subprocess.run(cmd, check=True)
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        if r.returncode or ffmpeg_err_is_truncated(r.stderr or "") or not os.path.isfile(path) or os.path.getsize(path) < 1000:
+            return False
+        if not video_decodes(path):
+            return False
+        return True
     parts = []
-    if n_in: cut(0, n_in, os.path.join(d, "opening.mp4"), "out"); parts.append(os.path.join(d, "opening.mp4"))
+    if n_in:
+        op = os.path.join(d, "opening.mp4")
+        if cut(0, n_in, op, "out"):
+            parts.append(op)
+        else:
+            print(f"opening left out: source 0.00-{n_in / FPS:.2f}s is not readable (truncated file / invalid NAL)", flush=True)
+            n_in = 0
     parts.append(main)
-    if n_out: cut(o_f, n_out, os.path.join(d, "ending.mp4"), "in"); parts.append(os.path.join(d, "ending.mp4"))
+    if n_out:
+        ep = os.path.join(d, "ending.mp4")
+        if cut(o_f, n_out, ep, "in"):
+            parts.append(ep)
+        else:
+            print(f"ending left out: source {o_f / FPS:.2f}s is not readable (truncated file / invalid NAL)", flush=True)
+            n_out = 0
+    if not n_in and not n_out:
+        print("nothing to add: the clean master is the render itself"); shutil.copyfile(main, out)
+        cfg.update(clean_final=out, opening_s=0, ending_s=0, ending_src_s=None, clean_nofx=out)
+        cfg.pop("glow", None); cfg.pop("bookended", None)
+        save(a.work, "config.json", cfg); return
     lst = os.path.join(d, "parts.txt"); open(lst, "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in parts))
     tmp = os.path.join(os.path.dirname(out), ".bookends_tmp.mp4")
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-map", "0:v", "-map", "0:a",
-                    "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", tmp], check=True)
-    main_ms = probe_duration_ms(main); new_ms = probe_duration_ms(tmp); want = (n_in + n_out) / FPS * 1000 + main_ms
+    cat = subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-map", "0:v", "-map", "0:a",
+                          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", tmp],
+                         capture_output=True, text=True)
+    main_ms = probe_duration_ms(main)
+    want = (n_in + n_out) / FPS * 1000 + main_ms
+    new_ms = probe_duration_ms(tmp) if os.path.isfile(tmp) else 0
+    bad = (cat.returncode or ffmpeg_err_is_truncated(cat.stderr or "")
+           or abs(new_ms - want) > 3 * 1000 / FPS + 50 or not video_decodes(tmp))
+    if bad:
+        # TAB EP28: concat -c copy of a truncated source ending kept the render length and a corrupt file.
+        print("bookends concat did not keep the extra footage (truncated source / invalid NAL); "
+              "clean master is the render", flush=True)
+        shutil.copyfile(main, out)
+        cfg.update(clean_final=out, opening_s=0, ending_s=0, ending_src_s=None, clean_nofx=out)
+        cfg.pop("glow", None); cfg.pop("bookended", None)
+        save(a.work, "config.json", cfg)
+        print(f"saved {out}: {main_ms / 1000:.3f}s (no opening/ending)")
+        return
     # check: the dub audio must start exactly where the opening ends
     def pcm(path, t0, t=15):
         raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0:.3f}", "-t", str(t), "-i", path, "-vn", "-ac", "1", "-ar", "8000",
@@ -1658,7 +1729,8 @@ def cmd_bookends(a):
     print(f"saved {out}: {new_ms / 1000:.3f}s = opening {n_in / FPS:.2f}s + dub episode {main_ms / 1000:.3f}s + ending {n_out / FPS:.2f}s "
           f"(expected {want / 1000:.3f}s, diff {abs(new_ms - want):.0f}ms)")
     print(f"check: dub audio starts {lag / 8000 * 1000:+.0f}ms from the end of the opening (match {peak:.2f})")
-    if abs(new_ms - want) > 3 * 1000 / FPS + 50 or (m > 8000 and (abs(lag) > 400 or peak < 0.5)): sys.exit(1)
+    if m > 8000 and (abs(lag) > 400 or peak < 0.5):
+        sys.exit(1)
 
 # ---------------------------------------------------------------------------------
 # 9b. transitions: a transition at every clip switch of the clean master (owner's TOLR choice: light leak,

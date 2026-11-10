@@ -459,6 +459,7 @@ def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path)
     assert staged == work / "_pipe" / "dubstitch.py" and staged.is_file()
     text = staged.read_text()
     assert "segment_mp4_ready" in text and "write_black_segment" in text
+    assert "ffmpeg_err_is_truncated" in text and "clean master is the render" in text
     assert (work / "_pipe" / "pngsubs.py").is_file()
     assert (work / "_pipe" / "dynsubs.py").is_file()
     assert out[2:] == ["render", "--work", str(work)]
