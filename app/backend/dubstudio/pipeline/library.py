@@ -301,8 +301,13 @@ def clip(r, folder):
     name = f"shot{r['n']:03d}_{fmt(r['start']).replace(':', 'm').replace('.', 's')}_{r['type']}.mp4"
     p = folder / name
     if not p.exists():
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{r['start']:.3f}", "-to", f"{r['end']:.3f}", "-i", video, "-an",
-                        "-vf", "scale=540:540", "-c:v", "libx264", "-preset", "veryfast", "-crf", "24", str(p)], check=True)
+        enc = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{r['start']:.3f}", "-to", f"{r['end']:.3f}", "-i", video, "-an",
+                              "-vf", "scale=540:540", "-c:v", "libx264", "-preset", "veryfast", "-crf", "24", str(p)],
+                             capture_output=True)
+        if enc.returncode or not p.exists() or p.stat().st_size < 64:
+            print(f"shot {r['n']} clip empty ({r['start']:.2f}-{r['end']:.2f}s); skipping", flush=True)
+            p.unlink(missing_ok=True)
+            return ""
     return name
 
 
