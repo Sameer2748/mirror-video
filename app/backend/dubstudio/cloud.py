@@ -642,12 +642,19 @@ def point_library_at_staged_app(cmd, work):
 
 
 def stage_dubstitch(work):
-    """Copy this image's dubstitch.py into W/_pipe. The rented image concatenates leftover .ok files without the mp4."""
-    src = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    """Copy this image's dubstitch.py and the modules it imports from the same folder (pngsubs, dynsubs).
+
+    The rented image concatenates leftover .ok files without the mp4. Staging only dubstitch.py made
+    `import pngsubs` look in /work/_pipe and miss the worker's /opt/dubstudio/scripts copy (TAB EP20)."""
+    src_dir = Path(__file__).resolve().parents[1] / "pipeline_tools"
     dest_dir = Path(work) / "_pipe"
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / "dubstitch.py"
-    shutil.copy2(src, dest)
+    shutil.copy2(src_dir / "dubstitch.py", dest)
+    for name in ("pngsubs.py", "dynsubs.py"):
+        src = src_dir / name
+        if src.is_file():
+            shutil.copy2(src, dest_dir / name)
     return dest
 
 

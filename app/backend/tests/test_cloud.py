@@ -436,6 +436,8 @@ def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path)
     assert staged == work / "_pipe" / "dubstitch.py" and staged.is_file()
     text = staged.read_text()
     assert "segment_mp4_ready" in text and "write_black_segment" in text
+    assert (work / "_pipe" / "pngsubs.py").is_file()
+    assert (work / "_pipe" / "dynsubs.py").is_file()
     assert out[2:] == ["render", "--work", str(work)]
 
 
@@ -632,6 +634,8 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
         assert "/opt/dubstudio/scripts/dubstitch.py" not in joined
         assert str(tmp_path) not in joined
         assert "/work" in joined
+    assert (work / "_pipe" / "pngsubs.py").is_file()
+    assert (work / "_pipe" / "dynsubs.py").is_file()
     font_args = sent["jobs"]["steps"][2]["cmd"]
     assert any(a.startswith("/files/F") and a.endswith("Poppins-Bold.ttf") for a in font_args)
     assert any(a == "/out/dub.mp4" for a in font_args)
