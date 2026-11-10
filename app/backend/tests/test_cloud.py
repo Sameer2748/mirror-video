@@ -24,11 +24,14 @@ def test_the_pieces_are_lipgpus_pieces_including_the_last_one():
 
 
 class FakeCloud:
-    """A fake endpoint. `fail_first` shares die on the first attempt, as a reclaimed machine does."""
+    """A fake endpoint. `fail_first` shares die on the first attempt, as a reclaimed machine does.
+    `empty_first` pieces write frames:0 once, then a real file — TAB EP20 390-405."""
 
-    def __init__(self, bucket, fail_first=0):
+    def __init__(self, bucket, fail_first=0, empty_first=None):
         self.bucket = Path(bucket)
         self.fail_first = fail_first
+        self.empty_first = {tuple(c) for c in (empty_first or [])}
+        self.emptied = set()
         self.jobs = {}                                        # job id -> (ranges, key)
         self.attempts = []
 
@@ -49,7 +52,13 @@ class FakeCloud:
             nets = self.bucket / jid / "lips_nets"
             nets.mkdir(parents=True, exist_ok=True)
             for s, e in rngs:                                 # lipgpu names the file after the range it was given
-                (nets / f"range_{s:g}_{e:g}.json").write_text(json.dumps({"window": [s, e]}))
+                cut = (s, e)
+                if cut in self.empty_first and cut not in self.emptied:
+                    payload = {"window": [s, e], "frames": 0, "scores": []}
+                    self.emptied.add(cut)
+                else:
+                    payload = {"window": [s, e], "frames": 375, "scores": [1] * 8}
+                (nets / f"range_{s:g}_{e:g}.json").write_text(json.dumps(payload))
             (nets / "ranges.json").write_text(json.dumps(rngs))     # the worker only knows its own share
             out = self.bucket / key
             out.parent.mkdir(parents=True, exist_ok=True)
@@ -103,6 +112,17 @@ def test_a_failed_share_is_sent_again_and_the_finished_ones_are_kept(tmp_path, m
     assert len(fake.attempts) == 2 and len(fake.attempts[0]) == 4 and len(fake.attempts[1]) == 1
     assert sorted(p.name for p in nets.glob("range_*.json")) == \
            ["range_0_15.json", "range_15_30.json", "range_30_45.json", "range_45_60.json"]
+
+
+def test_an_empty_piece_is_scanned_again_without_redoing_the_rest(tmp_path, monkeypatch, ep):
+    """TAB EP20: 47 files came back, but 390-405 had frames:0. Merge then died. Resend only that slice."""
+    show, episode = ep
+    fake = FakeCloud(tmp_path / "bucket", empty_first=[[15.0, 30.0]]).install(monkeypatch)
+    res = cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
+    nets = Path(episode["work_dir"]) / "lips_nets"
+    assert res["files"] == 4 and res["retries"] == 1
+    assert json.loads((nets / "range_15_30.json").read_text())["frames"] == 375
+    assert len(fake.attempts) == 2 and fake.attempts[1]  # second visit is the empty-piece retry
 
 
 def test_a_share_that_keeps_failing_is_reported_not_hidden(tmp_path, monkeypatch, ep):
@@ -375,6 +395,43 @@ def test_library_job_ships_this_boxes_ai_not_the_baked_image(tmp_path):
     got = mod.extract_json(text, "locations")
     assert got["locations"]["Albert's study"] == "study"
     assert "Night forest" not in json.dumps(got)
+
+
+def test_lip_mesh_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
+    """The rented lipmesh.py still does frames[0] on an empty ffmpeg slice. The job takes THIS copy."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/dubstudio/scripts/lipmesh.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "--video", "/files/F0/ep.mp4", "--out-dir", str(work / "lips_mesh")]
+    out = cloud.point_lipmesh_at_staged(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_pipe" / "lipmesh.py" and staged.is_file()
+    text = staged.read_text()
+    assert "accurate seek" in text and "closed-mouth" in text
+    assert out[2:] == ["--video", "/files/F0/ep.mp4", "--out-dir", str(work / "lips_mesh")]
+
+
+def test_decode_piece_retries_accurate_seek_when_fast_seek_is_empty(monkeypatch):
+    from dubstudio.pipeline import lipmesh
+    calls = []
+
+    class Proc:
+        def __init__(self, stdout, returncode=0):
+            self.stdout, self.stderr, self.returncode = stdout, b"", returncode
+
+    def fake_run(cmd, capture_output=True):
+        calls.append(cmd)
+        ss_i, in_i = cmd.index("-ss"), cmd.index("-i")
+        if ss_i < in_i:                       # fast seek: empty, as TAB EP26-30
+            return Proc(b"")
+        return Proc(bytes([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]))   # one 2×2 rgb frame
+
+    monkeypatch.setattr(lipmesh.subprocess, "run", fake_run)
+    fr, rc, err = lipmesh.decode_piece("VID.mp4", 240, 255, size=2)
+    assert len(fr) == 1 and rc == 0
+    assert len(calls) == 2
+    assert calls[0].index("-ss") < calls[0].index("-i")
+    assert calls[1].index("-i") < calls[1].index("-ss")
 
 
 def test_library_is_claimed_by_the_cut_visit_so_it_goes_as_its_own_cloud_job(monkeypatch):

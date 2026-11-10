@@ -67,9 +67,12 @@ def yunet_dets(frames, idx, model_path, conf=0.7, scale=0.5):
 
 def mesh_pass(frames, win=5):
     """Face Mesh exactly as lipdetect.mouth_series, but also returns per-frame face boxes from the landmarks."""
+    n = len(frames)
+    if n == 0:
+        return np.zeros(0), np.zeros(0), {}
     import mediapipe as mp
     fm = mp.solutions.face_mesh.FaceMesh(static_image_mode=False, max_num_faces=3, min_detection_confidence=0.5)
-    n = len(frames); faces = []; boxes = {}
+    faces = []; boxes = {}
     H, W = frames[0].shape[:2]
     for k, f in enumerate(frames):
         r = fm.process(np.ascontiguousarray(f)); boxes[k] = []

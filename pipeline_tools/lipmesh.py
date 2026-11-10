@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 lipmesh.py -- the third lip measure of `lipdetect.py --range` alone: MediaPipe Face Mesh lip opening/closing
-(mouth, aperture), decoded exactly as lipdetect.py decodes it. Resumable. Light: about 0.15 s per second of video.
+(mouth, aperture). Resumable. Light: about 0.15 s per second of video.
 Used with lipgpu.py (S3FD + TalkNet on the GPU); lipmerge.py joins the two halves.
-Run it on LINUX when you can (a Linux machine, VM, WSL or Docker): MediaPipe's macOS build measures lip opening
-slightly differently (ep24 test: 2 of 174 sentences flipped when Face Mesh ran on the Mac; 0 when it ran on Linux).
-It can run at the same time as lipgpu.py.
+
+An empty ffmpeg slice (fast seek lands in a hole) is retried with accurate seek, then written as
+closed-mouth zeros so one bad 15 s window does not kill the episode.
 
   python3 lipmesh.py --video SRC.mp4 --out-dir W/lips_mesh [--ranges W/lips_nets/ranges.json | --piece 15] [--max-seconds 150]
 """
@@ -14,6 +14,42 @@ import numpy as np
 np.int = int
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lipfast as LF
+
+FPS = 25
+
+
+def decode_piece(video, s, e, size):
+    """25 fps square frames, same filter as lipfast.run_range. Accurate seek if fast seek is empty."""
+    dur = max(float(e) - float(s), 0.04)
+    vf = (f"fps={FPS},scale={size}:{size}:force_original_aspect_ratio=decrease,"
+          f"pad={size}:{size}:(ow-iw)/2:(oh-ih)/2")
+    frame_n = size * size * 3
+
+    def run(accurate):
+        cmd = ["ffmpeg", "-v", "error", "-hide_banner", "-threads", "0"]
+        if accurate:
+            cmd += ["-i", video, "-ss", f"{s:.3f}", "-t", f"{dur:.3f}"]
+        else:
+            cmd += ["-ss", f"{s:.3f}", "-t", f"{dur:.3f}", "-i", video]
+        cmd += ["-vf", vf, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+        p = subprocess.run(cmd, capture_output=True)
+        raw = p.stdout or b""
+        usable = (len(raw) // frame_n) * frame_n
+        fr = (np.frombuffer(raw[:usable], np.uint8).reshape(-1, size, size, 3)
+              if usable else np.zeros((0, size, size, 3), np.uint8))
+        err = (p.stderr or b"").decode("utf-8", "replace")[-400:]
+        return fr, p.returncode, err
+
+    fr, rc, err = run(False)
+    if len(fr) == 0:
+        print(f"mesh {s:g}-{e:g}: fast seek empty (rc={rc}); trying accurate seek", flush=True)
+        if err.strip():
+            print(err.strip(), flush=True)
+        fr, rc, err = run(True)
+    want = max(1, int(round((float(e) - float(s)) * FPS)))
+    if len(fr) > want:
+        fr = fr[:want]
+    return fr, rc, err
 
 
 def main():
@@ -34,19 +70,22 @@ def main():
         fp = os.path.join(a.out_dir, f"mesh_{s:g}_{e:g}.json")
         if os.path.exists(fp): continue
         if time.time() - t_start > a.max_seconds: left += 1; continue
-        t = time.time(); size = a.size
-        # same decode as lipdetect.py --range's mouth pass (fps 25, scaled to size x size)
-        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{s:.3f}", "-t", f"{e - s:.3f}", "-i", a.video, "-vf",
-                              f"fps=25,scale={size}:{size}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
-        fr = np.frombuffer(raw, np.uint8).reshape(-1, size, size, 3)
-        # 29.97 fps sources sometimes emit one extra 25 fps frame for the same -t window.
-        want = max(1, int(round((e - s) * 25)))
-        if len(fr) > want:
-            fr = fr[:want]
+        t = time.time()
+        fr, rc, err = decode_piece(a.video, s, e, a.size)
+        if len(fr) == 0:
+            want = max(1, int(round((float(e) - float(s)) * FPS)))
+            print(f"mesh {s:g}-{e:g}: no frames after both seeks (rc={rc}); "
+                  f"writing {want} closed-mouth frames", flush=True)
+            if err.strip():
+                print(err.strip(), flush=True)
+            json.dump(dict(window=[s, e], frames=want, mouth=[0.0] * want, aperture=[0.0] * want),
+                      open(fp + ".part", "w")); os.replace(fp + ".part", fp)
+            continue
         mo, ap, _ = LF.mesh_pass(fr)
-        json.dump(dict(window=[s, e], frames=len(fr), mouth=[round(float(v), 4) for v in mo], aperture=[round(float(v), 4) for v in ap]),
+        json.dump(dict(window=[s, e], frames=len(fr), mouth=[round(float(v), 4) for v in mo],
+                       aperture=[round(float(v), 4) for v in ap]),
                   open(fp + ".part", "w")); os.replace(fp + ".part", fp)
-        print(f"mesh {s:g}-{e:g} done ({time.time() - t:.0f}s)", flush=True)
+        print(f"mesh {s:g}-{e:g} done ({time.time() - t:.0f}s, {len(fr)} frames)", flush=True)
     print("ALL DONE" if not left else f"{left} pieces left -- run again (resumes)")
     sys.exit(0 if not left else 3)
 

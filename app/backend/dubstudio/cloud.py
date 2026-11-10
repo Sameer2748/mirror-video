@@ -252,6 +252,27 @@ def ensure_input_in_cloud(db, show, ep, kind="src_video"):
     return key
 
 
+def _empty_lip_pieces(nets, cuts):
+    """Pieces whose range file exists but has frames: 0. Files with no `frames` key are left alone
+    (tests write a stub `{window}`; a real lipgpu file always records frames). -> [[s, e], ...]
+    Empty files are deleted so the next scan overwrites them."""
+    empty = []
+    for s, e in cuts:
+        p = Path(nets) / f"range_{s:g}_{e:g}.json"
+        if not p.is_file():
+            continue
+        try:
+            d = json.loads(p.read_text())
+        except ValueError:
+            empty.append([s, e])
+            p.unlink(missing_ok=True)
+            continue
+        if "frames" in d and int(d.get("frames") or 0) < 1:
+            empty.append([s, e])
+            p.unlink(missing_ok=True)
+    return empty
+
+
 def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3):
     """Scan the whole source video on rented machines and write `<work>/lips_nets` exactly as the local step would.
 
@@ -297,6 +318,37 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
     if todo:
         raise RuntimeError(f"{len(todo)} share(s) still failing after {tries} tries: pieces "
                            f"{[c for _, mine in todo for c in mine][:6]}…")
+    # A share can succeed and still write frames:0 for one slice (TAB EP20 390-405). Merge then dies
+    # on "empty lip scan". Drop those files and send just those pieces again.
+    empty = _empty_lip_pieces(nets, cuts)
+    extra_i = len(shares)
+    for extra in range(tries):
+        if not empty:
+            break
+        log(f"{len(empty)} piece(s) came back empty; scanning them again")
+        video = storage.presign(key, 10800)
+        ok = storage.work_key(show, ep, f"lips_cloud/piece_{extra_i + extra:02d}.tar.gz")
+        jid = submit({"step": "lip_scan", "inputs": {"video": video},
+                      "args": {"ranges": empty, "device": "cpu"},
+                      "outputs": {"result": storage.presign(ok, 10800, method="PUT")}})
+        done, failed = wait([jid], on_progress=on_progress)
+        if failed:
+            retries += 1
+            log(f"empty-piece retry {extra + 1} failed: {list(failed.values())[0][:80]}")
+            continue
+        st = list(done.values())[0] or {}
+        worker_s += st.get("executionTime", 0) / 1000
+        tar = nets.parent / f"_piece_{extra_i + extra:02d}.tar.gz"
+        storage.download(ok, tar)
+        with tarfile.open(tar) as tf:
+            tf.extractall(nets.parent / "_piece")
+        for f in (nets.parent / "_piece" / "lips_nets").glob("range_*.json"):
+            f.replace(nets / f.name)
+        tar.unlink(missing_ok=True)
+        retries += 1
+        empty = _empty_lip_pieces(nets, cuts)
+    if empty:
+        raise RuntimeError(f"{len(empty)} piece(s) still empty after retry, e.g. {empty[:3]}")
     # lipgpu writes this next to the pieces, and the two steps after the scan read it (`lipmesh --ranges`,
     # `lipmerge` defaults to NETS_DIR/ranges.json). Each worker only knows its own share, so the whole list is
     # written here -- without it the scan "succeeds" and the next step has nothing to work from.
@@ -543,6 +595,28 @@ def stage_current_app(work):
     return pipe / "library.py"
 
 
+def stage_lipmesh(work):
+    """Copy this image's lipmesh.py into W/_pipe. The rented image still crashes on an empty ffmpeg slice."""
+    src = Path(__file__).resolve().parent / "pipeline" / "lipmesh.py"
+    dest_dir = Path(work) / "_pipe"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / "lipmesh.py"
+    shutil.copy2(src, dest)
+    return dest
+
+
+def point_lipmesh_at_staged(cmd, work):
+    """Rewrite a lip_mesh command so the worker runs the copy we just staged under W/_pipe."""
+    script = stage_lipmesh(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("lipmesh.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def point_library_at_staged_app(cmd, work):
     """Rewrite a library command so the worker runs the copy we just staged under W/_app."""
     script = stage_current_app(work)
@@ -573,6 +647,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
         log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
+    if name == "lip_mesh":
+        cmd = point_lipmesh_at_staged(cmd, W)
+        log("lip_mesh: this box's lipmesh.py travels with the job (the rented image still crashes on an empty slice)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
