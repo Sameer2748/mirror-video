@@ -165,18 +165,20 @@ def command(job_in):
     # rc 3 means "not finished, run me again (it resumes)" -- the app decides, so it is reported, not hidden
     res = {"ok": p.returncode == 0, "step": job_in.get("name") or "command", "rc": p.returncode,
            "seconds": secs, "cmd": cmd, "fetched": brought, "log": log[-12000:]}
-    if p.returncode not in (0, 3):
-        return res
-
     sent = {}
     skip = ("input/", "lips_nets.tar.gz", "segs/", "segs_groups/", "segs_groups.auto/",
             "bookends/", "pieces/", "thumbs/")
-    for root, before, key in ((WORK, before_work, "work"), (OUT, before_out, "out")):
+    # /out always: a failed final check used to skip the PUT, so TAB EP31's three videos died
+    # on the rented machine. Work files only come back on success (or a resume, rc 3).
+    send = [("out", OUT, before_out, ())]
+    if p.returncode in (0, 3):
+        send.append(("work", WORK, before_work, skip))
+    for key, root, before, skip_prefixes in send:
         url = (job_in.get("outputs") or {}).get(key)
         if not url:
             continue
         tar = f"/tmp/{key}_out.tar.gz"
-        changed = tar_changed(root, before, tar, skip_prefixes=skip if root == WORK else ())
+        changed = tar_changed(root, before, tar, skip_prefixes=skip_prefixes)
         if changed:
             put(url, tar, "application/gzip")
             sent[key] = {"files": len(changed), "bytes": os.path.getsize(tar), "names": sorted(changed)[:40]}

@@ -866,7 +866,7 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
         {"scene_sheet": job("scene_sheet", 9, None),
          "qc": job("qc", 10, ["{py}", "qc"]),
          "check": job("check", 11, ["{py}", "check"])})
-    assert [n for n, _ in closing] == ["scene_sheet", "groups_review", "qc", "check"]
+    assert [n for n, _ in closing] == ["scene_sheet", "groups_review", "qc", "point_translation", "check"]
     assert [j["step"] for j in jobs] == ["scene_sheet", "qc", "check"]
 
     monkeypatch.setattr(cloud, "ai_key_allowed", lambda: False)
@@ -1182,3 +1182,65 @@ def test_run_command_lands_outputs_before_work_and_skips_segs(tmp_path, monkeypa
     assert not (work / "segs_groups").exists()
     now = json.loads((work / "config.json").read_text())
     assert now["video_out"] == f"{work}/video_groups.mp4"
+
+
+def test_unpacking_an_older_config_keeps_the_english_srt_pointer():
+    """TAB EP31: scene/cut unpacked a config packed before the AI translation wrote translation.out."""
+    old = json.dumps({"translation": {"out": "/out/en.srt"}, "src_video": "/work/a.mp4"})
+    incoming = json.dumps({"src_video": "/work/a.mp4", "video_out": "/work/v.mp4"})
+    got = json.loads(cloud._keep_local_config_keys(old, incoming))
+    assert got["translation"]["out"] == "/out/en.srt"
+    assert got["video_out"] == "/work/v.mp4"
+
+
+def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch):
+    """A failed check used to raise before downloading /out, so EP31's videos never landed."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    video = tmp_path / "show/US/TGS EPISODE 34.mp4"
+    video.parent.mkdir(parents=True); video.write_bytes(b"v" * 32)
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(video), "translation": {"out": f"{out}/en.srt"}}))
+    bucket = tmp_path / "bucket"
+
+    def fake_wait(ids, **kw):
+        back = bucket / "cloud/render_out_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        obox = tmp_path / "oback"; obox.mkdir()
+        (obox / "final_clean.mp4").write_bytes(b"final")
+        with tarfile.open(back, "w:gz") as t:
+            t.add(obox / "final_clean.mp4", arcname="final_clean.mp4")
+        return {"j": {"output": {"ok": False, "rc": 1, "log": "FINAL CHECK FAILED: translated SRT missing",
+                                 "sent": {"out": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    with pytest.raises(RuntimeError, match="translated SRT missing"):
+        cloud.run_command({}, show, ep, "render",
+                          [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render", "--work", str(work)],
+                          cfg, log=lambda m: None)
+    assert (out / "final_clean.mp4").read_bytes() == b"final"
+
+
+def test_check_finds_the_english_srt_next_to_the_sheet(tmp_path):
+    """The pointer can be missing; the file from AI translate is still next to the mapping sheet."""
+    import importlib.util
+    script = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    spec = importlib.util.spec_from_file_location("dubstitch_ep31", script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out = tmp_path / "out"
+    out.mkdir()
+    srt = out / "TABPGCIT_EP31_IT_english_google.srt"
+    srt.write_text("1\n")
+    work = tmp_path / "work"; work.mkdir()
+    found = mod._find_translated_srt(str(work), {"sheet_out": str(out / "mapping.xlsx")})
+    assert found == str(srt)

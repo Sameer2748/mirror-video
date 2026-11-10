@@ -791,9 +791,34 @@ class Runner:
         cj = by.get("check")
         if cj and cj["status"] not in DONE and (cj["params"] or {}).get("cmd"):
             if not qj or qj["status"] in DONE or qj in mark:
+                named.append(("point_translation", self._expand(self._point_translation_cmd())))
                 named.append(("check", self._expand(cj["params"]["cmd"])))
                 mark.append(cj)
         return named, mark
+
+    @staticmethod
+    def _point_translation_cmd():
+        """Put `translation.out` back on config.json if a later unpack wiped it (TAB EP31)."""
+        return ["{py}", "-c",
+                "import glob, json, os\n"
+                "p = '/work/config.json'\n"
+                "c = json.load(open(p, encoding='utf-8'))\n"
+                "cands = []\n"
+                "cur = (c.get('translation') or {}).get('out')\n"
+                "if cur: cands.append(cur)\n"
+                "for d in ('/out', '/work'):\n"
+                "    cands += glob.glob(os.path.join(d, '*english*.srt'))\n"
+                "    cands.append(os.path.join(d, 'english_translation_original.srt'))\n"
+                "for key in ('sheet_out', 'clean_final'):\n"
+                "    q = c.get(key)\n"
+                "    if q: cands += glob.glob(os.path.join(os.path.dirname(q), '*english*.srt'))\n"
+                "src = next((x for x in cands if x and os.path.isfile(x)), '')\n"
+                "if src:\n"
+                "    c.setdefault('translation', {})['out'] = os.path.abspath(src)\n"
+                "    json.dump(c, open(p, 'w'), indent=1)\n"
+                "    print('translated SRT', c['translation']['out'])\n"
+                "else:\n"
+                "    print('translated SRT not next to the videos')\n"]
 
     @staticmethod
     def _clean_master_cmd():

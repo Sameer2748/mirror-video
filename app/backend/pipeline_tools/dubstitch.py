@@ -34,7 +34,7 @@ Run in order, always with the same --work folder:
   lipmark   (tests) mark each word-timed sentence "speaking on screen" or not, from lipdetect.py --range results
   listen    (optional) transcribe a stretch of the dub audio, e.g. to confirm a repeat
 """
-import argparse, difflib, hashlib, io, json, math, os, re, shutil, subprocess, sys, time
+import argparse, difflib, glob, hashlib, io, json, math, os, re, shutil, subprocess, sys, time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
@@ -2746,6 +2746,28 @@ def cmd_dynsrt(a):
     dynsubs.make_plan(a.work, words, a.out, find_font(a.font, a.size), (W, H), size=a.size)
     cfg = load(a.work, "config.json"); cfg["dynamic_srt"] = os.path.abspath(a.out); save(a.work, "config.json", cfg)
 
+def _find_translated_srt(work, cfg):
+    """The English SRT on disk, even when config.json lost `translation.out`.
+
+    Translate writes it under the output folder. A later cloud visit unpacks an older config.json
+    (scene/cut packed before the AI fallback finished) and wipes the pointer; the file stays."""
+    cands = []
+    cur = (cfg.get("translation") or {}).get("out")
+    if cur:
+        cands.append(cur)
+    for key in ("sheet_out", "clean_final", "groups_review"):
+        p = cfg.get(key)
+        if p:
+            d = os.path.dirname(p)
+            cands.extend(sorted(glob.glob(os.path.join(d, "*english*.srt"))))
+    cands.extend(sorted(glob.glob(os.path.join(work, "*english*.srt"))))
+    cands.append(os.path.join(work, "english_translation_original.srt"))
+    for p in cands:
+        if p and os.path.isfile(p):
+            return os.path.abspath(p)
+    return None
+
+
 def cmd_check(a):
     from PIL import Image, ImageDraw
     cfg = load(a.work, "config.json"); bad = []
@@ -2763,8 +2785,16 @@ def cmd_check(a):
         ok = "video" in st and "audio" in st and (ref is None or abs(d - ref) <= 2 * 1000 / FPS + 60)
         print(f"{'OK ' if ok else 'BAD'} {os.path.basename(p)}: {d / 1000:.3f}s, streams {sorted(set(st))}")
         if not ok: bad.append(f"{os.path.basename(p)}: streams {st}, {d} ms vs clean {ref} ms")
+    t_srt = (cfg.get("translation") or {}).get("out")
+    if not (t_srt and os.path.exists(t_srt)):
+        # AI translate writes the SRT; a later cloud unpack of config.json (scene/cut) can wipe
+        # translation.out. The file is still next to the videos. TAB EP31: check printed None.
+        t_srt = _find_translated_srt(a.work, cfg)
+        if t_srt:
+            cfg.setdefault("translation", {})["out"] = t_srt
+            save(a.work, "config.json", cfg)
     for label, p in (("mapping sheet", cfg.get("sheet_out")), ("dynamic-group review", cfg.get("groups_review")),
-                     ("translated SRT", (cfg.get("translation") or {}).get("out"))):
+                     ("translated SRT", t_srt)):
         good = bool(p) and os.path.exists(p)
         print(f"{'OK ' if good else 'BAD'} {label}: {p}")
         if not good: bad.append(f"{label} missing")

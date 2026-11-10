@@ -474,6 +474,29 @@ def _swap(text, pairs):
     return json.dumps(_swap_paths(data, pairs), ensure_ascii=False)
 
 
+KEEP_CONFIG_KEYS = ("translation",)
+
+
+def _keep_local_config_keys(previous, incoming_text):
+    """A later visit can unpack an older config.json and wipe keys an earlier step wrote.
+
+    TAB EP31: scene/cut packed config before the AI translation finished, then unpacked
+    over `translation.out`. The English SRT file stayed; the pointer did not."""
+    try:
+        incoming = json.loads(incoming_text)
+        old = json.loads(previous)
+    except ValueError:
+        return incoming_text
+    if not isinstance(incoming, dict) or not isinstance(old, dict):
+        return incoming_text
+    changed = False
+    for k in KEEP_CONFIG_KEYS:
+        if k in old and not incoming.get(k):
+            incoming[k] = old[k]
+            changed = True
+    return json.dumps(incoming, ensure_ascii=False) if changed else incoming_text
+
+
 def tokenise(cmd, work_dir, out_dir, cfg, files=None):
     """One command line as the worker should see it. -> (cmd, {token: local path of a big file})
 
@@ -879,13 +902,13 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     res = (list(done.values())[0] or {}).get("output") or {}
     if res.get("log"):
         log(res["log"])
-    if not res.get("ok"):
-        raise RuntimeError(f"{name} failed on the rented machine (exit {res.get('rc')}): "
-                           f"{(res.get('log') or res.get('error') or '')[-300:]}")
 
     sent = res.get("sent") or {}
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+    prev_cfg = (W / CONFIG).read_text(encoding="utf-8") if (W / CONFIG).is_file() else None
     # /out first: the deliverables. Work caches used to unpack first and fill the disk (TAB EP53).
+    # Unpack even when the visit failed: TAB EP31 check died on a missing SRT pointer after the
+    # three videos were already in /out; raising first threw those files away.
     for which, key, root in (("out", back_out, O), ("work", back_work, W)):
         if not sent.get(which):
             continue
@@ -920,7 +943,13 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             for listed in (CONFIG, *EDIT_LISTS):
                 back = root / listed
                 if back.is_file():
-                    back.write_text(_swap(back.read_text(encoding="utf-8"), back_pairs), encoding="utf-8")
+                    swapped = _swap(back.read_text(encoding="utf-8"), back_pairs)
+                    if listed == CONFIG and prev_cfg:
+                        swapped = _keep_local_config_keys(prev_cfg, swapped)
+                    back.write_text(swapped, encoding="utf-8")
+    if not res.get("ok"):
+        raise RuntimeError(f"{name} failed on the rented machine (exit {res.get('rc')}): "
+                           f"{(res.get('log') or res.get('error') or '')[-300:]}")
     log(f"{name}: done in {res.get('seconds')} s; "
         f"{sum(v.get('files', 0) for v in sent.values())} files came back")
     return res
