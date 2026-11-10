@@ -273,6 +273,37 @@ def _empty_lip_pieces(nets, cuts):
     return empty
 
 
+def _write_silent_lip_piece(nets, s, e):
+    want = max(1, int(round((float(e) - float(s)) * 25)))
+    (Path(nets) / f"range_{s:g}_{e:g}.json").write_text(json.dumps({
+        "idx": -1, "cls": "range", "text": f"{s:g}-{e:g}s",
+        "start_s": s, "end_s": e, "window": [s, e], "frames": want,
+        "scores": [-9.0] * want, "visual": [-9.0] * want,
+        "tracks": [], "intervals": [], "intervals_visual": [],
+        "method": {"filled": "empty-eof"},
+    }))
+    return want
+
+
+def _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log):
+    """The last make_ranges window can run past EOF (one 15 s overshoot). Fill that.
+
+    A run of empty pieces from 390 s to the end of a 615 s file is the pictures stopping
+    minutes early. That is not a leftover empty frame and must not be scored as 'no lips'."""
+    last = cuts[-1] if cuts else None
+    if last is not None and empty == [list(last)]:
+        s, e = empty[0]
+        want = _write_silent_lip_piece(nets, s, e)
+        log(f"{s:g}-{e:g}: past the pictures; wrote {want} silent frames")
+        return
+    start = empty[0][0]
+    raise RuntimeError(
+        f"{len(empty)} piece(s) have no pictures after {start:.0f}s "
+        f"(file duration {float(duration_s):.0f}s, e.g. {empty[:3]}). "
+        f"The source video's pictures stop there — not a leftover empty frame. "
+        f"Re-upload the source video, or check it actually plays past {start:.0f}s.")
+
+
 def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3):
     """Scan the whole source video on rented machines and write `<work>/lips_nets` exactly as the local step would.
 
@@ -348,19 +379,7 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
         retries += 1
         empty = _empty_lip_pieces(nets, cuts)
     if empty:
-        # Past EOF (TAB EP26-30 390-405): ffmpeg keeps returning 0 frames. Merge used to die on
-        # "empty lip scan". Write silent scores so the rest of the episode can finish.
-        fps = 25
-        for s, e in empty:
-            want = max(1, int(round((float(e) - float(s)) * fps)))
-            (nets / f"range_{s:g}_{e:g}.json").write_text(json.dumps({
-                "idx": -1, "cls": "range", "text": f"{s:g}-{e:g}s",
-                "start_s": s, "end_s": e, "window": [s, e], "frames": want,
-                "scores": [-9.0] * want, "visual": [-9.0] * want,
-                "tracks": [], "intervals": [], "intervals_visual": [],
-                "method": {"filled": "empty-eof"},
-            }))
-            log(f"{s:g}-{e:g}: still empty after retry; wrote {want} silent frames")
+        _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log)
     # lipgpu writes this next to the pieces, and the two steps after the scan read it (`lipmesh --ranges`,
     # `lipmerge` defaults to NETS_DIR/ranges.json). Each worker only knows its own share, so the whole list is
     # written here -- without it the scan "succeeds" and the next step has nothing to work from.

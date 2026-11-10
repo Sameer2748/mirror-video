@@ -90,8 +90,14 @@ class Runner:
         show = self.db.one("SELECT * FROM shows WHERE id=?", (ep["show_id"],))
         assets = {a["kind"]: a["path"] for a in self.db.q("SELECT * FROM assets WHERE episode_id=? AND role='input'", (ep_id,))}
         for a in self.db.q("SELECT kind, probe FROM assets WHERE episode_id=? AND role='input'", (ep_id,)):
-            if isinstance(a["probe"], dict) and a["probe"].get("duration"):
-                assets[f"_dur_{a['kind']}"] = a["probe"]["duration"]
+            if not isinstance(a["probe"], dict):
+                continue
+            if a["kind"] == "src_video":
+                dur = scan.picture_duration(a["probe"])
+            else:
+                dur = a["probe"].get("duration")
+            if dur:
+                assets[f"_dur_{a['kind']}"] = dur
         return show, ep, assets
 
     def create_run(self, ep_id):

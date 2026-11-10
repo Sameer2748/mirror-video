@@ -10,7 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from dubstudio import cloud
+from dubstudio import cloud, scan
+
+
+def test_picture_duration_uses_the_shorter_video_stream():
+    """Container 615 s with pictures stopping at 390 s must not cut 16 empty lip-scan pieces."""
+    assert scan.picture_duration({"duration": 615, "video": {"duration": 390}}) == 390
+    assert scan.picture_duration({"duration": 615, "video": {}}) == 615
+    assert scan.picture_duration({"duration": 615}) == 615
 
 
 def test_the_pieces_are_lipgpus_pieces_including_the_last_one():
@@ -126,17 +133,31 @@ def test_an_empty_piece_is_scanned_again_without_redoing_the_rest(tmp_path, monk
     assert len(fake.attempts) == 2 and fake.attempts[1]  # second visit is the empty-piece retry
 
 
-def test_a_piece_that_stays_empty_is_filled_silent_not_failed(tmp_path, monkeypatch, ep):
-    """TAB EP26-30 390-405: ffmpeg never returns frames. Merge died; now the scan writes silent scores."""
+def test_only_the_last_overshoot_piece_is_filled_silent(tmp_path, monkeypatch, ep):
+    """make_ranges runs the last window past EOF. That one empty file is silent scores, not a crash."""
     show, episode = ep
-    fake = FakeCloud(tmp_path / "bucket", empty_always=[[15.0, 30.0]]).install(monkeypatch)
+    FakeCloud(tmp_path / "bucket", empty_always=[[45.0, 60.0]]).install(monkeypatch)
     res = cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
     nets = Path(episode["work_dir"]) / "lips_nets"
-    d = json.loads((nets / "range_15_30.json").read_text())
+    d = json.loads((nets / "range_45_60.json").read_text())
     assert res["files"] == 4
     assert d["frames"] == 375 and d["scores"] == [-9.0] * 375
     assert d["method"]["filled"] == "empty-eof"
-    assert json.loads((nets / "range_0_15.json").read_text())["frames"] == 375
+
+
+def test_a_hole_in_the_middle_is_not_scored_as_no_lips(tmp_path, monkeypatch, ep):
+    """TAB EP26-30: 16 pieces from 390s onward were empty. Filling them as 'no lips' would skip 4 minutes."""
+    show, episode = ep
+    FakeCloud(tmp_path / "bucket", empty_always=[[15.0, 30.0]]).install(monkeypatch)
+    with pytest.raises(RuntimeError, match="no pictures after 15"):
+        cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
+
+
+def test_a_long_empty_tail_is_not_scored_as_no_lips(tmp_path, monkeypatch, ep):
+    show, episode = ep
+    FakeCloud(tmp_path / "bucket", empty_always=[[15.0, 30.0], [30.0, 45.0], [45.0, 60.0]]).install(monkeypatch)
+    with pytest.raises(RuntimeError, match="no pictures after 15"):
+        cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
 
 
 def test_a_share_that_keeps_failing_is_reported_not_hidden(tmp_path, monkeypatch, ep):

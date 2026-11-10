@@ -88,7 +88,7 @@ def scan_episode(show_folder, number, profile):
 def probe(path):
     try:
         out = subprocess.run([cfg.ffprobe, "-v", "error", "-show_entries",
-                              "format=duration:stream=codec_type,width,height,r_frame_rate,sample_rate,channels",
+                              "format=duration:stream=codec_type,duration,width,height,r_frame_rate,sample_rate,channels",
                               "-of", "json", str(path)], capture_output=True, text=True, timeout=60).stdout
         d = json.loads(out or "{}")
     except Exception as e:
@@ -97,11 +97,34 @@ def probe(path):
     for s in d.get("streams", []):
         if s.get("codec_type") == "video" and not res["video"]:
             num, den = (s.get("r_frame_rate") or "0/1").split("/")
+            try:
+                vd = float(s.get("duration") or 0)
+            except (TypeError, ValueError):
+                vd = 0.0
             res["video"] = {"width": s.get("width"), "height": s.get("height"),
-                            "fps": round(float(num) / float(den), 3) if float(den) else 0}
+                            "fps": round(float(num) / float(den), 3) if float(den) else 0,
+                            "duration": vd or None}
         if s.get("codec_type") == "audio" and not res["audio"]:
             res["audio"] = {"sample_rate": s.get("sample_rate"), "channels": s.get("channels")}
     return res
+
+
+def picture_duration(probe):
+    """Seconds of actual pictures. Container duration follows the longest stream (often audio).
+
+    TAB EP26-30: ffprobe format duration was 615 s, so the lip scan asked for 42 pieces; pictures
+    stopped around 390 s and the remaining 16 pieces came back empty."""
+    if not probe:
+        return 0.0
+    fmt = float(probe.get("duration") or 0)
+    v = probe.get("video") if isinstance(probe.get("video"), dict) else {}
+    try:
+        vd = float(v.get("duration") or 0)
+    except (TypeError, ValueError):
+        vd = 0.0
+    if vd > 0 and fmt > 0:
+        return min(fmt, vd)
+    return vd or fmt
 
 
 def fingerprint(path, chunk=4 << 20):
