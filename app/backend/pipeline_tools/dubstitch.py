@@ -1102,6 +1102,29 @@ def seg_sig(s, nf, crop_h, W, H, FPS):
     return sig + f"|{s['video']}" if s.get("video") else sig
 
 
+def segment_mp4_ready(path, sig=None):
+    """A leftover .ok from another rented machine is not enough: the mp4 itself has to be here."""
+    if not os.path.isfile(path) or os.path.getsize(path) < 64:
+        return False
+    if sig is None:
+        return True
+    ok = path + ".ok"
+    return os.path.isfile(ok) and open(ok).read() == sig
+
+
+def write_black_segment(path, nf, W, H, FPS):
+    """nf black frames when ffmpeg's seek lands past EOF or in a hole (last empty frame)."""
+    n = max(int(nf), 1)
+    dur = n / float(FPS)
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-f", "lavfi", "-i", f"color=c=black:s={W}x{H}:r={FPS}:d={dur:.4f}",
+         "-frames:v", str(n), "-r", str(FPS), "-pix_fmt", "yuv420p",
+         "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-an",
+         "-movflags", "+faststart", path],
+        check=True, capture_output=True, text=True)
+
+
 def cmd_render(a):
     cfg = cfg_get(a)
     mname, M = active_manifest(a.work, cfg, a.manifest); segs = M["segments"]; tag = manifest_tag(mname)
@@ -1119,7 +1142,9 @@ def cmd_render(a):
         s = segs[i]; out = os.path.join(d, f"{i:04d}.mp4")
         f0 = round(s["it_start_ms"] * FPS / 1000); f1 = round(s["it_end_ms"] * FPS / 1000); nf = max(f1 - f0, 1)
         sig = seg_sig(s, nf, crop_h, W, H, FPS)
-        if (os.path.exists(out + ".ok") and open(out + ".ok").read() == sig) or time.time() > t_end:
+        if time.time() > t_end:
+            return
+        if segment_mp4_ready(out, sig):
             return
         k = (nf / FPS) / max((s["us_end_ms"] - s["us_start_ms"]) / 1000, 0.04)
         frame = (f"crop={W}:{crop_h}:0:0,pad={W}:{H}:0:0:black" if crop_h and not s.get("video") else
@@ -1132,19 +1157,33 @@ def cmd_render(a):
                             "-to", f"{s['us_end_ms'] / 1000:.3f}", "-i", s.get("video") or cfg["src_video"], "-vf", vf, "-frames:v", str(nf),
                             "-r", str(FPS), "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
                             "-an", "-movflags", "+faststart", out], capture_output=True, text=True)
-        if r.returncode: print(f"FAILED segment {i}: {r.stderr[-300:]}")
-        else: open(out + ".ok", "w").write(sig)
+        if r.returncode:
+            print(f"FAILED segment {i}: {r.stderr[-300:]}")
+        if not segment_mp4_ready(out):
+            print(f"segment {i}: empty seek ({s['us_start_ms']:.0f}-{s['us_end_ms']:.0f} ms); "
+                  f"writing {nf} black frames", flush=True)
+            try:
+                write_black_segment(out, nf, W, H, FPS)
+            except subprocess.CalledProcessError as e:
+                print(f"FAILED black segment {i}: {(e.stderr or '')[-300:]}"); return
+        if segment_mp4_ready(out):
+            open(out + ".ok", "w").write(sig)
     with ThreadPoolExecutor(a.workers) as ex: list(ex.map(job, range(len(segs))))
     def is_done(i):
-        s = segs[i]; ok = os.path.join(d, f"{i:04d}.mp4.ok")
+        s = segs[i]; out = os.path.join(d, f"{i:04d}.mp4")
         nf = max(round(s["it_end_ms"] * FPS / 1000) - round(s["it_start_ms"] * FPS / 1000), 1)
-        return os.path.exists(ok) and open(ok).read() == seg_sig(s, nf, crop_h, W, H, FPS)
+        return segment_mp4_ready(out, seg_sig(s, nf, crop_h, W, H, FPS))
     done = sum(is_done(i) for i in range(len(segs)))
     print(f"rendered {done}/{len(segs)} segments")
     if done < len(segs):
         print("not finished -- run the same render command again (it resumes)"); sys.exit(3)
     lst = os.path.join(a.work, f"concat{tag}.txt")
-    open(lst, "w").write("".join(f"file '{os.path.abspath(os.path.join(d, f'{i:04d}.mp4'))}'\n" for i in range(len(segs))))
+    paths = [os.path.abspath(os.path.join(d, f"{i:04d}.mp4")) for i in range(len(segs))]
+    missing = [p for p in paths if not segment_mp4_ready(p)]
+    if missing:
+        print(f"concat refused: {len(missing)} segment mp4(s) missing, e.g. {missing[0]}")
+        sys.exit(3)
+    open(lst, "w").write("".join(f"file '{p}'\n" for p in paths))
     silent = os.path.join(a.work, f"silent{tag}.mp4")
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", silent], check=True)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
@@ -1408,7 +1447,9 @@ def cmd_subs(a):
     t_stop = time.time() + a.max_seconds
     def job(k):
         f0, f1 = chunks[k]; out = os.path.join(d, f"part{k:03d}.mp4"); sig = f"{base_sig}|{f0}|{f1}"
-        if (os.path.exists(out + ".ok") and open(out + ".ok").read() == sig) or time.time() > t_stop:
+        if time.time() > t_stop:
+            return
+        if segment_mp4_ready(out, sig):
             return
         items, x = [], f0
         while x < f1:
@@ -1425,15 +1466,21 @@ def cmd_subs(a):
                             "-map", "[v]", "-frames:v", str(f1 - f0), "-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast",
                             "-crf", "18", "-an", out], capture_output=True, text=True)
         if r.returncode: print(f"FAILED chunk {k} (exit {r.returncode}): {r.stderr[-300:]}")
-        else: open(out + ".ok", "w").write(sig)
+        elif segment_mp4_ready(out):
+            open(out + ".ok", "w").write(sig)
     with ThreadPoolExecutor(a.workers) as ex: list(ex.map(job, range(len(chunks))))
-    done = sum(os.path.exists(os.path.join(d, f"part{k:03d}.mp4.ok")) and
-               open(os.path.join(d, f"part{k:03d}.mp4.ok")).read() == f"{base_sig}|{chunks[k][0]}|{chunks[k][1]}" for k in range(len(chunks)))
+    done = sum(segment_mp4_ready(os.path.join(d, f"part{k:03d}.mp4"), f"{base_sig}|{chunks[k][0]}|{chunks[k][1]}")
+               for k in range(len(chunks)))
     print(f"subtitled {done}/{len(chunks)} chunks")
     if done < len(chunks):
         print("not finished -- run the same subs command again (it resumes)"); sys.exit(3)
     lst = os.path.join(d, "parts.txt"); silent = os.path.join(d, "silent.mp4")
-    open(lst, "w").write("".join(f"file '{os.path.abspath(os.path.join(d, f'part{k:03d}.mp4'))}'\n" for k in range(len(chunks))))
+    paths = [os.path.abspath(os.path.join(d, f"part{k:03d}.mp4")) for k in range(len(chunks))]
+    missing = [p for p in paths if not segment_mp4_ready(p)]
+    if missing:
+        print(f"concat refused: {len(missing)} subtitle part(s) missing, e.g. {missing[0]}")
+        sys.exit(3)
+    open(lst, "w").write("".join(f"file '{p}'\n" for p in paths))
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", silent], check=True)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", silent, "-i", video, "-map", "0:v", "-map", "1:a", "-c", "copy",
@@ -1738,7 +1785,10 @@ def cmd_transitions(a):
     t_stop = time.time() + a.max_seconds
     def job(k):
         f0, f1 = chunks[k]; p = os.path.join(d, f"part{k:03d}.mp4"); sig = f"{sig0}|{f0}|{f1}"
-        if (os.path.exists(p + ".ok") and open(p + ".ok").read() == sig) or time.time() > t_stop: return
+        if time.time() > t_stop:
+            return
+        if segment_mp4_ready(p, sig):
+            return
         mine = [q for q in plan if q["t"] + q["ha"] > f0 / FPS and q["t"] - q["hb"] < f1 / FPS]
         cache = {}                                                  # source frames of ONE transition at a time (memory:
         def frames(q):                                              # clause-mode episodes have many switches per chunk)
@@ -1765,18 +1815,24 @@ def cmd_transitions(a):
                 buf = transition_frame(q["style"], A, B, x, w, p_).tobytes()
             enc.stdin.write(buf); m += 1
         enc.stdin.close(); enc.wait(); dec.wait()
-        if m == f1 - f0 and enc.returncode == 0: open(p + ".ok", "w").write(sig)
+        if m == f1 - f0 and enc.returncode == 0 and segment_mp4_ready(p):
+            open(p + ".ok", "w").write(sig)
         else: print(f"FAILED chunk {k}: {m}/{f1 - f0} frames")
     with ThreadPoolExecutor(a.workers) as ex: list(ex.map(job, range(len(chunks))))
-    done = sum(os.path.exists(os.path.join(d, f"part{k:03d}.mp4.ok")) and
-               open(os.path.join(d, f"part{k:03d}.mp4.ok")).read() == f"{sig0}|{chunks[k][0]}|{chunks[k][1]}" for k in range(len(chunks)))
+    done = sum(segment_mp4_ready(os.path.join(d, f"part{k:03d}.mp4"), f"{sig0}|{chunks[k][0]}|{chunks[k][1]}")
+               for k in range(len(chunks)))
     cnt = defaultdict(int)
     for q in plan:
         if q["t"] < n / FPS: cnt[q["style"]] += 1
     print(f"transitions: {sum(cnt.values())} clip switches ({dict(cnt)}); {done}/{len(chunks)} chunks done")
     if done < len(chunks): print("not finished -- run the same command again (it resumes)"); sys.exit(3)
     lst = os.path.join(d, "parts.txt"); silent = os.path.join(d, "silent.mp4")
-    open(lst, "w").write("".join(f"file '{os.path.abspath(os.path.join(d, f'part{k:03d}.mp4'))}'\n" for k in range(len(chunks))))
+    paths = [os.path.abspath(os.path.join(d, f"part{k:03d}.mp4")) for k in range(len(chunks))]
+    missing = [p for p in paths if not segment_mp4_ready(p)]
+    if missing:
+        print(f"concat refused: {len(missing)} transition part(s) missing, e.g. {missing[0]}")
+        sys.exit(3)
+    open(lst, "w").write("".join(f"file '{p}'\n" for p in paths))
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", silent], check=True)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", silent, "-i", src, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac",

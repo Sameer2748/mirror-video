@@ -629,6 +629,28 @@ def point_library_at_staged_app(cmd, work):
     return out
 
 
+def stage_dubstitch(work):
+    """Copy this image's dubstitch.py into W/_pipe. The rented image concatenates leftover .ok files without the mp4."""
+    src = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    dest_dir = Path(work) / "_pipe"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / "dubstitch.py"
+    shutil.copy2(src, dest)
+    return dest
+
+
+def point_dubstitch_at_staged(cmd, work):
+    """Rewrite a command so the worker runs the copy we just staged under W/_pipe."""
+    script = stage_dubstitch(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("dubstitch.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def _scratch_tar(work, ep, name, part):
     """Local tar used while talking to R2. W.parent is the shared library/work folder, so the name must include
     the episode: eleven render tails used to write `_render_tail_work_in.tar.gz` at once, and the PUT
@@ -650,6 +672,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if name == "lip_mesh":
         cmd = point_lipmesh_at_staged(cmd, W)
         log("lip_mesh: this box's lipmesh.py travels with the job (the rented image still crashes on an empty slice)")
+    if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
+        cmd = point_dubstitch_at_staged(cmd, W)
+        log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
@@ -792,7 +817,11 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     files, packed = {}, []
+    staged = False
     for step_name, cmd in named_cmds:
+        if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
+            cmd = point_dubstitch_at_staged(cmd, W)
+            staged = True
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
         # Do this before {WORK} is frozen to /work. The dub audio lives in input/, which the work tar skips,
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).
@@ -805,6 +834,8 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         item["cmd"] = [_fill_tokens(a, places) for a in item["cmd"]]
     (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed}, ensure_ascii=False), encoding="utf-8")
     (W / "_cloud_chain.py").write_text(CHAIN_DRIVER, encoding="utf-8")
+    if staged:
+        log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")
     log(f"{len(packed)} steps on one rented machine: " + ", ".join(n for n, _ in named_cmds))
     return run_command(db, show, ep, name,
                        [cfg.pipeline_python if hasattr(cfg, "pipeline_python") else "{py}",

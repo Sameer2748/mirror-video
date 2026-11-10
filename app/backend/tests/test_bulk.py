@@ -70,6 +70,22 @@ def test_bulk_does_not_overwrite_an_existing_episode(env):
     assert [e["number"] for e in c.get(f"/api/shows/{s['id']}/episodes").json()] == [32]
 
 
+def test_deleting_a_row_frees_the_number_for_a_new_bulk(env):
+    """Empty or leftover rows block the same range; Delete removes them so the bulk can be created again."""
+    c = env["client"]; s = make_show(c, env["show"])
+    b = c.post(f"/api/shows/{s['id']}/batches", json={"range": "31-34"}).json()
+    ids = {e["number"]: e["id"] for e in b["episodes"]}
+    assert c.delete(f"/api/episodes/{ids[32]}").json() == {"deleted": ids[32]}
+    assert [e["number"] for e in c.get(f"/api/shows/{s['id']}/episodes").json()] == [31, 33, 34]
+    blocked = c.post(f"/api/shows/{s['id']}/batches", json={"range": "31-34"})
+    assert blocked.status_code == 409 and "31" in blocked.json()["detail"]
+    for n in (31, 33, 34):
+        assert c.delete(f"/api/episodes/{ids[n]}").status_code == 200
+    b2 = c.post(f"/api/shows/{s['id']}/batches", json={"range": "31-34"}).json()
+    assert [e["number"] for e in b2["episodes"]] == [31, 32, 33, 34]
+    assert b2["id"] != b["id"]
+
+
 def test_single_episode_still_works_next_to_bulk(env):
     c = env["client"]; s = make_show(c, env["show"])
     c.post(f"/api/shows/{s['id']}/batches", json={"start": 31, "end": 32})

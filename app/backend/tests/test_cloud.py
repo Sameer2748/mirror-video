@@ -411,6 +411,20 @@ def test_lip_mesh_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
     assert out[2:] == ["--video", "/files/F0/ep.mp4", "--out-dir", str(work / "lips_mesh")]
 
 
+def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path):
+    """The rented dubstitch concatenates leftover .ok files when the mp4s never arrived. The job takes THIS copy."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/dubstudio/scripts/dubstitch.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "render", "--work", str(work)]
+    out = cloud.point_dubstitch_at_staged(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_pipe" / "dubstitch.py" and staged.is_file()
+    text = staged.read_text()
+    assert "segment_mp4_ready" in text and "write_black_segment" in text
+    assert out[2:] == ["render", "--work", str(work)]
+
+
 def test_decode_piece_retries_accurate_seek_when_fast_seek_is_empty(monkeypatch):
     from dubstudio.pipeline import lipmesh
     calls = []
@@ -600,7 +614,8 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
     for item in sent["jobs"]["steps"]:
         joined = " ".join(item["cmd"])
         assert "/opt/pipeline_env/bin/python" in joined
-        assert "/opt/dubstudio/scripts/dubstitch.py" in joined
+        assert "/work/_pipe/dubstitch.py" in joined
+        assert "/opt/dubstudio/scripts/dubstitch.py" not in joined
         assert str(tmp_path) not in joined
         assert "/work" in joined
     font_args = sent["jobs"]["steps"][2]["cmd"]

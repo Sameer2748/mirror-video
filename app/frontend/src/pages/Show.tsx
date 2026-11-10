@@ -132,6 +132,14 @@ export default function ShowPage() {
                     </button>
                   )}
                   {["review", "done"].includes(e.status) && <Link to={`/episodes/${e.id}/editor`} className="button small">Open editor</Link>}
+                  <button className="small ghost danger" disabled={!!busy}
+                    onClick={() => {
+                      if (!confirm(`Delete EP ${e.number} from this list?\n\nYou can then add this episode again in a new bulk. If it is processing, it will stop.`)) return;
+                      setBusy(`del-${e.id}`); setErr(null);
+                      api.del(`/api/episodes/${e.id}`).then(load).catch((err: any) => setErr(err.message)).finally(() => setBusy(""));
+                    }}>
+                    {busy === `del-${e.id}` ? "Deleting…" : "Delete"}
+                  </button>
                 </td>
               </tr>
             ))}

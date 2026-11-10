@@ -153,6 +153,14 @@ export default function BulkStatus() {
                   if (!confirm(`Render EP ${e.number} from its current timeline (no editor)?`)) return;
                   act(() => api.post(`/api/episodes/${e.id}/timeline/render`), "render");
                 }}
+                onDelete={() => {
+                  if (!confirm(`Delete EP ${e.number} from this list?\n\nYou can then add this episode again in a new bulk. If it is processing, it will stop.`)) return;
+                  act(async () => {
+                    await api.del(`/api/episodes/${e.id}`);
+                    if (open === e.id) setOpen(null);
+                  }, `del-${e.id}`);
+                }}
+                deleting={busy === `del-${e.id}`}
                 rendering={busy === "render"}
                 full={expanded ? full : null}
                 reload={() => { load(); if (e.id === open) api.get<Episode>(`/api/episodes/${e.id}`).then(setFull); }}
@@ -165,9 +173,9 @@ export default function BulkStatus() {
   );
 }
 
-function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, rendering, full, reload, goMatching }:
+function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, onDelete, deleting, rendering, full, reload, goMatching }:
   { e: BatchEpisode; expanded: boolean; uploading: boolean; onToggle: () => void; onOpen: () => void;
-    onRender: () => void; rendering: boolean;
+    onRender: () => void; onDelete: () => void; deleting: boolean; rendering: boolean;
     full: Episode | null; reload: () => void; goMatching: () => void }) {
   const files = (e.have || []).length
     ? `${e.have!.includes("src_video") ? "video" : ""}${e.have!.includes("dub_audio") ? " · audio" : ""}${e.have!.includes("dub_script") ? " · script" : ""}`.replace(/^ · /, "")
@@ -189,6 +197,9 @@ function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, rend
           )}
           <button className="small ghost" onClick={onToggle}>{expanded ? "Hide steps" : "Steps"}</button>
           <button className="small" onClick={onOpen}>Open</button>
+          <button className="small ghost danger" disabled={deleting || uploading} onClick={onDelete}>
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
         </td>
       </tr>
       {expanded && (
