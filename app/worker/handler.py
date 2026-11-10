@@ -169,7 +169,8 @@ def command(job_in):
         return res
 
     sent = {}
-    skip = ("input/", "lips_nets.tar.gz")
+    skip = ("input/", "lips_nets.tar.gz", "segs/", "segs_groups/", "segs_groups.auto/",
+            "bookends/", "pieces/", "thumbs/")
     for root, before, key in ((WORK, before_work, "work"), (OUT, before_out, "out")):
         url = (job_in.get("outputs") or {}).get(key)
         if not url:

@@ -644,24 +644,80 @@ def publish_outputs(db, show, ep, files, user_id=None, work_dir=None, log=print)
     return {"uploads": len(sent), "work_files": kept}
 
 
+RENDER_SCRATCH_DIRS = ("segs", "segs_groups", "segs_groups.auto", "bookends", "pieces", "thumbs")
+
+
+def _dir_bytes(p):
+    return sum(f.stat().st_size for f in p.rglob("*") if f.is_file()) if p.is_dir() else 0
+
+
+def drop_render_scratch(work, log=None):
+    """Segment caches and concat leftovers. The editor uses proxy.mp4, not these. Always safe after a visit."""
+    W = Path(work)
+    freed, gone = 0, []
+    if not W.is_dir():
+        return {"freed": 0, "removed": []}
+    for name in RENDER_SCRATCH_DIRS:
+        p = W / name
+        if p.is_dir():
+            freed += _dir_bytes(p)
+            shutil.rmtree(p, ignore_errors=True)
+            gone.append(name)
+    for p in [*W.glob("silent_*.mp4"), *W.glob("concat*.txt"), *W.glob("*.mp4.ok")]:
+        if p.is_file():
+            freed += p.stat().st_size
+            p.unlink(missing_ok=True)
+            gone.append(p.name)
+    if log:
+        log(f"dropped {freed / 1e9:.2f} GB of render scratch ({', '.join(gone) or 'none'})")
+    return {"freed": freed, "removed": gone}
+
+
+def drop_render_scratch_tree(root, log=None):
+    """Scratch folders in this directory and each immediate child (library/work/<show>_epN)."""
+    root = Path(root)
+    if not root.is_dir():
+        return {"freed": 0, "folders": 0}
+    targets = [root]
+    try:
+        targets.extend(p for p in root.iterdir() if p.is_dir())
+    except OSError:
+        pass
+    freed = n = 0
+    seen = set()
+    for folder in targets:
+        for name in RENDER_SCRATCH_DIRS:
+            p = folder / name
+            key = str(p)
+            if key in seen or not p.is_dir():
+                continue
+            seen.add(key)
+            freed += _dir_bytes(p)
+            shutil.rmtree(p, ignore_errors=True)
+            n += 1
+    if log and n:
+        log(f"disk: dropped {n} scratch folders ({freed / 1e9:.2f} GB) under {root}")
+    return {"freed": freed, "folders": n}
+
+
 def clean_scratch(db, ep, keep_work=False, log=print):
     """After an episode is delivered and its files are in R2: drop the big local files (the uploaded video and
-    audio, the preview copy, the rendered pieces) so the next episode has room. The small work files stay unless
-    `keep_work` is false and they are already up there."""
+    audio, the preview copy, the rendered pieces) so the next episode has room. Segment caches always go;
+    proxy / lips stay unless `keep_work` is false."""
     W = Path(ep["work_dir"])
-    freed = 0
-    gone = []
+    scratch = drop_render_scratch(W)
+    freed, gone = scratch["freed"], list(scratch["removed"])
     for a in db.q("SELECT * FROM assets WHERE episode_id=? AND r2_key IS NOT NULL", (ep["id"],)):
         p = Path(a["path"])
         if p.exists():                                   # safe: the file is in R2 and comes back with `fetch`
             freed += p.stat().st_size; p.unlink(); gone.append(a["kind"])
     if not keep_work and W.is_dir():
-        for name in ("proxy.mp4", "pieces", "lips_nets", "lips_mesh", "clean_noglow.mp4"):
+        for name in ("proxy.mp4", "lips_nets", "lips_mesh", "clean_noglow.mp4"):
             p = W / name
             if p.is_file():
                 freed += p.stat().st_size; p.unlink(); gone.append(name)
             elif p.is_dir():
-                freed += sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
+                freed += _dir_bytes(p)
                 shutil.rmtree(p, ignore_errors=True); gone.append(name)
     log(f"cleaned {freed / 1e9:.2f} GB ({', '.join(gone) or 'nothing to clean'})")
     return {"freed": freed, "removed": gone}

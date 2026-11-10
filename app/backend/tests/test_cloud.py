@@ -1075,3 +1075,110 @@ def test_a_job_can_go_to_the_gpu_endpoint(monkeypatch):
     assert done and not failed
     assert seen[0] == ("/run", "gpu", "command")
     assert any(p.startswith("/status/") and k == "gpu" for p, k, _ in seen)
+
+
+def test_skip_work_back_is_only_the_throwaway_caches():
+    assert cloud.skip_work_back("segs_groups/000.mp4")
+    assert cloud.skip_work_back("segs/a.mp4")
+    assert cloud.skip_work_back("bookends/open.mp4")
+    assert not cloud.skip_work_back("config.json")
+    assert not cloud.skip_work_back("video_groups.mp4")
+    assert not cloud.skip_work_back("manifest_groups.json")
+
+
+def test_unpack_skips_segment_caches_and_keeps_config(tmp_path):
+    """TAB EP53: extractall of segs_groups after CHAIN OK filled Render. Config and work videos still land."""
+    src = tmp_path / "src"
+    (src / "segs_groups" / "000.mp4").parent.mkdir(parents=True)
+    (src / "segs_groups" / "000.mp4").write_bytes(b"seg")
+    (src / "config.json").write_text("{}")
+    (src / "video_groups.mp4").write_bytes(b"vid")
+    tar = tmp_path / "back.tar.gz"
+    with tarfile.open(tar, "w:gz") as t:
+        t.add(src / "config.json", arcname="config.json")
+        t.add(src / "video_groups.mp4", arcname="video_groups.mp4")
+        t.add(src / "segs_groups", arcname="segs_groups")
+    dest = tmp_path / "work"
+    wrote, skipped = cloud.unpack_returned_tar(tar, dest, kind="work")
+    assert (dest / "config.json").read_text() == "{}"
+    assert (dest / "video_groups.mp4").read_bytes() == b"vid"
+    assert not (dest / "segs_groups").exists()
+    assert skipped >= 1 and wrote == 2
+
+
+def test_unpack_out_keeps_the_finals(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "final_clean.mp4").write_bytes(b"final")
+    tar = tmp_path / "out.tar.gz"
+    with tarfile.open(tar, "w:gz") as t:
+        t.add(src / "final_clean.mp4", arcname="final_clean.mp4")
+    dest = tmp_path / "out"
+    wrote, skipped = cloud.unpack_returned_tar(tar, dest, kind="out")
+    assert skipped == 0 and wrote == 1
+    assert (dest / "final_clean.mp4").read_bytes() == b"final"
+
+
+def test_the_chain_driver_drops_segment_caches_after_ok(tmp_path):
+    """The driver travels with the job, so this runs on the rented machine without an image rebuild."""
+    import subprocess, sys
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "segs_groups" / "000.mp4").parent.mkdir()
+    (work / "segs_groups" / "000.mp4").write_bytes(b"x")
+    (work / "_cloud_chain.json").write_text(json.dumps({"steps": [
+        {"name": "check", "cmd": [sys.executable, "-c", "print('CHECK_OK')"]},
+    ]}))
+    (work / "_cloud_chain.py").write_text(cloud.CHAIN_DRIVER)
+    p = subprocess.run([sys.executable, str(work / "_cloud_chain.py")], cwd=str(work),
+                       capture_output=True, text=True)
+    assert p.returncode == 0, p.stdout + p.stderr
+    assert "CHAIN OK" in p.stdout and "scratch dropped" in p.stdout
+    assert not (work / "segs_groups").exists()
+
+
+def test_run_command_lands_outputs_before_work_and_skips_segs(tmp_path, monkeypatch):
+    """After CHAIN OK the finals in /out must land even if the work tar is full of segs_groups."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    video = tmp_path / "show/US/TGS EPISODE 34.mp4"
+    video.parent.mkdir(parents=True); video.write_bytes(b"v" * 32)
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(video), "dub_srt": f"{work}/x.srt", "clean_final": f"{out}/final.mp4"}))
+    bucket = tmp_path / "bucket"
+
+    def fake_wait(ids, **kw):
+        box = tmp_path / "wback"; box.mkdir()
+        (box / "config.json").write_text(json.dumps({"video_out": "/work/video_groups.mp4"}))
+        (box / "segs_groups" / "000.mp4").parent.mkdir(parents=True)
+        (box / "segs_groups" / "000.mp4").write_bytes(b"seg" * 100)
+        back = bucket / "cloud/render_work_out.tar.gz"
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "config.json", arcname="config.json")
+            t.add(box / "segs_groups", arcname="segs_groups")
+        obox = tmp_path / "oback"; obox.mkdir()
+        (obox / "final_clean.mp4").write_bytes(b"final")
+        with tarfile.open(bucket / "cloud/render_out_out.tar.gz", "w:gz") as t:
+            t.add(obox / "final_clean.mp4", arcname="final_clean.mp4")
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1,
+                                 "sent": {"work": {"files": 2}, "out": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cloud.run_command({}, show, ep, "render",
+                      [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render", "--work", str(work)],
+                      cfg, log=lambda m: None)
+
+    assert (out / "final_clean.mp4").read_bytes() == b"final"
+    assert not (work / "segs_groups").exists()
+    now = json.loads((work / "config.json").read_text())
+    assert now["video_out"] == f"{work}/video_groups.mp4"

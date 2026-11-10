@@ -510,6 +510,46 @@ def test_live_events_go_through_redis():
     loop.call_soon_threadsafe(loop.stop)
 
 
+def test_clean_scratch_always_drops_segment_caches(tmp_path):
+    """CLEAN_WORK defaults off so the editor's proxy stays, but segs_groups must still go or Render fills up
+    (TAB EP53: 50 GB gone after CHAIN OK because cleanup never ran and segs were not in the delete list)."""
+    from dubstudio import storage
+    work = tmp_path / "work"
+    (work / "segs_groups" / "000.mp4").parent.mkdir(parents=True)
+    (work / "segs_groups" / "000.mp4").write_bytes(b"x" * 200)
+    (work / "segs" / "a.mp4").parent.mkdir(parents=True)
+    (work / "segs" / "a.mp4").write_bytes(b"y")
+    (work / "proxy.mp4").write_bytes(b"proxy")
+    (work / "config.json").write_text("{}")
+    (work / "silent_groups.mp4").write_bytes(b"silent")
+
+    class FakeDb:
+        def q(self, *a, **k):
+            return []
+
+    out = storage.clean_scratch(FakeDb(), {"id": 1, "work_dir": str(work)}, keep_work=True, log=lambda m: None)
+    assert "segs_groups" in out["removed"] and "segs" in out["removed"]
+    assert "silent_groups.mp4" in out["removed"]
+    assert not (work / "segs_groups").exists()
+    assert not (work / "segs").exists()
+    assert not (work / "silent_groups.mp4").exists()
+    assert (work / "proxy.mp4").exists()
+    assert (work / "config.json").exists()
+
+
+def test_drop_render_scratch_tree_clears_neighbour_episodes(tmp_path):
+    from dubstudio import storage
+    lib = tmp_path / "work"
+    for n in (52, 53):
+        segs = lib / f"TAB_ep{n}" / "segs_groups"
+        segs.mkdir(parents=True)
+        (segs / "000.mp4").write_bytes(b"x" * 50)
+    out = storage.drop_render_scratch_tree(lib, log=lambda m: None)
+    assert out["folders"] == 2
+    assert not (lib / "TAB_ep52" / "segs_groups").exists()
+    assert not (lib / "TAB_ep53" / "segs_groups").exists()
+
+
 @pytest.mark.skipif(not os.environ.get("DATABASE_URL"), reason="set DATABASE_URL (docker-compose up) for the Postgres check")
 def test_the_app_runs_on_postgres(env):
     """The same suite runs end to end on Postgres; this one states it plainly."""

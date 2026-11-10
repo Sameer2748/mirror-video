@@ -429,6 +429,10 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
 #   {WORK}       the episode's work folder      {OUT}     the show's output folder
 #   {F0} {F1} …  one big input file each (the source video, the dub audio, the font): a signed link
 SMALL = 1 << 20                  # a file this size or under travels in the work tar, not on its own
+# Segment caches the render visit writes under /work. Rebuildable, multi-GB, and the reason TAB EP53
+# died with ENOSPC on this box after CHAIN OK: extractall unpacked segs_groups onto the 50 GB disk.
+WORK_BACK_SKIP = ("segs/", "segs_groups/", "segs_groups.auto/", "bookends/", "pieces/", "thumbs/")
+LOW_DISK = 8 * 10**9             # drop leftover caches across episodes when this much is not free
 # Where the worker image puts things (it is our image, so this is known, not guessed).
 WORKER = {"{WORK}": "/work", "{OUT}": "/out", "{FILES}": "/files"}
 # The work folder's own `config.json` records **absolute paths on this Mac** -- the source video, the dub audio,
@@ -717,6 +721,74 @@ def _scratch_tar(work, ep, name, part):
     return Path(work).parent / f"_{ep['id']}_{name}_{part}.tar.gz"
 
 
+def skip_work_back(name):
+    """True when this member of the work return tar is a throwaway render cache."""
+    name = (name or "").replace("\\", "/").lstrip("./")
+    return any(name == p.rstrip("/") or name.startswith(p) for p in WORK_BACK_SKIP)
+
+
+def unpack_returned_tar(tar_path, root, kind="work"):
+    """Write the rented machine's changed files onto this box. -> (wrote, skipped).
+
+    /out is the deliverables and is never skipped. Work segment caches stay off this disk so a finished
+    visit cannot fill Render (TAB EP53: extractall of segs_groups after CHAIN OK)."""
+    wrote = skipped = 0
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    base = root.resolve()
+    with tarfile.open(tar_path) as t:
+        for m in t.getmembers():
+            name = (m.name or "").replace("\\", "/").lstrip("./")
+            if not name or name.endswith("/") or not m.isreg():
+                continue
+            if kind == "work" and skip_work_back(name):
+                skipped += 1
+                continue
+            dest = (root / name).resolve()
+            try:
+                dest.relative_to(base)
+            except ValueError:
+                continue
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            src = t.extractfile(m)
+            if src is None:
+                continue
+            with src, open(dest, "wb") as f:
+                shutil.copyfileobj(src, f)
+            wrote += 1
+    return wrote, skipped
+
+
+def _maybe_free_disk(work, log=print):
+    """When this box is tight, drop leftover segment caches (this episode and its neighbours) and old tars."""
+    W = Path(work)
+    parent = W.parent if W.parent.is_dir() else W
+    try:
+        free = shutil.disk_usage(parent).free
+    except OSError:
+        return
+    if free >= LOW_DISK:
+        return
+    log(f"disk has {free / 1e9:.1f} GB free; dropping leftover render scratch")
+    storage.drop_render_scratch(W, log=log)
+    storage.drop_render_scratch_tree(parent, log=log)
+    for p in parent.glob("_*.tar.gz"):
+        p.unlink(missing_ok=True)
+
+
+def _queue_returned_outputs(db, show, ep, log=print):
+    """The /out files of this step go to R2 now, not at the publish step after the whole episode."""
+    if not (db and show and show.get("profile") and storage.configured()
+            and storage.settings().get("auto_upload")):
+        return
+    from . import deliver
+    files = deliver.deliverables(show, ep, None)
+    if not any(f.get("exists") for f in files):
+        return
+    rows = storage.queue_uploads(db, show, ep, files, user_id=show.get("owner_id"))
+    log(f"{len(rows)} output file(s) queued for the cloud (this step, not waiting for publish)")
+
+
 def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu"):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
@@ -806,15 +878,36 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
                            f"{(res.get('log') or res.get('error') or '')[-300:]}")
 
     sent = res.get("sent") or {}
-    for which, key, root in (("work", back_work, W), ("out", back_out, O)):
-        if sent.get(which):
-            tar = _scratch_tar(W, ep, name, f"{which}_back")
-            storage.download(key, tar)
-            root.mkdir(parents=True, exist_ok=True)
-            with tarfile.open(tar) as t:
-                t.extractall(root)
+    _maybe_free_disk(W, log)
+    # /out first: the deliverables. Work caches used to unpack first and fill the disk (TAB EP53).
+    for which, key, root in (("out", back_out, O), ("work", back_work, W)):
+        if not sent.get(which):
+            continue
+        tar = _scratch_tar(W, ep, name, f"{which}_back")
+        try:
+            try:
+                storage.download(key, tar)
+                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
+            except OSError as e:
+                if e.errno != 28:
+                    raise
+                log("disk full while unpacking; dropping leftover segment caches and retrying")
+                _maybe_free_disk(W, log)
+                storage.drop_render_scratch_tree(W.parent, log=log)
+                tar.unlink(missing_ok=True)
+                storage.download(key, tar)
+                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
+        finally:
             tar.unlink(missing_ok=True)
-            # the step may have recorded new paths: read them as ours
+        if skipped:
+            log(f"{which}: kept {wrote} files, left {skipped} scratch files on the rented machine")
+        if which == "out":
+            try:
+                _queue_returned_outputs(db, show, ep, log)
+            except Exception as e:
+                log(f"outputs not queued yet: {e}")
+        else:
+            storage.drop_render_scratch(root)
             back_pairs = [(b, a) for a, b in there]
             for listed in (CONFIG, *EDIT_LISTS):
                 back = root / listed
@@ -830,8 +923,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
 # to it. No image rebuild, no pipeline change: the worker runs `{PY} {WORK}/_cloud_chain.py` the same way it
 # runs any other command.
 CHAIN_DRIVER = '''\
-import json, os, subprocess, sys
-jobs = json.loads(open(os.path.join(os.path.dirname(__file__), "_cloud_chain.json"), encoding="utf-8").read())
+import json, os, shutil, subprocess, sys
+here = os.path.dirname(os.path.abspath(__file__))
+jobs = json.loads(open(os.path.join(here, "_cloud_chain.json"), encoding="utf-8").read())
 for item in jobs["steps"]:
     name, cmd = item["name"], item["cmd"]
     print(f"=== {name} ===", flush=True)
@@ -849,6 +943,11 @@ for item in jobs["steps"]:
             sys.exit(p.returncode)
         break
 print("CHAIN OK", flush=True)
+# Segment caches are rebuildable. Sending them back filled Render's 50 GB after a finished
+# visit (TAB EP53 extractall ENOSPC). /out already has the deliverables.
+for name in ("segs", "segs_groups", "segs_groups.auto", "bookends", "pieces", "thumbs"):
+    shutil.rmtree(os.path.join(here, name), ignore_errors=True)
+print("scratch dropped (not sent back)", flush=True)
 '''
 
 # Where the worker image puts things -- same map as handler.py PLACES. Used to write the inner commands with
