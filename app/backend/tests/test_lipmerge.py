@@ -1,4 +1,4 @@
-"""lipmerge: 1-frame drift and last-piece EOF gaps are trimmed; an empty half still fails."""
+"""lipmerge: 1-frame drift and last-piece EOF gaps are trimmed; an empty half is filled silent."""
 import sys
 from pathlib import Path
 
@@ -45,13 +45,39 @@ def test_last_piece_eof_gap_is_trimmed():
     assert "trimmed" in note
 
 
-def test_empty_half_still_fails():
-    try:
-        merge_pair({"frames": 0, "scores": []}, {"frames": 376, "mouth": [0] * 376, "aperture": [0] * 376}, "0-15")
-    except ValueError as ex:
-        assert "empty" in str(ex)
-    else:
-        raise AssertionError("expected a ValueError")
+def test_empty_nets_are_filled_from_mesh():
+    """TAB EP26-30 390-405: GPU wrote frames:0, mesh wrote 375 closed-mouth. Merge used to die."""
+    out, note = merge_pair(
+        {"frames": 0, "scores": [], "visual": []},
+        {"frames": 375, "window": [390, 405], "mouth": [0.0] * 375, "aperture": [0.0] * 375},
+        "390-405")
+    assert out["frames"] == 375
+    assert out["scores"] == [-9.0] * 375
+    assert out["visual"] == [-9.0] * 375
+    assert out["mouth"] == [0.0] * 375
+    assert "empty nets filled" in note
+
+
+def test_empty_mesh_is_filled_from_nets():
+    out, note = merge_pair(
+        {"frames": 375, "scores": [1] * 375, "visual": [1] * 375, "method": {}},
+        {"frames": 0, "mouth": [], "aperture": []},
+        "0-15")
+    assert out["frames"] == 375
+    assert out["mouth"] == [0.0] * 375
+    assert out["scores"] == [1] * 375
+    assert "empty mesh filled" in note
+
+
+def test_both_halves_empty_use_the_window_length():
+    out, note = merge_pair(
+        {"frames": 0, "scores": [], "window": [390, 405]},
+        {"frames": 0, "mouth": [], "aperture": []},
+        "390-405")
+    assert out["frames"] == 375
+    assert out["scores"] == [-9.0] * 375
+    assert out["mouth"] == [0.0] * 375
+    assert "both halves empty" in note
 
 
 def test_lip_merge_uses_the_app_script_not_the_rented_one():

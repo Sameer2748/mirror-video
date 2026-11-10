@@ -27,10 +27,11 @@ class FakeCloud:
     """A fake endpoint. `fail_first` shares die on the first attempt, as a reclaimed machine does.
     `empty_first` pieces write frames:0 once, then a real file — TAB EP20 390-405."""
 
-    def __init__(self, bucket, fail_first=0, empty_first=None):
+    def __init__(self, bucket, fail_first=0, empty_first=None, empty_always=None):
         self.bucket = Path(bucket)
         self.fail_first = fail_first
         self.empty_first = {tuple(c) for c in (empty_first or [])}
+        self.empty_always = {tuple(c) for c in (empty_always or [])}
         self.emptied = set()
         self.jobs = {}                                        # job id -> (ranges, key)
         self.attempts = []
@@ -53,7 +54,7 @@ class FakeCloud:
             nets.mkdir(parents=True, exist_ok=True)
             for s, e in rngs:                                 # lipgpu names the file after the range it was given
                 cut = (s, e)
-                if cut in self.empty_first and cut not in self.emptied:
+                if cut in self.empty_always or (cut in self.empty_first and cut not in self.emptied):
                     payload = {"window": [s, e], "frames": 0, "scores": []}
                     self.emptied.add(cut)
                 else:
@@ -123,6 +124,19 @@ def test_an_empty_piece_is_scanned_again_without_redoing_the_rest(tmp_path, monk
     assert res["files"] == 4 and res["retries"] == 1
     assert json.loads((nets / "range_15_30.json").read_text())["frames"] == 375
     assert len(fake.attempts) == 2 and fake.attempts[1]  # second visit is the empty-piece retry
+
+
+def test_a_piece_that_stays_empty_is_filled_silent_not_failed(tmp_path, monkeypatch, ep):
+    """TAB EP26-30 390-405: ffmpeg never returns frames. Merge died; now the scan writes silent scores."""
+    show, episode = ep
+    fake = FakeCloud(tmp_path / "bucket", empty_always=[[15.0, 30.0]]).install(monkeypatch)
+    res = cloud.lip_scan({}, show, episode, duration_s=60.0, n_pieces=4, log=lambda m: None)
+    nets = Path(episode["work_dir"]) / "lips_nets"
+    d = json.loads((nets / "range_15_30.json").read_text())
+    assert res["files"] == 4
+    assert d["frames"] == 375 and d["scores"] == [-9.0] * 375
+    assert d["method"]["filled"] == "empty-eof"
+    assert json.loads((nets / "range_0_15.json").read_text())["frames"] == 375
 
 
 def test_a_share_that_keeps_failing_is_reported_not_hidden(tmp_path, monkeypatch, ep):

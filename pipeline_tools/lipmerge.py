@@ -22,14 +22,66 @@ def _nlist(seq, fallback):
     return len(seq) if isinstance(seq, list) and seq else fallback
 
 
+FPS = 25
+SILENT = -9.0  # same as dubstitch merged_lip_intervals: no lips on this frame
+
+
+def _count(d, keys):
+    n = int(d.get("frames") or 0)
+    return min(n or 10**9, *(_nlist(d.get(k), n) for k in keys))
+
+
+def _window_frames(d, m, label=""):
+    for src in (d, m):
+        w = src.get("window")
+        if isinstance(w, (list, tuple)) and len(w) >= 2:
+            return max(1, int(round((float(w[1]) - float(w[0])) * FPS)))
+    if label and "-" in label:
+        try:
+            a, b = label.split("-", 1)
+            return max(1, int(round((float(b) - float(a)) * FPS)))
+        except ValueError:
+            pass
+    return 1
+
+
 def merge_pair(d, m, label=""):
-    """Copy mouth/aperture onto the nets file. Align both halves to the shorter count."""
-    n, nm = int(d.get("frames") or 0), int(m.get("frames") or 0)
-    n = min(n or 10**9, _nlist(d.get("scores"), n), _nlist(d.get("visual"), n))
-    nm = min(nm or 10**9, _nlist(m.get("mouth"), nm), _nlist(m.get("aperture"), nm))
-    if n < 1 or nm < 1:
-        raise ValueError(f"empty lip scan in {label}: nets {n} mesh {nm}")
+    """Copy mouth/aperture onto the nets file. Align both halves to the shorter count.
+
+    A half with 0 frames is the slice past EOF (TAB EP26-30 390-405: nets 0, mesh 375 closed-mouth).
+    Fill that half silent / closed-mouth so merge does not kill the episode."""
+    n = _count(d, ("scores", "visual"))
+    nm = _count(m, ("mouth", "aperture"))
+    if n >= 10**9:
+        n = 0
+    if nm >= 10**9:
+        nm = 0
     note = None
+    if n < 1 and nm < 1:
+        keep = _window_frames(d, m, label)
+        d, m = dict(d), dict(m)
+        d["frames"] = keep
+        d["scores"] = [SILENT] * keep
+        d["visual"] = [SILENT] * keep
+        m["mouth"] = [0.0] * keep
+        m["aperture"] = [0.0] * keep
+        note = f"both halves empty; wrote {keep} silent frames"
+        n = nm = keep
+    elif n < 1:
+        d = dict(d)
+        d["frames"] = nm
+        d["scores"] = [SILENT] * nm
+        d["visual"] = [SILENT] * nm
+        if "window" not in d and m.get("window"):
+            d["window"] = m["window"]
+        note = f"empty nets filled with {nm} silent frames (mesh {nm})"
+        n = nm
+    elif nm < 1:
+        m = dict(m)
+        m["mouth"] = [0.0] * n
+        m["aperture"] = [0.0] * n
+        note = f"empty mesh filled with {n} closed-mouth frames (nets {n})"
+        nm = n
     keep = min(n, nm)
     if n != nm:
         note = f"trimmed to {keep} frames (nets {n}, mesh {nm})"

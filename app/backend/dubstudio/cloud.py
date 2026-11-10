@@ -348,7 +348,19 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
         retries += 1
         empty = _empty_lip_pieces(nets, cuts)
     if empty:
-        raise RuntimeError(f"{len(empty)} piece(s) still empty after retry, e.g. {empty[:3]}")
+        # Past EOF (TAB EP26-30 390-405): ffmpeg keeps returning 0 frames. Merge used to die on
+        # "empty lip scan". Write silent scores so the rest of the episode can finish.
+        fps = 25
+        for s, e in empty:
+            want = max(1, int(round((float(e) - float(s)) * fps)))
+            (nets / f"range_{s:g}_{e:g}.json").write_text(json.dumps({
+                "idx": -1, "cls": "range", "text": f"{s:g}-{e:g}s",
+                "start_s": s, "end_s": e, "window": [s, e], "frames": want,
+                "scores": [-9.0] * want, "visual": [-9.0] * want,
+                "tracks": [], "intervals": [], "intervals_visual": [],
+                "method": {"filled": "empty-eof"},
+            }))
+            log(f"{s:g}-{e:g}: still empty after retry; wrote {want} silent frames")
     # lipgpu writes this next to the pieces, and the two steps after the scan read it (`lipmesh --ranges`,
     # `lipmerge` defaults to NETS_DIR/ranges.json). Each worker only knows its own share, so the whole list is
     # written here -- without it the scan "succeeds" and the next step has nothing to work from.
