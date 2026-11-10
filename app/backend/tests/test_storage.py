@@ -553,6 +553,42 @@ def test_drop_render_scratch_tree_clears_neighbour_episodes(tmp_path):
     assert not (lib / "TAB_ep53" / "segs_groups").exists()
 
 
+def test_free_disk_drops_published_videos_when_scratch_is_already_gone(tmp_path, monkeypatch):
+    """TAB EP31: 0.0 GB free, segs already absent, so the old scratch drop freed nothing and mksrt
+    could not download a small SRT tar. Published mp4s and a neighbour's intermediates must go."""
+    import shutil
+    from dubstudio import storage
+    lib = tmp_path / "library"
+    work_root = lib / "work"
+    cur = work_root / "TABPGCIT_ep31"
+    other = work_root / "TABPGCIT_ep52"
+    cur.mkdir(parents=True); other.mkdir(parents=True)
+    (cur / "proxy_540.mp4").write_bytes(b"P" * 80)
+    (other / "video_groups_nosubs.mp4").write_bytes(b"V" * 400)
+    (other / "lips_nets" / "a.json").parent.mkdir()
+    (other / "lips_nets" / "a.json").write_bytes(b"L" * 200)
+    (other / "proxy_540.mp4").write_bytes(b"Q" * 120)
+    published = tmp_path / "out" / "TABPGCIT_EP52_IT_final_clean.mp4"
+    published.parent.mkdir()
+    published.write_bytes(b"M" * 800)
+    leftover = work_root / "_57_mksrt_dub_work_back.tar.gz"
+    leftover.write_bytes(b"T" * 300)
+
+    class DB:
+        def q(self, *a, **k):
+            return [{"path": str(published), "episode_id": 52}]
+
+    monkeypatch.setattr(shutil, "disk_usage", lambda p: type("U", (), {"free": 0, "used": 50e9, "total": 50e9})())
+    out = storage.free_disk(cur, log=lambda m: None, db=DB(), keep_episode_id=31)
+    assert out["freed"] >= 800 + 400 + 300
+    assert not published.exists()
+    assert not leftover.exists()
+    assert not (other / "video_groups_nosubs.mp4").exists()
+    assert not (other / "lips_nets").exists()
+    assert not (other / "proxy_540.mp4").exists()
+    assert (cur / "proxy_540.mp4").exists()
+
+
 @pytest.mark.skipif(not os.environ.get("DATABASE_URL"), reason="set DATABASE_URL (docker-compose up) for the Postgres check")
 def test_the_app_runs_on_postgres(env):
     """The same suite runs end to end on Postgres; this one states it plainly."""

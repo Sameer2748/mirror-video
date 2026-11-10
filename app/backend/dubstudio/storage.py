@@ -294,11 +294,15 @@ def download(key, path, timeout=3600.0, on_progress=None):
             if r.status_code >= 400:
                 raise RuntimeError(f"R2 GET {key}: HTTP {r.status_code} {_error_text(r.read().decode(errors='replace'))}")
             total = int(r.headers.get("content-length") or 0)
-            with tmp.open("wb") as f:
-                for chunk in r.iter_bytes(PART):
-                    f.write(chunk); got += len(chunk)
-                    if on_progress:
-                        on_progress(got, total)
+            try:
+                with tmp.open("wb") as f:
+                    for chunk in r.iter_bytes(PART):
+                        f.write(chunk); got += len(chunk)
+                        if on_progress:
+                            on_progress(got, total)
+            except Exception:
+                tmp.unlink(missing_ok=True)
+                raise
     tmp.replace(p)
     return {"path": str(p), "size": p.stat().st_size}
 
@@ -700,6 +704,104 @@ def drop_render_scratch_tree(root, log=None):
     if log and n:
         log(f"disk: dropped {n} scratch folders ({freed / 1e9:.2f} GB) under {root}")
     return {"freed": freed, "folders": n}
+
+
+def _library_work_root(work):
+    """library/ and library/work/ from an episode work folder (`…/work/TABPGCIT_ep31`)."""
+    W = Path(work).resolve()
+    if W.parent.name == "work":
+        return W.parent.parent, W.parent
+    return W.parent, W.parent
+
+
+def free_disk(work, log=print, db=None, keep_episode_id=None):
+    """Make room on this box. Segment caches were not the only thing filling Render's 50 GB: published
+    mp4s, leftover tars, and other episodes' lips/proxies stayed after CHAIN OK (TAB EP31 mksrt ENOSPC
+    at 0.0 GB, scratch drop found none). Published files are already in R2."""
+    W = Path(work)
+    keep = W.resolve() if W.exists() else W
+    _, work_root = _library_work_root(W)
+    if not work_root.is_dir():
+        work_root = W.parent if W.parent.is_dir() else W
+    freed, gone = 0, []
+
+    def drop_file(p, label=None):
+        nonlocal freed
+        if not p.is_file():
+            return
+        try:
+            sz = p.stat().st_size
+            p.unlink()
+            freed += sz
+            gone.append(label or p.name)
+        except OSError:
+            pass
+
+    def drop_dir(p, label=None):
+        nonlocal freed
+        if not p.is_dir():
+            return
+        try:
+            sz = _dir_bytes(p)
+            shutil.rmtree(p, ignore_errors=True)
+            freed += sz
+            gone.append(label or p.name)
+        except OSError:
+            pass
+
+    for folder in (work_root, W, Path("/tmp")):
+        if not folder.is_dir():
+            continue
+        for p in [*folder.glob("_*.tar.gz"), *folder.glob("_*.tar.gz.part"), *folder.glob("*.tar.gz.part")]:
+            drop_file(p)
+
+    kids = [work_root]
+    try:
+        kids.extend(p for p in work_root.iterdir() if p.is_dir())
+    except OSError:
+        pass
+    for folder in kids:
+        r = drop_render_scratch(folder)
+        freed += r["freed"]
+        gone.extend(r["removed"])
+        other = folder.resolve() != keep
+        if other:
+            for pat in ("video_*_nosubs.mp4", "clean_noglow.mp4", "video_groups.mp4", "video_groups.auto.mp4"):
+                for p in folder.glob(pat):
+                    drop_file(p, f"{folder.name}/{p.name}")
+        for p in folder.glob("trans_*"):
+            if p.is_dir():
+                drop_dir(p, f"{folder.name}/{p.name}")
+
+    if db is not None:
+        try:
+            rows = db.q("SELECT path, episode_id FROM uploads WHERE status='done'")
+        except Exception:
+            rows = []
+        for u in rows:
+            if keep_episode_id is not None and u.get("episode_id") == keep_episode_id:
+                continue
+            p = Path(u.get("path") or "")
+            if p.suffix.lower() in (".mp4", ".mov", ".mkv"):
+                drop_file(p, p.name)
+
+    try:
+        free = shutil.disk_usage(work_root).free
+    except OSError:
+        free = 0
+    if free < 2 * 10**9:
+        for folder in kids:
+            if folder.resolve() == keep:
+                continue
+            for name in ("lips_nets", "lips_mesh"):
+                drop_dir(folder / name, f"{folder.name}/{name}")
+            for name in ("proxy_540.mp4", "proxy.mp4"):
+                drop_file(folder / name, f"{folder.name}/{name}")
+
+    if log:
+        sample = ", ".join(gone[:10]) or "nothing extra"
+        log(f"freed {freed / 1e9:.2f} GB on this box ({sample}{'…' if len(gone) > 10 else ''})")
+    return {"freed": freed, "removed": gone}
 
 
 def clean_scratch(db, ep, keep_work=False, log=print):

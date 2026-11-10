@@ -759,8 +759,8 @@ def unpack_returned_tar(tar_path, root, kind="work"):
     return wrote, skipped
 
 
-def _maybe_free_disk(work, log=print):
-    """When this box is tight, drop leftover segment caches (this episode and its neighbours) and old tars."""
+def _maybe_free_disk(work, log=print, db=None, keep_episode_id=None):
+    """When this box is tight, drop leftover caches, leftover tars, and published videos already in R2."""
     W = Path(work)
     parent = W.parent if W.parent.is_dir() else W
     try:
@@ -769,11 +769,8 @@ def _maybe_free_disk(work, log=print):
         return
     if free >= LOW_DISK:
         return
-    log(f"disk has {free / 1e9:.1f} GB free; dropping leftover render scratch")
-    storage.drop_render_scratch(W, log=log)
-    storage.drop_render_scratch_tree(parent, log=log)
-    for p in parent.glob("_*.tar.gz"):
-        p.unlink(missing_ok=True)
+    log(f"disk has {free / 1e9:.1f} GB free; making room")
+    storage.free_disk(W, log=log, db=db, keep_episode_id=keep_episode_id)
 
 
 def _queue_returned_outputs(db, show, ep, log=print):
@@ -797,6 +794,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one.
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
+    _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
         log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
@@ -831,7 +829,15 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
              if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
     if small:
         tar = _scratch_tar(W, ep, name, "work_in")
-        n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
+        try:
+            n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
+        except OSError as e:
+            if e.errno != 28:
+                raise
+            log("disk full packing the work tar; making room")
+            tar.unlink(missing_ok=True)
+            _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+            n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
         key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
         storage.put_file(tar, key)
         tar.unlink(missing_ok=True)
@@ -878,12 +884,13 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
                            f"{(res.get('log') or res.get('error') or '')[-300:]}")
 
     sent = res.get("sent") or {}
-    _maybe_free_disk(W, log)
+    _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     # /out first: the deliverables. Work caches used to unpack first and fill the disk (TAB EP53).
     for which, key, root in (("out", back_out, O), ("work", back_work, W)):
         if not sent.get(which):
             continue
         tar = _scratch_tar(W, ep, name, f"{which}_back")
+        part = tar.with_name(tar.name + ".part")
         try:
             try:
                 storage.download(key, tar)
@@ -891,14 +898,15 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             except OSError as e:
                 if e.errno != 28:
                     raise
-                log("disk full while unpacking; dropping leftover segment caches and retrying")
-                _maybe_free_disk(W, log)
-                storage.drop_render_scratch_tree(W.parent, log=log)
+                log("disk full while unpacking; making room and retrying")
                 tar.unlink(missing_ok=True)
+                part.unlink(missing_ok=True)
+                _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
                 storage.download(key, tar)
                 wrote, skipped = unpack_returned_tar(tar, root, kind=which)
         finally:
             tar.unlink(missing_ok=True)
+            part.unlink(missing_ok=True)
         if skipped:
             log(f"{which}: kept {wrote} files, left {skipped} scratch files on the rented machine")
         if which == "out":
@@ -974,6 +982,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     is the videos. The pipeline scripts themselves are not touched. `name` is the job name (`match`, `cut`,
     `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
+    _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     files, packed = {}, []
     staged = False
     for step_name, cmd in named_cmds:
