@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from dubstudio.db import DB
-from dubstudio.runner import Runner, NOISE
+from dubstudio.runner import Runner, NOISE, is_key_limit_error
 
 
 def test_progress_from_tool_lines():
@@ -166,6 +166,52 @@ def test_a_local_command_does_not_require_the_mac_scripts_folder(tmp_path, monke
     here.mkdir()
     monkeypatch.setattr(type(cfg), "scripts", property(lambda self: here))
     assert Runner._local_cwd() == str(here)
+
+
+def test_openrouter_key_limit_retries_the_job_once_not_the_claude_call(tmp_path, monkeypatch):
+    """TAB EP79: translate died on the $500 OpenRouter cap. Other episodes started after the cap
+    was raised. Retry the job once; do not ask Claude three times for the same 403."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    monkeypatch.setattr(Runner, "_spend", staticmethod(lambda: "NA"))
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=79, status="processing",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    log = tmp_path / "translate.log"; log.write_text("")
+    jid = db.insert("jobs", episode_id=eid, run=1, step="translate", ord=1, status="running",
+                    needs=[], resource="cpu", attempt=0, log_path=str(log),
+                    params={"fn": "translate"})
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    hits = {"n": 0}
+
+    def boom(j):
+        hits["n"] += 1
+        raise RuntimeError(
+            'AI gateway HTTP 403: b\'{"error":{"message":"Key limit exceeded (total limit). '
+            '$500.62 of $500.00 used","code":403,"metadata":{"limit_source":"openrouter_key_limit"}}}\'')
+
+    r._fn_translate = boom
+    r._run_job(jid)
+    j = db.one("SELECT * FROM jobs WHERE id=?", (jid,))
+    assert hits["n"] == 1
+    assert j["status"] == "waiting" and j["attempt"] == 1
+    assert "key limit" in (j["message"] or "").lower()
+    assert "trying again once" in log.read_text()
+
+    db.update("jobs", jid, status="running")
+    r._run_job(jid)
+    j = db.one("SELECT * FROM jobs WHERE id=?", (jid,))
+    assert hits["n"] == 2
+    assert j["status"] == "failed" and j["attempt"] == 1
+    assert "HTTP 403" in (j["message"] or "")
+
+
+def test_key_limit_error_is_not_an_empty_claude_reply():
+    assert is_key_limit_error('AI gateway HTTP 403: b\'{"error":{"message":"Key limit exceeded (total limit)."')
+    assert is_key_limit_error('openrouter_key_limit')
+    assert not is_key_limit_error("the AI did not translate a batch of 1 sentences")
+    assert not is_key_limit_error("AI gateway HTTP 500: overloaded")
 
 
 def test_retrying_transitions_rebuilds_the_video_first(tmp_path):

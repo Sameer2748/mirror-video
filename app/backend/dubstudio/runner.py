@@ -21,6 +21,14 @@ PIECE_PAT = re.compile(r"piece\s+(\d+)\s*/\s*(\d+)", re.I)
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
 
+def is_key_limit_error(exc):
+    """OpenRouter refused the key because its spend cap is used up.
+
+    Not an empty Claude reply (those stay failed). The job can be asked once more after the cap is raised."""
+    s = str(exc or "")
+    return "Key limit exceeded" in s or "openrouter_key_limit" in s
+
+
 class Runner:
     def __init__(self, db):
         self.db = db
@@ -474,11 +482,18 @@ class Runner:
             # a step killed from outside (memory pressure, sleep, a crash: exit by signal) is retried once by itself
             m = re.search(r"exit code (-?\d+)", str(e)); rc = int(m.group(1)) if m else None
             cur = self.db.one("SELECT attempt FROM jobs WHERE id=?", (job_id,))
-            if rc is not None and (rc < 0 or rc in (137, 143)) and job_id not in self.cancelled and (cur["attempt"] or 0) < 1:
+            once = job_id not in self.cancelled and (cur["attempt"] or 0) < 1
+            if rc is not None and (rc < 0 or rc in (137, 143)) and once:
                 with open(j["log_path"], "a") as f:
                     f.write(f"\n(stopped by signal, exit {rc}: trying again once)\n")
                 self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
                           message=f"stopped unexpectedly (exit {rc}); trying again")
+            elif once and is_key_limit_error(e):
+                # OpenRouter 403 spend cap — not a Claude empty-reply. One job retry, one call, after the cap can move.
+                with open(j["log_path"], "a") as f:
+                    f.write("\n(OpenRouter key limit: trying again once)\n")
+                self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
+                          message="OpenRouter key limit; trying again once")
             else:
                 self._set(j, status="failed", finished=now(), message=f"{type(e).__name__}: {e}")
         finally:
