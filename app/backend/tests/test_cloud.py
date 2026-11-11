@@ -1075,6 +1075,12 @@ def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
         "sibling": "/Users/me/conductor/workspaces/app/library/work/TGS_ep35/y.srt",   # a different episode
         "labels": "DE,US", "n": 7, "flag": True,
         "nested": {"list": ["/Users/me/conductor/workspaces/app/library/work/TGS_ep34/z.json", "not a path"]},
+        "subs_outputs": {
+            "/Users/me/Downloads/TGS US_DE/output/ep34/final_en_subs.mp4": {
+                "srt": "/Users/me/Downloads/TGS US_DE/output/ep34/en.srt",
+                "video": "/Users/me/Downloads/TGS US_DE/output/ep34/final.mp4",
+            }
+        },
     }
     there = json.loads(cloud._swap(json.dumps(conf), pairs))
     assert there["src_video"] == "/Users/me/Downloads/TGS US_DE/US/ep34.mp4"
@@ -1083,6 +1089,9 @@ def test_a_path_that_merely_contains_work_or_out_is_not_mangled(tmp_path):
     assert there["work_itself"] == "/work"
     assert there["sibling"] == "/Users/me/conductor/workspaces/app/library/work/TGS_ep35/y.srt"
     assert there["nested"]["list"] == ["/work/z.json", "not a path"]
+    assert "/out/final_en_subs.mp4" in there["subs_outputs"]
+    assert "/Users/me/Downloads/TGS US_DE/output/ep34/final_en_subs.mp4" not in there["subs_outputs"]
+    assert there["subs_outputs"]["/out/final_en_subs.mp4"]["srt"] == "/out/en.srt"
     assert there["labels"] == "DE,US" and there["n"] == 7 and there["flag"] is True
     # and back again, exactly
     back = json.loads(cloud._swap(json.dumps(there), [(b, a) for a, b in pairs]))
@@ -1284,3 +1293,29 @@ def test_check_finds_the_english_srt_next_to_the_sheet(tmp_path):
     work = tmp_path / "work"; work.mkdir()
     found = mod._find_translated_srt(str(work), {"sheet_out": str(out / "mapping.xlsx")})
     assert found == str(srt)
+
+
+def test_check_finds_subtitle_videos_when_subs_outputs_keys_still_say_out(tmp_path):
+    """IMTS EP69/70: the videos landed next to the clean master, but config keys stayed `/out/...`."""
+    import importlib.util
+    script = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    spec = importlib.util.spec_from_file_location("dubstitch_imts", script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out = tmp_path / "out"
+    out.mkdir()
+    clean = out / "IMTSDEUS_EP69_IT_final_clean.mp4"; clean.write_bytes(b"c")
+    de = out / "IMTSDEUS_EP69_IT_final_de_subs.mp4"; de.write_bytes(b"d")
+    en = out / "IMTSDEUS_EP69_IT_final_en_subs.mp4"; en.write_bytes(b"e")
+    cfg = {
+        "clean_final": str(clean),
+        "sheet_out": str(out / "mapping.xlsx"),
+        "subs_outputs": {
+            "/out/IMTSDEUS_EP69_IT_final_de_subs.mp4": {"srt": "/out/de.srt"},
+            "/out/IMTSDEUS_EP69_IT_final_en_subs.mp4": {"srt": "/out/en.srt"},
+        },
+    }
+    assert mod._heal_subs_outputs(cfg)
+    assert cfg["subs_outputs"][str(de)]["srt"] == "/out/de.srt"
+    assert cfg["subs_outputs"][str(en)]["srt"] == "/out/en.srt"
+    assert "/out/IMTSDEUS_EP69_IT_final_en_subs.mp4" not in cfg["subs_outputs"]

@@ -2746,6 +2746,50 @@ def cmd_dynsrt(a):
     dynsubs.make_plan(a.work, words, a.out, find_font(a.font, a.size), (W, H), size=a.size)
     cfg = load(a.work, "config.json"); cfg["dynamic_srt"] = os.path.abspath(a.out); save(a.work, "config.json", cfg)
 
+def _resolve_output_path(p, cfg, work=None):
+    """The file on this machine, even when config.json still names the worker's `/out/...`.
+
+    `subs_outputs` is keyed by the video path. Unpacking used to rewrite values but not keys, so
+    check looked for `/out/SHOW_EPN_IT_final_en_subs.mp4` after the files had landed next to the
+    clean master (IMTS EP69/70)."""
+    if p and os.path.isfile(p):
+        return os.path.abspath(p)
+    name = os.path.basename(p or "")
+    if not name:
+        return p
+    dirs = []
+    for key in ("clean_final", "sheet_out", "groups_review"):
+        q = cfg.get(key)
+        if q:
+            dirs.append(os.path.dirname(q))
+    if work:
+        dirs.append(work)
+    for d in dirs:
+        cand = os.path.join(d, name)
+        if os.path.isfile(cand):
+            return os.path.abspath(cand)
+    return p
+
+
+def _heal_subs_outputs(cfg, work=None):
+    """Rewrite leftover `/out/...` keys in `subs_outputs` (and `clean_final`) to files on this disk."""
+    changed = False
+    clean = cfg.get("clean_final")
+    q = _resolve_output_path(clean, cfg, work)
+    if q and q != clean:
+        cfg["clean_final"] = q
+        changed = True
+    healed = {}
+    for p, meta in (cfg.get("subs_outputs") or {}).items():
+        r = _resolve_output_path(p, cfg, work)
+        if r != p:
+            changed = True
+        healed[r] = meta
+    if healed:
+        cfg["subs_outputs"] = healed
+    return changed
+
+
 def _find_translated_srt(work, cfg):
     """The English SRT on disk, even when config.json lost `translation.out`.
 
@@ -2771,10 +2815,13 @@ def _find_translated_srt(work, cfg):
 def cmd_check(a):
     from PIL import Image, ImageDraw
     cfg = load(a.work, "config.json"); bad = []
+    if _heal_subs_outputs(cfg, a.work):
+        save(a.work, "config.json", cfg)
     clean = cfg.get("clean_final"); subs = cfg.get("subs_outputs") or {}
     vids = ([("clean", clean)] if clean else []) + [(os.path.basename(v["srt"]), p) for p, v in subs.items()]
     if not clean or not os.path.exists(clean): bad.append("no clean master (run `bookends --out ...`)")
-    if len([p for p in subs if os.path.exists(p)]) < a.expect_subs: bad.append(f"only {len(subs)} subtitled videos, expected {a.expect_subs}")
+    have = [p for p in subs if os.path.exists(p)]
+    if len(have) < a.expect_subs: bad.append(f"only {len(have)} subtitled videos, expected {a.expect_subs}")
     ref = probe_duration_ms(clean) if clean and os.path.exists(clean) else None
     FPS = out_fps(cfg)
     for name, p in vids:

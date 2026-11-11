@@ -461,7 +461,13 @@ def _swap_paths(value, pairs):
     if isinstance(value, list):
         return [_swap_paths(v, pairs) for v in value]
     if isinstance(value, dict):
-        return {k: _swap_paths(v, pairs) for k, v in value.items()}
+        # `subs_outputs` is keyed by the video path. Values used to come back as local paths
+        # while the keys stayed `/out/...`; local check then reported the files missing (IMTS EP69/70).
+        out = {}
+        for k, v in value.items():
+            nk = _swap_paths(k, pairs) if isinstance(k, str) else k
+            out[nk] = _swap_paths(v, pairs)
+        return out
     return value
 
 
