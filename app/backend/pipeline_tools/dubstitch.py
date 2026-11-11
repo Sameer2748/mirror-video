@@ -610,11 +610,27 @@ def probe_duration_ms(path):
                          capture_output=True, text=True).stdout.strip()
     return int(round(float(out) * 1000))
 
+OUT_FPS = 25   # owner 2026-10-30: every output video is rendered at 25 fps, whatever the source's rate (TGS: 30)
+
 def probe_video(path):
-    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
-                          "stream=width,height,r_frame_rate", "-of", "csv=p=0", path], capture_output=True, text=True).stdout
-    w, h, r = out.strip().split(",")[:3]; a, b = r.split("/")
-    return int(w), int(h), round(int(a) / int(b))
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                        "stream=width,height,r_frame_rate", "-of", "csv=p=0", path],
+                       capture_output=True, text=True)
+    out = (r.stdout or "").strip()
+    parts = [p.strip() for p in out.split(",") if p.strip() and p.strip().upper() != "N/A"]
+    if len(parts) < 3:
+        size = os.path.getsize(path) if os.path.isfile(path) else 0
+        err = (r.stderr or "").strip().replace("\n", " ")[:200]
+        raise RuntimeError(
+            f"ffprobe could not read this video ({path!r}: exists={os.path.isfile(path)} "
+            f"size={size} got {out!r}{(' stderr=' + err) if err else ''})")
+    w, h, rate = parts[0], parts[1], parts[2]
+    if "/" in rate:
+        a, b = rate.split("/", 1)
+        fps = round(int(a) / int(b)) if b and int(b) else 0
+    else:
+        fps = round(float(rate)) if rate else 0
+    return int(w), int(h), fps or OUT_FPS
 
 
 TRUNCATED_MARKERS = (
@@ -644,8 +660,6 @@ def video_decodes(path, ss=None):
     if r.returncode != 0 or ffmpeg_err_is_truncated(err):
         return False
     return True
-
-OUT_FPS = 25   # owner 2026-10-30: every output video is rendered at 25 fps, whatever the source's rate (TGS: 30)
 
 def out_fps(cfg):
     """frame rate of every video this pipeline writes (config "out_fps" overrides; default OUT_FPS)"""
@@ -1872,8 +1886,11 @@ def cmd_transitions(a):
         pg = c - (sw[k - 1][0] if k else 0); ng = (sw[k + 1][0] if k + 1 < len(sw) else 1e9) - c
         plan.append(dict(t=c, style=st, hb=min(hh, 0.45 * pg), ha=min(hh, 0.45 * ng), ua=ua, sa=sa, ub=ub, sb=sb))
     src_video = cfg["src_video"]
-    rate = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate", "-of", "csv=p=0",
-                           src_video], capture_output=True, text=True).stdout.strip().split("/")
+    raw = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate", "-of", "csv=p=0",
+                          src_video], capture_output=True, text=True).stdout.strip()
+    rate = raw.split("/")
+    if not raw or not rate[0]:
+        raise RuntimeError(f"ffprobe has no frame rate for {src_video!r} (got {raw!r})")
     sfps = int(rate[0]) / int(rate[1]) if len(rate) == 2 else float(rate[0])
     vf = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2"
     def grab(t0, t1):                                               # source frames [t0, t1) at the render's size

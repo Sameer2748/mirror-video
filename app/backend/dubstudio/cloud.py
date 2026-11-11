@@ -481,13 +481,17 @@ def _swap(text, pairs):
 
 
 KEEP_CONFIG_KEYS = ("translation",)
+INPUT_CONFIG_KEYS = ("src_video", "dub_audio")
 
 
 def _keep_local_config_keys(previous, incoming_text):
     """A later visit can unpack an older config.json and wipe keys an earlier step wrote.
 
     TAB EP31: scene/cut packed config before the AI translation finished, then unpacked
-    over `translation.out`. The English SRT file stayed; the pointer did not."""
+    over `translation.out`. The English SRT file stayed; the pointer did not.
+
+    TAB EP15: a later visit left `src_video` as `/files/F0/15.mp4`. ffprobe of that path
+    on the next render is empty (`expected 3, got 1` / `float ''`)."""
     try:
         incoming = json.loads(incoming_text)
         old = json.loads(previous)
@@ -500,7 +504,40 @@ def _keep_local_config_keys(previous, incoming_text):
         if k in old and not incoming.get(k):
             incoming[k] = old[k]
             changed = True
+    for k in INPUT_CONFIG_KEYS:
+        old_p = old.get(k)
+        if isinstance(old_p, str) and Path(old_p).is_file() and incoming.get(k) != old_p:
+            incoming[k] = old_p
+            changed = True
     return json.dumps(incoming, ensure_ascii=False) if changed else incoming_text
+
+
+def heal_config_inputs(db, ep, W):
+    """If config.json still names a rented-machine path, point src_video / dub_audio at this episode's files."""
+    one = getattr(db, "one", None)
+    if not callable(one) or not isinstance(ep, dict) or ep.get("id") is None:
+        return
+    conf = Path(W) / CONFIG
+    if not conf.is_file():
+        return
+    try:
+        data = json.loads(conf.read_text(encoding="utf-8"))
+    except ValueError:
+        return
+    if not isinstance(data, dict):
+        return
+    changed = False
+    for kind in INPUT_CONFIG_KEYS:
+        a = one("SELECT path FROM assets WHERE episode_id=? AND kind=? AND role='input'", (ep["id"], kind))
+        local = (a or {}).get("path")
+        if not local or not Path(local).is_file():
+            continue
+        cur = data.get(kind)
+        if not (isinstance(cur, str) and Path(cur).is_file()):
+            data[kind] = local
+            changed = True
+    if changed:
+        conf.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def tokenise(cmd, work_dir, out_dir, cfg, files=None):
@@ -857,6 +894,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+    heal_config_inputs(db, ep, W)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
         log("library: this box's ai.py/library.py travel with the job (the rented image is older)")

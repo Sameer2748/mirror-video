@@ -911,6 +911,8 @@ class Runner:
             return []
         clean = trans[trans.index("--out") + 1]
         out = clean.replace("_final_clean.mp4", "_before.mp4")
+        if Path(out).is_file() and Path(out).stat().st_size > 64:
+            return []
         py = render[0]
         picture = self._expand(list(render) + ["--manifest", "manifest_groups.auto.json", "--out", out])
         drop = self._expand([py, "-c",

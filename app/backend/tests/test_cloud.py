@@ -1242,6 +1242,33 @@ def test_unpacking_an_older_config_keeps_the_english_srt_pointer():
     assert got["video_out"] == "/work/v.mp4"
 
 
+def test_unpacking_keeps_the_local_source_video_path(tmp_path):
+    """TAB EP15: a later visit left src_video as /files/F0/15.mp4. The next render ffprobed that
+    empty path (expected 3, got 1). Keep the real file this box already has."""
+    src = tmp_path / "15.mp4"
+    src.write_bytes(b"v" * 32)
+    old = json.dumps({"src_video": str(src), "dub_audio": "/missing.wav"})
+    incoming = json.dumps({"src_video": "/files/F0/15.mp4", "video_out": "/work/v.mp4"})
+    got = json.loads(cloud._keep_local_config_keys(old, incoming))
+    assert got["src_video"] == str(src)
+    assert got["video_out"] == "/work/v.mp4"
+
+
+def test_heal_config_inputs_rewrites_a_worker_source_path(tmp_path):
+    src = tmp_path / "input.mp4"
+    src.write_bytes(b"v" * 32)
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "config.json").write_text(json.dumps({"src_video": "/files/F0/15.mp4"}))
+
+    class DB:
+        def one(self, sql, args=()):
+            return {"path": str(src)} if args[1] == "src_video" else None
+
+    cloud.heal_config_inputs(DB(), {"id": 19}, work)
+    assert json.loads((work / "config.json").read_text())["src_video"] == str(src)
+
+
 def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch):
     """A failed check used to raise before downloading /out, so EP31's videos never landed."""
     show, ep = _episode(tmp_path)
