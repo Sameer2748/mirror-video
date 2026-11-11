@@ -471,6 +471,46 @@ def test_lip_mesh_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
     assert out[2:] == ["--video", "/files/F0/ep.mp4", "--out-dir", str(work / "lips_mesh")]
 
 
+def _keep_named_groups():
+    """Load keep_named_groups from facemap.py without running the InsightFace script."""
+    src = Path(__file__).resolve().parents[1] / "pipeline_tools" / "facemap.py"
+    if not src.is_file():
+        src = Path(__file__).resolve().parents[3] / "pipeline_tools" / "facemap.py"
+    text = src.read_text()
+    start = text.index("def keep_named_groups")
+    chunk = text[start:]
+    end = chunk.index("\np = argparse")
+    ns = {}
+    exec(compile(chunk[:end], str(src), "exec"), ns)
+    return ns["keep_named_groups"]
+
+
+def test_facemap_drops_claude_group_ids_that_are_not_clusters():
+    """TAB EP48: Claude named group 83, which was not a ≥4-face identity cluster. Building
+    centroids from gname via big[g] KeyError'd and killed a finished 5-minute scan."""
+    keep = _keep_named_groups()
+    big = {1: [0, 1, 2, 3]}
+    gname, how = keep({1: "Mira", 83: "hallucinated"}, {1: "vote 3", 83: "Claude (reference faces)"}, big)
+    assert gname == {1: "Mira"} and how == {1: "vote 3"}
+    cent = {g: big[g] for g in gname}          # the crash was KeyError 83 on this lookup
+    assert list(cent) == [1]
+
+
+def test_facemap_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
+    """The rented facemap.py still KeyErrors on a Claude-invented group id. The job takes THIS copy."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/dubstudio/scripts/facemap.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "--video", "/files/F0/ep.mp4", "--library", str(work / "broll_library.json")]
+    out = cloud.point_facemap_at_staged(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_pipe" / "facemap.py" and staged.is_file()
+    text = staged.read_text()
+    assert "keep_named_groups" in text and "not a real identity group" in text
+    assert "KeyError 83" in text
+    assert out[2:] == ["--video", "/files/F0/ep.mp4", "--library", str(work / "broll_library.json")]
+
+
 def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path):
     """The rented dubstitch concatenates leftover .ok files when the mp4s never arrived. The job takes THIS copy."""
     work = tmp_path / "W"; work.mkdir()

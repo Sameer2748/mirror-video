@@ -737,6 +737,39 @@ def point_dubstitch_at_staged(cmd, work):
     return out
 
 
+def stage_facemap(work):
+    """Copy this image's facemap.py into W/_pipe.
+
+    The rented GPU image dies when Claude names a group that is not a ≥4-face cluster (TAB EP48 KeyError 83).
+    Staging this copy means a Retry uses the skip, without rebuilding `:face-gpu`."""
+    here = Path(__file__).resolve()
+    src = None
+    for p in (here.parents[1] / "pipeline_tools" / "facemap.py",
+              here.parents[3] / "pipeline_tools" / "facemap.py" if len(here.parents) > 3 else None):
+        if p is not None and p.is_file():
+            src = p
+            break
+    if src is None:
+        raise FileNotFoundError("facemap.py")
+    dest_dir = Path(work) / "_pipe"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / "facemap.py"
+    shutil.copy2(src, dest)
+    return dest
+
+
+def point_facemap_at_staged(cmd, work):
+    """Rewrite a facemap command so the worker runs the copy we just staged under W/_pipe."""
+    script = stage_facemap(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("facemap.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def _scratch_tar(work, ep, name, part):
     """Local tar used while talking to R2. W.parent is the shared library/work folder, so the name must include
     the episode: eleven render tails used to write `_render_tail_work_in.tar.gz` at once, and the PUT
@@ -824,6 +857,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if name == "lip_mesh":
         cmd = point_lipmesh_at_staged(cmd, W)
         log("lip_mesh: this box's lipmesh.py travels with the job (the rented image still crashes on an empty slice)")
+    if name == "facemap" or any(str(c).endswith("facemap.py") for c in (cmd or [])):
+        cmd = point_facemap_at_staged(cmd, W)
+        log("facemap: this box's facemap.py travels with the job (the rented image dies when Claude names a missing group)")
     if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
         cmd = point_dubstitch_at_staged(cmd, W)
         log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")

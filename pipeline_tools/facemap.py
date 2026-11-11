@@ -21,6 +21,21 @@ Usage: facemap.py --video V --library <dir>/broll_library.json --lips <work>/lip
 import argparse, base64, io, json, os, subprocess, sys, time
 import numpy as np, cv2
 
+def keep_named_groups(gname, how, big):
+    """Keep names only for identity groups that exist.
+
+    Vote naming only writes ids from `big` (≥4 faces). Claude's JSON can invent a group number
+    (TAB EP48: KeyError 83 when a named id was not a real cluster)."""
+    keep, how2 = {}, {}
+    for g, n in gname.items():
+        if g not in big:
+            print(f"Claude named group {g} which is not a real identity group -- skipped")
+            continue
+        keep[g] = n
+        if g in how:
+            how2[g] = how[g]
+    return keep, how2
+
 p = argparse.ArgumentParser(); p.add_argument("--video", required=True); p.add_argument("--library", required=True)
 p.add_argument("--lips", required=True); p.add_argument("--fps", type=float, default=5); p.add_argument("--yolo", default="yolo26l.pt")
 p.add_argument("--app", default=os.environ.get("DUB_APP_BACKEND", "")); p.add_argument("--thr", type=float, default=0.40)
@@ -122,9 +137,18 @@ if rest and ai:
     try:
         text, _ = ai.chat([{"type": "text", "text": q}, {"type": "image_url", "image_url": {"url": grid(ims, lbs)}}], max_tokens=2000)
         for kk, v in ((ai.extract_json(text, "groups") or {}).get("groups") or {}).items():
-            gname[int(kk)] = v; how[int(kk)] = "Claude (reference faces)"
+            try:
+                gid = int(kk)
+            except (TypeError, ValueError):
+                print(f"Claude named group {kk!r} which is not a number -- skipped")
+                continue
+            if gid not in big:
+                print(f"Claude named group {gid} which is not a real identity group -- skipped")
+                continue
+            gname[gid] = v; how[gid] = "Claude (reference faces)"
     except Exception as ex:
         print("group naming by Claude failed:", str(ex)[:120])
+gname, how = keep_named_groups(gname, how, big)
 cent = {g: (lambda m: m / np.linalg.norm(m))(X[big[g]].mean(0)) for g in gname}
 for i, f in enumerate(faces):
     if f["g"] in gname: f["name"] = gname[f["g"]]; continue
