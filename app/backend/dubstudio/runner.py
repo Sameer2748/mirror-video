@@ -39,6 +39,8 @@ class Runner:
         self.thread = None
         self.wake = threading.Event()
         self.awake = None           # caffeinate while steps run (the Mac must not sleep mid-render)
+        self._cleanup_busy = False
+        self._cleanup_thread = None
 
     # ---------- lifecycle ----------
     def start(self):
@@ -316,7 +318,33 @@ class Runner:
                 traceback.print_exc()
             self.wake.wait(0.5); self.wake.clear()
 
+    def _maybe_daily_cleanup(self):
+        """Once a day, in a side thread so packing a job is not blocked: leftover tars, segs, and
+        local copies of finished episodes that are already in R2."""
+        if self._cleanup_busy:
+            return
+        if not storage.cleanup_due(cfg.library):
+            return
+        self._cleanup_busy = True
+
+        def run():
+            try:
+                busy = [r["episode_id"] for r in self.db.q(
+                    "SELECT DISTINCT episode_id FROM jobs WHERE status='running'")]
+                out = storage.maybe_daily_cleanup(self.db, cfg.library, keep_episode_ids=busy)
+                if out and (out.get("freed") or out.get("episodes")):
+                    print(f"daily disk cleanup: {out['freed'] / 1e9:.2f} GB, "
+                          f"{out.get('episodes', 0)} finished episodes")
+            except Exception:
+                traceback.print_exc()
+            finally:
+                self._cleanup_busy = False
+
+        self._cleanup_thread = threading.Thread(target=run, daemon=True, name="disk-cleanup")
+        self._cleanup_thread.start()
+
     def _tick(self):
+        self._maybe_daily_cleanup()
         jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
         self._keep_awake(any(j["status"] == "running" for j in jobs))     # not for steps parked behind the review
         if not jobs:

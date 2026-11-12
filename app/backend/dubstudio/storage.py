@@ -679,11 +679,17 @@ def drop_render_scratch(work, log=None):
     return {"freed": freed, "removed": gone}
 
 
-def drop_render_scratch_tree(root, log=None):
+def drop_render_scratch_tree(root, log=None, skip_dirs=None):
     """Scratch folders in this directory and each immediate child (library/work/<show>_epN)."""
     root = Path(root)
     if not root.is_dir():
         return {"freed": 0, "folders": 0}
+    skip = set()
+    for p in skip_dirs or []:
+        try:
+            skip.add(str(Path(p).resolve()))
+        except OSError:
+            skip.add(str(p))
     targets = [root]
     try:
         targets.extend(p for p in root.iterdir() if p.is_dir())
@@ -692,6 +698,11 @@ def drop_render_scratch_tree(root, log=None):
     freed = n = 0
     seen = set()
     for folder in targets:
+        try:
+            if str(folder.resolve()) in skip:
+                continue
+        except OSError:
+            pass
         for name in RENDER_SCRATCH_DIRS:
             p = folder / name
             key = str(p)
@@ -802,6 +813,178 @@ def free_disk(work, log=print, db=None, keep_episode_id=None):
         sample = ", ".join(gone[:10]) or "nothing extra"
         log(f"freed {freed / 1e9:.2f} GB on this box ({sample}{'…' if len(gone) > 10 else ''})")
     return {"freed": freed, "removed": gone}
+
+
+# Daily sweeper: leftover pack tars, render segs, and local copies of finished episodes that are already in R2.
+# CLEAN_WORK stays false on the per-episode cleanup step (proxy/lips stay for a same-day editor visit).
+CLEANUP_INTERVAL = 24 * 3600
+CLEANUP_MARKER = ".disk_cleanup_at"
+KEEP_TAR_SECONDS = 2 * 3600          # a pack still being written
+DONE_AGE = 24 * 3600                 # strip a finished episode the next day
+TIGHT_DISK = 40 * 10**9              # also strip younger done episodes when free space is under this
+LOW_WORK_DISK = 20 * 10**9           # then also drop proxy / lips of done episodes
+KEEP_EPISODE_STATUSES = frozenset({"new", "queued", "processing", "review"})
+INTERMEDIATE_VIDEO_PATS = ("video_*_nosubs.mp4", "clean_noglow.mp4", "video_groups.mp4", "video_groups.auto.mp4")
+
+
+def cleanup_marker(library):
+    return Path(library) / CLEANUP_MARKER
+
+
+def cleanup_due(library, interval=CLEANUP_INTERVAL, now_ts=None):
+    now_ts = now_ts or time.time()
+    try:
+        last = float(cleanup_marker(library).read_text().strip().split()[0])
+    except Exception:
+        return True
+    return now_ts - last >= interval
+
+
+def mark_cleanup(library, now_ts=None, freed=0):
+    now_ts = now_ts or time.time()
+    p = cleanup_marker(library)
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(f"{now_ts:.0f} {freed}\n")
+    except OSError:
+        pass
+
+
+def _tar_leftovers(folder):
+    if not folder.is_dir():
+        return []
+    try:
+        return [*folder.glob("_*.tar.gz"), *folder.glob("_*.tar.gz.part"), *folder.glob("*.tar.gz.part")]
+    except OSError:
+        return []
+
+
+def _resolved(p):
+    try:
+        return str(Path(p).resolve())
+    except OSError:
+        return str(p)
+
+
+def daily_cleanup(db, library, now_ts=None, min_age=DONE_AGE, keep_episode_ids=None, log=print):
+    """Drop leftover pack tars, render segs, and big local copies of finished episodes that are already in R2.
+
+    Processing / queued / review / currently-running episodes are left alone. The editor's thumbs, json, srt
+    stay. Inputs and published masters of a done episode come back from R2 if a later retry needs them."""
+    now_ts = now_ts or time.time()
+    lib = Path(library)
+    work_root = lib / "work" if (lib / "work").is_dir() else lib
+    keep_ids = set(keep_episode_ids or ())
+    keep_dirs = set()
+    done_eps = []
+    try:
+        rows = db.q("SELECT id, status, work_dir, output_dir, updated FROM episodes") if db is not None else []
+    except Exception:
+        rows = []
+    for e in rows:
+        active = e["id"] in keep_ids or (e.get("status") or "") in KEEP_EPISODE_STATUSES
+        for d in (e.get("work_dir"), e.get("output_dir")):
+            if d and active:
+                keep_dirs.add(_resolved(d))
+        if (e.get("status") or "") == "done" and e["id"] not in keep_ids:
+            done_eps.append(e)
+
+    try:
+        free = shutil.disk_usage(lib if lib.exists() else Path.cwd()).free
+    except OSError:
+        free = 0
+    age_cut = now_ts if free < TIGHT_DISK else (now_ts - min_age)
+    targets = [e for e in done_eps if (e.get("updated") or 0) <= age_cut]
+    keep_work = free >= LOW_WORK_DISK
+
+    freed, gone = 0, []
+
+    def drop_file(p, label=None):
+        nonlocal freed
+        if not p.is_file():
+            return
+        try:
+            sz = p.stat().st_size
+            p.unlink()
+            freed += sz
+            gone.append(label or p.name)
+        except OSError:
+            pass
+
+    def drop_dir(p, label=None):
+        nonlocal freed
+        if not p.is_dir():
+            return
+        try:
+            sz = _dir_bytes(p)
+            shutil.rmtree(p, ignore_errors=True)
+            freed += sz
+            gone.append(label or p.name)
+        except OSError:
+            pass
+
+    tar_roots = [lib, work_root, Path("/tmp")]
+    try:
+        tar_roots.extend(p for p in work_root.iterdir() if p.is_dir() and _resolved(p) not in keep_dirs)
+    except OSError:
+        pass
+    for folder in tar_roots:
+        for p in _tar_leftovers(folder):
+            try:
+                if now_ts - p.stat().st_mtime < KEEP_TAR_SECONDS:
+                    continue
+            except OSError:
+                continue
+            drop_file(p, p.name)
+
+    skip = [Path(d) for d in keep_dirs]
+    r = drop_render_scratch_tree(work_root, skip_dirs=skip)
+    freed += r["freed"]
+    if r["folders"]:
+        gone.append(f"{r['folders']} scratch folders")
+
+    for e in targets:
+        W = Path(e.get("work_dir") or "")
+        if W.is_dir() and _resolved(W) not in keep_dirs:
+            out = clean_scratch(db, e, keep_work=keep_work, log=lambda m: None)
+            freed += out["freed"]
+            gone.extend(f"{W.name}/{n}" for n in out["removed"])
+            for pat in INTERMEDIATE_VIDEO_PATS:
+                for p in W.glob(pat):
+                    drop_file(p, f"{W.name}/{p.name}")
+            for p in W.glob("trans_*"):
+                if p.is_dir():
+                    drop_dir(p, f"{W.name}/{p.name}")
+
+    if db is not None:
+        try:
+            uploads = db.q("SELECT path, episode_id FROM uploads WHERE status='done'")
+        except Exception:
+            uploads = []
+        target_ids = {e["id"] for e in targets}
+        for u in uploads:
+            if u.get("episode_id") not in target_ids:
+                continue
+            p = Path(u.get("path") or "")
+            if p.suffix.lower() in (".mp4", ".mov", ".mkv"):
+                drop_file(p, p.name)
+
+    if log:
+        sample = ", ".join(gone[:8]) or "nothing extra"
+        log(f"daily cleanup: {freed / 1e9:.2f} GB ({sample}{'…' if len(gone) > 8 else ''})")
+    return {"freed": freed, "removed": gone, "episodes": len(targets)}
+
+
+def maybe_daily_cleanup(db, library, now_ts=None, interval=CLEANUP_INTERVAL, min_age=DONE_AGE,
+                        keep_episode_ids=None, force=False, log=print):
+    """Run `daily_cleanup` at most once per day (or now if `force`)."""
+    now_ts = now_ts or time.time()
+    if not force and not cleanup_due(library, interval=interval, now_ts=now_ts):
+        return None
+    out = daily_cleanup(db, library, now_ts=now_ts, min_age=min_age,
+                        keep_episode_ids=keep_episode_ids, log=log)
+    mark_cleanup(library, now_ts=now_ts, freed=out.get("freed") or 0)
+    return out
 
 
 def clean_scratch(db, ep, keep_work=False, log=print):

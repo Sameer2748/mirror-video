@@ -275,6 +275,29 @@ def test_run_notes_are_written_without_the_mac_scripts_folder(tmp_path, monkeypa
     assert row["status"] == "done"
 
 
+def test_runner_starts_daily_disk_cleanup_once(tmp_path, monkeypatch):
+    import threading
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    seen = []
+    gate = threading.Event()
+
+    def fake(db_, library, **k):
+        gate.wait(2)
+        seen.append(library)
+        return {"freed": 1, "removed": ["x"], "episodes": 1}
+
+    monkeypatch.setattr("dubstudio.storage.cleanup_due", lambda *a, **k: True)
+    monkeypatch.setattr("dubstudio.storage.maybe_daily_cleanup", fake)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._maybe_daily_cleanup()
+    r._maybe_daily_cleanup()
+    gate.set()
+    r._cleanup_thread.join(2)
+    assert len(seen) == 1
+
+
 def test_library_warnings_are_not_the_last_line():
     assert NOISE.search("box_utils.py:103: UserWarning: An output with one or more elements was resized")
     assert NOISE.search("  torch.index_select(x1, 0, idx, out=xx1)")

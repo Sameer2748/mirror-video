@@ -27,6 +27,7 @@ Do not Process Again from scratch on a late episode (throws away matching / lip 
 | 10 Nov | **Undo Process again** | If Process again restarted from lip-scan after a late run already existed, restore the previous run and retry the failed step. |
 | 10 Nov | **Keep the English SRT pointer** | If scene/cut unpacks an older `config.json` after translate, find `*english*.srt` next to the videos, write `translation.out` again, and still land `/out` when check fails so the masters are not thrown away (`232f32b`). Tail is **14 steps** (`point_translation` before `check`). |
 | 12 Nov | **Upload type per slot** | Video / audio / script folders (or one mixed folder used three times) only take their own types: video `.mp4/.mov/.mkv`, audio `.mp3/.wav/.m4a` (not mp4), script `.docx/.doc/.txt`. The API rejects the wrong type too. |
+| 12 Nov | **Daily disk cleanup** | Once a day the runner drops leftover pack tars, render `segs*`, and local copies of **done** episodes that are already in R2 (source video, published masters, intermediates). Processing / Review / running jobs are left alone. Thumbs / json / srt stay. If free space is under **40 GB**, it also strips done episodes from today; under **20 GB** it drops proxy / lips of done episodes too. |
 
 Automatic transitions on a finished cut still rotate styles at source jumps (into B-roll stays a straight cut). EP52 example: 104 transitions (blur dissolve 39, zoom blur 34, light leak 31), not one style on every clip.
 
@@ -45,6 +46,7 @@ The website disk is **not** the rented machine. Whisper / render can finish on R
 | TAB EP31 Whisper | Worker finished (1570 words, 286 SRT rows, 63 s); then download ENOSPC | Cleanup only looked for `segs` and found **none**. 50 GB was leftover **published mp4s, tars, other episodes’ lips/proxies** | `free_disk`: drop leftover tars, published videos already in R2, neighbour caches (`2311a93`) |
 | TAB EP53 / EP54 | Stuck **68%**, “sending the render tail”, 55–61 min | Not waiting on RunPod. This box could not pack the work tar / copy `dynsubs.py` | Same disk. After space returned, retry **render** only |
 | 10 Nov afternoon | Jobs stayed **running** with no new log after a deploy | Runner requeues `running` on start, then hung in `free_disk` while the volume was still 0 GB. After that, `running` + message `sending the render tail` has no watchdog | Restarted the service once 53 GB (later **157 GB**) was free so they packed and sent |
+| 12 Nov | Site 502 ~5 min, then 200; **35 GB free of 200** | Deploy warmup of upload-type filter, not a full disk. TAB bulk leftovers (tars, segs, published mp4s, source files of 100+ done eps) still eat the volume | Daily sweeper on the runner: leftover tars/segs always; done-episode R2 copies after 1 day, or immediately when free < 40 GB |
 | 10 Nov | Disk still tight for bulk | 50 GB too small for 8 active episodes + leftovers | Live disk **50 → 200 GB** at `/app/output` (~**$50/mo** at $0.25/GB). Extra space does **not** replace cleanup |
 
 **Now (11 Nov):** disk is **200 GB** at `/app/output`. EP53 / EP54 were resent as the full tail. EP31 check-fail (below) is patched; retry was **Render clips** only, not Process Again. Tail is **14 steps** (`point_translation` before `check`).
@@ -139,9 +141,9 @@ Bigger disk **buys time**. Leftover masters, tars, and other episodes’ caches 
 
 ## 5. Still open / next
 
-- Cleanup after Review (park work in R2, download only on Render) was asked then **paused** — process unchanged; disk was increased instead.
+- Cleanup after Review (park work in R2, download only on Render) was asked then **paused** — process unchanged; disk was increased instead. A **daily leftover sweeper** now covers tars / segs / R2 copies of done episodes (12 Nov).
 - After a deploy, a job can sit `running` with a dead thread if the message is not `starting` (120 s watchdog only covers `starting`). Restarting the service requeues them.
-- `CLEAN_WORK` still defaults **false** (proxy / lips stay). Final `cleanup` only after publish.
+- `CLEAN_WORK` still defaults **false** (proxy / lips stay after publish). The daily sweeper removes them of **done** episodes only when free space is under 20 GB.
 - Scene/groups still `force_local` until the CPU image is confirmed to have the empty-reply cap and medium thinking.
 - R2 CORS `ExposeHeaders: ["ETag"]` still needed for browser multipart of multi-GB videos.
 - TAB EP12 matching-fill hole: Retry `use_scene` only if asked.

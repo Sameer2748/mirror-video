@@ -589,6 +589,121 @@ def test_free_disk_drops_published_videos_when_scratch_is_already_gone(tmp_path,
     assert (cur / "proxy_540.mp4").exists()
 
 
+def test_daily_cleanup_drops_done_episode_leftovers_and_keeps_active(tmp_path, monkeypatch):
+    """Finished TAB episodes leave source video, published masters, segs, and pack tars on the 200 GB
+    disk. A once-a-day pass removes those (they are already in R2) and leaves a processing episode alone."""
+    import shutil
+    from dubstudio import storage
+    lib = tmp_path / "library"
+    work_root = lib / "work"
+    done_w = work_root / "TABPGCIT_ep10"
+    live_w = work_root / "TABPGCIT_ep99"
+    out_dir = lib / "output" / "ep10"
+    done_w.mkdir(parents=True)
+    live_w.mkdir(parents=True)
+    out_dir.mkdir(parents=True)
+    src = done_w / "input" / "10.mp4"
+    src.parent.mkdir()
+    src.write_bytes(b"S" * 400)
+    (done_w / "segs_groups" / "000.mp4").parent.mkdir()
+    (done_w / "segs_groups" / "000.mp4").write_bytes(b"G" * 200)
+    (done_w / "video_groups_nosubs.mp4").write_bytes(b"V" * 150)
+    (done_w / "proxy.mp4").write_bytes(b"P" * 80)
+    (done_w / "config.json").write_text("{}")
+    (done_w / "thumbs" / "a.jpg").parent.mkdir()
+    (done_w / "thumbs" / "a.jpg").write_bytes(b"jpg")
+    published = out_dir / "TABPGCIT_EP10_IT_final_clean.mp4"
+    published.write_bytes(b"M" * 800)
+    old_tar = work_root / "_10_mksrt_dub_work_back.tar.gz"
+    old_tar.write_bytes(b"T" * 300)
+    os.utime(old_tar, (time.time() - 3 * 3600, time.time() - 3 * 3600))
+    fresh_tar = work_root / "_99_render_work_in.tar.gz"
+    fresh_tar.write_bytes(b"N" * 50)
+    (live_w / "segs" / "000.mp4").parent.mkdir()
+    (live_w / "segs" / "000.mp4").write_bytes(b"L" * 100)
+    (live_w / "src.mp4").write_bytes(b"LIVE")
+
+    class DB:
+        def q(self, sql, args=()):
+            if "FROM episodes" in sql:
+                return [
+                    {"id": 10, "status": "done", "work_dir": str(done_w), "output_dir": str(out_dir),
+                     "updated": time.time() - 2 * 86400},
+                    {"id": 99, "status": "processing", "work_dir": str(live_w), "output_dir": str(lib / "output" / "ep99"),
+                     "updated": time.time()},
+                ]
+            if "FROM uploads" in sql:
+                return [{"path": str(published), "episode_id": 10}]
+            if "FROM assets" in sql:
+                return [{"path": str(src), "kind": "src_video", "r2_key": "shows/TAB/ep10/10.mp4"}]
+            return []
+
+    monkeypatch.setattr(shutil, "disk_usage",
+                        lambda p: type("U", (), {"free": 35e9, "used": 165e9, "total": 200e9})())
+    out = storage.daily_cleanup(DB(), lib, log=lambda m: None, keep_episode_ids={99})
+    assert out["freed"] >= 400 + 200 + 150 + 800 + 300
+    assert not src.exists()
+    assert not published.exists()
+    assert not old_tar.exists()
+    assert not (done_w / "segs_groups").exists()
+    assert not (done_w / "video_groups_nosubs.mp4").exists()
+    assert (done_w / "proxy.mp4").exists()
+    assert (done_w / "config.json").exists()
+    assert (done_w / "thumbs" / "a.jpg").exists()
+    assert fresh_tar.exists()
+    assert (live_w / "segs" / "000.mp4").exists()
+    assert (live_w / "src.mp4").exists()
+
+
+def test_maybe_daily_cleanup_runs_once_per_day(tmp_path, monkeypatch):
+    from dubstudio import storage
+    lib = tmp_path / "library"
+    lib.mkdir()
+    work = lib / "work"
+    work.mkdir()
+    t0 = 1_700_000_000
+    (work / "_old.tar.gz").write_bytes(b"T" * 40)
+    os.utime(work / "_old.tar.gz", (t0 - 3 * 3600, t0 - 3 * 3600))
+
+    class DB:
+        def q(self, *a, **k):
+            return []
+
+    first = storage.maybe_daily_cleanup(DB(), lib, now_ts=t0, log=lambda m: None)
+    assert first is not None and first["freed"] >= 40
+    assert not (work / "_old.tar.gz").exists()
+    (work / "_old.tar.gz").write_bytes(b"T" * 40)
+    os.utime(work / "_old.tar.gz", (t0 - 3 * 3600, t0 - 3 * 3600))
+    second = storage.maybe_daily_cleanup(DB(), lib, now_ts=t0 + 60, log=lambda m: None)
+    assert second is None
+    assert (work / "_old.tar.gz").exists()
+    later = storage.maybe_daily_cleanup(DB(), lib, now_ts=t0 + storage.CLEANUP_INTERVAL + 1, log=lambda m: None)
+    assert later is not None
+    assert not (work / "_old.tar.gz").exists()
+
+
+def test_daily_cleanup_leaves_young_done_episodes_when_disk_is_not_tight(tmp_path, monkeypatch):
+    import shutil
+    from dubstudio import storage
+    lib = tmp_path / "library"
+    work = lib / "work" / "TAB_ep1"
+    work.mkdir(parents=True)
+    src = work / "1.mp4"
+    src.write_bytes(b"S" * 100)
+
+    class DB:
+        def q(self, sql, args=()):
+            if "FROM episodes" in sql:
+                return [{"id": 1, "status": "done", "work_dir": str(work), "output_dir": str(work),
+                         "updated": time.time()}]
+            return []
+
+    monkeypatch.setattr(shutil, "disk_usage",
+                        lambda p: type("U", (), {"free": 80e9, "used": 120e9, "total": 200e9})())
+    storage.daily_cleanup(DB(), lib, log=lambda m: None)
+    assert src.exists()
+
+
 @pytest.mark.skipif(not os.environ.get("DATABASE_URL"), reason="set DATABASE_URL (docker-compose up) for the Postgres check")
 def test_the_app_runs_on_postgres(env):
     """The same suite runs end to end on Postgres; this one states it plainly."""
