@@ -113,6 +113,14 @@ def deliverables(show, ep, ctx):
     return files
 
 
+# Download-all: the three videos and the English SRT. Sheets stay as individual cloud links.
+ZIP_KINDS = ("clean", "dub_subs", "en_subs", "en_srt")
+
+
+def zip_members(files):
+    return [f for f in files if f.get("kind") in ZIP_KINDS]
+
+
 def write_zip(files, dest, folder):
     """The finished files that are on disk, stored (not recompressed) in one folder inside a zip. -> how many."""
     import zipfile

@@ -1254,6 +1254,39 @@ def test_unpacking_keeps_the_local_source_video_path(tmp_path):
     assert got["video_out"] == "/work/v.mp4"
 
 
+def test_a_second_render_finds_the_source_video_when_config_still_names_work_input(tmp_path):
+    """TAB EP21/23: after the first render, config.json still said `/work/input/src_video/….mp4`.
+    The tar skips input/, so the next visit probed a missing file. Match by name and send it."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    video = work / "input" / "src_video" / "NO_SUB_TAB_FR_EP_21.mp4"
+    video.parent.mkdir(parents=True)
+    video.write_bytes(b"v" * (cloud.SMALL + 8))
+    (work / "config.json").write_text(json.dumps({
+        "src_video": "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4"}))
+
+    class DB:
+        def one(self, sql, args=()):
+            return {"path": str(video), "kind": "src_video", "id": 1, "r2_key": None}
+        def q(self, sql, args=()):
+            return [{"path": str(video), "kind": "src_video"}]
+
+    cloud.heal_config_inputs(DB(), ep, work)
+    assert json.loads((work / "config.json").read_text())["src_video"] == str(video)
+    got = cloud._files_named_in_config(work, Path(ep["output_dir"]), {})
+    assert str(video) in got.values()
+    extra = cloud._input_asset_files(DB(), ep, {})
+    assert str(video) in extra.values()
+    swapped = json.loads(cloud._swap(
+        json.dumps({"src_video": "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4"}),
+        [(str(work), "/work"), (str(video), "/files/F0/NO_SUB_TAB_FR_EP_21.mp4")]))
+    assert swapped["src_video"] == "/files/F0/NO_SUB_TAB_FR_EP_21.mp4"
+    place = cloud._media_place_list({"{F0}": str(video)}, work)
+    dests = place[0]["dests"]
+    assert "/files/F0/NO_SUB_TAB_FR_EP_21.mp4" in dests
+    assert "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4" in dests
+
+
 def test_heal_config_inputs_rewrites_a_worker_source_path(tmp_path):
     src = tmp_path / "input.mp4"
     src.write_bytes(b"v" * 32)

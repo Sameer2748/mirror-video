@@ -471,13 +471,39 @@ def _swap_paths(value, pairs):
     return value
 
 
+def _point_named_files(value, named):
+    """A leftover `/work/input/…` or `/files/F0/…` path becomes the file we actually sent, matched by name.
+
+    TAB EP21/23: after the first render, config.json still said `/work/input/src_video/….mp4`. The tar
+    skips `input/`, so the worker probed a missing file even though the same name was in `/files/F0`."""
+    if isinstance(value, str):
+        name = Path(value).name
+        if name in named and (value.startswith(("/work/", "/files/", "/out/")) or not Path(value).is_file()):
+            return named[name]
+        return value
+    if isinstance(value, list):
+        return [_point_named_files(v, named) for v in value]
+    if isinstance(value, dict):
+        return {(_point_named_files(k, named) if isinstance(k, str) else k): _point_named_files(v, named)
+                for k, v in value.items()}
+    return value
+
+
 def _swap(text, pairs):
     """`config.json` with its paths pointing at the other machine's copies of the same files."""
     try:
         data = json.loads(text)
     except ValueError:
         return text
-    return json.dumps(_swap_paths(data, pairs), ensure_ascii=False)
+    data = _swap_paths(data, pairs)
+    named = {}
+    for a, b in pairs:
+        b = str(b)
+        if b == "/files" or b.startswith("/files/"):
+            named[Path(a).name] = b
+    if named:
+        data = _point_named_files(data, named)
+    return json.dumps(data, ensure_ascii=False)
 
 
 KEEP_CONFIG_KEYS = ("translation",)
@@ -512,6 +538,20 @@ def _keep_local_config_keys(previous, incoming_text):
     return json.dumps(incoming, ensure_ascii=False) if changed else incoming_text
 
 
+def ensure_episode_inputs(db, show, ep, log=print):
+    """Bring src_video / dub_audio down from R2 when this box no longer has them.
+
+    A second render after Review used to pack config.json pointing at `/work/input/…` while the tar
+    skips `input/` and the local copy may already have been cleaned. The rented machine then ffprobed
+    an empty path (TAB EP21 / EP23)."""
+    if db is None or not isinstance(ep, dict) or ep.get("id") is None:
+        return
+    try:
+        storage.fetch_inputs(db, show or {}, ep, kinds=list(INPUT_CONFIG_KEYS), log=log)
+    except Exception as ex:
+        log(f"could not fetch the source video/audio: {ex}")
+
+
 def heal_config_inputs(db, ep, W):
     """If config.json still names a rented-machine path, point src_video / dub_audio at this episode's files."""
     one = getattr(db, "one", None)
@@ -533,7 +573,8 @@ def heal_config_inputs(db, ep, W):
         if not local or not Path(local).is_file():
             continue
         cur = data.get(kind)
-        if not (isinstance(cur, str) and Path(cur).is_file()):
+        workerish = isinstance(cur, str) and cur.startswith(("/work/", "/files/", "/out/"))
+        if workerish or not (isinstance(cur, str) and Path(cur).is_file()):
             data[kind] = local
             changed = True
     if changed:
@@ -595,6 +636,32 @@ def _send_large_work_files(cmd, work_dir, files):
     return out, files
 
 
+def _resolve_media_path(W, O, value):
+    """A path from config.json / the edit list, including leftover worker paths, as a file on this box."""
+    if not isinstance(value, str) or not value.startswith("/"):
+        return None
+    p = Path(value)
+    if p.is_file():
+        return p
+    if value == "/work" or value.startswith("/work/"):
+        q = Path(W) / value[len("/work"):].lstrip("/")
+        if q.is_file():
+            return q
+    if value == "/out" or value.startswith("/out/"):
+        q = Path(O) / value[len("/out"):].lstrip("/")
+        if q.is_file():
+            return q
+    if value.startswith("/files/"):
+        name = Path(value).name
+        for folder in (Path(W) / "input", Path(W)):
+            if not folder.is_dir():
+                continue
+            hits = [h for h in folder.rglob(name) if h.is_file()]
+            if hits:
+                return hits[0]
+    return None
+
+
 def _files_named_in_config(W, O, already):
     """The big files a step needs may be named **only inside config.json**, never on the command line.
     `dubstitch.py manifest --work W` is the whole command, and `cmd_manifest` then does
@@ -612,8 +679,11 @@ def _files_named_in_config(W, O, already):
     for value in data.values():
         if not isinstance(value, str) or not value.startswith("/") or value in seen:
             continue
-        p = Path(value)
-        if not p.is_file():
+        p = _resolve_media_path(W, O, value)
+        if p is None:
+            continue
+        value = str(p)
+        if value in seen:
             continue
         # A small file in the work folder rides in the tar, and the path is rewritten to /work.
         # The uploaded video and audio live in input/, which the tar skips, and anything over 1 MB is
@@ -627,6 +697,43 @@ def _files_named_in_config(W, O, already):
         out[f"{{F{len(already) + len(out)}}}"] = str(p)
         seen.add(value)
     return out
+
+
+def _input_asset_files(db, ep, already):
+    """Always send the uploaded source video and dub audio, even if config.json still names a worker path."""
+    out, seen = {}, set(already.values())
+    q = getattr(db, "q", None) if db is not None else None
+    if not callable(q) or not isinstance(ep, dict) or ep.get("id") is None:
+        return out
+    try:
+        rows = q("SELECT path FROM assets WHERE episode_id=? AND kind IN ('src_video','dub_audio') AND role='input'",
+                 (ep["id"],))
+    except Exception:
+        return out
+    for a in rows or []:
+        p = Path(a.get("path") or "")
+        if not p.is_file() or str(p) in seen:
+            continue
+        if p.stat().st_size <= SMALL:
+            continue
+        out[f"{{F{len(already) + len(out)}}}"] = str(p)
+        seen.add(str(p))
+    return out
+
+
+def _media_place_list(files, W):
+    """Where the rented machine must put each big file, including `/work/input/…` if that is what config.json says."""
+    place, W = [], Path(W)
+    for token, path in files.items():
+        p = Path(path)
+        dests = [f"{WORKER['{FILES}']}/{token.strip('{}')}/{p.name}"]
+        try:
+            dests.append("/work/" + p.resolve().relative_to(W.resolve()).as_posix())
+        except ValueError:
+            if "input" in p.parts:
+                dests.append("/work/" + "/".join(p.parts[p.parts.index("input"):]))
+        place.append({"name": p.name, "dests": dests})
+    return place
 
 
 def _used_clip_files(W, already):
@@ -649,8 +756,11 @@ def _used_clip_files(W, already):
             value = seg.get("video") if isinstance(seg, dict) else None
             if not isinstance(value, str) or not value.startswith("/") or value in seen:
                 continue
-            p = Path(value)
-            if not p.is_file():
+            p = _resolve_media_path(W, W, value)
+            if p is None:
+                continue
+            value = str(p)
+            if value in seen:
                 continue
             inside = value == root or value.startswith(root + "/")
             if inside and p.stat().st_size <= SMALL:
@@ -894,6 +1004,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+    ensure_episode_inputs(db, show, ep, log=log)
     heal_config_inputs(db, ep, W)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
@@ -911,6 +1022,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if preset_files:
         files.update(preset_files)
     files.update(_files_named_in_config(W, O, files))
+    files.update(_input_asset_files(db, ep, files))
     # A later step can need a big file an earlier step wrote into the work folder (the 540 px preview).
     # The work tar only carries files of 1 MB or under, so that file goes as its own link, like the source video.
     cmd_t, files = _send_large_work_files(cmd_t, W, files)
@@ -1040,9 +1152,35 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
 # to it. No image rebuild, no pipeline change: the worker runs `{PY} {WORK}/_cloud_chain.py` the same way it
 # runs any other command.
 CHAIN_DRIVER = '''\
-import json, os, shutil, subprocess, sys
+import json, os, shutil, subprocess, sys, urllib.request
 here = os.path.dirname(os.path.abspath(__file__))
 jobs = json.loads(open(os.path.join(here, "_cloud_chain.json"), encoding="utf-8").read())
+by_name = {}
+if os.path.isdir("/files"):
+    for root, _, names in os.walk("/files"):
+        for n in names:
+            by_name[n] = os.path.join(root, n)
+for item in jobs.get("place") or []:
+    name = item.get("name")
+    src = by_name.get(name)
+    url = item.get("url")
+    for dest in item.get("dests") or []:
+        if os.path.isfile(dest) and os.path.getsize(dest) > 64:
+            continue
+        os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+        if src and os.path.isfile(src):
+            if not os.path.exists(dest):
+                try:
+                    os.symlink(src, dest)
+                except OSError:
+                    shutil.copy2(src, dest)
+            print("media: %s -> %s" % (name, dest), flush=True)
+        elif url:
+            print("media: downloading %s" % name, flush=True)
+            with urllib.request.urlopen(url, timeout=1800) as r, open(dest, "wb") as f:
+                shutil.copyfileobj(r, f, 8 << 20)
+            by_name[name] = dest
+            src = dest
 for item in jobs["steps"]:
     name, cmd = item["name"], item["cmd"]
     print(f"=== {name} ===", flush=True)
@@ -1092,6 +1230,8 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+    ensure_episode_inputs(db, show, ep, log=log)
+    heal_config_inputs(db, ep, W)
     files, packed = {}, []
     staged = False
     for step_name, cmd in named_cmds:
@@ -1103,12 +1243,15 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).
         cmd_t, files = _send_large_work_files(cmd_t, W, files)
         packed.append({"name": step_name, "cmd": cmd_t})
+    files.update(_files_named_in_config(W, O, files))
+    files.update(_input_asset_files(db, ep, files))
     places = dict(WORKER_PLACES)
     for token, path in files.items():
         places[token] = f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"
     for item in packed:
         item["cmd"] = [_fill_tokens(a, places) for a in item["cmd"]]
-    (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed}, ensure_ascii=False), encoding="utf-8")
+    (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed, "place": _media_place_list(files, W)},
+                                                    ensure_ascii=False), encoding="utf-8")
     (W / "_cloud_chain.py").write_text(CHAIN_DRIVER, encoding="utf-8")
     if staged:
         log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")
@@ -1121,13 +1264,23 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
 
 def _file_in_cloud(db, show, ep, path):
     """A big input file in R2, uploading it once if it is not there yet. -> the key."""
-    a = db.one("SELECT * FROM assets WHERE episode_id=? AND path=? AND role='input'", (ep["id"], str(path)))
+    path = Path(path)
+    a = None
+    one = getattr(db, "one", None) if db is not None else None
+    if callable(one) and isinstance(ep, dict) and ep.get("id") is not None:
+        a = one("SELECT * FROM assets WHERE episode_id=? AND path=? AND role='input'", (ep["id"], str(path)))
+        if not a:
+            a = one("SELECT * FROM assets WHERE episode_id=? AND role='input' AND path LIKE ?",
+                    (ep["id"], "%" + path.name))
     if a and a.get("r2_key") and storage.head(a["r2_key"]):
         return a["r2_key"]
     kind = (a or {}).get("kind") or "file"
     key = storage.input_key(show, ep, kind, path.name)
-    if not storage.head(key):
-        storage.put_big_file(path, key)
+    if storage.head(key):
+        return key
+    if not path.is_file():
+        raise FileNotFoundError(f"the file is gone: {path}")
+    storage.put_big_file(path, key)
     if a:
         db.update("assets", a["id"], r2_key=key)
     return key

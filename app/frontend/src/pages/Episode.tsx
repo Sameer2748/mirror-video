@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { api, Episode, reveal, Upload, useLive } from "../api";
+import { api, Episode, Upload, useLive } from "../api";
 import { base, Chip, ErrorBox, fmtDur, fmtSize, Picker, uploadEpisodeFile } from "../ui";
 import { acceptOf, isKindFile, KIND_EXTS } from "./bulkFiles";
 import Processing from "./Processing";
@@ -307,12 +307,9 @@ function Outputs({ ep }: { ep: Episode }) {
   const [err, setErr] = useState<string | null>(null);
   const load = () => api.get<Deliv>(`/api/episodes/${ep.id}/deliverables`).then(setD).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [ep.id, ep.status]); // eslint-disable-line
-  const open = (p: string) => reveal(p).catch((e) => setErr(e.message));
   if (!d) return <ErrorBox error={err} />;
   const r = d.render; const check = ep.jobs.find((j) => j.step === "check");
   const passed = r?.check_result?.passed ?? check?.check_passed;
-  const main = d.files.filter((f) => ["clean", "dub_subs", "en_subs", "en_srt", "mapping"].includes(f.kind));
-  const extra = d.files.filter((f) => !main.includes(f));
   const busy = r && (r.status === "running" || r.status === "waiting");
   return (
     <div>
@@ -322,32 +319,7 @@ function Outputs({ ep }: { ep: Episode }) {
       {!busy && passed === false && <div className="error">The final check did not pass:<pre className="log">{(r?.check_result?.lines || check?.check_lines || []).join("\n") || "the check log is empty — open Processing and read the render step"}</pre></div>}
       {d.unrendered && <div className="warn">The editor has changes that are not in these files yet (timeline version {d.latest_version}{d.rendered_version ? `, rendered ${d.rendered_version}` : ""}). <Link to={`/episodes/${ep.id}/editor`}>Open the editor</Link> and press Render.</div>}
       {d.qc_open > 0 && <div className="warn">{d.qc_open} QC note{d.qc_open > 1 ? "s are" : " is"} still open in the editor.</div>}
-      <div className="panel-row">
-        <code>{d.output_dir}</code>
-        <button className="small" onClick={() => open(d.output_dir)}>Open in Finder</button>
-        <a className="button small ghost" href={`/api/episodes/${ep.id}/export/premiere`} title="The current timeline as Final Cut Pro 7 XML: in Premiere, File → Import">Export for Premiere</a>
-      </div>
       <ErrorBox error={err} />
-      <table className="table">
-        <tbody>
-          {main.map((f) => (
-            <tr key={f.kind} className={f.exists ? "" : "muted"}>
-              <td style={{ width: 30 }}>{f.exists ? (f.name.endsWith(".mp4") ? "🎬" : "📄") : "·"}</td>
-              <td><b>{f.label}</b><div className="small-text muted">{f.name}</div></td>
-              <td className="muted">{f.exists ? fmtSize(f.size) : "not made yet"}</td>
-              <td className="muted small-text">{f.mtime ? new Date(f.mtime * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : ""}</td>
-              <td className="right">{f.exists && <button className="small ghost" onClick={() => open(f.path)}>Show in Finder</button>}</td>
-            </tr>
-          ))}
-          {extra.map((f) => (
-            <tr key={f.kind}>
-              <td>📎</td><td>{f.label}<div className="small-text muted">{f.name}</div></td><td className="muted">{fmtSize(f.size)}</td>
-              <td className="muted small-text">{f.mtime ? new Date(f.mtime * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : ""}</td>
-              <td className="right"><button className="small ghost" onClick={() => open(f.path)}>Show in Finder</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
       <Cloud ep={ep} />
       {d.final_check_image && <div className="panel">
         <div className="small-text muted" style={{ marginBottom: 8 }}>The final check: the same moment in every video (clean = no subtitles; the others show theirs).</div>
@@ -382,7 +354,7 @@ function Cloud({ ep }: { ep: Episode }) {
         <b>In the cloud</b>
         <span className="muted small-text">R2 · <code>{c.prefix}</code>{c.auto ? " · sent up by itself when the episode is done" : ""}</span>
         <span className="grow" />
-        <a className="button small" href={`/api/episodes/${ep.id}/deliverables.zip`}>Download all</a>
+        <a className="button small" href={`/api/episodes/${ep.id}/deliverables.zip`} title="The three videos and the English SRT">Download all</a>
         <button className="small" disabled={!!busy} onClick={send}>{busy === "send" ? "Queueing…" : "Send the finished files up"}</button>
       </div>
       <ErrorBox error={err} />

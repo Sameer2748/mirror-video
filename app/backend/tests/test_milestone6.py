@@ -73,6 +73,7 @@ def test_the_finished_files_pack_into_one_folder(tmp_path):
     ]
     dest = tmp_path / "out.zip"
     assert deliver.write_zip(files, dest, "TGS_ep34") == 2
+    assert [f["name"] for f in deliver.zip_members(files)] == ["clean.mp4"]
     import zipfile
     with zipfile.ZipFile(dest) as z:
         assert sorted(z.namelist()) == ["TGS_ep34/clean.mp4", "TGS_ep34/notes.md"]

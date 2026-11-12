@@ -1681,18 +1681,38 @@ def deliverables(eid: int):
 
 @app.get("/api/episodes/{eid}/deliverables.zip")
 def deliverables_zip(eid: int):
-    """Every finished file of this episode, in one folder, as a zip."""
+    """The three videos and the English SRT, in one folder, as a zip. Sheets stay as individual cloud links."""
     ep = _get("episodes", eid)
     show = _get("shows", ep["show_id"])
-    files = deliver.deliverables(show, ep, None)
+    files = deliver.zip_members(deliver.deliverables(show, ep, None))
     folder = f"{show['code']}_ep{ep['number']}"
+    temps = []
     fd, name = tempfile.mkstemp(suffix=".zip")
     os.close(fd)
     try:
+        by_kind = {}
+        for u in db().q("SELECT kind, key FROM uploads WHERE episode_id=? AND status='done' ORDER BY id", (eid,)):
+            by_kind[u["kind"]] = u["key"]
+        for f in files:
+            if f.get("exists") and f.get("path") and Path(f["path"]).is_file():
+                continue
+            key = by_kind.get(f["kind"])
+            if not key or not storage.configured():
+                continue
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=Path(f["name"]).suffix)
+            tmp.close()
+            storage.download(key, tmp.name)
+            f["path"] = tmp.name
+            f["exists"] = True
+            temps.append(tmp.name)
         n = deliver.write_zip(files, name, folder)
     except Exception:
         os.unlink(name)
+        for t in temps:
+            os.unlink(t)
         raise
+    for t in temps:
+        os.unlink(t)
     if not n:
         os.unlink(name)
         raise HTTPException(409, "nothing to download yet")
