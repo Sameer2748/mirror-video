@@ -2262,26 +2262,24 @@ def gen_file(eid: int, tid: int, path: str):
     return FileResponse(p, headers={"Cache-Control": "private, max-age=3600"})
 
 
-def _frames_from(eid):
-    """The file thumbnails are cut from: the preview copy if there is one (here or in R2), else the source video.
+_proxy_local = threading.Lock()
+_THUMB_MISS = {"Cache-Control": "public, max-age=3600"}
 
-    ffmpeg can take a signed URL, so a deployed box whose scratch was cleaned still shows the timeline filmstrip
-    without copying the whole source back first."""
+
+def _frames_from(eid):
+    """A local file to cut thumbnails from. Never a signed URL: ffmpeg on HTTP hung the website
+    (TAB EP22 filmstrip). Pull the 540p copy from R2 once if it is not on this box."""
     e = _get("episodes", eid)
     show = _get("shows", e["show_id"])
-    p = tlm.proxy_path(e["work_dir"]) or storage.ensure_local(show, e, tlm.PROXY)
+    p = tlm.proxy_path(e["work_dir"])
+    if not p:
+        with _proxy_local:
+            p = tlm.proxy_path(e["work_dir"]) or storage.ensure_local(show, e, tlm.PROXY)
     if p:
         return e, str(p)
     a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
     if a and Path(a["path"]).exists():
         return e, a["path"]
-    url = storage.media_link(show, e, tlm.PROXY)
-    if url:
-        return e, url
-    if a:
-        key = a.get("r2_key") or _input_in_cloud(show, e, a, "src_video")
-        if key:
-            return e, storage.presign(key, 3600)
     return e, None
 
 
@@ -2289,7 +2287,7 @@ def _frames_from(eid):
 def thumb(eid: int, ms: float, h: int = 120):
     e, src = _frames_from(eid)
     if not src:
-        raise HTTPException(404, "no source video")
+        raise HTTPException(404, "no source video", headers=_THUMB_MISS)
     work = e["work_dir"]
     try:
         if shutil.disk_usage(work).free < 2 * 10**9:
@@ -2308,7 +2306,7 @@ def thumb(eid: int, ms: float, h: int = 120):
         storage.drop_render_scratch_tree(Path(work).parent)
         p = tlm.thumb(work, str(src), ms, h)
     if not p:
-        raise HTTPException(404, "no frame")
+        raise HTTPException(404, "no frame", headers=_THUMB_MISS)
     return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
 
 

@@ -855,22 +855,43 @@ _thumb_sem = threading.Semaphore(4)
 
 
 def thumb(work, video, ms, height=120):
-    """One small frame of the source video at `ms` (rounded to 0.1 s), cached as a jpg."""
+    """One small frame of the source video at `ms` (rounded to 0.1 s), cached as a jpg.
+
+    Only a real local file is used. A signed URL / missing file used to launch ffmpeg on every
+    filmstrip tile (TAB EP22: hundreds of 404s, then the website 502'd). A failed tile is
+    remembered so the next request does not run ffmpeg again."""
     ms = int(round(ms / 100.0) * 100)
     d = Path(work) / "thumbs"
     d.mkdir(parents=True, exist_ok=True)
     p = d / f"{ms:08d}_{height}.jpg"
-    if not p.exists():
-        with _thumb_sem:
-            if not p.exists():
-                tmp = p.with_suffix(".part.jpg")
-                r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{ms / 1000:.3f}", "-i", str(video),
-                                    "-frames:v", "1", "-vf", f"scale=-2:{height}", "-q:v", "5", str(tmp)],
-                                   capture_output=True)
-                if tmp.exists() and r.returncode == 0:
-                    tmp.replace(p)
-                else:
-                    tmp.unlink(missing_ok=True)
-                    if r.returncode != 0 and b"No space left" in (r.stderr or b""):
-                        raise OSError(28, "No space left on device")
-    return p if p.exists() else None
+    if p.exists():
+        return p
+    fail = d / f"{ms:08d}_{height}.fail"
+    if fail.exists():
+        return None
+    src = Path(str(video)) if video and not str(video).startswith(("http://", "https://")) else None
+    if not src or not src.is_file():
+        fail.write_text("no local video")
+        return None
+    with _thumb_sem:
+        if p.exists():
+            return p
+        if fail.exists():
+            return None
+        tmp = p.with_suffix(".part.jpg")
+        try:
+            r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{ms / 1000:.3f}", "-i", str(src),
+                                "-frames:v", "1", "-vf", f"scale=-2:{height}", "-q:v", "5", str(tmp)],
+                               capture_output=True, timeout=8)
+        except subprocess.TimeoutExpired:
+            tmp.unlink(missing_ok=True)
+            fail.write_text("timeout")
+            return None
+        if tmp.exists() and r.returncode == 0:
+            tmp.replace(p)
+            return p
+        tmp.unlink(missing_ok=True)
+        if r.returncode != 0 and b"No space left" in (r.stderr or b""):
+            raise OSError(28, "No space left on device")
+        fail.write_text((r.stderr or b"")[-200:].decode("utf-8", "replace"))
+        return None

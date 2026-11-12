@@ -153,3 +153,13 @@ def test_dub_preview_is_an_exact_aac_copy(env):
     time.sleep(0.05); Path(src).touch()
     c.get(f"/api/episodes/{e['id']}/media/dub_preview")
     assert out.stat().st_mtime > m1                                        # the audio changed: made again
+
+
+def test_thumb_does_not_run_ffmpeg_when_the_video_is_missing(tmp_path, monkeypatch):
+    """A missing 540p copy used to launch ffmpeg on every filmstrip tile and 502 the website (TAB EP22)."""
+    w = tmp_path / "w"; w.mkdir()
+    monkeypatch.setattr(tlm.subprocess, "run", lambda *a, **k: (_ for _ in ()).throw(AssertionError("ffmpeg")))
+    assert tlm.thumb(w, "/no/such.mp4", 1000) is None
+    assert tlm.thumb(w, "/no/such.mp4", 1000) is None
+    assert tlm.thumb(w, "https://example/proxy_540.mp4", 1500) is None
+    assert (w / "thumbs" / "00001000_120.fail").exists()

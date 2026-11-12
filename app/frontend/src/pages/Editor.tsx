@@ -1887,11 +1887,12 @@ function TimelineView(p: {
 
   const thumbsFor = (c: Clip, w: number, laneH = H.v1) => {
     if (c.media) return null;                                       // an imported clip: no frames from the source video
-    const n = w < 16 ? 1 : clamp(Math.ceil(w / Math.max(laneH * 1.2, 40)), 1, 16);
+    const n = w < 16 ? 1 : clamp(Math.ceil(w / Math.max(laneH * 1.2, 40)), 1, 8);
     const span = Math.max((c.s1 || 0) - (c.s0 || 0), 1);
     return Array.from({ length: n }, (_, k) => {
       const ms = Math.round(((c.s0 || 0) + ((k + 0.5) / n) * span) / 500) * 500;
-      return <img key={k} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80`} loading="lazy" alt="" draggable={false} />;
+      return <img key={k} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80`} loading="lazy" alt="" draggable={false}
+        onError={(e) => { const el = e.currentTarget; el.onerror = null; el.remove(); }} />;
     });
   };
 
