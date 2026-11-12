@@ -486,6 +486,7 @@ export default function Editor() {
   const act = useRef(0);                 // which player is visible
   const vClip = useRef<string[]>(["", ""]);   // clip id each player is parked on
   const lastFix = useRef(0);
+  const swapAt = useRef(0);              // last clip change: seeking here is normal, do not pause the voice
   const playheadEl = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const clipsRef = useRef(clips); clipsRef.current = clips;
@@ -517,7 +518,7 @@ export default function Editor() {
       if (play) {
         if (I.paused) I.play().catch(() => {});
         const err = I.currentTime - want, now = performance.now();
-        if (Math.abs(err) > 0.25 && now - lastFix.current > 250 && !I.seeking) { I.currentTime = want; lastFix.current = now; }
+        if (Math.abs(err) > 0.8 && now - lastFix.current > 500 && !I.seeking) { I.currentTime = want; lastFix.current = now; }
         else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
       } else { if (!I.paused) I.pause(); if (Math.abs(I.currentTime - want) > 0.02) I.currentTime = want; }
       if (Math.abs(I.playbackRate - rate) > 0.001) I.playbackRate = rate;
@@ -538,6 +539,7 @@ export default function Editor() {
     if (vClip.current[a] !== key) {
       if (vClip.current[1 - a] === key) { a = 1 - a; act.current = a; }    // the standby player is already here
       vClip.current[a] = key;
+      swapAt.current = performance.now();
       const V = vids[a].current!; if (Math.abs(V.currentTime - want) > 0.05) V.currentTime = want;
     }
     const V = vids[a].current!, S = vids[1 - a].current!;
@@ -549,7 +551,8 @@ export default function Editor() {
     if (play) {
       if (V.paused) V.play().catch(() => {});
       const err = V.currentTime - want, now = performance.now();       // + = picture ahead of the voice
-      if (Math.abs(err) > 0.25 && now - lastFix.current > 250 && !V.seeking) { V.currentTime = want; lastFix.current = now; }
+      // a hard seek every 250 ms keeps the player in "seeking" and pauses the voice on a cutty stretch (TAB EP22)
+      if (Math.abs(err) > 0.8 && now - lastFix.current > 500 && !V.seeking) { V.currentTime = want; lastFix.current = now; }
       else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
     }
     if (Math.abs(V.playbackRate - rate) > 0.001) V.playbackRate = rate;
@@ -619,8 +622,8 @@ export default function Editor() {
 
   // the play loop. The dub audio is the clock; picture + subtitles follow it. Screen redraws (requestAnimationFrame)
   // stop or slow down when the window is not in front or the Mac is busy (a lip scan, Whisper, a render), so a timer
-  // drives the same step too. If the picture still falls more than 0.5 s behind (its player cannot decode fast
-  // enough), the voice is held until the picture is back on the right frame: never out-of-sync play.
+  // drives the same step too. A cut / slow clip makes the player seek: that is not a hang, so the voice keeps
+  // going. Only a long stall pauses it ("picture catching up").
   useEffect(() => {
     if (!playing) return;
     let raf = 0, lastUi = 0, lastStep = 0, holdSince = 0, stallSince = 0; let alive = true;
@@ -636,9 +639,10 @@ export default function Editor() {
         }
       } else {
         showFrame(t, true);
-        stallSince = lag.current.stalled ? stallSince || now : 0;     // the picture's player stuck loading since …
+        const swapping = now - swapAt.current < 1200;  // new clip: seeking is expected
+        stallSince = !swapping && lag.current.stalled ? stallSince || now : 0;
         // (not while the editor tab is hidden: nobody sees the picture then; it lines up when the tab is back)
-        if ((lag.current.s > 0.5 || (stallSince && now - stallSince > 500)) && !A.paused && !document.hidden) {
+        if (!swapping && (lag.current.s > 1.5 || (stallSince && now - stallSince > 2000)) && !A.paused && !document.hidden) {
           holding.current = true; holdSince = now; stallSince = 0; setHeld(true); A.pause();
         }
       }
