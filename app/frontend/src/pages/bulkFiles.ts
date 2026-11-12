@@ -1,8 +1,43 @@
 // Files the bulk form already matched, handed to the status page so uploads start there.
 
-export const VIDEO_EXTS = ["mp4", "mov", "mkv", "m4v"];
-export const AUDIO_EXTS = ["mp3", "wav", "m4a", "aac"];
+export const VIDEO_EXTS = ["mp4", "mov", "mkv", "m4v", "webm", "avi", "mxf"];
+export const AUDIO_EXTS = ["mp3", "wav", "m4a", "aac", "flac", "ogg", "opus"];
 export const SCRIPT_EXTS = ["docx", "doc", "txt"];
+export const SRT_EXTS = ["srt"];
+export const SHEET_EXTS = ["csv", "xlsx", "xls"];
+
+export const KIND_EXTS: Record<string, string[]> = {
+  src_video: VIDEO_EXTS,
+  dub_audio: AUDIO_EXTS,
+  dub_script: SCRIPT_EXTS,
+  src_script: SCRIPT_EXTS,
+  dub_srt: SRT_EXTS,
+  src_srt: SRT_EXTS,
+  names_csv: SHEET_EXTS,
+};
+
+export function fileExt(name: string): string {
+  const base = (name.split("/").pop() || name).trim();
+  const i = base.lastIndexOf(".");
+  return i >= 0 ? base.slice(i + 1).toLowerCase() : "";
+}
+
+export function isKindFile(kind: string, name: string): boolean {
+  const exts = KIND_EXTS[kind];
+  return !exts || exts.includes(fileExt(name));
+}
+
+export function acceptOf(exts: string[]): string {
+  return exts.map((e) => `.${e}`).join(",");
+}
+
+export function onlyKindFiles(files: File[], exts: string[]): File[] {
+  const ok = new Set(exts);
+  return files.filter((f) => {
+    const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name;
+    return ok.has(fileExt(rel));
+  });
+}
 
 const NOT_EPISODE = new Set([360, 480, 720, 1080, 1440, 2160, 1920, 1280, 3840, 4096]);
 

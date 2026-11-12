@@ -26,6 +26,7 @@ Do not Process Again from scratch on a late episode (throws away matching / lip 
 | 10 Nov | **Check-only retry** | After translate rewrites the English SRT, run check again without sending the render tail. Videos already made stay. |
 | 10 Nov | **Undo Process again** | If Process again restarted from lip-scan after a late run already existed, restore the previous run and retry the failed step. |
 | 10 Nov | **Keep the English SRT pointer** | If scene/cut unpacks an older `config.json` after translate, find `*english*.srt` next to the videos, write `translation.out` again, and still land `/out` when check fails so the masters are not thrown away (`232f32b`). Tail is **14 steps** (`point_translation` before `check`). |
+| 12 Nov | **Upload type per slot** | Video / audio / script folders (or one mixed folder used three times) only take their own types: video `.mp4/.mov/.mkv`, audio `.mp3/.wav/.m4a` (not mp4), script `.docx/.doc/.txt`. The API rejects the wrong type too. |
 
 Automatic transitions on a finished cut still rotate styles at source jumps (into B-roll stays a straight cut). EP52 example: 104 transitions (blur dissolve 39, zoom blur 34, light leak 31), not one style on every clip.
 

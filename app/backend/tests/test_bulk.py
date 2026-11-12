@@ -129,6 +129,31 @@ def test_bulk_ignores_files_outside_the_range(env):
         assert names["dub_script"] == f"{e['number']}.docx"
 
 
+def test_mixed_folder_picks_only_the_right_type_per_slot(env):
+    """One folder with 11.mp4 + 11.mp3 + 11.docx, used as video / audio / script: each slot takes only its type.
+    An mp4 must never become the dub audio."""
+    c = env["client"]; s = make_show(c, env["show"])
+    mixed = env["tmp"] / "all-in-one"; mixed.mkdir()
+    (mixed / "11.mp4").write_bytes(b"v" * 32)
+    (mixed / "11.mp3").write_bytes(b"a" * 32)
+    (mixed / "11.docx").write_text("script 11")
+    (mixed / "11.txt").write_text("notes")
+    (mixed / "readme.md").write_text("ignore")
+    dirs = {"src_video_dir": str(mixed), "dub_audio_dir": str(mixed), "dub_script_dir": str(mixed)}
+    prev = c.post(f"/api/shows/{s['id']}/batches/preview", json={"start": 11, "end": 11, **dirs}).json()
+    row = prev["episodes"][0]
+    assert row["src_video"].endswith("11.mp4")
+    assert row["dub_audio"].endswith("11.mp3")
+    assert row["dub_script"].endswith("11.docx")   # .docx beats .txt
+    assert not row["missing"]
+    b = c.post(f"/api/shows/{s['id']}/batches", json={"start": 11, "end": 11, **dirs}).json()
+    names = {a["kind"]: Path(a["path"]).name
+             for a in c.get(f"/api/episodes/{b['episodes'][0]['id']}").json()["assets"] if a.get("role") == "input"}
+    assert names["src_video"] == "11.mp4"
+    assert names["dub_audio"] == "11.mp3"
+    assert names["dub_script"] == "11.docx"
+
+
 def test_bulk_matches_long_file_names_in_the_range(env):
     """TAB FR / Italy titles that already contain 11 and 12, without renaming to 11.mp4."""
     c = env["client"]; s = make_show(c, env["show"])

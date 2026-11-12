@@ -3,8 +3,8 @@ import hashlib, json, os, re, subprocess, zipfile
 from pathlib import Path
 from .config import cfg
 
-VIDEO = {".mp4", ".m4v", ".mov", ".mkv"}
-AUDIO = {".mp3", ".wav", ".m4a", ".aac", ".flac"}
+VIDEO = {".mp4", ".m4v", ".mov", ".mkv", ".webm", ".avi", ".mxf"}
+AUDIO = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg", ".opus"}
 SKIP_DIRS = {"output", "outputs", "work", "_to_delete", "node_modules", ".git", "qc_check", "frames"}
 STOP = {
     "it": "che non di la il è un una per con sono ma lo si le del della mi ti questo come".split(),

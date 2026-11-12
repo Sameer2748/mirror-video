@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, Batch, Show } from "../api";
 import { ErrorBox, fmtSize, Picker } from "../ui";
-import { AUDIO_EXTS, folderLabel, folderUse, keepRange, matchFolder, SCRIPT_EXTS, stashBulkFiles, VIDEO_EXTS } from "./bulkFiles";
+import { AUDIO_EXTS, acceptOf, folderLabel, folderUse, keepRange, matchFolder, onlyKindFiles, SCRIPT_EXTS, stashBulkFiles, VIDEO_EXTS } from "./bulkFiles";
 
 type LocalDirs = { src_video_dir: string; dub_audio_dir: string; dub_script_dir: string };
 type PreviewRow = { number: number; src_video?: string | null; dub_audio?: string | null; dub_script?: string | null;
@@ -85,9 +85,9 @@ export default function BulkNew() {
         <b>How to name the files</b>
         <p>Each folder holds one file per episode. The name just has to contain that episode number — you do not have to rename to <code>11.mp4</code>:</p>
         <ul>
-          <li>Source videos → <code>TAB FR eo 14 .mp4</code>, <code>TAB_FR_S01E11.mp4</code>, <code>11.mp4</code></li>
-          <li>Dub audio → <code>TAB_Italy_Ep11.mp3</code>, <code>11.mp3</code>, <code>puntata 11.m4a</code></li>
-          <li>Dub script → <code>TAB_IT_11.docx</code>, <code>11.docx</code>, <code>episode 11.txt</code></li>
+          <li>Source videos → <code>.mp4</code> / <code>.mov</code> / <code>.mkv</code> — e.g. <code>TAB FR eo 14 .mp4</code>, <code>11.mp4</code></li>
+          <li>Dub audio → <code>.mp3</code> / <code>.wav</code> / <code>.m4a</code> only (not <code>.mp4</code>) — e.g. <code>TAB_Italy_Ep11.mp3</code></li>
+          <li>Dub script → <code>.docx</code> / <code>.doc</code> / <code>.txt</code> — e.g. <code>TAB_IT_11.docx</code></li>
         </ul>
         <p className="hint" style={{ margin: 0 }}>If you type 11–12, only files whose name is episode 11 or 12 are used.
           Extra episodes (<code>10</code>, <code>13</code>), trailers, and names with no number stay on disk.
@@ -106,12 +106,12 @@ export default function BulkNew() {
 
         {uploads ? (
           <>
-            <FolderPick label="Source videos folder" hint="Only the source videos for this range are uploaded"
-              files={videos} onFiles={setVideos} used={videoUse.used} skipped={videoUse.skipped} />
-            <FolderPick label="Dub audio folder" hint="Only the dub audio for this range is uploaded"
-              files={audios} onFiles={setAudios} used={audioUse.used} skipped={audioUse.skipped} />
-            <FolderPick label="Dub script folder (optional)" hint="Only the scripts for this range are uploaded"
-              files={scripts} onFiles={setScripts} used={scriptUse.used} skipped={scriptUse.skipped} />
+            <FolderPick label="Source videos folder" hint="Only video files (.mp4 / .mov / .mkv / .m4v) for this range are used. Audio and scripts in the same folder are ignored."
+              files={videos} onFiles={setVideos} used={videoUse.used} skipped={videoUse.skipped} accept={acceptOf(VIDEO_EXTS)} exts={VIDEO_EXTS} />
+            <FolderPick label="Dub audio folder" hint="Only audio files (.mp3 / .wav / .m4a / .aac). An .mp4 in this folder is not used."
+              files={audios} onFiles={setAudios} used={audioUse.used} skipped={audioUse.skipped} accept={acceptOf(AUDIO_EXTS)} exts={AUDIO_EXTS} />
+            <FolderPick label="Dub script folder (optional)" hint="Only Word / text scripts (.docx / .doc / .txt). Videos and audio in this folder are ignored."
+              files={scripts} onFiles={setScripts} used={scriptUse.used} skipped={scriptUse.skipped} accept={acceptOf(SCRIPT_EXTS)} exts={SCRIPT_EXTS} />
           </>
         ) : (
           <>
@@ -165,8 +165,9 @@ export default function BulkNew() {
   );
 }
 
-function FolderPick({ label, hint, files, onFiles, used, skipped }:
-  { label: string; hint: string; files: File[]; onFiles: (f: File[]) => void; used: number; skipped: number }) {
+function FolderPick({ label, hint, files, onFiles, used, skipped, accept, exts }:
+  { label: string; hint: string; files: File[]; onFiles: (f: File[]) => void; used: number; skipped: number;
+    accept: string; exts: string[] }) {
   const extra = { webkitdirectory: "", directory: "" } as any;
   const summary = files.length
     ? `${folderLabel(files)} · using ${used} for this range`
@@ -176,8 +177,8 @@ function FolderPick({ label, hint, files, onFiles, used, skipped }:
     <label>{label}
       <div className="row">
         <label className="button">{files.length ? "Change folder…" : "Choose folder…"}
-          <input type="file" multiple style={{ display: "none" }} {...extra}
-            onChange={(e) => onFiles(Array.from(e.target.files || []))} />
+          <input type="file" multiple accept={accept} style={{ display: "none" }} {...extra}
+            onChange={(e) => onFiles(onlyKindFiles(Array.from(e.target.files || []), exts))} />
         </label>
         {summary && <span className="muted small-text">{summary}</span>}
       </div>

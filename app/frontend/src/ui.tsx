@@ -130,7 +130,8 @@ export function ErrorBox({ error }: { error?: string | null }) {
 type FsItem = { name: string; path: string; dir: boolean; size: number | null };
 
 /** Modal browser over /api/fs. mode "dir" picks a folder, "file" picks a file. */
-export function Picker({ start, mode, onPick, onClose }: { start?: string; mode: "dir" | "file"; onPick: (p: string) => void; onClose: () => void }) {
+export function Picker({ start, mode, onPick, onClose, accept }:
+  { start?: string; mode: "dir" | "file"; onPick: (p: string) => void; onClose: () => void; accept?: string[] }) {
   const [path, setPath] = useState(start || "~");
   const [data, setData] = useState<{ path: string; parent: string; items: FsItem[] } | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -153,7 +154,13 @@ export function Picker({ start, mode, onPick, onClose }: { start?: string; mode:
         </div>
         <ErrorBox error={err} />
         <div className="picker-list">
-          {data?.items.filter((i) => i.dir || mode === "file").map((i) => (
+          {data?.items.filter((i) => {
+            if (i.dir) return true;
+            if (mode !== "file") return false;
+            if (!accept?.length) return true;
+            const ext = (i.name.split(".").pop() || "").toLowerCase();
+            return accept.includes(ext);
+          }).map((i) => (
             <div key={i.path} className="picker-item" onDoubleClick={() => (i.dir ? setPath(i.path) : onPick(i.path))}
               onClick={() => (i.dir ? setPath(i.path) : onPick(i.path))}>
               <span>{i.dir ? "📁" : "📄"} {i.name}</span>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, Episode, reveal, Upload, useLive } from "../api";
 import { base, Chip, ErrorBox, fmtDur, fmtSize, Picker, uploadEpisodeFile } from "../ui";
+import { acceptOf, isKindFile, KIND_EXTS } from "./bulkFiles";
 import Processing from "./Processing";
 import Matching from "./Matching";
 import { RenderRow } from "./Renders";
@@ -117,6 +118,10 @@ function UploadRow({ ep, kind, label, hint, need, have, size, reload }:
   const [err, setErr] = useState<string | null>(null);
   async function pick(f: File | null) {
     if (!f) return;
+    if (!isKindFile(kind, f.name)) {
+      setErr(`${label} must be ${(KIND_EXTS[kind] || []).map((e) => "." + e).join(" / ")}, not ${f.name}`);
+      return;
+    }
     setErr(null); setPct(0);
     try { await uploadEpisodeFile(ep.id, kind, f, setPct); reload(); }
     catch (e: any) { setErr(e.message); } finally { setPct(-1); }
@@ -137,7 +142,8 @@ function UploadRow({ ep, kind, label, hint, need, have, size, reload }:
       <td className="small-text muted">{have ? <span className="good">✓ in cloud storage</span> : ""}</td>
       <td className="right">
         <label className="button small">{have ? "Replace…" : "Upload…"}
-          <input type="file" style={{ display: "none" }} disabled={pct >= 0} onChange={(e) => pick(e.target.files?.[0] || null)} />
+          <input type="file" accept={KIND_EXTS[kind] ? acceptOf(KIND_EXTS[kind]) : undefined}
+            style={{ display: "none" }} disabled={pct >= 0} onChange={(e) => pick(e.target.files?.[0] || null)} />
         </label>
         {have && <button className="small ghost" disabled={pct >= 0} onClick={clear}>Remove</button>}
       </td>
@@ -198,6 +204,10 @@ function Files({ ep, reload, onStarted }: { ep: Episode; reload: () => void; onS
 
   async function setAsset(kind: string, path: string | null) {
     setErr(null); setChecks(null);
+    if (path && !isKindFile(kind, path)) {
+      setErr(`${kind} must be ${(KIND_EXTS[kind] || []).map((e) => "." + e).join(" / ")}, not ${path.split("/").pop()}`);
+      return;
+    }
     try { await api.put(`/api/episodes/${ep.id}/assets`, { [kind]: path }); reload(); } catch (e: any) { setErr(e.message); }
   }
   async function check() {
@@ -279,6 +289,7 @@ function Files({ ep, reload, onStarted }: { ep: Episode; reload: () => void; onS
         {locked && <span className="muted">Processing — files are locked.</span>}
       </div>
       {picking && <Picker mode="file" start={have[picking] ? have[picking].split("/").slice(0, -1).join("/") : ep.show.folder}
+        accept={KIND_EXTS[picking]}
         onClose={() => setPicking(null)} onPick={(p) => { const k = picking; setPicking(null); setAsset(k, p); }} />}
     </div>
   );

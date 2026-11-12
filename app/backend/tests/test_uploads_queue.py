@@ -79,6 +79,21 @@ def test_episode_files_are_uploaded_and_land_in_r2(r2):
     assert upload(c, ep["id"], "nonsense", "x.bin").status_code == 400
 
 
+def test_upload_rejects_the_wrong_file_type_for_the_slot(r2):
+    """An mp4 in the audio slot, a wav in the video slot, a video as the script."""
+    c = r2["client"]
+    s = cloud_show(c)
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json()
+    eid = ep["id"]
+    assert upload(c, eid, "dub_audio", "11.mp4", b"v").status_code == 400
+    assert upload(c, eid, "src_video", "11.mp3", b"a").status_code == 400
+    assert upload(c, eid, "dub_script", "11.mp4", b"v").status_code == 400
+    assert upload(c, eid, "dub_script", "11.docx", b"d").status_code == 200
+    start = c.post(f"/api/episodes/{eid}/files/dub_audio/start", json={"filename": "ep.mp4", "size": 10})
+    assert start.status_code == 400
+    assert upload(c, eid, "dub_audio", "11.wav", b"a").status_code == 200
+
+
 def test_a_file_can_be_removed_again(r2):
     c = r2["client"]
     s = cloud_show(c)

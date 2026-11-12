@@ -477,12 +477,36 @@ def _episode_full(eid):
     return e
 
 
-NUMBERED_EXTS = {
-    "src_video": (".mp4", ".mov", ".mkv", ".m4v"),
-    "dub_audio": (".mp3", ".wav", ".m4a", ".aac"),
+KIND_EXTS = {
+    "src_video": (".mp4", ".mov", ".mkv", ".m4v", ".webm", ".avi", ".mxf"),
+    "dub_audio": (".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg", ".opus"),
     "dub_script": (".docx", ".doc", ".txt"),
+    "src_script": (".docx", ".doc", ".txt"),
+    "dub_srt": (".srt",),
+    "src_srt": (".srt",),
+    "names_csv": (".csv", ".xlsx", ".xls"),
+}
+NUMBERED_EXTS = {k: KIND_EXTS[k] for k in ("src_video", "dub_audio", "dub_script")}
+KIND_LABEL = {
+    "src_video": "source video", "dub_audio": "dub audio", "dub_script": "dub script",
+    "src_script": "source script", "dub_srt": "dub SRT", "src_srt": "source SRT",
+    "names_csv": "names sheet",
 }
 BATCH_MAX = 100
+
+
+def kind_ext_ok(kind, name):
+    exts = KIND_EXTS.get(kind)
+    return not exts or Path(str(name)).suffix.lower() in exts
+
+
+def _need_kind_ext(kind, name):
+    """Reject an mp4 in the audio slot, a wav in the video slot, a video in the script slot."""
+    if kind_ext_ok(kind, name):
+        return
+    exts = KIND_EXTS[kind]
+    got = Path(str(name)).suffix.lower() or "no extension"
+    raise HTTPException(400, f"{KIND_LABEL.get(kind, kind)} must be {' / '.join(exts)}, not {got}")
 
 
 def _episode_range(body):
@@ -933,6 +957,7 @@ def set_assets(eid: int, body: dict = Body(...)):
         if path:
             if not Path(path).exists():
                 raise HTTPException(400, f"{kind}: file not found: {path}")
+            _need_kind_ext(kind, path)
             db().insert("assets", episode_id=eid, kind=kind, path=path, role="input", created=now())
     return _episode_full(eid)
 
@@ -987,6 +1012,7 @@ def upload_file(eid: int, kind: str, file: UploadFile = File(...)):
     if db().one("SELECT id FROM jobs WHERE episode_id=? AND status IN ('waiting','running')", (eid,)):
         raise HTTPException(409, "this episode is processing: cancel it before changing its files")
     name = storage.safe_name(file.filename)
+    _need_kind_ext(kind, name)
     local = Path(storage.cache_path(ep, kind, name))
     size = _save_upload(file, local)
     key = None
@@ -1022,6 +1048,7 @@ def upload_start(eid: int, kind: str, body: dict = Body(...)):
     if db().one("SELECT id FROM jobs WHERE episode_id=? AND status IN ('waiting','running')", (eid,)):
         raise HTTPException(409, "this episode is processing: cancel it before changing its files")
     name = storage.safe_name(body.get("filename") or kind)
+    _need_kind_ext(kind, name)
     size = int(body.get("size") or 0)
     local = Path(storage.cache_path(ep, kind, name))
     local.parent.mkdir(parents=True, exist_ok=True)
@@ -1109,6 +1136,7 @@ def upload_url(eid: int, body: dict = Body(...)):
         raise HTTPException(400, f"unknown file kind {kind}")
     ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
     name = storage.safe_name(body.get("filename") or kind)
+    _need_kind_ext(kind, name)
     key = storage.input_key(show, ep, kind, name)
     return {"mode": storage.upload_mode(), "key": key, "name": name,
             "url": storage.presign(key, seconds=3600, method="PUT"),
@@ -1126,6 +1154,7 @@ def upload_confirm(eid: int, kind: str, body: dict = Body(...)):
     if not head:
         raise HTTPException(409, "the file did not arrive in the cloud")
     name = Path(key).name
+    _need_kind_ext(kind, name)
     db().ex("DELETE FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
     db().insert("assets", episode_id=eid, kind=kind, path=storage.cache_path(ep, kind, name), role="input",
                 size=head["size"], r2_key=key, origin="r2", uploaded=now(), created=now())
