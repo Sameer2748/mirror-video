@@ -327,8 +327,9 @@ def test_auto_upload_can_be_switched_off(r2, monkeypatch):
 
 # ---------------- the editor's media on a machine that has no files (docs/09 §4) ----------------
 def test_the_preview_copy_is_mirrored_and_then_served_from_the_cloud(r2):
-    """On this Mac the proxy copy is on disk and a copy goes up; take the disk copy away (a deployed box, or after
-    the scratch clean) and the editor is sent to R2 instead of getting a 404."""
+    """Once R2 has the 540p copy, the editor is sent there even if this box still has the file -- so a
+    render packing here does not stall every editor's preview. This Mac with no cloud copy still serves
+    from disk until the mirror lands."""
     c = r2["client"]
     s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
     ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 21}).json()
@@ -340,16 +341,20 @@ def test_the_preview_copy_is_mirrored_and_then_served_from_the_cloud(r2):
     proxy.parent.mkdir(parents=True, exist_ok=True)
     proxy.write_bytes(b"proxy-bytes")
 
-    r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy")
-    assert r.status_code == 200 and r.content == b"proxy-bytes"          # served from disk
+    r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy", follow_redirects=False)
+    assert r.status_code == 200 and r.content == b"proxy-bytes"          # not in R2 yet: this box serves it
     key = storage.work_key(s, e, tlm.PROXY)
     wait_for(lambda: r2["objects"].get(key), 10)                         # and mirrored in the background
     assert r2["objects"][key] == b"proxy-bytes"
 
-    proxy.unlink()                                                       # now this machine has nothing
+    r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy", follow_redirects=False)
+    assert r.status_code == 307 and "X-Amz-Signature=" in r.headers["location"]  # disk copy still there
+    assert httpx.get(r.headers["location"]).content == b"proxy-bytes"
+
+    proxy.unlink()
     r = c.get(f"/api/episodes/{ep['id']}/media/src_proxy", follow_redirects=False)
     assert r.status_code == 307 and "X-Amz-Signature=" in r.headers["location"]
-    assert httpx.get(r.headers["location"]).content == b"proxy-bytes"     # the browser streams it straight from R2
+    assert httpx.get(r.headers["location"]).content == b"proxy-bytes"
 
 
 def test_a_media_file_that_is_nowhere_is_still_a_404(r2):

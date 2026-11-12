@@ -1911,15 +1911,17 @@ PLAY = {"Cache-Control": "private, max-age=3600"}
 
 
 def _serve_media(show, ep, rel, local, media_type):
-    """Hand the editor one media file. On this Mac it is on disk, and a copy goes to R2 so another machine can serve
-    it; on a deployed box there is no disk copy, so the browser is sent straight to R2 (which does the range
-    requests -- scrubbing works and the API passes no bytes)."""
-    if local and Path(local).exists():
+    """Hand the editor one media file. Prefer a signed R2 link so playback does not go through this box
+    (a render packing here must not stall every editor's preview). This Mac with no cloud copy still
+    serves from disk; a copy is mirrored in the background the first time."""
+    local_ok = bool(local and Path(local).exists())
+    if local_ok:
         storage.mirror(show, ep, rel)
-        return FileResponse(local, media_type=media_type, headers=PLAY)
     url = storage.media_link(show, ep, rel)
     if url:
         return RedirectResponse(url, status_code=307, headers=PLAY)
+    if local_ok:
+        return FileResponse(local, media_type=media_type, headers=PLAY)
     return None
 
 
@@ -1949,11 +1951,11 @@ def media(eid: int, kind: str):
     a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
     if not a:
         raise HTTPException(404, f"no {kind}")
+    key = _input_in_cloud(show, e, a, kind)
+    if key:                                                 # R2 plays it; this box does not stream the original
+        return RedirectResponse(storage.presign(key, 10800), status_code=307, headers=PLAY)
     if Path(a["path"]).exists():
         return FileResponse(a["path"], headers=PLAY)
-    key = _input_in_cloud(show, e, a, kind)
-    if key:                                                 # uploaded episode, or the scratch is already cleaned
-        return RedirectResponse(storage.presign(key, 10800), status_code=307, headers=PLAY)
     raise HTTPException(404, f"no {kind}")
 
 
