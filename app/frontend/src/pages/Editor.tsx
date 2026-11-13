@@ -656,7 +656,15 @@ export default function Editor() {
         const sc = scroller.current;                   // keep the playhead in view
         if (sc) { const x = (t / 1000) * zoomRef.current; if (x > sc.scrollLeft + sc.clientWidth - 80 || x < sc.scrollLeft) sc.scrollLeft = x - 120; }
       }
-      if ((A.ended || t >= total - 5) && !holding.current) { setPlaying(false); }
+      if ((A.ended || t >= total - 5) && !holding.current) {
+        const end = Math.min(t, total - 1);
+        tRef.current = end; setTShow(end); placePlayhead(end);
+        if (!A.paused) A.pause();
+        vids.forEach((v) => v.current?.pause());
+        impV.current?.pause();
+        showFrame(end, false);
+        setPlaying(false);
+      }
     };
     const frame = () => { step(); raf = requestAnimationFrame(frame); };
     raf = requestAnimationFrame(frame);
@@ -673,7 +681,12 @@ export default function Editor() {
     else { A.currentTime = tRef.current / 1000; A.play().then(() => setPlaying(true)).catch((e) => say(`Cannot play: ${e.message}`, true)); }
   };
   useEffect(() => { if (data) setTimeout(() => showFrame(tRef.current, false), 300); }, [data]); // eslint-disable-line
-  useEffect(() => { if (!playing) showFrame(tRef.current, false); }, [clips, v2]); // eslint-disable-line
+  useEffect(() => {
+    if (playing) return;
+    vids.forEach((v) => v.current?.pause());
+    impV.current?.pause();
+    showFrame(tRef.current, false);
+  }, [playing, clips, v2]); // eslint-disable-line
 
   // ---- source monitor ----
   const srcVid = useRef<HTMLVideoElement>(null);
