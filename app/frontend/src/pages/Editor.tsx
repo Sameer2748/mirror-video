@@ -264,7 +264,7 @@ export default function Editor() {
   const [trackDlg, setTrackDlg] = useState<Lang | null>(null);
   const [monH, setMonH] = useState(400);
   const [srcAR, setSrcAR] = useState(16 / 9);            // final-video aspect: the program frame stays this size when you zoom
-  const [clipboard, setClipboard] = useState<{ s0: number; s1: number; src_text: string; from: string; speed: number; media?: string; fromSource?: boolean } | null>(null);
+  const [clipboard, setClipboard] = useState<{ s0: number; s1: number; src_text: string; from: string; speed: number; media?: string; fromSource?: boolean; fromId?: string } | null>(null);
   const lastPane = useRef<"src" | "tl">("tl");             // where the editor last clicked: ⌘C copies from there
   const [bin, setBin] = useState<{ imports: Imp[]; files: BinFile[] }>({ imports: [], files: [] });
   const [srcMedia, setSrcMedia] = useState<string | null>(null);   // what the source monitor shows: null = the source video
@@ -808,8 +808,8 @@ export default function Editor() {
     if (!n) { say("Every approved clip is locked already"); return; }
     commit(clips.map((c) => (approved.includes(c.id) ? { ...c, locked: true } : c))); say(`${n} approved clips locked`);
   };
-  // copy one clip's footage; paste = that footage fitted to the selected clip's slot (⇧ keeps its speed instead)
-  // the source monitor's start→end as a clip on the clipboard (⌘C there); ⌘V puts it where the editor is
+  // copy: source In→Out (⌘C on the source) or a V1/V2 clip. ⌘V: a copied timeline clip goes on V2 at the playhead
+  // (same as ▲ V2 for In/Out); a source copy still pastes onto the selected clip, a gap, or V2.
   const copySrc = () => {
     if (markIn == null || markOut == null || markOut - markIn < 100) { say("Set the clip's start and end first (type them, or I / O on the source)", true); return; }
     const name = srcMedia ? impOf(srcMedia)?.name || "imported clip" : S;
@@ -818,13 +818,23 @@ export default function Editor() {
     try { navigator.clipboard?.writeText(`${name} ${fmt(markIn)}–${fmt(markOut)} (Mirror Video clip)`).catch(() => {}); } catch { /* no clipboard access */ }
     say(`Copied ${name} ${fmt(markIn)}–${fmt(markOut)} (${((markOut - markIn) / 1000).toFixed(2)} s): ${modKey}V pastes it onto the selected clip, into a gap, or on V2 at the playhead`);
   };
-  const copyClip = () => { if (!selClip) return; setClipboard({ s0: selClip.s0, s1: selClip.s1, src_text: selClip.src_text, from: label(selClip), speed: speedOf(selClip), media: selClip.media }); say(`Copied the footage of ${label(selClip)} (${fmt(selClip.s0)}–${fmt(selClip.s1)})`); };
+  const copyClip = () => {
+    if (!selClip) return;
+    setClipboard({ s0: selClip.s0, s1: selClip.s1, src_text: selClip.src_text, from: label(selClip), speed: speedOf(selClip), media: selClip.media, fromId: selClip.id });
+    say(`Copied ${label(selClip)} (${fmt(selClip.s0)}–${fmt(selClip.s1)}): ${modKey}V pastes it on V2 at the playhead`);
+  };
   const pasteClip = (keepSpeed = false) => {
     if (!clipboard) { say("Copy a clip first (⌘C)", true); return; }
     if (!selClip) { say("Select the clip to paste onto", true); return; }
     const c = selClip; let { s0, s1 } = clipboard;
     if (keepSpeed) s1 = Math.min(s0 + (c.t1 - c.t0) * clipboard.speed, durOf(clipboard.media));
     doReplace(s0, s1, `pasted from ${clipboard.from}`, selIdx, clipboard.media ?? null);
+  };
+  const pasteOnV2 = () => {
+    if (!clipboard) { say("Copy a clip first (⌘C)", true); return; }
+    if (tracks.v2?.locked) { rowLocked(2); return; }
+    const slot = (clipboard.s1 - clipboard.s0) / Math.max(clipboard.speed, 0.05);
+    addV2(tRef.current, clipboard.s0, clipboard.s1, clipboard.src_text, `pasted ${clipboard.from}`, undefined, slot, clipboard.media);
   };
   const resetClip = () => {
     if (!selClip?.orig) return; const o = selClip.orig;
@@ -1016,9 +1026,11 @@ export default function Editor() {
         if (!clipboard) { say(`Nothing copied yet: set a clip on the source and press ${modKey}C, or select a clip and press ${modKey}C`, true); return; }
         const g = flat.find((q) => q.gap && q.t0 <= tRef.current && tRef.current < q.t1);
         const onSel = selClip && selClip.t0 <= tRef.current && tRef.current < selClip.t1;
+        const ontoOther = selClip && clipboard.fromId && selClip.id !== clipboard.fromId && onSel;
         if (g && !onSel) pasteToGap(g);
-        else if (selClip) pasteClip(e.shiftKey);                        // fitted to the clip's slot (⇧: own speed)
-        else addV2(tRef.current, clipboard.s0, clipboard.s1, clipboard.src_text, `pasted ${clipboard.from}`, undefined, undefined, clipboard.media);
+        else if (clipboard.fromSource && selClip) pasteClip(e.shiftKey);  // In/Out copy onto the selected clip
+        else if (ontoOther) pasteClip(e.shiftKey);                      // copied clip A's footage onto selected clip B
+        else pasteOnV2();                                              // V1 copy → V2 at the playhead (same as ▲ V2)
       }
       else if (cmd) return;
       else if ((k === "l" || k === "L") && e.shiftKey) toggleLock();
@@ -1293,8 +1305,8 @@ export default function Editor() {
               <b style={{ color: "var(--text)" }}>How editing works</b><br />
               The {D} voice never moves. You change which {S} footage plays under it:<br />
               • drag a clip's edge to trim it: in leaves a gap, out overwrites the next clip (⌥: move the cut)<br />• drag a clip onto another to swap their footage<br />• Slip (Y) slides the footage<br />
-              • Razor (C) cuts a clip in two<br />• pick a sentence or mark In/Out on the source, then Replace (F)<br />• Delete leaves a gap (click it to fill, or drop a sentence on it)<br />• V2 is over V1: drop a sentence, drag a clip up, or press . for the marked In→Out<br />
-              • ⌘C / ⌘V copies one clip's footage onto another<br />• ⇧L locks a clip; Lock approved locks them all<br />
+              • Razor (C) cuts a clip in two<br />• pick a sentence or mark In/Out on the source, then Replace (F)<br />• Delete leaves a gap (click it to fill, or drop a sentence on it)<br />              • V2 is over V1: drop a sentence, drag a clip up, or press . for the marked In→Out<br />
+              • ⌘C a V1 clip, then ⌘V pastes it on V2 at the playhead (In/Out + ▲ V2 is the same from the source)<br />• ⇧L locks a clip; Lock approved locks them all<br />
               • click a subtitle on S1 / S2 to edit its words and times<br />• M adds a QC note at the playhead</div>}
             {!cueSel && selClip && !transInto.has(selClip.id) && (
               <div className="insp muted small-text" style={{ paddingBottom: 8 }}>First clip of the episode — no transition into it.</div>
@@ -1315,10 +1327,10 @@ export default function Editor() {
                 </div>
               </div>
             )}
-            {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={selClip.row != null && lipSet.has(selClip.row)}
+            {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} onPasteV2={pasteOnV2} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={selClip.row != null && lipSet.has(selClip.row)}
               D={D} S={S} srcDur={durOf(selClip.media)}
               onChange={(c) => updateSel(c)} onMotion={setSelMotion} onApprove={() => toggleApprove()} onReset={resetClip}
-              track={selV2 >= 0 ? 2 : 1} onCopyToV2={() => selClip && copyToV2(selClip)}
+              track={selV2 >= 0 ? 2 : 1} onCopyToV2={() => selClip && copyToV2(selClip)} v2Locked={!!tracks.v2?.locked}
               onGenerate={() => {
                 const ord = [...clips].sort((x, y) => x.t0 - y.t0); const k = ord.findIndex((x) => x.id === selClip.id);
                 const prev = k > 0 ? ord[k - 1] : clips.filter((x) => x.t1 <= selClip.t0 + 1).pop(); const next = k >= 0 ? ord[k + 1] : clips.find((x) => x.t0 >= selClip.t1 - 1);
@@ -1437,10 +1449,10 @@ function MotionBlock({ c, locked, onMotion }: { c: Clip; locked: boolean; onMoti
   );
 }
 
-function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, onMotion, onApprove, onReset, onPlay, onDelete, onFitSentence, onLock, onCopy, onPaste, track, onCopyToV2, onGenerate }: {
+function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, onMotion, onApprove, onReset, onPlay, onDelete, onFitSentence, onLock, onCopy, onPaste, onPasteV2, track, onCopyToV2, v2Locked, onGenerate }: {
   c: Clip; fl: Flag[]; approved: boolean; lip: boolean; D: string; S: string; srcDur: number; clipboard: string | null;
   onChange: (c: Clip) => void; onMotion: (c: Clip, done: boolean) => void; onApprove: () => void; onReset: () => void; onPlay: () => void; onDelete: () => void; onFitSentence: () => void;
-  onLock: () => void; onCopy: () => void; onPaste: (keepSpeed: boolean) => void; track: 1 | 2; onCopyToV2: () => void; onGenerate: () => void;
+  onLock: () => void; onCopy: () => void; onPaste: (keepSpeed: boolean) => void; onPasteV2: () => void; track: 1 | 2; onCopyToV2: () => void; v2Locked: boolean; onGenerate: () => void;
 }) {
   const lk = !!c.locked;
   const sp = speedOf(c);
@@ -1487,10 +1499,11 @@ function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, on
         <button className="ghost danger" disabled={lk} onClick={onDelete} title={track === 2 ? "Remove from V2 (V1 shows again)" : "Delete leaves a gap to fill (⇧Delete: the clip before takes its place)"}>Delete</button>
       </div>
       <div className="insp-actions">
-        <button className="small" onClick={onCopy} title="Copy this clip's footage (⌘C)">Copy footage</button>
-        <button className="small" disabled={!clipboard || lk} onClick={() => onPaste(false)} title="Paste the copied footage, fitted to this slot (⌘V)">Paste{clipboard ? ` ${clipboard}` : ""}</button>
-        <button className="small ghost" disabled={!clipboard || lk} onClick={() => onPaste(true)} title="Paste from the copied in-point at the copied clip's speed (⇧⌘V)">… keep speed</button>
+        <button className="small" onClick={onCopy} title="Copy this clip (⌘C). ⌘V then pastes it on V2 at the playhead">Copy footage</button>
+        <button className="small" disabled={!clipboard || lk} onClick={() => onPaste(false)} title="Paste the copied footage onto this clip, fitted to its slot">Paste onto clip{clipboard ? ` ${clipboard}` : ""}</button>
+        <button className="small ghost" disabled={!clipboard || lk} onClick={() => onPaste(true)} title="Paste from the copied in-point at the copied clip's speed (⇧⌘V onto this clip)">… keep speed</button>
         {track === 1 && <button className="small ghost" onClick={onCopyToV2} title="Put a copy of this footage on V2 above it (then change the V2 copy; V1 stays as it was)">⧉ Copy to V2</button>}
+        <button className="small" disabled={!clipboard || v2Locked} onClick={onPasteV2} title="Paste the copied clip on V2 at the playhead, same length and speed (⌘V)">▲ Paste on V2</button>
       </div>
     </div>
   );
@@ -2122,7 +2135,7 @@ function KeysHelp({ onClose }: { onClose: () => void }) {
     ["Space", "play / pause"], ["J / L", "back / forward 2 s"], ["← →", "one frame"], ["⇧← ⇧→", "one second"], ["↑ ↓", "previous / next clip"],
     ["N / ⇧N", "next / previous flag"], ["A", "approve the clip"], ["V", "select tool"], ["C", "razor tool"], ["⇧C", "cut at the playhead"], ["drag an edge", "trim that clip (in = gap, out = overwrite)"], ["⌥ + drag an edge", "move the cut (both clips change)"], [".", "marked In→Out onto V2 at the playhead"], ["⇧Delete", "delete and let the clip before fill"],
     ["Y", "slip tool"], ["I / O", "mark In / Out on the source"], ["F", "replace the clip with In→Out"], ["Delete", "remove the clip (leaves a gap; on V2: V1 shows again)"],
-    ["⌘C", "copy: the source clip (start → end) after a click on the source monitor, else the selected clip"], ["⌘V", "paste: onto the selected clip, into a gap at the playhead, or on V2 at the playhead"], ["⇧⌘V", "paste keeping the copied speed"], ["⇧L", "lock / unlock the clip"],
+    ["⌘C", "copy: the source clip (start → end) after a click on the source monitor, else the selected clip"], ["⌘V", "paste a copied V1 clip on V2 at the playhead; a source copy still goes onto the selected clip, a gap, or V2"], ["⇧⌘V", "paste keeping the copied speed onto another clip"], ["⇧L", "lock / unlock the clip"],
     ["S", "snapping on / off"], ["M", "QC note at the playhead"], ["/", "split the selected subtitle at the playhead"],
     ["⌘Z / ⇧⌘Z", "undo / redo"], ["⌘S", "save a version"], ["+ / −", "zoom"], ["\\", "fit the whole episode"], ["⌘ + scroll", "zoom at the mouse"], ["Esc", "deselect"],
   ];
