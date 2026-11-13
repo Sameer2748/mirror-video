@@ -357,6 +357,42 @@ def test_the_preview_copy_is_mirrored_and_then_served_from_the_cloud(r2):
     assert httpx.get(r.headers["location"]).content == b"proxy-bytes"
 
 
+def test_a_truncated_preview_copy_is_replaced_from_the_cloud_so_late_thumbs_work(r2):
+    """TAB EP22: this box kept a 540p file that ended ~7:30; R2 had the full copy. Filmstrip tiles
+    after that time 404'd and the timeline looked empty. Replace the short file, then a late frame works."""
+    import subprocess
+    import dubstudio.main as main, dubstudio.timeline as tlm
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 24}).json()
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    work = Path(e["work_dir"]); work.mkdir(parents=True, exist_ok=True)
+    short, full = work / "short.mp4", work / tlm.PROXY
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc=size=160x160:rate=25:duration=1",
+                    "-f", "lavfi", "-i", "sine=duration=1", "-shortest", str(short)], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc=size=160x160:rate=25:duration=3",
+                    "-f", "lavfi", "-i", "sine=duration=3", "-shortest", str(full)], check=True)
+    full_bytes = full.read_bytes()
+    full.write_bytes(short.read_bytes())                                 # this box has the short copy
+    storage.put_bytes(storage.work_key(s, e, tlm.PROXY), full_bytes, "video/mp4")
+    (work / "thumbs").mkdir(exist_ok=True)
+    (work / "thumbs" / "00002000_80.fail").write_text("no local video")
+
+    r = c.get(f"/api/episodes/{ep['id']}/thumb?ms=2000&h=80")
+    assert r.status_code == 200 and r.headers["content-type"].startswith("image/jpeg")
+    assert Path(e["work_dir"], tlm.PROXY).stat().st_size == len(full_bytes)
+
+
+def test_a_missing_thumb_is_not_cached_by_the_browser(r2):
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 25}).json()
+    r = c.get(f"/api/episodes/{ep['id']}/thumb?ms=1000&h=80")
+    assert r.status_code == 404
+    assert "no-store" in (r.headers.get("cache-control") or "").lower()
+
+
 def test_a_media_file_that_is_nowhere_is_still_a_404(r2):
     c = r2["client"]
     s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()

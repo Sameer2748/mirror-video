@@ -768,11 +768,67 @@ def proxy_path(work):
     return p if p.exists() else None
 
 
-def proxy_state(work):
-    if proxy_path(work):
-        return dict(ready=True, progress=1.0)
+def clear_thumb_fails(work):
+    """Drop remembered filmstrip misses so they are cut again after the 540p copy is replaced."""
+    d = Path(work) / "thumbs"
+    if not d.is_dir():
+        return
+    for p in d.glob("*.fail"):
+        p.unlink(missing_ok=True)
+
+
+def _probe_duration_s(path):
+    try:
+        r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+                           capture_output=True, text=True, timeout=20)
+        return float(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
+    except (ValueError, subprocess.TimeoutExpired, OSError):
+        return None
+
+
+def _have_frame(path, t_s):
+    """True if ffmpeg can actually cut a frame at t_s (a truncated file can still report a full duration)."""
+    try:
+        r = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0, t_s):.3f}", "-i", str(path),
+                            "-frames:v", "1", "-f", "null", "-"],
+                           capture_output=True, timeout=15)
+        err = r.stderr or b""
+        return r.returncode == 0 and b"Output file is empty" not in err
+    except (subprocess.TimeoutExpired, OSError):
+        return False
+
+
+def proxy_covers(work, duration_s=None):
+    """True when the 540p copy reaches the end of the source (TAB EP22/27 were truncated around 7 min)."""
+    p = proxy_path(work)
+    if not p:
+        return False
+    if not duration_s or duration_s < 2:
+        return True
+    meta = Path(work) / "proxy_ok.json"
+    rec = {"size": p.stat().st_size, "mtime": int(p.stat().st_mtime), "need": round(float(duration_s), 1)}
+    try:
+        old = json.loads(meta.read_text()) if meta.exists() else None
+        if old and old.get("size") == rec["size"] and old.get("mtime") == rec["mtime"] and old.get("need") == rec["need"]:
+            return bool(old.get("ok"))
+    except (ValueError, OSError):
+        pass
+    dur = _probe_duration_s(p)
+    ok = bool(dur and dur >= float(duration_s) - 1.5) and _have_frame(p, max(0.0, float(duration_s) - 1.0))
+    rec["ok"] = ok
+    try:
+        meta.write_text(json.dumps(rec))
+    except OSError:
+        pass
+    return ok
+
+
+def proxy_state(work, duration_s=None):
     j = _proxy_jobs.get(str(Path(work)))
-    return dict(ready=False, running=bool(j and j.get("running")), progress=(j or {}).get("progress", 0.0),
+    running = bool(j and j.get("running"))
+    if proxy_path(work) and proxy_covers(work, duration_s):
+        return dict(ready=True, progress=1.0, running=running)
+    return dict(ready=False, running=running, progress=(j or {}).get("progress", 0.0),
                 error=(j or {}).get("error"))
 
 
@@ -783,8 +839,12 @@ def make_proxy(work, video, duration_s=None, on_progress=None, log=None):
     with _proxy_lock:
         st = _proxy_jobs.setdefault(key, dict(running=False, progress=0.0, lock=threading.Lock()))
     with st["lock"]:
-        if out.exists():
+        if out.exists() and proxy_covers(work, duration_s):
             return out
+        if out.exists():
+            out.unlink()
+            (w / "proxy_ok.json").unlink(missing_ok=True)
+            clear_thumb_fails(work)
         st.update(running=True, progress=0.0, error=None)
         tmp = w / (PROXY + ".part.mp4")
         cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(video), "-map", "0:v:0", "-map", "0:a:0?",
@@ -816,7 +876,7 @@ def make_proxy(work, video, duration_s=None, on_progress=None, log=None):
 
 def make_proxy_bg(work, video, duration_s=None):
     """Start the proxy in a background thread (episodes processed before the proxy step existed)."""
-    if proxy_path(work) or (_proxy_jobs.get(str(Path(work))) or {}).get("running"):
+    if (proxy_path(work) and proxy_covers(work, duration_s)) or (_proxy_jobs.get(str(Path(work))) or {}).get("running"):
         return
     def go():
         try:

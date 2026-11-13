@@ -1890,21 +1890,34 @@ def _src_video(eid):
     return a["path"], (a["probe"] or {}).get("duration") if isinstance(a["probe"], dict) else None
 
 
+def _src_duration_s(eid):
+    a = db().one("SELECT probe FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    if a and isinstance(a.get("probe"), dict) and a["probe"].get("duration"):
+        try:
+            return float(a["probe"]["duration"])
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
 @app.get("/api/episodes/{eid}/proxy")
 def proxy_status(eid: int):
-    return tlm.proxy_state(_get("episodes", eid)["work_dir"])
+    return tlm.proxy_state(_get("episodes", eid)["work_dir"], _src_duration_s(eid))
 
 
 @app.post("/api/episodes/{eid}/proxy")
 def proxy_make(eid: int):
     """Make the preview copy now (episodes processed before the proxy step existed); returns at once."""
-    e = _get("episodes", eid); path, dur = _src_video(eid)
+    e = _get("episodes", eid); show = _get("shows", e["show_id"])
+    from . import cloud
+    cloud.ensure_episode_inputs(db(), show, e)
+    path, dur = _src_video(eid)
     Path(e["work_dir"]).mkdir(parents=True, exist_ok=True)
     tlm.make_proxy_bg(e["work_dir"], path, dur)
     # older episodes: the blur flag's measure too (from the preview copy once it exists)
     if not (Path(e["work_dir"]) / tlm.SHARPNESS).exists() and tlm.proxy_path(e["work_dir"]):
         tlm.make_sharpness_bg(e["work_dir"], tlm.proxy_path(e["work_dir"]), cfg.pipeline_python)
-    return tlm.proxy_state(e["work_dir"])
+    return tlm.proxy_state(e["work_dir"], dur)
 
 
 PLAY = {"Cache-Control": "private, max-age=3600"}
@@ -2263,24 +2276,35 @@ def gen_file(eid: int, tid: int, path: str):
 
 
 _proxy_local = threading.Lock()
-_THUMB_MISS = {"Cache-Control": "public, max-age=3600"}
+_THUMB_MISS = {"Cache-Control": "no-store"}
+_proxy_checked = {}
 
 
 def _frames_from(eid):
     """A local file to cut thumbnails from. Never a signed URL: ffmpeg on HTTP hung the website
-    (TAB EP22 filmstrip). Pull the 540p copy from R2 once if it is not on this box."""
+    (TAB EP22 filmstrip). Pull the 540p copy from R2 once if it is not on this box. A truncated
+    leftover that is smaller than the R2 object is replaced so later clips get frames again."""
     e = _get("episodes", eid)
     show = _get("shows", e["show_id"])
-    p = tlm.proxy_path(e["work_dir"])
-    if not p:
-        with _proxy_local:
-            p = tlm.proxy_path(e["work_dir"]) or storage.ensure_local(show, e, tlm.PROXY)
-    if p:
-        return e, str(p)
-    a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
-    if a and Path(a["path"]).exists():
-        return e, a["path"]
-    return e, None
+    work = e["work_dir"]
+    now = time.time()
+    cached = _proxy_checked.get(work)
+    if cached and now - cached[0] < 60 and cached[1] and Path(cached[1]).exists():
+        return e, cached[1]
+    with _proxy_local:
+        local = tlm.proxy_path(work)
+        size0 = local.stat().st_size if local else 0
+        p = storage.ensure_local(show, e, tlm.PROXY) if storage.configured() else local
+        if p and Path(p).exists() and Path(p).stat().st_size != size0:
+            tlm.clear_thumb_fails(work)
+            Path(work, "proxy_ok.json").unlink(missing_ok=True)
+        src = str(p) if p and Path(p).exists() else None
+        if not src:
+            a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+            if a and Path(a["path"]).exists():
+                src = a["path"]
+        _proxy_checked[work] = (now, src)
+        return e, src
 
 
 @app.get("/api/episodes/{eid}/thumb")

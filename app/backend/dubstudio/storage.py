@@ -421,25 +421,26 @@ def media_link(show, ep, rel, seconds=10800):
 
 
 def ensure_local(show, ep, rel):
-    """A real file at `<work>/rel`: the one here, or the copy from R2. -> Path or None."""
+    """A real file at `<work>/rel`: the one here, or the copy from R2. -> Path or None.
+
+    A truncated leftover (TAB EP22's 540p copy ended ~7:30 while R2 had the full file) is replaced
+    when the size here does not match the object in the bucket."""
     p = Path(ep["work_dir"]) / rel
-    if p.exists():
+    info = head(work_key(show, ep, rel)) if configured() else None
+    if p.exists() and (not info or int(info.get("size") or 0) in (0, p.stat().st_size)):
         return p
-    if not configured():
-        return None
-    key = work_key(show, ep, rel)
-    if not head(key):
-        return None
+    if not configured() or not info:
+        return p if p.exists() else None
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(p.suffix + ".part")
     try:
-        download(key, tmp)
+        download(work_key(show, ep, rel), tmp)
         tmp.replace(p)
-        _mirrored.add(key)
+        _mirrored.add(work_key(show, ep, rel))
         return p
     except Exception:
         tmp.unlink(missing_ok=True)
-        return None
+        return p if p.exists() else None
 
 
 def upload_mode():
