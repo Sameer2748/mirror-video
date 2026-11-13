@@ -1328,6 +1328,7 @@ def cmd_verify(a):
 #    pauses, and an empty strip wherever the render would still show a source caption.
 # ---------------------------------------------------------------------------------
 FONT_CANDIDATES = ["/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf", "/usr/share/fonts/truetype/poppins/Poppins-Bold.ttf",
+                   "/app/frontend/dist/fonts/Poppins-Bold.ttf", "/app/assets/fonts/Poppins-Bold.ttf", "/opt/fonts/Poppins-Bold.ttf",
                    os.path.expanduser("~/Library/Fonts/Poppins-Bold.ttf"), "/Library/Fonts/Poppins-Bold.ttf",
                    os.path.expanduser("~/.local/share/fonts/Poppins-Bold.ttf"), os.path.expanduser("~/.fonts/Poppins-Bold.ttf"),
                    "C:/Windows/Fonts/Poppins-Bold.ttf"]

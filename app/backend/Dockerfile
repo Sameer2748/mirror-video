@@ -20,6 +20,11 @@ COPY pipeline_tools ./pipeline_tools
 # which means no CORS and the session cookie just works)
 COPY frontend_dist /app/frontend/dist
 
+# Poppins Bold is the house subtitle font. dynsrt / strip burns look it up here; the screens also ship a copy.
+RUN mkdir -p /usr/share/fonts/truetype/poppins /app/assets/fonts
+COPY frontend_dist/fonts/Poppins-Bold.ttf /usr/share/fonts/truetype/poppins/Poppins-Bold.ttf
+COPY frontend_dist/fonts/Poppins-Bold.ttf /app/assets/fonts/Poppins-Bold.ttf
+
 ENV PYTHONUNBUFFERED=1 DUBSTUDIO_LIBRARY=/data/library
 EXPOSE 8765
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -fsS http://127.0.0.1:${PORT:-8765}/api/info || exit 1

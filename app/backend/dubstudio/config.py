@@ -57,9 +57,15 @@ class Config:
         self.cpu_slots = int(env("DUBSTUDIO_CPU_SLOTS") or f.get("cpu_slots") or 8)
         self.gpu_slots = int(f.get("gpu_slots") or 1)
         self.step_max_seconds = float(env("DUBSTUDIO_STEP_MAX_SECONDS") or f.get("step_max_seconds") or 0)   # 0 = run to the end
-        # subtitle font (Poppins Bold, the house style); the pipeline only looks in Linux font folders by itself
+        # subtitle font (Poppins Bold, the house style). On Render the ttf ships with the screens
+        # (/app/frontend/dist/fonts); the API image also copies it to /usr/share and /app/assets.
         self.font = env("DUBSTUDIO_FONT") or f.get("font") or next((str(x) for x in (
-            ROOT / "assets/fonts/Poppins-Bold.ttf", HOME / "Library/Fonts/Poppins-Bold.ttf",
+            ROOT / "assets/fonts/Poppins-Bold.ttf",
+            Path(__file__).resolve().parents[1] / "frontend_dist/fonts/Poppins-Bold.ttf",
+            Path("/app/frontend/dist/fonts/Poppins-Bold.ttf"),
+            Path("/usr/share/fonts/truetype/poppins/Poppins-Bold.ttf"),
+            Path("/opt/fonts/Poppins-Bold.ttf"),
+            HOME / "Library/Fonts/Poppins-Bold.ttf",
             Path("/Library/Fonts/Poppins-Bold.ttf")) if x.exists()), "")
         self.ffprobe = f.get("ffprobe") or "ffprobe"
         self.ffmpeg = f.get("ffmpeg") or "ffmpeg"

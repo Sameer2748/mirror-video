@@ -31,6 +31,7 @@ Do not Process Again from scratch on a late episode (throws away matching / lip 
 | 12 Nov | **Editor preview from R2** | 540p + dub audio play from a signed cloud link once mirrored, even if this box still has the file. A render packing on the website no longer streams preview bytes through the API, so other editors can work. |
 | 12 Nov | **Smoother editor preview** | A cut / slow clip used to pause the voice (“picture catching up”) because the player was seeking. Seeking at a cut is ignored; the voice only waits on a real 2 s hang. |
 | 12 Nov | **Filmstrip cannot 502 the site** | Missing stills used to run ffmpeg on every tile (TAB EP22 404 storm). Thumbs only cut a local file, fail once and remember, timeout 8 s; 404s are cached. |
+| 13 Nov | **Poppins Bold on the API box** | Dynamic subs (`dynsrt`) on Render failed: the ttf was in the screens folder but not on the font path. Copy it into `/usr/share/fonts` and `/app/assets`; config finds it. |
 | 12 Nov | **Second-render missing video** | After Review, a second Render left `config.json` pointing at `/work/input/….mp4`. The tar skips `input/`, so the rented machine ffprobed an empty path (TAB EP21 / EP23). Fetch from R2 if the file is gone, rewrite leftover worker paths, and the chain driver copies `/files/F0/name` onto `/work/input/…` if it is still missing. |
 | 12 Nov | **Download-all zip** | Zip is the three videos + English SRT only (pulled from R2 if the local copies were cleaned). Deliverables shows only the cloud list (download links + Download all), not the this-Mac Finder table. |
 

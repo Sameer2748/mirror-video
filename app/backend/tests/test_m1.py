@@ -183,6 +183,9 @@ def test_hih_plan_has_dynamic_subtitles(env):
     assert by["dynsrt"]["needs"] == ["review", "captions"]
     dy = " ".join(by["dynsrt"]["cmd"])
     assert "--words /w/HIH_EP55_IT_words.json" in dy and "--out /w/HIH_EP55_IT_dynamic.srt" in dy
+    from dubstudio.config import cfg
+    assert cfg.font and Path(cfg.font).name == "Poppins-Bold.ttf" and Path(cfg.font).is_file()
+    assert "--font" in dy and cfg.font in dy
     assert by["translate"]["needs"] == ["dynsrt"] and "--srt /w/HIH_EP55_IT_dynamic.srt" in " ".join(by["translate"]["cmd"])
     for k in ("subs_dub", "subs_en"):
         assert "--style dynamic" in " ".join(by[k]["cmd"])
