@@ -393,14 +393,18 @@ _mirrored = set()
 
 
 def mirror(show, ep, rel, background=True):
-    """Copy `<work>/rel` to R2 once, so another machine can serve it. Quiet: a failure never breaks the editor."""
+    """Copy `<work>/rel` to R2, so another machine can serve it. Quiet: a failure never breaks the editor.
+
+    A short leftover in the bucket (TAB EP22/27 540p copy) is replaced when this box has a different size."""
     p = Path(ep["work_dir"]) / rel
     key = work_key(show, ep, rel)
-    if not configured() or not p.exists() or key in _mirrored:
+    if not configured() or not p.exists():
         return None
     def go():
         try:
-            if not head(key):
+            info = head(key)
+            remote = int((info or {}).get("size") or 0)
+            if not info or remote != p.stat().st_size:
                 (put_big_file if p.stat().st_size >= MULTIPART_FROM else put_file)(p, key)
             _mirrored.add(key)
         except Exception:
@@ -427,7 +431,9 @@ def ensure_local(show, ep, rel):
     when the size here does not match the object in the bucket."""
     p = Path(ep["work_dir"]) / rel
     info = head(work_key(show, ep, rel)) if configured() else None
-    if p.exists() and (not info or int(info.get("size") or 0) in (0, p.stat().st_size)):
+    remote = int((info or {}).get("size") or 0)
+    # Do not replace a longer local 540p copy with a short leftover in the bucket (TAB EP22).
+    if p.exists() and (not info or remote in (0, p.stat().st_size) or p.stat().st_size > remote):
         return p
     if not configured() or not info:
         return p if p.exists() else None
