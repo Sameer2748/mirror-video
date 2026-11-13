@@ -786,16 +786,24 @@ def _probe_duration_s(path):
         return None
 
 
-def _have_frame(path, t_s):
-    """True if ffmpeg can actually cut a frame at t_s (a truncated file can still report a full duration)."""
+def _last_video_s(path):
+    """Last video packet time. Format duration can still say 9:48 when the packets stop at 7:30 (TAB EP22)."""
     try:
-        r = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0, t_s):.3f}", "-i", str(path),
-                            "-frames:v", "1", "-f", "null", "-"],
-                           capture_output=True, timeout=15)
-        err = r.stderr or b""
-        return r.returncode == 0 and b"Output file is empty" not in err
+        r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
+                            "-show_entries", "packet=pts_time", "-of", "csv=p=0", str(path)],
+                           capture_output=True, text=True, timeout=45)
+        last = None
+        for line in r.stdout.splitlines():
+            line = line.strip().split(",")[-1]
+            if not line:
+                continue
+            try:
+                last = float(line)
+            except ValueError:
+                continue
+        return last
     except (subprocess.TimeoutExpired, OSError):
-        return False
+        return None
 
 
 def proxy_covers(work, duration_s=None):
@@ -806,15 +814,15 @@ def proxy_covers(work, duration_s=None):
     if not duration_s or duration_s < 2:
         return True
     meta = Path(work) / "proxy_ok.json"
-    rec = {"size": p.stat().st_size, "mtime": int(p.stat().st_mtime), "need": round(float(duration_s), 1)}
+    rec = {"size": p.stat().st_size, "mtime": int(p.stat().st_mtime), "need": round(float(duration_s), 1), "v": 2}
     try:
         old = json.loads(meta.read_text()) if meta.exists() else None
-        if old and old.get("size") == rec["size"] and old.get("mtime") == rec["mtime"] and old.get("need") == rec["need"]:
+        if old and old.get("v") == 2 and old.get("size") == rec["size"] and old.get("mtime") == rec["mtime"] and old.get("need") == rec["need"]:
             return bool(old.get("ok"))
     except (ValueError, OSError):
         pass
-    dur = _probe_duration_s(p)
-    ok = bool(dur and dur >= float(duration_s) - 1.5) and _have_frame(p, max(0.0, float(duration_s) - 1.0))
+    last = _last_video_s(p)
+    ok = bool(last is not None and last >= float(duration_s) - 1.5)
     rec["ok"] = ok
     try:
         meta.write_text(json.dumps(rec))
@@ -874,15 +882,26 @@ def make_proxy(work, video, duration_s=None, on_progress=None, log=None):
             st["running"] = False
 
 
-def make_proxy_bg(work, video, duration_s=None):
+def make_proxy_bg(work, video, duration_s=None, after=None, replace=False):
     """Start the proxy in a background thread (episodes processed before the proxy step existed)."""
-    if (proxy_path(work) and proxy_covers(work, duration_s)) or (_proxy_jobs.get(str(Path(work))) or {}).get("running"):
+    if (not replace and proxy_path(work) and proxy_covers(work, duration_s)) or (_proxy_jobs.get(str(Path(work))) or {}).get("running"):
         return
     def go():
+        key = str(Path(work))
         try:
+            if replace:
+                p = proxy_path(work)
+                if p:
+                    p.unlink()
+                (Path(work) / "proxy_ok.json").unlink(missing_ok=True)
+                clear_thumb_fails(work)
             make_proxy(work, video, duration_s)
-        except Exception:
-            pass
+            if after:
+                after()
+        except Exception as ex:
+            st = _proxy_jobs.get(key)
+            if st is not None:
+                st["error"] = str(ex)
     threading.Thread(target=go, daemon=True).start()
 
 

@@ -1906,18 +1906,50 @@ def proxy_status(eid: int):
 
 
 @app.post("/api/episodes/{eid}/proxy")
-def proxy_make(eid: int):
-    """Make the preview copy now (episodes processed before the proxy step existed); returns at once."""
+def proxy_make(eid: int, force: bool = False):
+    """Make the preview copy now (episodes processed before the proxy step existed); returns at once.
+
+    Fetch + encode run in the background: the source can be 800 MB, and doing that on this request
+    502'd the site. `force` remakes even if a short leftover file is still sitting there."""
     e = _get("episodes", eid); show = _get("shows", e["show_id"])
-    from . import cloud
-    cloud.ensure_episode_inputs(db(), show, e)
-    path, dur = _src_video(eid)
     Path(e["work_dir"]).mkdir(parents=True, exist_ok=True)
-    tlm.make_proxy_bg(e["work_dir"], path, dur)
-    # older episodes: the blur flag's measure too (from the preview copy once it exists)
-    if not (Path(e["work_dir"]) / tlm.SHARPNESS).exists() and tlm.proxy_path(e["work_dir"]):
-        tlm.make_sharpness_bg(e["work_dir"], tlm.proxy_path(e["work_dir"]), cfg.pipeline_python)
-    return tlm.proxy_state(e["work_dir"], dur)
+    dur = _src_duration_s(eid)
+    work = e["work_dir"]
+    if tlm.proxy_path(work) and not force and tlm.proxy_covers(work, dur):
+        return tlm.proxy_state(work, dur)
+    if (tlm._proxy_jobs.get(str(Path(work))) or {}).get("running"):
+        return tlm.proxy_state(work, dur)
+
+    with tlm._proxy_lock:
+        st = tlm._proxy_jobs.setdefault(str(Path(work)), dict(running=False, progress=0.0, lock=threading.Lock(), error=None))
+        if st.get("running"):
+            return tlm.proxy_state(work, dur)
+        st.update(running=True, progress=0.0, error=None)
+
+    def go():
+        from . import cloud
+        try:
+            cloud.ensure_episode_inputs(db(), show, e)
+            path, d = _src_video(eid)
+            if not path or not Path(path).exists():
+                raise RuntimeError("source video is not on this box")
+            tlm.make_proxy(work, path, d or dur)
+            if storage.configured():
+                storage.mirror(show, e, tlm.PROXY, background=False)
+            tlm.clear_thumb_fails(work)
+        except Exception as ex:
+            st["error"] = str(ex)
+        finally:
+            st["running"] = False
+
+    if force:
+        p = tlm.proxy_path(work)
+        if p:
+            p.unlink()
+        (Path(work) / "proxy_ok.json").unlink(missing_ok=True)
+        tlm.clear_thumb_fails(work)
+    threading.Thread(target=go, daemon=True).start()
+    return tlm.proxy_state(work, dur)
 
 
 PLAY = {"Cache-Control": "private, max-age=3600"}
