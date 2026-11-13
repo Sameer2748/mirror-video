@@ -928,7 +928,15 @@ def thumb(work, video, ms, height=120):
         return p
     fail = d / f"{ms:08d}_{height}.fail"
     if fail.exists():
-        return None
+        # TAB EP22: a truncated copy wrote these, then the full 540p file was on disk and
+        # R2, but the remembered miss kept the timeline blank. Retry once the miss is stale.
+        try:
+            age = time.time() - fail.stat().st_mtime
+        except OSError:
+            age = 1e9
+        if age < 90:
+            return None
+        fail.unlink(missing_ok=True)
     src = Path(str(video)) if video and not str(video).startswith(("http://", "https://")) else None
     if not src or not src.is_file():
         fail.write_text("no local video")
