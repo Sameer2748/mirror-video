@@ -613,6 +613,12 @@ def inputs_to_fetch(db, ep, kinds=None):
         if kinds and a["kind"] not in kinds:
             continue
         p = Path(a["path"])
+        remote = 0
+        if a.get("r2_key") and configured():
+            info = head(a["r2_key"])
+            remote = int((info or {}).get("size") or 0)
+        if p.exists() and remote and p.stat().st_size != remote:
+            out.append(a); continue
         if p.exists() and (not a["size"] or p.stat().st_size == a["size"]):
             continue
         out.append(a)
