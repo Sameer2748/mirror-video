@@ -522,8 +522,9 @@ export default function Editor() {
         else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
       } else { if (!I.paused) I.pause(); if (Math.abs(I.currentTime - want) > 0.02) I.currentTime = want; }
       if (Math.abs(I.playbackRate - rate) > 0.001) I.playbackRate = rate;
-      lag.current = { s: want - I.currentTime, stalled: I.seeking || I.readyState < 3 };
-      if (nextReal) { const k = `${nextReal.id}@${Math.round(nextReal.t0)}`; if (vClip.current[a] !== k) { vClip.current[a] = k; A.currentTime = nextReal.s0! / 1000; } }
+      // HAVE_CURRENT_DATA (2) is enough to show a frame; R2 often sits here while playing
+      lag.current = { s: want - I.currentTime, stalled: I.seeking || I.readyState < 2 };
+      if (nextReal && !I.seeking) { const k = `${nextReal.id}@${Math.round(nextReal.t0)}`; if (vClip.current[a] !== k) { vClip.current[a] = k; A.currentTime = nextReal.s0! / 1000; } }
       return;
     }
     if (c.gap) {                                       // nothing on V1 or V2 here: black (it would render black)
@@ -556,7 +557,8 @@ export default function Editor() {
       else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
     }
     if (Math.abs(V.playbackRate - rate) > 0.001) V.playbackRate = rate;
-    lag.current = { s: want - V.currentTime, stalled: V.seeking || V.readyState < 3 };
+    // HAVE_CURRENT_DATA (2) is enough to show a frame; R2 often sits here while playing
+    lag.current = { s: want - V.currentTime, stalled: V.seeking || V.readyState < 2 };
     if (!play) {
       if (!V.paused) V.pause();
       if (Math.abs(V.currentTime - want) > 0.02) V.currentTime = want;
@@ -582,8 +584,9 @@ export default function Editor() {
       fxRef.current.style.backgroundPosition = fx ? `${50 + 60 * fx.x}% 35%` : "";
       fxRef.current.dataset.label = fx ? TLABEL[fx.st] || fx.st : "";
     }
-    // park the standby player on the next piece's first frame
-    if (nextReal) { const k = `${nextReal.id}@${Math.round(nextReal.t0)}`; if (vClip.current[1 - a] !== k) { vClip.current[1 - a] = k; S.pause(); S.currentTime = nextReal.s0! / 1000; } }
+    // park the standby player on the next piece's first frame (not while this one is still seeking:
+    // two R2 range requests at once make the visible cut wait)
+    if (nextReal && !V.seeking) { const k = `${nextReal.id}@${Math.round(nextReal.t0)}`; if (vClip.current[1 - a] !== k) { vClip.current[1 - a] = k; S.pause(); S.currentTime = nextReal.s0! / 1000; } }
   }, []); // eslint-disable-line
 
   // learn each player's lead from the frames it really displays (requestVideoFrameCallback): the shown frame is
@@ -622,8 +625,9 @@ export default function Editor() {
 
   // the play loop. The dub audio is the clock; picture + subtitles follow it. Screen redraws (requestAnimationFrame)
   // stop or slow down when the window is not in front or the Mac is busy (a lip scan, Whisper, a render), so a timer
-  // drives the same step too. A cut / slow clip makes the player seek: that is not a hang, so the voice keeps
-  // going. Only a long stall pauses it ("picture catching up").
+  // drives the same step too. A cut jumps the source file (TAB EP22 has jumps of several minutes). On R2 that seek
+  // often takes longer than a local file, so lag looks huge until it lands — that is not a hang; the voice keeps
+  // going. Only a real empty buffer (no frame for several seconds) pauses it ("picture catching up").
   useEffect(() => {
     if (!playing) return;
     let raf = 0, lastUi = 0, lastStep = 0, holdSince = 0, stallSince = 0; let alive = true;
@@ -633,16 +637,17 @@ export default function Editor() {
       const t = A.currentTime * 1000; tRef.current = t; placePlayhead(t);
       if (holding.current) {
         showFrame(t, false);                           // park the picture on the voice's frame, paused
-        const ok = !lag.current.stalled && Math.abs(lag.current.s) < 0.08;
-        if (ok || now - holdSince > 4000) {            // caught up (or give up holding after 4 s)
+        const ok = !lag.current.stalled;
+        if (ok || now - holdSince > 1500) {            // a frame is back (or give up holding)
           holding.current = false; setHeld(false); A.play().catch(() => {});
         }
       } else {
         showFrame(t, true);
-        const swapping = now - swapAt.current < 1200;  // new clip: seeking is expected
+        if (lag.current.stalled) swapAt.current = Math.max(swapAt.current, now - 200); // still seeking this cut
+        const swapping = now - swapAt.current < 3000;
         stallSince = !swapping && lag.current.stalled ? stallSince || now : 0;
-        // (not while the editor tab is hidden: nobody sees the picture then; it lines up when the tab is back)
-        if (!swapping && (lag.current.s > 1.5 || (stallSince && now - stallSince > 2000)) && !A.paused && !document.hidden) {
+        // lag.s is the source-time miss: a 400 s jump reads as 400 s of "lag" until the seek finishes. Ignore it.
+        if (!swapping && stallSince && now - stallSince > 5000 && !A.paused && !document.hidden) {
           holding.current = true; holdSince = now; stallSince = 0; setHeld(true); A.pause();
         }
       }
