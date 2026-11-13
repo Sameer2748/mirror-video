@@ -2278,6 +2278,7 @@ def gen_file(eid: int, tid: int, path: str):
 _proxy_local = threading.Lock()
 _THUMB_MISS = {"Cache-Control": "no-store"}
 _proxy_checked = {}
+_proxy_forced = set()
 
 
 def _frames_from(eid):
@@ -2329,6 +2330,22 @@ def thumb(eid: int, ms: float, h: int = 120):
         storage.drop_render_scratch(work)
         storage.drop_render_scratch_tree(Path(work).parent)
         p = tlm.thumb(work, str(src), ms, h)
+    if not p and storage.configured():
+        # TAB EP22: local 540p copy could not cut this frame; pull the R2 file once and try again.
+        with _proxy_local:
+            if work not in _proxy_forced:
+                _proxy_forced.add(work)
+                local = Path(work) / tlm.PROXY
+                local.unlink(missing_ok=True)
+                tlm.clear_thumb_fails(work)
+                Path(work, "proxy_ok.json").unlink(missing_ok=True)
+                show = _get("shows", e["show_id"])
+                got = storage.ensure_local(show, e, tlm.PROXY)
+                _proxy_checked[work] = (time.time(), str(got) if got else None)
+                src = str(got) if got and Path(got).exists() else src
+            elif _proxy_checked.get(work) and _proxy_checked[work][1]:
+                src = _proxy_checked[work][1]
+            p = tlm.thumb(work, str(src), ms, h)
     if not p:
         raise HTTPException(404, "no frame", headers=_THUMB_MISS)
     return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
