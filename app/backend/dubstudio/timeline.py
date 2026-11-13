@@ -834,10 +834,12 @@ def proxy_covers(work, duration_s=None):
 def proxy_state(work, duration_s=None):
     j = _proxy_jobs.get(str(Path(work)))
     running = bool(j and j.get("running"))
-    if proxy_path(work) and proxy_covers(work, duration_s):
-        return dict(ready=True, progress=1.0, running=running)
+    p = proxy_path(work)
+    rev = p.stat().st_size if p else 0
+    if p and proxy_covers(work, duration_s):
+        return dict(ready=True, progress=1.0, running=running, rev=rev)
     return dict(ready=False, running=running, progress=(j or {}).get("progress", 0.0),
-                error=(j or {}).get("error"))
+                error=(j or {}).get("error"), rev=rev)
 
 
 def make_proxy(work, video, duration_s=None, on_progress=None, log=None):
@@ -855,7 +857,9 @@ def make_proxy(work, video, duration_s=None, on_progress=None, log=None):
             clear_thumb_fails(work)
         st.update(running=True, progress=0.0, error=None)
         tmp = w / (PROXY + ".part.mp4")
-        cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(video), "-map", "0:v:0", "-map", "0:a:0?",
+        cmd = ["ffmpeg", "-v", "error", "-y", "-fflags", "+genpts+igndts+discardcorrupt",
+               "-err_detect", "ignore_err", "-analyzeduration", "100M", "-probesize", "100M",
+               "-i", str(video), "-map", "0:v:0", "-map", "0:a:0?",
                "-vf", "scale=-2:'min(540,ih)'", "-c:v", "libx264", "-preset", "veryfast", "-crf", "27",
                "-pix_fmt", "yuv420p", "-force_key_frames", "expr:gte(t,n_forced*0.5)", "-c:a", "aac", "-b:a", "96k",
                "-ac", "2", "-movflags", "+faststart", "-progress", "pipe:1", "-nostats", str(tmp)]

@@ -35,7 +35,7 @@ function parseSrt(text: string): Cue[] {
 }
 type TransInfo = { default: string; styles: { id: string; label: string; half_s: number; uses: number }[] };
 const TLABEL: Record<string, string> = { auto: "Automatic", none: "Hard cut", light_leak: "Light leak", blur_dissolve: "Blur dissolve", zoom_blur: "Zoom blur", glow: "Glow" };
-type Proxy = { ready: boolean; running?: boolean; progress: number; error?: string | null };
+type Proxy = { ready: boolean; running?: boolean; progress: number; error?: string | null; rev?: number };
 type Cue = { t0: number; t1: number; text: string };
 type Sentence = { idx: number; text: string; start_ms: number; end_ms: number };
 type Tracks = { v1?: { hidden?: boolean; locked?: boolean }; v2?: { hidden?: boolean; locked?: boolean }; src?: { hidden?: boolean } };
@@ -1348,7 +1348,7 @@ export default function Editor() {
       <BinPanel onFold={toggleBin} eid={eid!} bin={bin} clips={[...clips, ...v2]} srcMedia={srcMedia} onShow={showImport} onImport={importFiles} onRemove={removeImport}
         onImportPath={async (path) => { try { const x = await api.post<Imp>(`/api/episodes/${eid}/imports/path`, { path }); say(`${x.name} imported`); loadBin(); } catch (e: any) { say(e.message, true); } }}
         onShowSource={() => { setSrcMedia(null); if (!srcOpen) toggleSrc(); }} onTrack={(lang) => setTrackDlg(lang)} labels={data.labels} />}
-      <TimelineView eid={eid!} holes={data.timeline.holes || []} clips={clips} flags={flags} approved={approved} total={total} zoom={zoom} setZoom={setZoom} fitZoom={fitZoom}
+      <TimelineView eid={eid!} thumbRev={proxy.rev || 0} holes={data.timeline.holes || []} clips={clips} flags={flags} approved={approved} total={total} zoom={zoom} setZoom={setZoom} fitZoom={fitZoom}
         tool={tool} sel={sel} setSel={(id) => { setSel(id); setSelCue(null); }} seek={seek} subs={subs} labels={data.labels} lipSet={lipSet}
         scroller={scroller} scrollerW={scrollerW} playheadEl={playheadEl} t={tShow} srcDur={srcDur}
         markers={markers} snapOn={snapOn} setSnapOn={setSnapOn} snapPts={snapPts} srcStarts={data.src_sentences.map((x) => x.start_ms)} tRef={tRef}
@@ -1631,7 +1631,7 @@ function SourceList({ sents, clips, onPick, onUse, canUse }: { sents: Sentence[]
 const H = { ruler: 24, marks: 16, flags: 14, v2: 46, v1: 64, auto: 30, src: 44, a1: 46, s: 26 };
 
 function TimelineView(p: {
-  eid: string; clips: Clip[]; flags: Record<string, Flag[]>; approved: string[]; total: number; zoom: number; setZoom: (z: number) => void; fitZoom: () => void;
+  eid: string; thumbRev: number; clips: Clip[]; flags: Record<string, Flag[]>; approved: string[]; total: number; zoom: number; setZoom: (z: number) => void; fitZoom: () => void;
   tool: Tool; sel: string | null; setSel: (id: string | null) => void; seek: (t: number) => void; subs: { dub: Cue[]; en: Cue[] }; labels: string[]; lipSet: Set<number>;
   scroller: React.RefObject<HTMLDivElement>; scrollerW: React.MutableRefObject<number>; playheadEl: React.RefObject<HTMLDivElement>; t: number; srcDur: number;
   onRoll: (i: number, t: number, done: boolean) => void; onSlip: (track: 1 | 2, i: number, d: number, done: boolean, base: Clip) => void; onRazor: (t: number) => void;
@@ -1896,7 +1896,7 @@ function TimelineView(p: {
     const span = Math.max((c.s1 || 0) - (c.s0 || 0), 1);
     return Array.from({ length: n }, (_, k) => {
       const ms = Math.round(((c.s0 || 0) + ((k + 0.5) / n) * span) / 500) * 500;
-      return <img key={k} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80`} loading="lazy" alt="" draggable={false}
+      return <img key={`${p.thumbRev}-${k}`} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80&r=${p.thumbRev}`} loading="lazy" alt="" draggable={false}
         onError={(e) => { const el = e.currentTarget; el.onerror = null; el.remove(); }} />;
     });
   };

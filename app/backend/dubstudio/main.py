@@ -1478,7 +1478,7 @@ def get_timeline(eid: int, pipeline: bool = False):
         "timeline": tl, "flags": fl, "counts": counts, "problems": probs,
         "versions": [v for v in _versions(eid) if v["base"] == tl["base"]],
         "src_sentences": c["src_sentences"], "dub_starts": c["dub_starts"], "lip_rows": sorted(c["lip_rows"]),
-        **_subs(eid, ctx), "markers": _markers(eid), "proxy": tlm.proxy_state(work),
+        **_subs(eid, ctx), "markers": _markers(eid), "proxy": tlm.proxy_state(work, _src_duration_s(eid)),
         "labels": (show["profile"].get("labels") or "DUB,SRC").split(","),
         "sub_style": show["profile"].get("sub_style", "box"), "sub_styles": show["profile"].get("sub_styles") or {},
         "transitions": _transitions_info(show), "cuts": tlm.cuts(tl),
