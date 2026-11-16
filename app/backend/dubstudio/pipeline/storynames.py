@@ -85,28 +85,55 @@ def anchors(sentences, cast):
     return out
 
 
-def _one_face(persons, cast_names):
-    """The single face/profile cast member in a shot, or None when the shot shows none or several."""
+def _one_face(persons, cast_names=None):
+    """The single face/profile person of a shot, or None when the shot shows none or several.
+
+    -> (name, group id or None). A shot with two faces says nothing about which face the line is about."""
     seen = []
     for p in persons or []:
         if p.get("view") not in ("face", "profile"):
             continue
-        n = p.get("name")
-        if n in cast_names and n not in seen:
-            seen.append(n)
+        key = (p.get("name"), p.get("g"))
+        if key not in seen:
+            seen.append(key)
     return seen[0] if len(seen) == 1 else None
 
 
+def _library_votes(library, face, groups, cast_names):
+    """Which library name each face group carries: the shots the library names with ONE person, in which the
+    group is the only face. The same vote facemap.py takes; repeated here so a group that Claude named by
+    its reference pictures still has the name the library gave its shots."""
+    votes = defaultdict(lambda: defaultdict(int))
+    for r in library.get("shots") or []:
+        people = r.get("people") or []
+        if len(people) != 1 or people[0] not in cast_names:
+            continue
+        one = _one_face((face.get("shots") or {}).get(str(r["n"]), {}).get("persons"))
+        if not one or one[1] is None or str(one[1]) not in groups:
+            continue
+        votes[str(one[1])][people[0]] += 1
+    out = {}
+    for gid, bag in votes.items():
+        tot = sum(bag.values())
+        top = max(bag, key=bag.get)
+        if tot >= 3 and bag[top] >= 0.6 * tot:
+            out[gid] = top
+    return out
+
+
 def apply_story_names(library, face, sentences):
-    """Rename face groups from agreed story lines. Mutates `library` and `face`. Returns a report."""
+    """Rename face groups from agreed story lines. Mutates `library` and `face`. Returns a report.
+
+    A line votes for the face GROUP seen alone in its shot (the group id is written on each person by
+    facemap.py). Names are never used to find the group: one name can sit on several groups."""
     cast = (library.get("cast") or {}).get("cast") or []
     cast_names = {c["name"] for c in cast}
     shots = {r["n"]: r for r in library.get("shots") or []}
     groups = face.get("groups") or {}
-    by_name = defaultdict(list)
-    for gid, g in groups.items():
-        if g.get("name") in cast_names:
-            by_name[g["name"]].append(str(gid))
+    has_g = any(p.get("g") is not None for s in (face.get("shots") or {}).values() for p in s.get("persons") or [])
+    if not has_g:
+        return [dict(group=None, old=None, new=None, why="face map has no group ids on its people (older facemap.py)", lines=[])]
+    lib_name = _library_votes(library, face, groups, cast_names)
     votes = defaultdict(lambda: defaultdict(int))
     used = defaultdict(list)
     for item in anchors(sentences, cast):
@@ -125,20 +152,17 @@ def apply_story_names(library, face, sentences):
                 continue
             if same is not None and r["n"] != same:
                 continue
-            face_who = _one_face((face.get("shots") or {}).get(str(r["n"]), {}).get("persons"), cast_names)
-            if not face_who:
-                continue
-            gids = by_name.get(face_who) or []
-            if len(gids) != 1:
+            one = _one_face((face.get("shots") or {}).get(str(r["n"]), {}).get("persons"))
+            if not one or one[1] is None or str(one[1]) not in groups:
                 continue
             best = ov
-            hit = (gids[0], face_who, r["n"])
+            hit = (str(one[1]), one[0], r["n"])
         if not hit:
             continue
-        gid, old, n = hit
+        gid, seen_as, n = hit
         votes[gid][who] += 1
-        used[gid].append((n, old, who, text[:80]))
-    mapping = {}
+        used[gid].append((n, seen_as, who, text[:80]))
+    story = {}
     report = []
     for gid, bag in votes.items():
         old = groups[gid]["name"]
@@ -149,16 +173,46 @@ def apply_story_names(library, face, sentences):
         if n < 2:
             report.append(dict(group=gid, old=old, new=None, why=f"only {n} line, need 2", lines=used[gid]))
             continue
-        if new == old:
-            report.append(dict(group=gid, old=old, new=old, why=f"{n} lines agree", lines=used[gid]))
-            continue
-        mapping[old] = new
-        groups[gid]["name"] = new
-        groups[gid]["how"] = f"story {dict(bag)} (was {old}; {groups[gid].get('how', '')})"
+        story[gid] = new
         report.append(dict(group=gid, old=old, new=new, why=f"{n} lines agree", lines=used[gid]))
-    new_names = list(mapping.values())
-    if len(new_names) != len(set(new_names)):
-        raise RuntimeError(f"two faces would get the same name: {mapping}")
+    # A swap has two sides. The story names one side (Jake -> Frankie); the other face then holds the name
+    # the first one gave up, so its library name moves the other way. Without this two people share a name.
+    for gid, new in list(story.items()):
+        lib_old = lib_name.get(gid) or groups[gid]["name"]
+        if lib_old == new or new in {lib_name.get(g) or groups[g]["name"] for g in story}:
+            continue
+        for other in groups:
+            if other in story or lib_name.get(other) != new:
+                continue
+            story[other] = lib_old
+            report.append(dict(group=other, old=groups[other]["name"], new=lib_old,
+                               why=f"swap: the library calls this face {new}, and {new} is the face the story calls {lib_old}",
+                               lines=[]))
+            used[other] = []
+    # two groups must not get one story name
+    taken = defaultdict(list)
+    for gid, new in story.items():
+        taken[new].append(gid)
+    for new, gids in taken.items():
+        if len(gids) > 1:
+            raise RuntimeError(f"two faces would get the same name {new}: groups {gids}")
+    # the name each group carries now: the library's vote, else what Claude said
+    for gid in groups:
+        if gid in lib_name and gid not in story and groups[gid].get("how", "").startswith("Claude"):
+            groups[gid]["how"] = f"library vote {lib_name[gid]} (was {groups[gid]['name']}; {groups[gid]['how']})"
+            groups[gid]["name"] = lib_name[gid]
+    # library names: the name the library gave the group -> the story name
+    mapping = {}
+    for gid, new in story.items():
+        lib_old = lib_name.get(gid) or groups[gid]["name"]
+        if lib_old != new:
+            mapping[lib_old] = new
+    for gid, new in story.items():
+        if groups[gid]["name"] != new:
+            groups[gid]["how"] = f"story {{'{new}': {len(used[gid])}}} (was {groups[gid]['name']}; {groups[gid].get('how', '')})"
+            groups[gid]["name"] = new
+    if len(set(mapping.values())) != len(mapping.values()):
+        raise RuntimeError(f"two library names would become one: {mapping}")
     if mapping:
         looks = {c["name"]: c.get("look", "") for c in cast}
         for c in cast:
@@ -174,13 +228,18 @@ def apply_story_names(library, face, sentences):
             return n
         for r in library.get("shots") or []:
             r["people"] = [ren(p) for p in (r.get("people") or [])]
+    # the face map: every person of a renamed group takes the story name, on every shot
+    if story:
         for shot in (face.get("shots") or {}).values():
+            moved = {}
             for p in shot.get("persons") or []:
-                if p.get("name") in mapping:
-                    p["name"] = mapping[p["name"]]
+                gid = str(p.get("g")) if p.get("g") is not None else None
+                if gid in story:
+                    moved[p.get("name")] = story[gid]
+                    p["name"] = story[gid]
             for t in shot.get("talking") or []:
-                if t.get("name") in mapping:
-                    t["name"] = mapping[t["name"]]
+                if t.get("name") in moved:
+                    t["name"] = moved[t["name"]]
     return report
 
 

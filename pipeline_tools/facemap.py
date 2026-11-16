@@ -212,8 +212,10 @@ for r in SH:
     persons = []
     for nm, v in list(P.items()):
         if len(v) < 2 and len(recs) > 3: P.pop(nm); continue      # a single stray frame is not a person
+        gs = [f["g"] for f in v if f["g"] in big]
         persons.append(dict(name=nm, pos=pos(np.median([f["box"] for f in v], 0)), view=view(float(np.median([f["yaw"] for f in v]))),
-                            from_s=min(f["t"] for f in v), to_s=max(f["t"] for f in v), frames=len(v)))
+                            from_s=min(f["t"] for f in v), to_s=max(f["t"] for f in v), frames=len(v),
+                            **({"g": max(set(gs), key=gs.count)} if gs else {})))
     nf = []
     for rc in recs:                      # bodies without a face: each face belongs to the smallest body whose upper part holds it
         fb = [faces[i]["box"] for i in rc["faces"]]; pb = rc["persons"]; has = set()
@@ -303,7 +305,10 @@ def _story_names():
 sent = os.path.join(os.path.dirname(os.path.dirname(a.library)), "sentences_src.json")
 if a.app and os.path.isfile(sent):
     try:
-        _story_names()(LIB, face_doc, json.load(open(sent))["sentences"])
+        rep = _story_names()(LIB, face_doc, json.load(open(sent))["sentences"])
+        for row in rep:
+            print(f"story names group {row['group']}: {row['old']} -> {row['new']} ({row['why']})", flush=True)
+        face_doc["story_names"] = [dict(group=r["group"], old=r["old"], new=r["new"], why=r["why"]) for r in rep]
         json.dump(LIB, open(a.library, "w"), indent=1, ensure_ascii=False)
     except Exception as ex:
         print("story names skipped:", str(ex)[:200])
