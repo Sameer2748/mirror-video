@@ -1021,7 +1021,11 @@ def cmd_manifest(a):
         if e["it_start_ms"] > cur: full.append(dict(kind="silence", it_start_ms=cur, it_end_ms=e["it_start_ms"]))
         full.append(e); cur = e["it_end_ms"]
     if cur < total_ms: full.append(dict(kind="silence", it_start_ms=cur, it_end_ms=total_ms))
-    if cur > total_ms: raise SystemExit(f"dub SRT runs past the dub audio ({cur} > {total_ms} ms)")
+    if cur > total_ms:   # last subtitle ends a little after the dub audio: allowed up to 4 s (the audio is silent there)
+        over = cur - total_ms
+        if over > 4000: raise SystemExit(f"dub SRT runs past the dub audio by {over} ms (limit 4000 ms) -- check the dub SRT/audio")
+        print(f"note: dub SRT runs {over} ms past the dub audio; timeline ends at the subtitle end, render cuts the video at the audio end")
+        total_ms = cur
     # Every silence is absorbed by the neighbouring clip(s) -> zero black screen.
     # (<=1.5s: whole sliver to the previous clip, else next; longer: split 50/50 between both.)
     for e in ev:

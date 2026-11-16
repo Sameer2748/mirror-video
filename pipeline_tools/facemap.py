@@ -102,12 +102,36 @@ for g, v in big.items():
     if votes and tot >= 3 and max(votes.values()) >= 0.6 * tot:
         gname[g] = max(votes, key=votes.get); how[g] = f"vote {votes}"
 
+def grab_png(t):
+    """One PNG at t seconds. Fast seek first; a hole in the file comes back empty, then accurate seek."""
+    def once(accurate):
+        cmd = ["ffmpeg", "-v", "error", "-hide_banner"]
+        if accurate:
+            cmd += ["-i", a.video, "-ss", f"{t:.3f}"]
+        else:
+            cmd += ["-ss", f"{t:.3f}", "-i", a.video]
+        cmd += ["-frames:v", "1", "-vf", f"scale={FW}:{FH}", "-f", "image2pipe", "-vcodec", "png", "-"]
+        p = subprocess.run(cmd, capture_output=True)
+        return p.stdout or b""
+    raw = once(False)
+    if raw.startswith(b"\x89PNG"):
+        return raw
+    raw2 = once(True)
+    if not raw2.startswith(b"\x89PNG"):
+        print(f"face frame at {t:.3f}s: fast seek returned {len(raw)} bytes, accurate seek {len(raw2)} — skipped", flush=True)
+        return b""
+    print(f"face frame at {t:.3f}s: fast seek was empty; accurate seek worked", flush=True)
+    return raw2
+
 def crop(i, pad=0.12, size=160, box=None, t=None, mask=()):
     t = faces[i]["t"] if t is None else t; box = faces[i]["box"] if box is None else box
-    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", a.video, "-frames:v", "1", "-vf", f"scale={FW}:{FH}",
-                          "-f", "image2pipe", "-vcodec", "png", "-"], capture_output=True).stdout
+    raw = grab_png(t)
     from PIL import Image, ImageDraw
-    im = Image.open(io.BytesIO(raw)).convert("RGB"); d = ImageDraw.Draw(im)
+    try:
+        im = Image.open(io.BytesIO(raw)).convert("RGB")
+    except Exception:
+        return None
+    d = ImageDraw.Draw(im)
     for m in mask: d.rectangle(list(m), fill=(128, 128, 128))
     w, h = box[2] - box[0], box[3] - box[1]
     im = im.crop((max(0, box[0] - pad * w), max(0, box[1] - pad * h), min(FW, box[2] + pad * w), min(FH, box[3] + pad * h))); im.thumbnail((size, size))
@@ -127,27 +151,39 @@ if rest and ai:
     refs = {}
     for g in sorted(gname, key=lambda g: -len(big[g])):
         if gname[g] not in refs: refs[gname[g]] = picks(big[g], 2)
-    ims = [crop(i) for n in refs for i in refs[n]]; lbs = [f"{n} (reference)" for n in refs for i in refs[n]]
+    ims, lbs = [], []
+    for n in refs:
+        for i in refs[n]:
+            im = crop(i)
+            if im is not None:
+                ims.append(im); lbs.append(f"{n} (reference)")
     for g in rest:
-        for i in picks(big[g], 3): ims.append(crop(i)); lbs.append(f"group {g}")
-    q = ("The first pictures are REFERENCE faces of known characters (labelled with the name). The others are face crops "
-         "labelled with a group number. " + LOOKS + "\nFor every group: the character name if it is the same person as a "
-         "reference or fits a character, a short description if it is nobody from the list, or \"photo\" if the face is inside "
-         "a photo / screen. Answer only JSON: {\"groups\": {\"<group number>\": \"name\"}}")
-    try:
-        text, _ = ai.chat([{"type": "text", "text": q}, {"type": "image_url", "image_url": {"url": grid(ims, lbs)}}], max_tokens=2000)
-        for kk, v in ((ai.extract_json(text, "groups") or {}).get("groups") or {}).items():
-            try:
-                gid = int(kk)
-            except (TypeError, ValueError):
-                print(f"Claude named group {kk!r} which is not a number -- skipped")
-                continue
-            if gid not in big:
-                print(f"Claude named group {gid} which is not a real identity group -- skipped")
-                continue
-            gname[gid] = v; how[gid] = "Claude (reference faces)"
-    except Exception as ex:
-        print("group naming by Claude failed:", str(ex)[:120])
+        for i in picks(big[g], 3):
+            im = crop(i)
+            if im is not None:
+                ims.append(im); lbs.append(f"group {g}")
+    if not ims:
+        print("no face pictures to name (every grab was empty); unnamed groups stay unknown", flush=True)
+    else:
+        q = ("The first pictures are REFERENCE faces of known characters (labelled with the name). The others are face crops "
+             "labelled with a group number. " + LOOKS + "\nFor every group: the character name if it is the same person as a "
+             "reference or fits a character, a short description if it is nobody from the list, or \"photo\" if the face is inside "
+             "a photo / screen. Answer only JSON: {\"groups\": {\"<group number>\": \"name\"}}")
+    if ims:
+        try:
+            text, _ = ai.chat([{"type": "text", "text": q}, {"type": "image_url", "image_url": {"url": grid(ims, lbs)}}], max_tokens=2000)
+            for kk, v in ((ai.extract_json(text, "groups") or {}).get("groups") or {}).items():
+                try:
+                    gid = int(kk)
+                except (TypeError, ValueError):
+                    print(f"Claude named group {kk!r} which is not a number -- skipped")
+                    continue
+                if gid not in big:
+                    print(f"Claude named group {gid} which is not a real identity group -- skipped")
+                    continue
+                gname[gid] = v; how[gid] = "Claude (reference faces)"
+        except Exception as ex:
+            print("group naming by Claude failed:", str(ex)[:120])
 gname, how = keep_named_groups(gname, how, big)
 cent = {g: (lambda m: m / np.linalg.norm(m))(X[big[g]].mean(0)) for g in gname}
 for i, f in enumerate(faces):
@@ -228,17 +264,24 @@ for r in SH:
             if x[1] - x[0] >= 0.3: talk.append(dict(name=who or "unknown face", from_s=round(x[0], 2), to_s=round(x[1], 2)))
     out[str(n)] = dict(persons=persons, talking=sorted(talk, key=lambda x: x["from_s"]))
 if backs and ai:
-    ims = [crop(None, pad=0.0, size=200, box=b, t=t, mask=o) for n, e, t, b, o in backs]
-    q = ("Each numbered picture shows ONE person seen from behind / without a clear face in a drama episode (other people are "
-         "greyed out). " + LOOKS + "\nWho is each one (hair, clothes, build)? A name from the list, a short description of anyone "
-         "else, or \"none\" if no person is left. Answer only JSON: {\"people\": {\"<number>\": \"name\"}}")
-    try:
-        text, _ = ai.chat([{"type": "text", "text": q}, {"type": "image_url", "image_url": {"url": grid(ims, [str(j) for j in range(len(ims))], cols=5, cell=200)}}], max_tokens=2000)
-        bn = (ai.extract_json(text, "people") or {}).get("people") or {}
-        for j, (n, e, t, b, o) in enumerate(backs):
-            if bn.get(str(j)) and bn[str(j)] != "none": e["name"] = bn[str(j)]; e["how"] = "Claude (body crop)"
-    except Exception as ex:
-        print("back naming by Claude failed:", str(ex)[:120])
+    got = []
+    for item in backs:
+        n, e, t, b, o = item
+        im = crop(None, pad=0.0, size=200, box=b, t=t, mask=o)
+        if im is not None:
+            got.append((e, im))
+    if got:
+        q = ("Each numbered picture shows ONE person seen from behind / without a clear face in a drama episode (other people are "
+             "greyed out). " + LOOKS + "\nWho is each one (hair, clothes, build)? A name from the list, a short description of anyone "
+             "else, or \"none\" if no person is left. Answer only JSON: {\"people\": {\"<number>\": \"name\"}}")
+        try:
+            ims = [im for _, im in got]
+            text, _ = ai.chat([{"type": "text", "text": q}, {"type": "image_url", "image_url": {"url": grid(ims, [str(j) for j in range(len(ims))], cols=5, cell=200)}}], max_tokens=2000)
+            bn = (ai.extract_json(text, "people") or {}).get("people") or {}
+            for j, (e, im) in enumerate(got):
+                if bn.get(str(j)) and bn[str(j)] != "none": e["name"] = bn[str(j)]; e["how"] = "Claude (body crop)"
+        except Exception as ex:
+            print("back naming by Claude failed:", str(ex)[:120])
 for v in out.values(): v["persons"] = [x for x in v["persons"] if x["name"]] + [dict(x, name="unknown person") for x in v["persons"] if not x["name"]]
 json.dump(dict(video=a.video, fps=a.fps, groups={str(g): dict(name=gname.get(g, "unknown"), faces=len(big[g]), how=how.get(g, "")) for g in big},
                shots=out, seconds=round(time.time() - t_all), timing={x: round(y) for x, y in T.items()}), open(OUT, "w"), indent=1, ensure_ascii=False)
