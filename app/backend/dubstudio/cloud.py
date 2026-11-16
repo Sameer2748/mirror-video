@@ -908,6 +908,9 @@ def stage_facemap(work):
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / "facemap.py"
     shutil.copy2(src, dest)
+    story = Path(__file__).resolve().parent / "pipeline" / "storynames.py"
+    if story.is_file():
+        shutil.copy2(story, dest_dir / "storynames.py")
     return dest
 
 

@@ -271,6 +271,9 @@ SLOW, OWN_FRAC, OWN_PAD = 0.8, 0.5, 0.5
 # and plays faster (example: clip 1-3 s + B-roll 3-4.3 s -> clip 1-2.3 s + B-roll 2.3-4.3 s). Faster than SPEED_HI that
 # clip shows a shorter part of its footage (its start is kept: a mouth or an action begins there), like a fast line.
 MIN_BROLL, SLOW_FLOOR = 2.0, SPEED_LO
+# A used clip (not B-roll) shorter than 1 s flashes on and off. Its screen time is split in half between the clip
+# before it and the clip after it; those two keep playing and the short clip is removed. B-roll keeps the 2 s rule.
+MIN_OWN = 1.0
 
 
 def merge_iv(iv):
@@ -594,6 +597,61 @@ def fix_short_broll(edl):
     return edl, notes
 
 
+def _hold_speed(e, shot):
+    """The clip's screen time grew. Use spare frames in its shot so it does not fall under 0.8x."""
+    dur = e["t1"] - e["t0"]
+    if dur <= 1e-6 or not shot:
+        return
+    if (e["to"] - e["from"]) / dur >= SPEED_LO - 0.001:
+        return
+    need = SPEED_LO * dur - (e["to"] - e["from"])
+    add = min(need, max(0.0, shot["end"] - e["to"]))
+    e["to"] = round(e["to"] + add, 3); need -= add
+    if need > 0.01:
+        add = min(need, max(0.0, e["from"] - shot["start"]))
+        e["from"] = round(e["from"] - add, 3)
+
+
+def absorb_short_own(edl, edges=True):
+    """Drop a used clip shorter than 1 s. The clip before and the clip after each play half of its time.
+
+    edges=False leaves a short clip that is the first or last piece of this stretch. The pass over the
+    joined episode splits it with the clip in the stretch next door.
+    """
+    edl = sorted([dict(e) for e in edl], key=lambda e: e["t0"]); notes = []
+    for _ in range(40):
+        edl = sorted(edl, key=lambda e: e["t0"])
+        short = None
+        for i, e in enumerate(edl):
+            d = e["t1"] - e["t0"]
+            if d <= 0 or d >= MIN_OWN - 0.01 or is_broll(e, piece_lines(e)):
+                continue
+            both = 0 < i < len(edl) - 1
+            if not both and (not edges or len(edl) == 1):
+                continue
+            short = i
+            break
+        if short is None:
+            break
+        e = edl[short]; d = e["t1"] - e["t0"]
+        prev = edl[short - 1] if short else None
+        nxt = edl[short + 1] if short + 1 < len(edl) else None
+        if prev and nxt:
+            mid = round(e["t0"] + d / 2, 3)
+            prev["t1"] = mid; nxt["t0"] = mid
+            _hold_speed(prev, SH.get(int(prev["shot"]))); _hold_speed(nxt, SH.get(int(nxt["shot"])))
+            notes.append(f"used clip {e['t0']:.2f}-{e['t1']:.2f} ({d:.2f} s, shot {e['shot']}) removed; "
+                         f"clip before plays until {mid:.2f}, clip after starts there")
+        elif prev:
+            prev["t1"] = round(e["t1"], 3); _hold_speed(prev, SH.get(int(prev["shot"])))
+            notes.append(f"used clip {e['t0']:.2f}-{e['t1']:.2f} ({d:.2f} s, shot {e['shot']}) given to the clip before it")
+        else:
+            nxt["t0"] = round(e["t0"], 3); _hold_speed(nxt, SH.get(int(nxt["shot"])))
+            notes.append(f"used clip {e['t0']:.2f}-{e['t1']:.2f} ({d:.2f} s, shot {e['shot']}) given to the clip after it")
+        del edl[short]
+    return edl, notes
+
+
 def fix_speed(edl):
     """Clamp each piece to 0.8–1.25x by changing only its source span, staying inside the shot."""
     notes = []
@@ -621,8 +679,9 @@ def fix_speed(edl):
 def polish(edl):
     """Mechanical repairs the checker already knows how to describe — do not spend a Claude round on them."""
     edl, n1 = fix_short_broll(edl)
-    edl, n2 = fix_speed(edl)
-    return edl, n1 + n2
+    edl, n2 = absorb_short_own(edl, edges=False)
+    edl, n3 = fix_speed(edl)
+    return edl, n1 + n2 + n3
 
 
 def line_tag(d):
@@ -1277,8 +1336,22 @@ def snap_segs(segs, a0, a1):
         s["it_start_ms"], s["it_end_ms"] = nt0, nt1
 
 
+def join_short_own(allE, report):
+    """One pass over the joined episode, so a short used clip at the edge of a stretch splits with the clip next door."""
+    allE, notes = absorb_short_own(allE)
+    allE, speed = fix_speed(allE)
+    for n in notes + speed:
+        print("  " + n, flush=True)
+    if notes:
+        for w in report:
+            T0, T1 = w["window"]
+            w["edl"] = [e for e in allE if T0 - 0.05 <= (e["t0"] + e["t1"]) / 2 <= T1 + 0.05]
+    return allE
+
+
 if PAR:
     allE, report, stats = run_par(A0, A1)
+    allE = join_short_own(allE, report)
     segs = []
     for e in allE:
         d = next((d for d in dub if d["start_ms"] / 1000 <= (e["t0"] + e["t1"]) / 2 <= d["end_ms"] / 1000), None)
@@ -1308,6 +1381,7 @@ for T0, T1 in windows(A0, A1):
     edl, rounds, lines, shots = cut_window(T0, T1, allE, cache, f"{T0:.2f}-{T1:.2f}")
     allE += edl
     report.append(dict(window=[T0, T1], lines=lines, shots=shots, edl=edl, rounds=rounds))
+allE = join_short_own(allE, report)
 
 segs = []
 for e in allE:

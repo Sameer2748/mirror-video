@@ -283,7 +283,30 @@ if backs and ai:
         except Exception as ex:
             print("back naming by Claude failed:", str(ex)[:120])
 for v in out.values(): v["persons"] = [x for x in v["persons"] if x["name"]] + [dict(x, name="unknown person") for x in v["persons"] if not x["name"]]
-json.dump(dict(video=a.video, fps=a.fps, groups={str(g): dict(name=gname.get(g, "unknown"), faces=len(big[g]), how=how.get(g, "")) for g in big},
-               shots=out, seconds=round(time.time() - t_all), timing={x: round(y) for x, y in T.items()}), open(OUT, "w"), indent=1, ensure_ascii=False)
+face_doc = dict(video=a.video, fps=a.fps, groups={str(g): dict(name=gname.get(g, "unknown"), faces=len(big[g]), how=how.get(g, "")) for g in big},
+                shots=out, seconds=round(time.time() - t_all), timing={x: round(y) for x, y in T.items()})
+# The vote names a face from the library's clothes guess. Story lines rename a group when they agree,
+# and the corrected names are written back onto the library before scene edit reads it.
+def _story_names():
+    """The naming rule travels next to this script. The rented GPU image does not have it."""
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storynames.py")
+    if os.path.isfile(here):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("storynames", here)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.apply_story_names
+    from dubstudio.pipeline.storynames import apply_story_names
+    return apply_story_names
+
+
+sent = os.path.join(os.path.dirname(os.path.dirname(a.library)), "sentences_src.json")
+if a.app and os.path.isfile(sent):
+    try:
+        _story_names()(LIB, face_doc, json.load(open(sent))["sentences"])
+        json.dump(LIB, open(a.library, "w"), indent=1, ensure_ascii=False)
+    except Exception as ex:
+        print("story names skipped:", str(ex)[:200])
+json.dump(face_doc, open(OUT, "w"), indent=1, ensure_ascii=False)
 two = sum(1 for v in out.values() if len(v["persons"]) >= 2); tk = sum(1 for v in out.values() if v["talking"])
 print(f"saved {OUT}: {len(out)} shots ({two} with 2+ people, {tk} with someone talking) in {time.time() - t_all:.0f} s")

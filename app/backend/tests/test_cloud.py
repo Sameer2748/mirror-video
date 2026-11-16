@@ -505,6 +505,7 @@ def test_facemap_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
     out = cloud.point_facemap_at_staged(cmd, work)
     staged = Path(out[1])
     assert staged == work / "_pipe" / "facemap.py" and staged.is_file()
+    assert (work / "_pipe" / "storynames.py").is_file()
     text = staged.read_text()
     assert "keep_named_groups" in text and "not a real identity group" in text
     assert "KeyError 83" in text
