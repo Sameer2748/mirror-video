@@ -162,7 +162,7 @@ def plan(show, episode, assets):
     clean = ctx["name_clean"]
     # every show: the source ending is kept and stops before a closing fade to black; the opening is left out when the
     # lip scan shows a moving mouth in it (bookends reads W/lipsync.json). Then the transition plan of the scene edit:
-    # a transition at every clip switch except the cut INTO a B-roll (scene_transitions.py), and the transitions.
+    # a transition at every clip switch, including into a B-roll (scene_transitions.py), and the transitions.
     tplan = W / "transitions_plan.json"
     add("bookends", [py, T("dubstitch.py"), "bookends", "--work", str(W), "--out", str(W / "clean_noglow.mp4")],
         ["verify"], label="Opening + ending")

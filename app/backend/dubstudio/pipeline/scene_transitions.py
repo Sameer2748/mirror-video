@@ -1,6 +1,6 @@
-"""transitions plan for a scene-edited episode (owner, 2026-10-29): a transition at EVERY clip switch, except the cut INTO a
-B-roll piece (clip -> B-roll is a straight cut; B-roll -> next clip gets the transition), so a short B-roll does not get two
-transitions around it. `--scenes-only`: the older plan, a transition only where the STORY moves to another scene.
+"""transitions plan for a scene-edited episode: a transition at every clip switch, including the cut into a B-roll,
+so a picture change does not play as a jump. Footage that continues (the next clip starts where this one ended in the
+source) is not a switch. `--scenes-only`: the older plan, a transition only where the STORY moves to another scene.
 Story scene at a moment = the scene of the dub line there (W/scene/line_places.json from sceneedit.py, Claude's reading of
 the story). Without that file: the library scene of the footage (older runs). A reaction shot of the same location taken
 from another scene (location guard) is NOT a scene change.
@@ -28,13 +28,12 @@ def scene_at(t):
 
 
 if "--scenes-only" not in sys.argv:
-    cuts, n_into = {}, 0
+    cuts = {}
     for a, b in zip(M, M[1:]):
         if abs(b["us_start_ms"] - a["us_end_ms"]) <= 50: continue          # the footage continues: not a switch
-        into = bool(b.get("broll"))
-        cuts[str(round(b["it_start_ms"]))] = "none" if into else "auto"; n_into += into
+        cuts[str(round(b["it_start_ms"]))] = "auto"
     json.dump({"default": "none", "cuts": cuts}, open(f"{W}/transitions_plan.json", "w"), indent=1)
-    print(f"{len(cuts)} clip switches: {len(cuts) - n_into} transitions, {n_into} straight cuts into a B-roll")
+    print(f"{len(cuts)} clip switches, a transition on every one")
     sys.exit(0)
 cuts, n_scene = {}, 0
 cur = (places.get(str(dub[0]["idx"])) or {}).get("scene") if places and dub else None   # story scene at the last switch
