@@ -121,6 +121,27 @@ def _library_votes(library, face, groups, cast_names):
     return out
 
 
+def _name_keys(mapping):
+    """Words to swap in a description: the full name, and the first name when the library used the first name alone."""
+    keys = {}
+    for old, new in mapping.items():
+        if len(old.split()) > 1:
+            keys[old] = new
+            if old.split()[0] not in ("Mr", "Mrs", "Ms", "Officer"):
+                keys[old.split()[0]] = new.split()[0]
+        else:
+            keys[old] = new.split()[0] if len(new.split()) > 1 else new
+    return keys
+
+
+def _swap_text(text, keys):
+    """Replace every listed name in one pass, so Jake -> Frankie and Frankie -> Jake do not undo each other."""
+    if not keys:
+        return text
+    pat = re.compile(r"\b(" + "|".join(re.escape(k) for k in sorted(keys, key=len, reverse=True)) + r")\b")
+    return pat.sub(lambda m: keys[m.group(1)], text)
+
+
 def apply_story_names(library, face, sentences):
     """Rename face groups from agreed story lines. Mutates `library` and `face`. Returns a report.
 
@@ -226,8 +247,16 @@ def apply_story_names(library, face, sentences):
                 if n.startswith(old + " ") or n.startswith(old + "("):
                     return new + n[len(old):]
             return n
+        keys = _name_keys(mapping)
         for r in library.get("shots") or []:
-            r["people"] = [ren(p) for p in (r.get("people") or [])]
+            before = list(r.get("people") or [])
+            r["people"] = [ren(p) for p in before]
+            if r["people"] != before:
+                # the description was written with the old name ("Jake looks down" on the navy-suit man): swap it too,
+                # in one pass so a swapped pair does not change twice
+                for field in ("action", "why"):
+                    if isinstance(r.get(field), str):
+                        r[field] = _swap_text(r[field], keys)
     # the face map: every person of a renamed group takes the story name, on every shot
     if story:
         for shot in (face.get("shots") or {}).values():

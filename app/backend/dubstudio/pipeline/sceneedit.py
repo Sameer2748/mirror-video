@@ -728,6 +728,29 @@ def line_tag(d):
 fmt_iv0 = lambda iv: ", ".join(f"{a:.2f}-{b:.2f}" for a, b in iv) or "never"
 
 
+def _first_name(c):
+    return re.split(r"[\s('’]", c)[0]
+
+
+def narration_mismatch(e, r, L, cast_names):
+    """A NARRATION line that names a cast member while the shot shows only one other cast member.
+
+    Episode 69: "Jake konnte ebenfalls nur die Stirn runzeln" over a shot of the navy-suit man, labelled Frankie.
+    Dialogue is left to the speaker rules. -> [(line idx, named, shown)]"""
+    shown = {p for p in (r.get("people") or []) if p in cast_names}
+    if len(shown) != 1:
+        return []
+    out = []
+    for d in L:
+        if d.get("dialogue") or ov(e["t0"], e["t1"], d["start_ms"] / 1000, d["end_ms"] / 1000) < 0.1:
+            continue
+        named = sorted(c for c in cast_names if not re.search(r"officers|classmates|reception", c, re.I)
+                       and re.search(r"\b" + re.escape(_first_name(c)) + r"\b", d.get("text") or ""))
+        if named and not (set(named) & shown):
+            out.append((d["idx"], named, sorted(shown)))
+    return out
+
+
 def check(edl, T0, T1, lines, before):
     probs = []
     if not edl: return ["empty EDL"]
@@ -783,6 +806,9 @@ def check(edl, T0, T1, lines, before):
                          f"{', '.join(str(d['idx']) for d in L)}), but {'that line is' if len(L) == 1 else 'those lines are'} not slow "
                          f"({', '.join(str(d['own_speed']) + 'x' for d in L)}): B-roll is ONLY for slow lines (below 0.8x); show the line's own "
                          f"footage ({'; '.join(fmt_iv0(d['_own']) for d in L)}), a shorter part of it if it is too fast")
+        for idx, named, shown in narration_mismatch(e, r, L, [c["name"] for c in cast]):
+            probs.append(f"piece {k}: shot {r['n']} shows {'/'.join(shown)} only, but narration line {idx} names {'/'.join(named)}; "
+                         f"show the person the narration names (a shot where {'/'.join(named)} is the one face), or use other footage")
         for d, who in wrong_mouth(e, r, lines):
             probs.append(f"piece {k}: shot {r['n']} shows {'/'.join(who)} talking while dialogue line {d['idx']} is said by {d['speaker']}; "
                          f"a moving mouth must be the speaker's: show {d['speaker']} talking (a SPEAKER shot of this place) or a face that does not talk")

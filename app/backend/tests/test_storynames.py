@@ -55,3 +55,12 @@ def test_one_line_is_not_enough():
     sn.apply_story_names(lib, face, LINES[:1])
     assert face["groups"]["1"]["name"] == "Jake"               # no story change: the library's vote, not Claude's guess
     assert [r["people"][0] for r in lib["shots"]][:4] == ["Jake"] * 4
+
+
+def test_description_follows_the_swapped_name_in_one_pass():
+    lib, face = _world({1: "Officer Cohen", 2: "Isla"})
+    lib["shots"][0]["action"] = "Jake looks down"                 # navy-suit man, labelled Jake
+    lib["shots"][4]["action"] = "Frankie frowns at Jake"          # brown-jacket man, labelled Frankie
+    sn.apply_story_names(lib, face, LINES)
+    assert lib["shots"][0]["action"] == "Frankie looks down"
+    assert lib["shots"][4]["action"] == "Jake frowns at Frankie"  # both names swapped, neither twice
