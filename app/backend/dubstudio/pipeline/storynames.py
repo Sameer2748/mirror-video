@@ -142,6 +142,56 @@ def _swap_text(text, keys):
     return pat.sub(lambda m: keys[m.group(1)], text)
 
 
+def _align_descriptions(library):
+    """The people list can already carry the story name while the action sentence still uses the old one.
+
+    A previous run renamed the list and left the sentence. When the single-face shots mostly describe the
+    other person, swap those two names through every description, once. A later run finds them matching
+    and leaves the text alone.
+    """
+    cast = (library.get("cast") or {}).get("cast") or []
+    firsts = []
+    for c in cast:
+        f = (c.get("name") or "").split()[0]
+        if len(f) < 3 or f in ("Mr", "Mrs", "Ms", "Officer") or f in firsts:
+            continue
+        firsts.append(f)
+    stale = defaultdict(int)
+    for r in library.get("shots") or []:
+        who = []
+        for p in r.get("people") or []:
+            f = p.split()[0]
+            if f in firsts and f not in who:
+                who.append(f)
+        if len(who) != 1:
+            continue
+        text = r.get("action") or ""
+        me = who[0]
+        other = [f for f in firsts if f != me and re.search(r"\b" + re.escape(f) + r"\b", text)]
+        if other and not re.search(r"\b" + re.escape(me) + r"\b", text):
+            stale[(me, other[0])] += 1
+    pairs = [((a, b), n) for (a, b), n in stale.items() if stale.get((b, a), 0) >= 2 and n >= 2]
+    if not pairs:
+        return 0
+    a, b = max(pairs, key=lambda kv: kv[1] + stale[(kv[0][1], kv[0][0])])[0]
+    full = {}
+    for c in cast:
+        if c["name"].split()[0] == a and c["name"] != a:
+            full[c["name"]] = b
+        elif c["name"].split()[0] == b and c["name"] != b:
+            full[c["name"]] = a
+    full[a], full[b] = b, a
+    n = 0
+    for r in library.get("shots") or []:
+        for field in ("action", "why"):
+            if isinstance(r.get(field), str) and re.search(r"\b(" + "|".join(re.escape(k) for k in full) + r")\b", r[field]):
+                swapped = _swap_text(r[field], full)
+                if swapped != r[field]:
+                    r[field] = swapped
+                    n += 1
+    return n
+
+
 def apply_story_names(library, face, sentences):
     """Rename face groups from agreed story lines. Mutates `library` and `face`. Returns a report.
 
@@ -269,6 +319,7 @@ def apply_story_names(library, face, sentences):
             for t in shot.get("talking") or []:
                 if t.get("name") in moved:
                     t["name"] = moved[t["name"]]
+    _align_descriptions(library)
     return report
 
 
