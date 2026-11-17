@@ -12,18 +12,31 @@ export default function ShowPage() {
   const [busy, setBusy] = useState("");
   const [renderNote, setRenderNote] = useState<string | null>(null);
   const [sheetNote, setSheetNote] = useState<string | null>(null);
+  const [imports, setImports] = useState<Record<number, LinkImport>>({});
   const sheetRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(() => {
     api.get<Show>(`/api/shows/${sid}`).then(setShow).catch((e) => setErr(e.message));
     api.get<Episode[]>(`/api/shows/${sid}/episodes`).then(setEps).catch((e) => setErr(e.message));
     api.get<Batch[]>(`/api/shows/${sid}/batches`).then((rows) => setBatches(Array.isArray(rows) ? rows : [])).catch(() => setBatches([]));
+    api.get<LinkImport[]>(`/api/shows/${sid}/link-imports`).then((rows) => {
+      const byNumber: Record<number, LinkImport> = {};
+      for (const row of [...rows].reverse()) byNumber[row.number] = row;
+      setImports(byNumber);
+    }).catch(() => setImports({}));
   }, [sid]);
   useEffect(load, [load]);
-  // progress changes arrive as events; reload the table at most every 2 s
+  // progress changes arrive as events; reload the table at most every 2 s.
+  // A sheet download does not emit those events, so the table also refreshes while one is in progress.
   const [tick, setTick] = useState(0);
   useLive((e) => { if (e.kind === "job" || e.kind === "episode_status" || e.kind === "run_created") setTick((t) => t + 1); });
   useEffect(() => { if (!tick) return; const t = setTimeout(load, 2000); return () => clearTimeout(t); }, [tick, load]);
+  const bringing = Object.values(imports).some((r) => r.status === "waiting" || r.status === "running");
+  useEffect(() => {
+    if (!bringing) return;
+    const t = setInterval(load, 2000);
+    return () => clearInterval(t);
+  }, [bringing, load]);
 
   async function remove() {
     if (!show || !confirm(`Remove the show ${show.code} from Mirror Video? Files on disk are not touched.`)) return;
@@ -113,7 +126,6 @@ export default function ShowPage() {
       </div>
       {renderNote && <div className="ok-box">{renderNote}</div>}
       {sheetNote && <div className="ok-box">{sheetNote}</div>}
-      <LinkSheetQueue sid={sid} tick={tick} />
       <ErrorBox error={err} />
       {eps && !eps.length && (
         <div className="empty">
@@ -140,11 +152,18 @@ export default function ShowPage() {
         <table className="table">
           <thead><tr><th>Episode</th><th>Status</th><th>Progress</th><th>Last change</th><th>Output folder</th><th></th></tr></thead>
           <tbody>
-            {eps.map((e) => (
+            {eps.map((e) => {
+              const imp = imports[e.number];
+              const downloading = imp && (imp.status === "waiting" || imp.status === "running" || (imp.status === "failed" && e.status === "new"));
+              return (
               <tr key={e.id} className="clickable" onClick={() => nav(`/episodes/${e.id}`)}>
                 <td><b>EP {e.number}</b></td>
-                <td><Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} /></td>
-                <td style={{ width: 160 }}>{e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
+                <td>{downloading
+                  ? <Chip status={imp.status} map={DOWNLOAD_STATUS} />
+                  : <Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} />}</td>
+                <td style={{ width: 220 }}>{downloading
+                  ? <span className="muted small-text">{imp.message}</span>
+                  : e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
                 <td className="muted">{fmtWhen(e.updated)}</td>
                 <td className="muted small-text">{(e.output_dir || "").replace((show.folder || "") + "/", "")}</td>
                 <td className="right" onClick={(ev) => ev.stopPropagation()}>
@@ -165,7 +184,8 @@ export default function ShowPage() {
                   </button>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       )}
@@ -188,39 +208,13 @@ const LIMITS: { key: string; label: string; hint: string; unit?: string }[] = [
   { key: "blur", label: "Soft picture: yellow under (share of usual)", hint: "default 0.25" },
 ];
 
-type LinkImport = { id: number; number: number; status: string; message?: string | null };
+type LinkImport = { id: number; episode_id?: number; number: number; status: string; message?: string | null };
 
-function LinkSheetQueue({ sid, tick }: { sid?: string; tick: number }) {
-  const [rows, setRows] = useState<LinkImport[] | null>(null);
-  const load = useCallback(() => {
-    api.get<LinkImport[]>(`/api/shows/${sid}/link-imports`).then(setRows).catch(() => setRows([]));
-  }, [sid]);
-  useEffect(load, [load]);
-  useEffect(() => { if (tick) load(); }, [tick, load]);
-  useEffect(() => {
-    if (!rows?.some((r) => r.status === "waiting" || r.status === "running")) return;
-    const t = setInterval(load, 2000);
-    return () => clearInterval(t);
-  }, [rows, load]);
-  return (
-    <div className="card" style={{ marginTop: 22 }}>
-      <h3 style={{ marginTop: 0 }}>Link sheet</h3>
-      <div className="muted small-text" style={{ marginBottom: 10 }}>
-        A .csv or .xlsx with four columns: episode number, source video link, audio link, script link. A header row is optional. One episode downloads at a time on its own slot. The rest of the pipeline keeps every CPU it already has. The folder scan and the file upload stay as they are.
-      </div>
-      {!rows?.length ? <div className="muted small-text">No link sheet yet.</div> : (
-      <table className="table">
-        <thead><tr><th>Episode</th><th>Download</th><th>Note</th></tr></thead>
-        <tbody>
-          {rows.slice(0, 20).map((r) => (
-            <tr key={r.id}><td>EP {r.number}</td><td><Chip status={r.status} map={{ waiting: ["Waiting", "grey"], running: ["Downloading", "blue"], done: ["In the line", "green"], failed: ["Failed", "red"] }} /></td><td className="muted small-text">{r.message}</td></tr>
-          ))}
-        </tbody>
-      </table>
-      )}
-    </div>
-  );
-}
+const DOWNLOAD_STATUS: Record<string, [string, string]> = {
+  waiting: ["Waiting", "grey"],
+  running: ["Downloading", "blue"],
+  failed: ["Download failed", "red"],
+};
 
 function FlagLimits({ show, onSaved }: { show: Show; onSaved: (s: Show) => void }) {
   const cur = ((show.profile || {}).flags || {}) as Record<string, number>;
