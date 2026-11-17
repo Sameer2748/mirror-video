@@ -302,3 +302,40 @@ def test_library_warnings_are_not_the_last_line():
     assert NOISE.search("box_utils.py:103: UserWarning: An output with one or more elements was resized")
     assert NOISE.search("  torch.index_select(x1, 0, idx, out=xx1)")
     assert not NOISE.search("22:58:50 done 45-60 in 23 s")
+
+
+def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch):
+    """Five GPU slots must not start two face maps of the same show. A different show can use another slot."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    from dubstudio.config import cfg
+    monkeypatch.setattr(cfg, "gpu_slots", 5)
+    db = DB(tmp_path / "t.db")
+    imts = db.insert("shows", name="IMTS", code="IMTS", folder=str(tmp_path), profile={})
+    tab = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
+
+    def ep(show, number):
+        return db.insert("episodes", show_id=show, number=number, status="processing",
+                         work_dir=str(tmp_path), output_dir=str(tmp_path))
+
+    a = ep(imts, 91)
+    b = ep(imts, 92)
+    c = ep(tab, 52)
+    for eid, n in ((a, 91), (b, 92), (c, 52)):
+        db.insert("jobs", episode_id=eid, run=1, step="facemap", ord=1, status="waiting",
+                  needs=[], resource="gpu")
+    started = []
+
+    class T:
+        def __init__(self, target, args, daemon):
+            self.args = args
+        def start(self):
+            started.append(self.args[0])
+
+    monkeypatch.setattr("dubstudio.runner.threading.Thread", T)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._tick()
+    st = {j["episode_id"]: j["status"] for j in db.q("SELECT episode_id, status FROM jobs")}
+    assert st[a] == "running" and st[c] == "running"
+    assert st[b] == "waiting"
+    assert len(started) == 2

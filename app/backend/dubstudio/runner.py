@@ -356,6 +356,15 @@ class Runner:
                 busy[j["resource"]] = busy.get(j["resource"], 0) + 1
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
         chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
+        # One GPU step per show. A face map writes that episode's own library, and two of the same show
+        # must not run together. Another show can still take a free GPU slot.
+        gpu_eps = list({j["episode_id"] for j in jobs if j.get("resource") == "gpu"})
+        show_of = {}
+        if gpu_eps:
+            rows = self.db.q(f"SELECT id, show_id FROM episodes WHERE id IN ({','.join('?' * len(gpu_eps))})", gpu_eps)
+            show_of = {r["id"]: r["show_id"] for r in rows}
+        gpu_show_busy = {show_of[j["episode_id"]] for j in jobs
+                         if j["status"] == "running" and j.get("resource") == "gpu" and j["episode_id"] in show_of}
         for j in jobs:
             if j["status"] == "running" and (j.get("message") or "") == "starting" and j.get("started") \
                     and now() - j["started"] > 120:
@@ -389,8 +398,14 @@ class Runner:
                     continue
                 chain_busy.add(j["episode_id"])
             res = j["resource"]
+            if res == "gpu":
+                sid = show_of.get(j["episode_id"])
+                if sid in gpu_show_busy:
+                    continue
             if res in slots and busy.get(res, 0) >= slots[res]:
                 continue
+            if res == "gpu":
+                gpu_show_busy.add(show_of.get(j["episode_id"]))
             if res in slots:
                 busy[res] = busy.get(res, 0) + 1
             self.cancelled.discard(j["id"])
