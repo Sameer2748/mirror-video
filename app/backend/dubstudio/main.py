@@ -1,8 +1,8 @@
 """FastAPI app: REST API under /api, live events on /api/ws, the built UI at /."""
-import asyncio, json, os, re, shutil, tempfile, threading, time
+import asyncio, csv, io, json, os, re, shutil, tempfile, threading, time
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Body, Request
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from starlette.background import BackgroundTask
 from fastapi.staticfiles import StaticFiles
 from .config import cfg, ROOT
@@ -1044,6 +1044,43 @@ def list_link_imports(sid: int):
     _get("shows", sid)
     return db().q("SELECT id, episode_id, number, status, message, created, started, finished "
                   "FROM link_imports WHERE show_id=? ORDER BY id DESC LIMIT 100", (sid,))
+
+
+SIGNED_LINK_MAX = 604800          # S3/R2 signed links last at most 7 days
+
+
+@app.get("/api/shows/{sid}/export-csv")
+def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
+    """Episode number + the final target-language subtitle video of every episode of the show, as a CSV.
+
+    Only when every episode of the show is done and its subtitle video is in the cloud; otherwise 409 names
+    the episodes that hold it up."""
+    show = _get("shows", sid)
+    eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
+    if not eps:
+        raise HTTPException(409, "this show has no episodes yet")
+    not_done = [e["number"] for e in eps if e["status"] != "done"]
+    if not_done:
+        raise HTTPException(409, "not finished yet: EP " + ", EP ".join(str(n) for n in not_done))
+    if not storage.configured():
+        raise HTTPException(409, "R2 storage is not set up (Settings -> Cloud storage)")
+    rows, missing = [], []
+    for e in eps:
+        up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
+                      "ORDER BY id DESC LIMIT 1", (e["id"],))
+        if not up:
+            missing.append(e["number"])
+            continue
+        rows.append([e["number"], storage.presign(up["key"], seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
+                                                  download_name=up["name"])])
+    if missing:
+        raise HTTPException(409, "subtitle video not in the cloud yet: EP " + ", EP ".join(str(n) for n in missing))
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["episode number", "final subtitle video link"])
+    w.writerows(rows)
+    return Response(buf.getvalue(), media_type="text/csv",
+                    headers={"Content-Disposition": f'attachment; filename="{storage.safe_name(show["code"])}_subtitle_links.csv"'})
 
 
 @app.post("/api/episodes/{eid}/files/{kind}")

@@ -38,6 +38,23 @@ export default function ShowPage() {
     return () => clearInterval(t);
   }, [bringing, load]);
 
+  // Every episode of the show done: the CSV of each episode's final target-language subtitle video (signed R2 link).
+  const allDone = !!eps && eps.length > 0 && eps.every((e) => e.status === "done");
+  async function exportCsv() {
+    setBusy("export"); setErr(null);
+    try {
+      const r = await fetch(`/api/shows/${sid}/export-csv`, { credentials: "same-origin" });
+      if (!r.ok) {
+        const j = await r.json().catch(() => null);
+        throw new Error(j?.detail || `Export failed (${r.status})`);
+      }
+      const url = URL.createObjectURL(await r.blob());
+      const a = document.createElement("a");
+      a.href = url; a.download = `${show?.code || "show"}_subtitle_links.csv`; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(""); }
+  }
+
   async function remove() {
     if (!show || !confirm(`Remove the show ${show.code} from Mirror Video? Files on disk are not touched.`)) return;
     await api.del(`/api/shows/${sid}`); nav("/");
@@ -105,6 +122,10 @@ export default function ShowPage() {
           <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
           <button className="button" disabled={!!busy} onClick={() => sheetRef.current?.click()}>
             {busy === "sheet" ? "Reading the sheet…" : "Sheet upload"}
+          </button>
+          <button className="button" disabled={!allDone || !!busy} onClick={exportCsv}
+            title={allDone ? "Download each episode's final subtitle video link as CSV" : "Available when every episode of this show is done"}>
+            {busy === "export" ? "Exporting…" : "Export CSV"}
           </button>
           <input ref={sheetRef} type="file" accept=".csv,.xlsx,.xlsm" hidden onChange={async (ev) => {
             const f = ev.target.files?.[0]; ev.target.value = "";
