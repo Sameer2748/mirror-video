@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, Batch, Episode, Show, useLive } from "../api";
-import { Chip, ErrorBox, fmtWhen, Picker } from "../ui";
+import { Chip, ErrorBox, fmtWhen, Picker, uploadFile } from "../ui";
 
 export default function ShowPage() {
   const { sid } = useParams(); const nav = useNavigate();
@@ -11,6 +11,8 @@ export default function ShowPage() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState("");
   const [renderNote, setRenderNote] = useState<string | null>(null);
+  const [sheetNote, setSheetNote] = useState<string | null>(null);
+  const sheetRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(() => {
     api.get<Show>(`/api/shows/${sid}`).then(setShow).catch((e) => setErr(e.message));
@@ -88,9 +90,30 @@ export default function ShowPage() {
           )}
           <Link to={`/shows/${sid}/new-episode`} className="button primary">+ New episode</Link>
           <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
+          <button className="button" disabled={!!busy} onClick={() => sheetRef.current?.click()}>
+            {busy === "sheet" ? "Reading the sheet…" : "Sheet upload"}
+          </button>
+          <input ref={sheetRef} type="file" accept=".csv,.xlsx,.xlsm" hidden onChange={async (ev) => {
+            const f = ev.target.files?.[0]; ev.target.value = "";
+            if (!f) return;
+            setBusy("sheet"); setErr(null); setSheetNote(null);
+            try {
+              const r = await uploadFile<{ queued: { number: number }[]; skipped: { number: number; reason: string }[] }>(
+                `/api/shows/${sid}/link-sheet`, f);
+              const q = (r.queued || []).map((x) => x.number);
+              const s = (r.skipped || []).map((x) => x.reason);
+              setSheetNote([
+                q.length ? `Queued EP ${q.join(", ")}. The files download one episode at a time, then each one joins the normal line.` : "Nothing new was queued.",
+                s.length ? `Skipped: ${s.join("; ")}` : "",
+              ].filter(Boolean).join(" "));
+              load();
+            } catch (e: any) { setErr(e.message); } finally { setBusy(""); }
+          }} />
         </div>
       </div>
       {renderNote && <div className="ok-box">{renderNote}</div>}
+      {sheetNote && <div className="ok-box">{sheetNote}</div>}
+      <LinkSheetQueue sid={sid} tick={tick} />
       <ErrorBox error={err} />
       {eps && !eps.length && (
         <div className="empty">
@@ -164,6 +187,40 @@ const LIMITS: { key: string; label: string; hint: string; unit?: string }[] = [
   { key: "drift_ms", label: "Drift: yellow over (ms)", hint: "default 500 (shown from 1 s)" },
   { key: "blur", label: "Soft picture: yellow under (share of usual)", hint: "default 0.25" },
 ];
+
+type LinkImport = { id: number; number: number; status: string; message?: string | null };
+
+function LinkSheetQueue({ sid, tick }: { sid?: string; tick: number }) {
+  const [rows, setRows] = useState<LinkImport[] | null>(null);
+  const load = useCallback(() => {
+    api.get<LinkImport[]>(`/api/shows/${sid}/link-imports`).then(setRows).catch(() => setRows([]));
+  }, [sid]);
+  useEffect(load, [load]);
+  useEffect(() => { if (tick) load(); }, [tick, load]);
+  useEffect(() => {
+    if (!rows?.some((r) => r.status === "waiting" || r.status === "running")) return;
+    const t = setInterval(load, 2000);
+    return () => clearInterval(t);
+  }, [rows, load]);
+  return (
+    <div className="card" style={{ marginTop: 22 }}>
+      <h3 style={{ marginTop: 0 }}>Link sheet</h3>
+      <div className="muted small-text" style={{ marginBottom: 10 }}>
+        A .csv or .xlsx with four columns: episode number, source video link, audio link, script link. A header row is optional. One episode downloads at a time on its own slot. The rest of the pipeline keeps every CPU it already has. The folder scan and the file upload stay as they are.
+      </div>
+      {!rows?.length ? <div className="muted small-text">No link sheet yet.</div> : (
+      <table className="table">
+        <thead><tr><th>Episode</th><th>Download</th><th>Note</th></tr></thead>
+        <tbody>
+          {rows.slice(0, 20).map((r) => (
+            <tr key={r.id}><td>EP {r.number}</td><td><Chip status={r.status} map={{ waiting: ["Waiting", "grey"], running: ["Downloading", "blue"], done: ["In the line", "green"], failed: ["Failed", "red"] }} /></td><td className="muted small-text">{r.message}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      )}
+    </div>
+  );
+}
 
 function FlagLimits({ show, onSaved }: { show: Show; onSaved: (s: Show) => void }) {
   const cur = ((show.profile || {}).flags || {}) as Record<string, number>;

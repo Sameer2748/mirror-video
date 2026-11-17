@@ -78,6 +78,12 @@ CREATE TABLE IF NOT EXISTS batches (
   start_num INTEGER NOT NULL, end_num INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'new',
   created_by INTEGER, created REAL, updated REAL);
 CREATE INDEX IF NOT EXISTS ix_gen_threads ON gen_threads(episode_id, slot);
+CREATE TABLE IF NOT EXISTS link_imports (
+  id INTEGER PRIMARY KEY, show_id INTEGER NOT NULL REFERENCES shows(id) ON DELETE CASCADE,
+  episode_id INTEGER REFERENCES episodes(id) ON DELETE CASCADE, number INTEGER NOT NULL,
+  src_url TEXT NOT NULL, audio_url TEXT NOT NULL, script_url TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'waiting', message TEXT, created REAL, started REAL, finished REAL);
+CREATE INDEX IF NOT EXISTS ix_link_imports_show ON link_imports(show_id, id);
 CREATE INDEX IF NOT EXISTS ix_batches_show ON batches(show_id);
 CREATE INDEX IF NOT EXISTS ix_jobs_ep ON jobs(episode_id, run);
 CREATE INDEX IF NOT EXISTS ix_events_ep ON events(episode_id, id);

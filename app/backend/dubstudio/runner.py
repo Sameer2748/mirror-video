@@ -309,6 +309,54 @@ class Runner:
         self.retry(chk["id"])
         return {"retried": "check"}
 
+    # ---------- link sheet: one download at a time, never a pipeline CPU ----------
+    def _tick_link_imports(self):
+        """Bring sheet links down on a private slot.
+
+        The pipeline's cpu_slots are not touched. One download runs, the next waits, and only then does
+        the episode join the normal processing line."""
+        try:
+            if self.db.one("SELECT id FROM link_imports WHERE status='running'"):
+                return
+            row = self.db.one("SELECT * FROM link_imports WHERE status='waiting' ORDER BY id LIMIT 1")
+        except Exception:
+            return
+        if not row:
+            return
+        self.db.update("link_imports", row["id"], status="running", started=now(), message="bringing the files down")
+        threading.Thread(target=self._run_link_import, args=(row["id"],), daemon=True).start()
+
+    def _run_link_import(self, iid):
+        from . import linksheet
+        row = self.db.one("SELECT * FROM link_imports WHERE id=?", (iid,))
+        if not row:
+            return
+        try:
+            ep = self.db.one("SELECT * FROM episodes WHERE id=?", (row["episode_id"],))
+            show = self.db.one("SELECT * FROM shows WHERE id=?", (row["show_id"],))
+            for kind, url in (("src_video", row["src_url"]), ("dub_audio", row["audio_url"]),
+                              ("dub_script", row["script_url"])):
+                self.db.update("link_imports", iid, message=f"downloading the {kind.replace('_', ' ')}")
+                path = linksheet.fetch(url, Path(ep["work_dir"]) / "input" / kind, kind)
+                info, problems = scan.check_asset(kind, str(path))
+                if problems:
+                    raise RuntimeError("; ".join(problems))
+                key = None
+                if storage.configured():
+                    key = storage.input_key(show, ep, kind, path.name)
+                    storage.put_big_file(path, key)
+                self.db.ex("DELETE FROM assets WHERE episode_id=? AND kind=? AND role='input'", (ep["id"], kind))
+                self.db.insert("assets", episode_id=ep["id"], kind=kind, path=str(path), role="input",
+                               size=path.stat().st_size, r2_key=key, origin="r2" if key else "local",
+                               uploaded=now(), fingerprint=(info or {}).get("fingerprint"),
+                               mtime=(info or {}).get("mtime"), probe=(info or {}).get("probe"), created=now())
+            self.submit(ep["id"])
+            self.db.update("link_imports", iid, status="done", finished=now(),
+                           message="files are in; the episode joined the processing line")
+        except Exception as ex:
+            self.db.update("link_imports", iid, status="failed", finished=now(), message=str(ex)[:300])
+        self.wake.set()
+
     # ---------- loop ----------
     def _loop(self):
         while not self.stop.is_set():
@@ -345,6 +393,7 @@ class Runner:
 
     def _tick(self):
         self._maybe_daily_cleanup()
+        self._tick_link_imports()
         jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
         self._keep_awake(any(j["status"] == "running" for j in jobs))     # not for steps parked behind the review
         if not jobs:

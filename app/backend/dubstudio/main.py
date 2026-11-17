@@ -9,7 +9,7 @@ from .config import cfg, ROOT
 from .db import DB, now
 from .events import bus
 from .runner import Runner
-from . import auth, envfile, gen, imports, presets, scan, deliver, names as nm, settings as stg, storage, timeline as tlm
+from . import auth, envfile, gen, imports, linksheet, presets, scan, deliver, names as nm, settings as stg, storage, timeline as tlm
 from .pipeline import steps as pipeline_steps
 from .pipeline import decisions as dec
 
@@ -1001,6 +1001,49 @@ def upload_sheet(sid: int, file: UploadFile = File(...)):
     sheet = nm.read(str(local))
     return {"name": name, "size": size, "path": str(local), "key": key, "names": len(sheet["names"]),
             "format": sheet["format"], "problem": sheet.get("error")}
+
+
+@app.post("/api/shows/{sid}/link-sheet")
+def upload_link_sheet(request: Request, sid: int, file: UploadFile = File(...)):
+    """Queue episodes from a sheet of links. The folder scan and the file upload stay as they are.
+
+    Columns: episode number, source video link, audio link, script link. The downloads run one at a time
+    on their own slot, then each episode joins the normal processing line."""
+    show = _get("shows", sid)
+    name = storage.safe_name(file.filename or "links.csv")
+    if not name.lower().endswith((".csv", ".xlsx", ".xlsm")):
+        raise HTTPException(400, "the link sheet must be a .csv or .xlsx file")
+    local = Path(show["folder"]) / "link_sheets" / f"{time.strftime('%Y%m%d_%H%M%S')}_{name}"
+    _save_upload(file, local, max_bytes=20 << 20)
+    try:
+        rows = linksheet.parse_sheet(local)
+    except ValueError as ex:
+        raise HTTPException(400, str(ex))
+    queued, skipped = [], []
+    busy_status = {"processing", "queued", "review", "done", "needs_input"}
+    for row in rows:
+        existing = db().one("SELECT * FROM episodes WHERE show_id=? AND number=?", (sid, row["number"]))
+        if existing and existing["status"] in busy_status:
+            skipped.append({"number": row["number"], "reason": f"episode {row['number']} is already {existing['status']}"})
+            continue
+        if existing:
+            eid = existing["id"]
+        else:
+            eid, _found = _new_episode(request, show, row["number"])
+        db().ex("DELETE FROM link_imports WHERE episode_id=? AND status IN ('waiting','failed')", (eid,))
+        db().insert("link_imports", show_id=sid, episode_id=eid, number=row["number"],
+                    src_url=row["video"], audio_url=row["audio"], script_url=row["script"],
+                    status="waiting", message="waiting for the download slot", created=now())
+        queued.append({"number": row["number"], "episode_id": eid})
+    runner().wake.set()
+    return {"queued": queued, "skipped": skipped}
+
+
+@app.get("/api/shows/{sid}/link-imports")
+def list_link_imports(sid: int):
+    _get("shows", sid)
+    return db().q("SELECT id, episode_id, number, status, message, created, started, finished "
+                  "FROM link_imports WHERE show_id=? ORDER BY id DESC LIMIT 100", (sid,))
 
 
 @app.post("/api/episodes/{eid}/files/{kind}")
