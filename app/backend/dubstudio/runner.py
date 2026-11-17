@@ -47,6 +47,7 @@ class Runner:
         for j in self.db.q("SELECT id, log_path FROM jobs WHERE status IN ('running','needs_input')"):
             self._stop_orphan(j["log_path"])
             self.db.update("jobs", j["id"], status="waiting", message="resumed after a restart")
+        self._resume_link_imports()
         self.thread = threading.Thread(target=self._loop, name="dubstudio-runner", daemon=True)
         self.thread.start()
 
@@ -310,19 +311,37 @@ class Runner:
         return {"retried": "check"}
 
     # ---------- link sheet: one download at a time, never a pipeline CPU ----------
+    def _resume_link_imports(self):
+        """A restart kills the download thread and leaves its row running, which then blocks every later row."""
+        try:
+            stuck = self.db.q("SELECT id FROM link_imports WHERE status='running'")
+        except Exception:
+            return
+        for row in stuck:
+            self.db.update("link_imports", row["id"], status="waiting", message="resumed after a restart")
+
     def _tick_link_imports(self):
         """Bring sheet links down on a private slot.
 
         The pipeline's cpu_slots are not touched. One download runs, the next waits, and only then does
-        the episode join the normal processing line."""
+        the episode join the normal processing line. A newer sheet row for the same episode replaces an
+        older one that has not started."""
         try:
             if self.db.one("SELECT id FROM link_imports WHERE status='running'"):
                 return
-            row = self.db.one("SELECT * FROM link_imports WHERE status='waiting' ORDER BY id LIMIT 1")
+            waiting = self.db.q("SELECT * FROM link_imports WHERE status='waiting' ORDER BY id")
         except Exception:
             return
-        if not row:
+        if not waiting:
             return
+        newest = {}
+        for row in waiting:
+            newest[row["episode_id"]] = row["id"]
+        for row in waiting:
+            if row["id"] != newest.get(row["episode_id"]):
+                self.db.update("link_imports", row["id"], status="failed", finished=now(),
+                               message="replaced by a newer sheet row")
+        row = next(r for r in waiting if r["id"] == newest.get(r["episode_id"]))
         self.db.update("link_imports", row["id"], status="running", started=now(), message="bringing the files down")
         threading.Thread(target=self._run_link_import, args=(row["id"],), daemon=True).start()
 
