@@ -1077,7 +1077,7 @@ def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
         raise HTTPException(409, "subtitle video not in the cloud yet: EP " + ", EP ".join(str(n) for n in missing))
     buf = io.StringIO()
     w = csv.writer(buf)
-    w.writerow(["episode number", "final subtitle video link"])
+    w.writerow(["media_file_title", "media_url"])
     w.writerows(rows)
     return Response(buf.getvalue(), media_type="text/csv",
                     headers={"Content-Disposition": f'attachment; filename="{storage.safe_name(show["code"])}_subtitle_links.csv"'})

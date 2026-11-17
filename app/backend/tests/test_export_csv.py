@@ -59,7 +59,7 @@ def main_test():
     code, body = run(sid)
     assert code == 200, (code, body)
     rows = rows_of(body)
-    assert rows[0] == ["episode number", "final subtitle video link"], rows[0]
+    assert rows[0] == ["media_file_title", "media_url"], rows[0]
     assert [r[0] for r in rows[1:]] == ["11", "12", "13"], rows
     assert rows[1][1].startswith("https://r2.test/shows/ALLDONE/ep11/out/"), rows[1]
     assert "expires=604800" in rows[1][1], rows[1]          # the 7-day cap
