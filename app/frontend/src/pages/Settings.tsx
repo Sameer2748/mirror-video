@@ -25,6 +25,7 @@ const APP_FIELDS: [string, string, string][] = [
   ["library", "Library (database + work files)", "app/library"],
   ["font", "Subtitle font file", "Poppins-Bold.ttf"],
   ["cpu_slots", "Heavy steps at the same time", "2 (raise on a big Mac, lower if it gets hot)"],
+  ["gpu_slots", "GPU steps at the same time (face map, lip scan; one rented GPU each)", "1 (raise up to the number of idle GPU workers)"],
   ["step_max_seconds", "Max seconds per step run (0 = no limit)", "0"],
   ["port", "Port", "8765"],
 ];

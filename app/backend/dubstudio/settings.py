@@ -13,7 +13,7 @@ ENV = ROOT / ".env"
 CONFIG = ROOT / "config.json"
 AI_KEYS = ("AI_BASE", "AI_EMAIL", "AI_KEY", "AI_MODEL", "AI_MODEL_FAST", "FAL_KEY")   # FAL_KEY: fal.ai (video generation)
 APP_KEYS = {"tools_dir": "path", "models_dir": "path", "pipeline_python": "file", "face_python": "file", "library": "path",
-            "cpu_slots": "int", "step_max_seconds": "int", "font": "file", "port": "int"}
+            "cpu_slots": "int", "gpu_slots": "int", "step_max_seconds": "int", "font": "file", "port": "int"}
 
 
 # ---------------- AI gateway (app/.env) ----------------
@@ -73,7 +73,8 @@ def app_settings(cfg):
     f = json.loads(CONFIG.read_text()) if CONFIG.exists() else {}
     cur = {"tools_dir": str(cfg.tools_dir), "models_dir": str(cfg.models_dir), "pipeline_python": str(cfg.pipeline_python),
            "face_python": str(cfg.face_python),
-           "library": str(cfg.library), "cpu_slots": cfg.cpu_slots, "step_max_seconds": int(cfg.step_max_seconds),
+           "library": str(cfg.library), "cpu_slots": cfg.cpu_slots, "gpu_slots": cfg.gpu_slots,
+           "step_max_seconds": int(cfg.step_max_seconds),
            "font": cfg.font, "port": cfg.port}
     return {"values": cur, "saved": {k: f[k] for k in APP_KEYS if k in f},
             "from_env": [k for k in APP_KEYS if os.environ.get("DUBSTUDIO_" + {"tools_dir": "TOOLS", "pipeline_python": "PIPELINE_PY", "face_python": "FACE_PY",
@@ -95,6 +96,8 @@ def write_app(values):
                 raise ValueError(f"{k} must be a whole number")
             if k == "cpu_slots" and not 1 <= v <= 16:
                 raise ValueError("CPU slots must be 1 to 16")
+            if k == "gpu_slots" and not 1 <= v <= 16:
+                raise ValueError("GPU slots must be 1 to 16")
             if k == "port" and not 1024 <= v <= 65535:
                 raise ValueError("the port must be 1024 to 65535")
         else:

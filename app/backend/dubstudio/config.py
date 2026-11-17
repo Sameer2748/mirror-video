@@ -55,7 +55,8 @@ class Config:
         # how many CPU jobs (incl. a render tail waiting on RunPod) this API may have in flight. One slot is held
         # until the rented machine finishes, so 2 blocked two episode renders even with idle RunPod workers.
         self.cpu_slots = int(env("DUBSTUDIO_CPU_SLOTS") or f.get("cpu_slots") or 8)
-        self.gpu_slots = int(f.get("gpu_slots") or 1)
+        # how many GPU steps (face map, lip scan) run at once, each on its own rented GPU worker. Set in Settings > Performance.
+        self.gpu_slots = int(env("DUBSTUDIO_GPU_SLOTS") or f.get("gpu_slots") or 1)
         self.step_max_seconds = float(env("DUBSTUDIO_STEP_MAX_SECONDS") or f.get("step_max_seconds") or 0)   # 0 = run to the end
         # subtitle font (Poppins Bold, the house style). On Render the ttf ships with the screens
         # (/app/frontend/dist/fonts); the API image also copies it to /usr/share and /app/assets.
