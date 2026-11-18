@@ -2156,6 +2156,47 @@ def bin_file(eid: int, kind: str):
     raise HTTPException(404, "no such file")
 
 
+def _export_source(eid, ep, media):
+    """The file (or a signed link to it) the marked In→Out is cut from.
+
+    An imported clip is the file in this episode's bin. The source video is the local file when this
+    box has it, otherwise the cloud copy, so a 3-second cut does not download the whole episode."""
+    if media:
+        src = imports.path_of(ep["work_dir"], media)
+        it = imports.get(ep["work_dir"], media)
+        if not src or not it or not Path(src).exists():
+            raise HTTPException(404, "that imported clip is not on this box")
+        return src, Path(it["name"]).stem
+    a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    if not a:
+        raise HTTPException(404, "no source video")
+    if Path(a["path"]).exists():
+        return a["path"], f"ep{ep['number']}"
+    show = _get("shows", ep["show_id"])
+    key = _input_in_cloud(show, ep, a, "src_video")
+    if key:
+        return storage.presign(key, 3600), f"ep{ep['number']}"
+    raise HTTPException(404, "no source video")
+
+
+@app.post("/api/episodes/{eid}/clip-export")
+def export_marked_clip(eid: int, body: dict = Body(...)):
+    """Cut the source monitor's In→Out into an mp4 the bin of another episode can import."""
+    ep = _get("episodes", eid)
+    src, label = _export_source(eid, ep, (body.get("media") or "").strip() or None)
+    dest_dir = Path(tempfile.mkdtemp(prefix="clipexport-"))
+    dest = dest_dir / "clip.mp4"
+    try:
+        imports.cut_range(src, dest, body.get("s0"), body.get("s1"))
+    except ValueError as ex:
+        shutil.rmtree(dest_dir, ignore_errors=True)
+        raise HTTPException(400, str(ex))
+    s0, s1 = int(body["s0"]), int(body["s1"])
+    name = imports.safe_name(f"{label}_{s0 / 1000:.2f}-{s1 / 1000:.2f}.mp4")
+    return FileResponse(dest, media_type="video/mp4", filename=name,
+                        background=BackgroundTask(lambda: shutil.rmtree(dest_dir, ignore_errors=True)))
+
+
 @app.post("/api/episodes/{eid}/imports")
 async def import_clip(eid: int, file: UploadFile = File(...)):
     """Import a video clip into this episode's bin (a copy in the work folder; the original is not touched)."""

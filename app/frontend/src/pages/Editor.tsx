@@ -34,7 +34,7 @@ function parseSrt(text: string): Cue[] {
   return out.sort((a, b) => a.t0 - b.t0);
 }
 type TransInfo = { default: string; styles: { id: string; label: string; half_s: number; uses: number }[] };
-const TLABEL: Record<string, string> = { auto: "Automatic", none: "Hard cut", light_leak: "Light leak", blur_dissolve: "Blur dissolve", zoom_blur: "Zoom blur", glow: "Glow" };
+const TLABEL: Record<string, string> = { auto: "Automatic", none: "Hard cut", light_leak: "Light leak", blur_dissolve: "Blur dissolve", zoom_blur: "Zoom blur", glow: "Glow", fade_black: "Black", fade_white: "White" };
 type Proxy = { ready: boolean; running?: boolean; progress: number; error?: string | null; rev?: number };
 type Cue = { t0: number; t1: number; text: string };
 type Sentence = { idx: number; text: string; start_ms: number; end_ms: number };
@@ -247,6 +247,7 @@ export default function Editor() {
   const [tShow, setTShow] = useState(0);                 // the playhead for text displays (~10 fps)
   const [markIn, setMarkIn] = useState<number | null>(null);
   const [markOut, setMarkOut] = useState<number | null>(null);
+  const [exporting, setExporting] = useState(false);
   const [srcT, setSrcT] = useState(0);
   const [version, setVersion] = useState(0);
   const [saveState, setSaveState] = useState<"saved" | "editing" | "draft" | "saving">("saved");
@@ -574,14 +575,17 @@ export default function Editor() {
       if (Math.abs(d) < h) fx = { st, x: d / h };
     }
     const w = fx ? (1 - Math.abs(fx.x)) ** 2 * (3 - 2 * (1 - Math.abs(fx.x))) : 0;
-    const filt = !fx ? "" : fx.st === "zoom_blur" ? `blur(${2 * w}px)` : fx.st === "glow" ? `brightness(${1 + 0.6 * w}) blur(${3 * w}px)`
+    const solid = fx && (fx.st === "fade_black" || fx.st === "fade_white");
+    const filt = !fx || solid ? "" : fx.st === "zoom_blur" ? `blur(${2 * w}px)` : fx.st === "glow" ? `brightness(${1 + 0.6 * w}) blur(${3 * w}px)`
       : fx.st === "light_leak" ? `brightness(${1 + 0.25 * w})` : `blur(${7 * w}px)`;
     V.style.filter = filt;
     paintMotion(V, byIdRef.current.get(c.id!), fx && fx.st === "zoom_blur" ? 1 + 0.15 * w : 1);
     paintMotion(S, undefined);
     if (fxRef.current) {
-      fxRef.current.style.opacity = fx && (fx.st === "light_leak" || fx.st === "glow" || fx.st === "auto") ? String(0.85 * w) : "0";
-      fxRef.current.style.backgroundPosition = fx ? `${50 + 60 * fx.x}% 35%` : "";
+      fxRef.current.style.background = solid ? (fx!.st === "fade_black" ? "#000" : "#fff") : "";
+      fxRef.current.style.opacity = solid ? String(Math.min(1, w * 1.4))
+        : fx && (fx.st === "light_leak" || fx.st === "glow" || fx.st === "auto") ? String(0.85 * w) : "0";
+      fxRef.current.style.backgroundPosition = fx && !solid ? `${50 + 60 * fx.x}% 35%` : "";
       fxRef.current.dataset.label = fx ? TLABEL[fx.st] || fx.st : "";
     }
     // park the standby player on the next piece's first frame (not while this one is still seeking:
@@ -913,6 +917,31 @@ export default function Editor() {
     if (markIn == null || markOut == null || markOut - markIn < 100) { say("Mark In (I) and Out (O) on the source monitor first", true); return; }
     addV2(tRef.current, markIn, markOut, srcMedia ? impOf(srcMedia)?.name || "imported clip" : srcTextFor(markIn, markOut, data!.src_sentences),
       `marked ${fmt(markIn)}–${fmt(markOut)}${srcMedia ? ` of ${impOf(srcMedia)?.name}` : ""}`, undefined, undefined, srcMedia);
+  };
+  const exportClip = async () => {
+    if (markIn == null || markOut == null || markOut - markIn < 100) { say("Mark In (I) and Out (O) on the source monitor first", true); return; }
+    setExporting(true);
+    try {
+      const r = await fetch(`/api/episodes/${eid}/clip-export`, {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ s0: Math.round(markIn), s1: Math.round(markOut), media: srcMedia }),
+      });
+      const ct = (r.headers.get("content-type") || "").toLowerCase();
+      if (!r.ok || ct.includes("json") || ct.includes("text/html")) {
+        const data = await r.json().catch(() => null);
+        const d = data && (data as any).detail;
+        throw new Error(typeof d === "string" ? d : "could not export that clip");
+      }
+      const blob = await r.blob();
+      const disp = r.headers.get("Content-Disposition") || "";
+      const m = /filename\*=UTF-8''([^;]+)|filename="([^"]+)"|filename=([^;]+)/.exec(disp);
+      const name = decodeURIComponent((m && (m[1] || m[2] || m[3]) || "clip.mp4").trim());
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = name; a.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+      say(`Exported ${name} (${((markOut - markIn) / 1000).toFixed(2)} s). Import that file in the other episode's bin.`);
+    } catch (e: any) { say(e.message, true); }
+    finally { setExporting(false); }
   };
   const copyToV2 = (c: Clip, t = c.t0) => addV2(t, c.s0, c.s1, c.src_text, `a copy of ${label(c)} (same length and speed)`, undefined, c.t1 - c.t0, c.media);
   const onMoveV2 = (i: number, t0: number, done: boolean, base: Snap) => {
@@ -1250,6 +1279,8 @@ export default function Editor() {
             <button className="small" onClick={() => setMarkOut(Math.round(srcT))} title="Mark Out (O)">Out</button>
             <button className="small wide-only" disabled={!selClip} onClick={() => selClip && seekSrc(selClip.s0)} title="Go to the selected clip's footage">⤒ Clip</button>
             <button className="small" disabled={markIn == null || markOut == null} onClick={markToV2} title="Put In→Out on V2 at the playhead, at real speed, over V1 (.)">▲ V2</button>
+            <button className="small" disabled={exporting || markIn == null || markOut == null || markOut - markIn < 100} onClick={exportClip}
+              title="Download this In→Out as a video file. Import that file in another episode's bin.">{exporting ? "Exporting…" : "Export"}</button>
             <button className="small primary" disabled={!selClip || markIn == null || markOut == null} onClick={() => doReplace()} title="Replace the selected clip with In→Out, fitted to its slot (F)">Replace<span className="wide-only"> ⏎</span></button>
           </div>
         </div>
@@ -1315,7 +1346,7 @@ export default function Editor() {
               <b style={{ color: "var(--text)" }}>How editing works</b><br />
               The {D} voice never moves. You change which {S} footage plays under it:<br />
               • drag a clip's edge to trim it: in leaves a gap, out overwrites the next clip (⌥: move the cut)<br />• drag a clip onto another to swap their footage<br />• Slip (Y) slides the footage<br />
-              • Razor (C) cuts a clip in two<br />• pick a sentence or mark In/Out on the source, then Replace (F)<br />• Delete leaves a gap (click it to fill, or drop a sentence on it)<br />              • V2 is over V1: drop a sentence, drag a clip up, or press . for the marked In→Out<br />
+              • Razor (C) cuts a clip in two<br />• pick a sentence or mark In/Out on the source, then Replace (F)<br />• Delete leaves a gap (click it to fill, or drop a sentence on it)<br />              • V2 is over V1: drop a sentence, drag a clip up, or press . for the marked In→Out<br />• Export downloads that In→Out as a file you can import in another episode's bin<br />
               • ⌘C a V1 clip, then ⌘V pastes it on V2 at the playhead (In/Out + ▲ V2 is the same from the source)<br />• ⇧L locks a clip; Lock approved locks them all<br />
               • click a subtitle on S1 / S2 to edit its words and times<br />• M adds a QC note at the playhead</div>}
             {!cueSel && selClip && !transInto.has(selClip.id) && (

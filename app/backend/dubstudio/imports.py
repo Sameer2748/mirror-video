@@ -118,3 +118,35 @@ def used_in(tl, iid):
 
 def safe_name(name):
     return re.sub(r"[^\w.\- ]", "_", Path(name or "clip").name)[:120] or "clip"
+
+
+# A marked In→Out the editor downloads so it can be imported on another episode.
+# Three minutes is the longest cut this request will encode; a whole episode is not a clip.
+MAX_EXPORT_MS = 180_000
+
+
+def cut_range(src, dest, s0_ms, s1_ms):
+    """Write src[s0:s1] to dest as an mp4. Re-encoded, so the cut starts at the marked frame
+    and not at the nearest keyframe. Audio is kept when the file has any."""
+    try:
+        s0, s1 = int(s0_ms), int(s1_ms)
+    except (TypeError, ValueError):
+        raise ValueError("set the clip start and end first")
+    if s1 - s0 < 100:
+        raise ValueError("the clip is shorter than 0.1 s")
+    if s1 - s0 > MAX_EXPORT_MS:
+        raise ValueError("a clip longer than 3 minutes is too long to export here")
+    start, dur = max(0, s0) / 1000.0, (s1 - s0) / 1000.0
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [cfg.ffmpeg, "-y", "-v", "error", "-ss", f"{start:.3f}", "-i", str(src), "-t", f"{dur:.3f}",
+           "-map", "0:v:0", "-map", "0:a:0?", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
+           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(dest)]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=max(180, int(dur * 8) + 60))
+    except subprocess.TimeoutExpired:
+        raise ValueError("cutting that clip took too long")
+    if r.returncode != 0 or not dest.is_file() or dest.stat().st_size < 1000:
+        msg = (r.stderr or "could not cut that clip").strip().splitlines()
+        raise ValueError(msg[-1][:300] if msg else "could not cut that clip")
+    return dest
