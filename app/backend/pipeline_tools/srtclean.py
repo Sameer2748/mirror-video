@@ -523,7 +523,255 @@ PRESETS = {
 }
 
 
-def align(srt_words, script_words, opts: AlignOptions):
+# ── Script typo repair ───────────────────────────────────────────────────────
+
+# "scampo.Viola", "pensarci,qualcosa", "posto?!»continuò": the script is
+# missing the space after punctuation. Only between two real words (2+
+# letters each side), so numbers (3.5), initials (M.Andrieux) and S.p.A.
+# are left alone.
+MISSING_SPACE_RE = re.compile(r"(?<=[^\W\d_]{2})([.,;:!?…»]+)(?=[^\W\d_]{2}|[^\W\d_]['’][^\W\d_]|«)")
+
+
+def fix_script_spacing(words: list[str]) -> list[str]:
+    """Split script tokens that are missing a space after punctuation, so
+    each word lines up with its own spoken word (and its own subtitle)."""
+    out: list[str] = []
+    for w in words:
+        # split ONLY where a space is missing; a token's existing spaces
+        # (French "deux ?", "aspettando .»") must stay inside the token
+        out.extend(part for part in MISSING_SPACE_RE.sub("\\1\x00", w).split("\x00") if part)
+    return out
+
+
+# Words that are legitimately written joined to the word before/after them,
+# so a "joined word" built from these is NOT treated as a script typo.
+JOIN_PREFIXES = {"tra", "fra", "ri", "re", "pre", "pro", "anti", "auto", "contro", "sopra", "sotto",
+                 "super", "extra", "multi", "semi", "inter", "intra", "sovra", "stra", "dis", "mal",
+                 "bene", "post", "neo", "ultra", "mega", "micro", "mini", "maxi", "vice", "co",
+                 "en", "em", "sur", "sous", "dé", "des", "entre", "outre", "para", "porte"}
+JOIN_SUFFIXES = {"gli", "lo", "la", "le", "li", "ne", "ci", "si", "mi", "ti", "vi", "glielo",
+                 "gliela", "glieli", "gliele", "gliene", "mente",
+                 # verb endings: "calamitava" is one word, not "calamita va"
+                 "va", "vano", "vamo", "vate", "vo", "no", "ono", "rono", "re", "ra", "ro", "rà", "rò"}
+SPELL_LANGS = ("it", "fr", "es", "pt")  # not German: German writes compounds as one word
+_SPELL_CACHE: dict = {}
+
+
+def _spellchecker(lang: str):
+    if lang not in _SPELL_CACHE:
+        try:
+            from spellchecker import SpellChecker
+            _SPELL_CACHE[lang] = SpellChecker(language=lang, distance=1)
+        except Exception:
+            _SPELL_CACHE[lang] = None
+    return _SPELL_CACHE[lang]
+
+
+def detect_script_dictionary(script_words: list[str]):
+    """Pick the dictionary (it/fr/es/pt) that recognises most of the script's
+    words; None if none of them clearly fits (e.g. a German script)."""
+    sample = [compact(w) for w in script_words if len(compact(w)) > 3][:600]
+    if not sample:
+        return None
+    best, best_ratio = None, 0.0
+    for lang in SPELL_LANGS:
+        sc = _spellchecker(lang)
+        if sc is None:
+            continue
+        ratio = sum(1 for w in sample if w in sc) / len(sample)
+        if ratio > best_ratio:
+            best, best_ratio = sc, ratio
+    return best if best_ratio >= 0.6 else None
+
+
+def split_glued_script_word(script_word: str, srt_pair: list[str], sc, script_counts) -> list[str] | None:
+    """If the script glued two words together by mistake ("trattatacome")
+    and the audio clearly said those two words ("trattata come"), return the
+    two words -- keeping the script's own capitals and punctuation.
+    Returns None whenever the joined form could be a real word."""
+    if sc is None or len(srt_pair) != 2:
+        return None
+    if any(ch in script_word for ch in "'’-"):   # elision (un'ape) / hyphenated (petit-déjeuner): correct as written
+        return None
+    core = re.sub(r"^[^0-9A-Za-zÀ-ÖØ-öø-ÿ]+", "", script_word)
+    if core[:1].isupper():                        # names (Lemaire, Lunaris) are kept as the script writes them
+        return None
+    a, b, w = compact(srt_pair[0]), compact(srt_pair[1]), compact(script_word)
+    if a + b != w or len(a) < 2 or len(b) < 2 or not a.isalpha() or not b.isalpha():
+        return None
+    if w in sc or script_counts.get(w, 0) >= 2:      # a real / deliberately used word
+        return None
+    if a not in sc or b not in sc or a in JOIN_PREFIXES or b in JOIN_SUFFIXES:
+        return None
+    # split the script's own spelling after len(a) letters
+    seen = 0
+    for idx, ch in enumerate(script_word):
+        if re.match(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ]", ch):
+            seen += 1
+            if seen == len(a):
+                return [script_word[:idx + 1], script_word[idx + 1:]]
+    return None
+
+
+_VOCAB_CACHE: dict = {}
+
+
+def show_vocabulary(script_path) -> dict[str, int]:
+    """How often each word appears across ALL scripts in this script's
+    folder. A joined word the writers use more than once in the show
+    (e.g. "cortocircuito", a character's name) is deliberate, not a typo."""
+    folder = Path(script_path).parent
+    key = str(folder)
+    if key not in _VOCAB_CACHE:
+        counts: dict[str, int] = {}
+        for f in folder.iterdir():
+            if f.suffix.lower() in SCRIPT_EXTS and not f.name.startswith("~$"):
+                try:
+                    for w in fix_script_spacing(extract_script_words(f, [])):
+                        counts[compact(w)] = counts.get(compact(w), 0) + 1
+                except Exception:
+                    continue
+        _VOCAB_CACHE[key] = counts
+    return _VOCAB_CACHE[key]
+
+
+GUILLEMET_RE = re.compile(r"\s*[«»]\s*")
+
+
+def strip_srt_guillemets(word: str) -> str:
+    """Remove « and » from a word that is being kept from the raw SRT.
+
+    Guillemets are only wanted when the SCRIPT has them. Words that come
+    from the script (matched or corrected) keep their marks exactly as the
+    script writes them; any word kept as-is from the raw SRT (audio-only
+    extras, rejected/mismatched replacements) has its « » removed here, so
+    stray ASR guillemets never reach the cleaned SRT."""
+    # "elle »." must become "elle." -- not "elle ." -- so a mark that sits
+    # right before a full stop or comma is removed together with its space.
+    word = re.sub(r"\s*[«»]\s*(?=[.,])", "", word)
+    return GUILLEMET_RE.sub(" ", word).strip()
+
+
+def _keep_srt_word(final: list, w: str, bpos: int) -> None:
+    w = strip_srt_guillemets(w)
+    if w:
+        final.append((w, bpos))
+
+
+def _quote_events(words: list[str]) -> list[tuple[int, str]]:
+    """(word index, mark) for every « / » inside a list of script words."""
+    return [(j, ch) for j, w in enumerate(words) for ch in w if ch in "«»"]
+
+
+def _unmatched_quotes(words: list[str]) -> tuple[list[int], list[int]]:
+    """Quote marks in a run of script words that are NOT closed/opened within
+    that same run. A complete «...» pair inside the run cancels out."""
+    opens: list[int] = []
+    closes: list[int] = []
+    for j, ch in _quote_events(words):
+        if ch == "«":
+            opens.append(j)
+        elif opens:
+            opens.pop()
+        else:
+            closes.append(j)
+    return opens, closes
+
+
+def _map_script_quotes(script_chunk: list[str], start: int, kept_n: int) -> tuple[list[int], list[int]]:
+    """Work out where the « / » of a rejected script chunk belong among the
+    kept_n spoken words that replace it (final[start : start + kept_n]).
+
+    Each mark is placed proportionally. A « that trails its word (the script
+    fused it on: "hurler. «") opens the NEXT word, which may be the first
+    word after this chunk; a » that leads its word closes the PREVIOUS one.
+    A complete «...» pair spanning several script words that lands on one
+    single spoken word means that quote wasn't really spoken -- both marks
+    are dropped together so the result stays balanced."""
+    n = len(script_chunk)
+    events = []  # (script index, mark, target index in final)
+    for j, w in enumerate(script_chunk):
+        for c, ch in enumerate(w):
+            if ch not in "«»":
+                continue
+            before, after = ALNUM_RE.search(w[:c]), ALNUM_RE.search(w[c + 1:])
+            if ch == "«":
+                k = (j * kept_n) // n if after else ((j + 1) * kept_n) // n
+                events.append((j, ch, start + min(k, kept_n)))
+            else:
+                k = (-(-(j + 1) * kept_n // n) - 1) if before else (-(-j * kept_n // n) - 1)
+                events.append((j, ch, start + max(k, -1)))
+    # "» ... «" can never sit on one word: when a close and a LATER open
+    # land on the same spoken word, the close belongs to the word before.
+    for e, (j, ch, t) in enumerate(events):
+        if ch == "»" and any(c2 == "«" and t2 == t for (_, c2, t2) in events[e + 1:]):
+            events[e] = (j, ch, t - 1)
+    drop: set[int] = set()
+    stack: list[int] = []
+    for e, (j, ch, t) in enumerate(events):
+        if ch == "«":
+            stack.append(e)
+        elif stack:
+            o = stack.pop()
+            if events[o][2] == t and events[o][0] != j:
+                drop.update((o, e))
+    opens = [t for e, (j, ch, t) in enumerate(events) if ch == "«" and e not in drop]
+    closes = [t for e, (j, ch, t) in enumerate(events) if ch == "»" and e not in drop]
+    return opens, closes
+
+
+def _drop_misplaced_moved_quotes(final: list, added_open: set[int], added_close: set[int]) -> None:
+    """Safety net for marks MOVED from the script (never the script's own).
+    A moved « is kept only if the next mark after it is a »; a moved » only
+    if the mark before it is a «. Anything else would create a doubled «« or
+    a » with nothing open -- which happens where the raw SRT and the script
+    diverge so much that there is no right place for the mark."""
+    while True:
+        marks = []  # (word index, mark, moved?)
+        for i, (w, _) in enumerate(final):
+            chars = [ch for ch in w if ch in "«»"]
+            for k, ch in enumerate(chars):
+                moved = (ch == "«" and k == 0 and i in added_open) or \
+                        (ch == "»" and k == len(chars) - 1 and i in added_close)
+                marks.append((i, ch, moved))
+        bad = None
+        for m, (i, ch, moved) in enumerate(marks):
+            if not moved:
+                continue
+            if ch == "«" and (m + 1 >= len(marks) or marks[m + 1][1] != "»"):
+                bad = (i, ch)
+                break
+            if ch == "»" and (m == 0 or marks[m - 1][1] != "«"):
+                bad = (i, ch)
+                break
+        if bad is None:
+            return
+        i, ch = bad
+        w, b = final[i]
+        if ch == "«":
+            final[i] = (w[1:].lstrip(), b)
+            added_open.discard(i)
+        else:
+            final[i] = (w[:-1].rstrip(), b)
+            added_close.discard(i)
+
+
+def align(srt_words, script_words, opts: AlignOptions, show_vocab: dict | None = None):
+    # Guillemets come ONLY from the script. When a script word that carries
+    # a « or » cannot be used (the audio says something different, or the
+    # script words were never spoken), its mark is moved onto the spoken
+    # word in the same place, so the script's quoting survives without ever
+    # keeping the raw SRT's own marks. French puts a space inside the marks
+    # (« Bonjour »), Italian doesn't («Ciao») -- follow whatever the script does.
+    _joined = " ".join(script_words)
+    spaced = len(re.findall(r"«\s", _joined)) > len(re.findall(r"«[^\s]", _joined))
+    fix_open: list[int] = []
+    fix_close: list[int] = []
+    spell = detect_script_dictionary(script_words)
+    script_counts: dict[str, int] = dict(show_vocab) if show_vocab else {}
+    if not show_vocab:
+        for w in script_words:
+            script_counts[compact(w)] = script_counts.get(compact(w), 0) + 1
     srt_norm = [norm(w) for w, _ in srt_words]
     script_norm = [norm(w) for w in script_words]
     sm = difflib.SequenceMatcher(None, srt_norm, script_norm, autojunk=False)
@@ -549,7 +797,17 @@ def align(srt_words, script_words, opts: AlignOptions):
                 and numeral_matches_word(norm(srt_chunk[0][0]), norm(script_chunk[0]))
             )
             if script_chunk and ((short and ratio > opts.short_ratio) or numeral_ok
-                                  or (same_len and ratio > opts.same_len_ratio)):
+                                  or (same_len and len(srt_chunk) <= opts.short_max
+                                      and ratio > opts.same_len_ratio)):
+                if len(script_chunk) == 1 and len(srt_chunk) == 2:
+                    parts = split_glued_script_word(script_chunk[0], [w for w, _ in srt_chunk],
+                                                    spell, script_counts)
+                    if parts:
+                        for w, (_, bpos) in zip(parts, srt_chunk):
+                            final.append((w, bpos))
+                        checks.append({"type": "script-typo-split", "srt": " ".join(w for w, _ in srt_chunk),
+                                       "script": script_chunk[0], "blocks": sorted(set(b + 1 for b in block_positions))})
+                        continue
                 for k, w in enumerate(script_chunk):
                     m = min(k, len(block_positions) - 1) if block_positions else 0
                     bpos = block_positions[m] if block_positions else (final[-1][1] if final else 0)
@@ -558,21 +816,55 @@ def align(srt_words, script_words, opts: AlignOptions):
                                 "script": " ".join(script_chunk),
                                 "blocks": sorted(set(b + 1 for b in block_positions))})
             else:
+                start = len(final)
                 for w, bpos in srt_chunk:
-                    final.append((w, bpos))
+                    _keep_srt_word(final, w, bpos)
+                opens, closes = _map_script_quotes(script_chunk, start, len(final) - start)
+                fix_open.extend(opens)
+                fix_close.extend(closes)
                 checks.append({"type": "CHECK-content-mismatch", "srt": " ".join(w for w, _ in srt_chunk),
                                 "script": " ".join(script_chunk),
                                 "blocks": sorted(set(b + 1 for b in block_positions))})
         elif tag == "delete":
             srt_chunk = srt_words[i1:i2]
             for w, bpos in srt_chunk:
-                final.append((w, bpos))
+                _keep_srt_word(final, w, bpos)
             checks.append({"type": "audio-only-extra", "srt": " ".join(w for w, _ in srt_chunk), "script": "",
                             "blocks": sorted(set(b + 1 for b in [bp for _, bp in srt_chunk]))})
         elif tag == "insert":
             script_chunk = script_words[j1:j2]
+            opens, closes = _unmatched_quotes(script_chunk)
+            fix_close.extend([len(final) - 1] * len(closes))
+            fix_open.extend([len(final)] * len(opens))
             checks.append({"type": "script-only-not-inserted", "srt": "", "script": " ".join(script_chunk),
                             "blocks": []})
+
+    # Skip a moved mark when the same mark is already right there -- either
+    # on the word itself or at the touching end of its neighbour (the script
+    # often fuses a lone « onto the previous word: "Rémi. «").
+    added_open: set[int] = set()
+    added_close: set[int] = set()
+    for i in sorted(set(fix_close)):
+        if not 0 <= i < len(final):
+            continue
+        w, b = final[i]
+        if w.rstrip(".,;:!?…").endswith("»") or (i + 1 < len(final) and final[i + 1][0].lstrip().startswith("»")):
+            continue
+        if w.rstrip().endswith("«"):
+            # the quote this « opened was never spoken: drop the orphan «
+            final[i] = (w.rstrip()[:-1].rstrip(), b)
+            continue
+        final[i] = (w + (" »" if spaced else "»"), b)
+        added_close.add(i)
+    for i in sorted(set(fix_open)):
+        if not 0 <= i < len(final):
+            continue
+        w, b = final[i]
+        if w.startswith("«") or (i > 0 and final[i - 1][0].rstrip().endswith("«")):
+            continue
+        final[i] = (("« " if spaced else "«") + w, b)
+        added_open.add(i)
+    _drop_misplaced_moved_quotes(final, added_open, added_close)
     return final, checks
 
 
@@ -605,6 +897,28 @@ def rebuild_blocks(blocks: list[dict], final_words, stage_patterns: list[str]) -
         text = re.sub(r"\s{2,}", " ", text).strip()
         new_blocks.append({"idx": b["idx"], "ts": b["ts"], "text": text})
     return new_blocks
+
+
+
+def extend_over_merged_subtitles(raw_blocks: list[dict], new_blocks: list[dict]) -> list[dict]:
+    """A subtitle can end up empty because the cleaner merged its words into
+    the subtitle before it (heard "luna." | "Aries." -> script "Lunaris").
+    The empty subtitle is dropped when writing, so stretch the previous
+    subtitle's end time over it -- the merged word stays on screen while it
+    is being spoken and no gap opens in the timeline. Subtitles that only
+    ever held quote marks or tags are just dropped, as before."""
+    out = [dict(b) for b in new_blocks]
+    last = None  # index of the last subtitle that still has text
+    for i, (rb, nb) in enumerate(zip(raw_blocks, out)):
+        if nb["text"].strip():
+            last = i
+            continue
+        had_words = bool(ALNUM_RE.search(strip_bracket_stage_tags(rb["text"], STAGE_TAG_RE_DEFAULT)))
+        if had_words and last is not None:
+            m_prev, m_this = TS_RE.match(out[last]["ts"]), TS_RE.match(nb["ts"])
+            if m_prev and m_this:
+                out[last]["ts"] = f"{m_prev.group(1)} --> {m_this.group(2)}"
+    return out
 
 
 # ── Optional: timestamp continuity repair ────────────────────────────────────
@@ -724,11 +1038,20 @@ def validate(raw_blocks: list[dict], new_blocks: list[dict], quote_style: str | 
             "quote_open": o, "quote_close": c, "quotes_balanced": balanced}
 
 
-def write_srt(blocks: list[dict], path: Path) -> None:
+def write_srt(blocks: list[dict], path: Path) -> int:
+    """Write blocks as an SRT file. A subtitle whose text ended up empty
+    (e.g. it only ever held a stray '»' or a stage tag) is left out, because
+    an empty text line is a blank line -- which ends the SRT block early and
+    makes players misread every subtitle after it. When anything is left
+    out, the remaining subtitles are renumbered 1, 2, 3... Returns how many
+    empty subtitles were dropped."""
+    kept = [b for b in blocks if b["text"].strip()]
+    dropped = len(blocks) - len(kept)
     lines = []
-    for b in blocks:
-        lines += [b["idx"], b["ts"], b["text"], ""]
+    for n, b in enumerate(kept, 1):
+        lines += [str(n) if dropped else b["idx"], b["ts"], b["text"], ""]
     path.write_text("\n".join(lines).rstrip("\n") + "\n", encoding="utf-8")
+    return dropped
 
 
 def reclassify_stage_only_checks(checks: list[dict], stage_patterns: list[str]) -> list[dict]:
@@ -790,15 +1113,22 @@ def clean_episode(ep: int, script_path: str, srt_path: str, out_dir: Path, repor
     # extract_script_words) so a tag can never end up split across two SRT
     # blocks. rebuild_blocks() below still re-applies the same stripping to
     # the assembled block text as a defense-in-depth safety net.
-    script_words = extract_script_words(script_path, stage_patterns)
+    script_words = fix_script_spacing(extract_script_words(script_path, stage_patterns))
     raw_blocks = parse_srt(srt_path)
+    if not raw_blocks:
+        raise ValueError("the SRT file has no subtitles in it (it is empty, or not a real .srt file)")
     srt_words = build_srt_words(raw_blocks)
 
     log(f"aligning {len(srt_words)} audio words against {len(script_words)} script words")
-    final_words, checks = align(srt_words, script_words, opts)
+    try:
+        vocab = show_vocabulary(script_path)
+    except Exception:
+        vocab = None
+    final_words, checks = align(srt_words, script_words, opts, vocab)
 
     new_blocks = rebuild_blocks(raw_blocks, final_words, stage_patterns)
     checks = reclassify_stage_only_checks(checks, stage_patterns)
+    new_blocks = extend_over_merged_subtitles(raw_blocks, new_blocks)
 
     ts_fixed = 0
     if fix_timestamps:
@@ -824,16 +1154,18 @@ def clean_episode(ep: int, script_path: str, srt_path: str, out_dir: Path, repor
     out_dir.mkdir(parents=True, exist_ok=True)
     report_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{Path(srt_path).stem}.srt"
-    write_srt(new_blocks, out_path)
+    empty_dropped = write_srt(new_blocks, out_path)
+    if empty_dropped:
+        log(f"{empty_dropped} empty subtitle(s) left out (they held only quote marks/tags)")
 
-    corrected = [c for c in checks if c["type"] == "corrected"]
+    corrected = [c for c in checks if c["type"] in ("corrected", "script-typo-split")]
     informational = [c for c in checks if c["type"] == "stage-direction-not-spoken"]
-    flagged = [c for c in checks if c["type"] not in ("corrected", "stage-direction-not-spoken")]
+    flagged = [c for c in checks if c["type"] not in ("corrected", "script-typo-split", "stage-direction-not-spoken")]
     report = {
         "episode": ep, "script": str(script_path), "srt": str(srt_path),
         "num_blocks": len(raw_blocks), "num_corrected": len(corrected),
         "num_flagged": len(flagged), "num_stage_directions_not_spoken": len(informational),
-        "timestamp_fixes": ts_fixed, "validation": v, "quote_imbalance_suspects": quote_suspects,
+        "timestamp_fixes": ts_fixed, "empty_subtitles_dropped": empty_dropped, "validation": v, "quote_imbalance_suspects": quote_suspects,
         "canonical_names_missing": name_flags, "checks": checks,
     }
     report_path = report_dir / f"{Path(srt_path).stem}_report.json"

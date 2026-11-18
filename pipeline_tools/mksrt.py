@@ -16,10 +16,10 @@ How:
 1. Whisper (faster-whisper "small", CPU, 60-s pieces, resumable, cached in W/asr = the cache `dubstitch.py words` uses)
    hears every word with its time. Invented credit lines ("Sottotitoli ... a cura di") are removed. Where the script
    has 2+ words Whisper skipped and the audio has room for them, that stretch is heard again with the script as a hint.
-2. Cleaning: the SRT-cleaning platform's method (srtclean.py), run on a one-word-per-row SRT so every word keeps its
-   own time: the script decides spelling, names, punctuation, quotes. A "Word Count: N" header and a stage note such
-   as "[ambience voice]" are removed before that comparison. Then small leftovers (1-3 words where voice and script
-   still differ) take the script's words (--keep-heard: not).
+2. Cleaning: the SRT-cleaning tool (srtclean.py, the same comparison as srt-cleaning-platform), run on a
+   one-word-per-row SRT so every word keeps its own time. The script decides spelling, names, punctuation and quotes.
+   A "Word Count: N" header and a stage note such as "[ambience voice]" are removed before that comparison. A real
+   mismatch is left as heard. Nothing is pasted on afterwards.
 3. The cleaned words are grouped into the two SRTs above.
 `--engine mlx --model mlx-community/whisper-large-v3-turbo` uses the Apple GPU (better words without a script, less
 exact times).
@@ -299,7 +299,7 @@ def main():
     p.add_argument("--script", help="the script (.docx/.txt) of this language: cleans the SRT word by word (srtclean.py)")
     p.add_argument("--sensitivity", default="aggressive", choices=["conservative", "balanced", "aggressive"],
                    help="how freely the cleaner replaces heard words by the script (aggressive: tested best on TOLR ep24-26)")
-    p.add_argument("--keep-heard", action="store_true", help="keep small heard/script differences as heard (default: the script's words win)")
+    p.add_argument("--keep-heard", action="store_true", help="kept so older commands still run; the comparison is the cleaning tool either way")
     p.add_argument("--names", help="character list CSV: fixes the spelling of names (when there is no script)")
     p.add_argument("--names-cols", default="First Name (Original),Last Name (Original)")
     p.add_argument("--engine", default="faster", choices=["faster", "mlx"]); p.add_argument("--model", default="small")
@@ -312,7 +312,7 @@ def main():
     if gone: print(f"dropped Whisper's invented credit line: {' '.join(gone)}")
     if a.script:
         import srtclean as P
-        words, redone = listen_again(a, words, P.extract_script_words(a.script, list(P.STAGE_TAG_RE_DEFAULT)))
+        words, redone = listen_again(a, words, P.fix_script_spacing(P.extract_script_words(a.script, list(P.STAGE_TAG_RE_DEFAULT))))
         if redone: print(f"listened again (Whisper had skipped script words there): {', '.join(redone)}")
     if a.names:
         words, fixed = fix_names(words, load_names(a.names, a.names_cols.split(",")))
@@ -329,16 +329,10 @@ def main():
         write_cards([[w] for w in words], str(per_word))
         res = P.clean_episode(0, a.script, str(per_word), tmp, tmp, sensitivity=a.sensitivity)
         rep = json.load(open(res["report_path"])); os.replace(res["report_path"], base + "_report.json")
-        if not a.keep_heard:
-            sw = P.extract_script_words(a.script, list(P.STAGE_TAG_RE_DEFAULT))
-            first = (P.docx.Document(a.script).paragraphs[0].text if a.script.lower().endswith(".docx")
-                     else open(a.script, encoding="utf-8", errors="replace").readline())
-            if re.match(r"\s*(episode|episodio|folge|ep)\.?\s*\d+", first or "", re.I):     # drop the title line
-                sw = " ".join(sw).split()[len(first.split()):]
-            done = script_wins(res["out_path"], sw)
-            if done: print(f"script spelling used for {len(done)} small leftovers: " + "; ".join(done))
+        # The cleaned file is the tool's comparison. A later pass used to paste leftovers of 1-3 script
+        # words back on (that is how "Word Count: 1369" reached the first line). The tool does not do that.
         final = read_word_blocks(res["out_path"])
-        flagged = [c for c in rep["checks"] if c["type"] not in ("corrected", "stage-direction-not-spoken")
+        flagged = [c for c in rep["checks"] if c["type"] not in ("corrected", "script-typo-split", "stage-direction-not-spoken")
                    and not (c["type"] == "script-only-not-inserted" and re.match(r"\s*(episode|episodio|folge|ep)\.?\s*\d+", c["script"], re.I))]
         print(f"cleaned with {os.path.basename(a.script)}: {rep['num_corrected']} corrections, {len(flagged)} places where voice and script differ")
     subs = make_subs(final, a.row_words, a.row_seconds); write_cards(subs, a.out, hold=0.5)

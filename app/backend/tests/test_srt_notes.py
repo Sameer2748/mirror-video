@@ -80,6 +80,27 @@ def test_a_real_short_difference_longer_than_three_words_stays_as_heard(tmp_path
     assert "alpha" not in text
 
 
+def test_the_cleaner_follows_the_tool_and_does_not_paste_script_only_words(tmp_path):
+    """The comparison is the SRT cleaning tool: a missing space is split, a close
+    spelling takes the script, and words the audio never said are not added."""
+    script = tmp_path / "script.txt"
+    script.write_text("Word Count: 1369\n[ambience voice] scampo.Viola restava.\n", encoding="utf-8")
+    heard = tmp_path / "heard.srt"
+    heard.write_text(_srt(["scampo.", "Viola", "restava."]), encoding="utf-8")
+    res = P.clean_episode(1, str(script), str(heard), tmp_path, tmp_path, sensitivity="aggressive")
+    text = Path(res["out_path"]).read_text(encoding="utf-8")
+    assert "Word Count" not in text and "1369" not in text and "ambience" not in text.lower()
+    assert "scampo." in text and "Viola" in text and "restava." in text
+
+    script2 = tmp_path / "only.txt"
+    script2.write_text("alpha beta gamma delta epsilon\n", encoding="utf-8")
+    heard2 = tmp_path / "heard2.srt"
+    heard2.write_text(_srt(["eins"]), encoding="utf-8")
+    res2 = P.clean_episode(2, str(script2), str(heard2), tmp_path / "b", tmp_path / "b")
+    text2 = Path(res2["out_path"]).read_text(encoding="utf-8")
+    assert "eins" in text2 and "alpha" not in text2
+
+
 def test_clean_then_script_wins_leaves_the_header_out_of_the_line(tmp_path):
     script = tmp_path / "script.txt"
     script.write_text("Word Count: 1369\n[ambience voice] Als Keira hörte das.\n", encoding="utf-8")
