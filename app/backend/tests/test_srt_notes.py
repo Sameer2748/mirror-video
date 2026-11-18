@@ -40,7 +40,7 @@ def test_extract_drops_the_header_and_the_ambience_note_and_keeps_the_line(tmp_p
     assert "1369" not in words and not any(w.lower().startswith("count") for w in words)
     assert "ambience" not in text.lower() and "ambient" not in text.lower() and "bedroom" not in text.lower()
     assert words[:4] == ["Als", "Keira", "hörte", "das."]
-    assert "Nascosto" in text and "Razza" in text and "Umano" in text
+    assert "Nascosto" not in text and "Razza" not in text and "Umano" not in text
     assert "Hallo." in words and "Ende." in words and "Schluss." in words
 
 

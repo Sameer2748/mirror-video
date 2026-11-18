@@ -268,6 +268,10 @@ def _remove_orphan_brackets(text: str) -> str:
     return "".join(ch for i, ch in enumerate(text) if i not in orphan_idx)
 
 
+# A whole "[...]" span on one line, with no nested or unclosed bracket inside it.
+SQUARE_BRACKET_SPAN_RE = re.compile(r"\[[^\[\]\n]{1,160}\]")
+
+
 def strip_bracket_stage_tags(text: str, stage_patterns: list[str]) -> str:
     """Remove production-only bracket tags. stage_patterns (the known-keyword
     whitelist, e.g. STAGE_TAG_RE_DEFAULT + any extras) is applied first for
@@ -284,6 +288,9 @@ def strip_bracket_stage_tags(text: str, stage_patterns: list[str]) -> str:
         return text
     for pat in stage_patterns:
         text = re.sub(pat, "", text, flags=re.IGNORECASE)
+    # Any square-bracket span is script-only (the director's notes, "[Ambience: rooms| bedroom]",
+    # "[Nascosto]", "[Razza: Umano]"). The whole bracket and its text go, never just the brackets.
+    text = SQUARE_BRACKET_SPAN_RE.sub("", text)
     text = _strip_stage_head_brackets(text)
     text = _strip_allcaps_brackets(text)
     text = _remove_orphan_brackets(text)
