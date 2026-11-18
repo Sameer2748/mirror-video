@@ -512,6 +512,23 @@ def test_facemap_job_ships_this_boxs_script_not_the_baked_image(tmp_path):
     assert out[2:] == ["--video", "/files/F0/ep.mp4", "--library", str(work / "broll_library.json")]
 
 
+def test_mksrt_job_ships_this_boxs_cleaner_not_the_baked_image(tmp_path):
+    """The rented mksrt pastes a Word Count header onto the first line. The job takes THIS mksrt.py and srtclean.py."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/dubstudio/scripts/mksrt.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "--work", str(work), "--script", str(work / "input" / "ep.docx")]
+    out = cloud.point_mksrt_at_staged(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_pipe" / "mksrt.py" and staged.is_file()
+    cleaner = work / "_pipe" / "srtclean.py"
+    assert cleaner.is_file()
+    assert "WORD_COUNT_RE" in cleaner.read_text()
+    assert "unspoken_script_chunk" in staged.read_text()
+    assert "_cwd" in staged.read_text()
+    assert out[2:] == ["--work", str(work), "--script", str(work / "input" / "ep.docx")]
+
+
 def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path):
     """The rented dubstitch concatenates leftover .ok files when the mp4s never arrived. The job takes THIS copy."""
     work = tmp_path / "W"; work.mkdir()

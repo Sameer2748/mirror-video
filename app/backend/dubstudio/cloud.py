@@ -890,6 +890,43 @@ def point_dubstitch_at_staged(cmd, work):
     return out
 
 
+def stage_mksrt(work):
+    """Copy this image's mksrt.py and srtclean.py into W/_pipe.
+
+    The rented image still pastes a "Word Count: N" header, and a lowercase
+    [ambience voice] note, onto the dub SRT. Both files travel with the job:
+    mksrt imports srtclean from its own folder, and dubstitch from the scripts
+    folder the worker starts in."""
+    here = Path(__file__).resolve()
+    src_dir = None
+    candidates = [here.parents[1] / "pipeline_tools"]
+    if len(here.parents) > 3:
+        candidates.append(here.parents[3] / "pipeline_tools")
+    for folder in candidates:
+        if (folder / "mksrt.py").is_file() and (folder / "srtclean.py").is_file():
+            src_dir = folder
+            break
+    if src_dir is None:
+        raise FileNotFoundError("mksrt.py")
+    dest_dir = Path(work) / "_pipe"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("mksrt.py", "srtclean.py"):
+        shutil.copy2(src_dir / name, dest_dir / name)
+    return dest_dir / "mksrt.py"
+
+
+def point_mksrt_at_staged(cmd, work):
+    """Rewrite an mksrt command so the worker runs the copy we just staged under W/_pipe."""
+    script = stage_mksrt(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("mksrt.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def stage_facemap(work):
     """Copy this image's facemap.py into W/_pipe.
 
@@ -1021,6 +1058,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
         cmd = point_dubstitch_at_staged(cmd, W)
         log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")
+    if any(str(c).endswith("mksrt.py") for c in (cmd or [])):
+        cmd = point_mksrt_at_staged(cmd, W)
+        log("mksrt: this box's mksrt.py and srtclean.py travel with the job "
+            "(the rented image pastes Word Count and ambience notes onto the dub SRT)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)

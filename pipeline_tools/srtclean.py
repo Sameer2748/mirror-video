@@ -216,6 +216,32 @@ def _strip_allcaps_brackets(text: str) -> str:
     return BRACKET_CONTENT_RE.sub(lambda m: "" if _is_allcaps_tag_content(m.group(1)) else m.group(0), text)
 
 
+# A bracket whose letters are not all capitals can still be a stage note.
+# "[ambience voice]" and "[Ambience: street]" are that case. The keyword
+# regex spells AMBIENT, and a case-insensitive search does not treat that as
+# the longer word "ambience", so those notes used to reach the comparison.
+# The check is done on the text in Python. A viewer-facing bracket
+# ("[Nascosto]", "[Razza: Umano]") does not start with one of these words
+# and is left as written.
+_STAGE_HEADS = (
+    "microphone filter", "phone filter", "inner thought", "inner voice",
+    "voice-over", "voice over", "voiceover", "ambience", "direction",
+    "ambient", "reverb", "stage", "music", "crowd", "note", "sfx", "voa", "fx",
+)
+
+
+def _head_is_stage(content: str) -> bool:
+    head = content.lstrip(" \t\"'").lower()
+    for word in _STAGE_HEADS:
+        if head.startswith(word) and (len(head) == len(word) or not head[len(word)].isalpha()):
+            return True
+    return False
+
+
+def _strip_stage_head_brackets(text: str) -> str:
+    return BRACKET_CONTENT_RE.sub(lambda m: "" if _head_is_stage(m.group(1)) else m.group(0), text)
+
+
 def _remove_orphan_brackets(text: str) -> str:
     """Strip only UNPAIRED '[' / ']' characters — e.g. a typo'd extra "] O]"
     left behind in the source after its real tag was already stripped.
@@ -250,13 +276,15 @@ def strip_bracket_stage_tags(text: str, stage_patterns: list[str]) -> str:
     malformed/typo'd tag in the source doc (e.g. "...] O]") — is stripped as
     bare punctuation, same as the "<<"/">>" markup handling, since a
     literal stray bracket character never belongs in viewer dialogue. A
-    still-paired "[...]" (mixed-case, so not a stage tag) is left untouched.
-    A no-op (returns text unchanged) when stage_patterns is empty, i.e. the
-    "remove stage tags" toggle is off."""
+    still-paired "[...]" is left untouched, unless its text starts with a
+    stage-note word ("[ambience voice]", "[Ambience: street]"). A
+    viewer-facing bracket stays. A no-op (returns text unchanged) when
+    stage_patterns is empty, i.e. the "remove stage tags" toggle is off."""
     if not stage_patterns:
         return text
     for pat in stage_patterns:
         text = re.sub(pat, "", text, flags=re.IGNORECASE)
+    text = _strip_stage_head_brackets(text)
     text = _strip_allcaps_brackets(text)
     text = _remove_orphan_brackets(text)
     return text
@@ -275,7 +303,9 @@ PAREN_CONTENT_RE = re.compile(r"\(([^()]{1,160})\)")
 
 
 def strip_paren_stage_tags(text: str) -> str:
-    return PAREN_CONTENT_RE.sub(lambda m: "" if _is_allcaps_tag_content(m.group(1)) else m.group(0), text)
+    return PAREN_CONTENT_RE.sub(
+        lambda m: "" if _is_allcaps_tag_content(m.group(1)) or _head_is_stage(m.group(1)) else m.group(0),
+        text)
 
 
 # Some scripts use "<<" / ">>" as script-only markup (e.g. emphasis/beat
@@ -317,6 +347,13 @@ INVISIBLE_CHARS_RE = re.compile(r"[\ufeff\u200b\u200c\u200d\u2060]")
 # deliberately left alone. Always stripped, independent of the
 # stage-tag toggle, like ARROW_MARKUP_RE and INVISIBLE_CHARS_RE.
 DIVIDER_RUN_RE = re.compile(r"[-\u2013\u2014_=*]{3,}")
+
+# A Word header left at the top of the script ("Word Count: 1369"). It is
+# never spoken. It is three tokens, so the small-leftover pass would paste
+# it onto the first subtitle (IMTS episode 69). Removed before the script is
+# split, the same way a divider line is removed, so the comparison never
+# sees it. Always on: it is a document header, not a stage-tag toggle.
+WORD_COUNT_RE = re.compile(r"(?i)\bword\s*count\s*:\s*\d[\d,.]*")
 
 CARDINALS = {
     0: "null", 1: "eins", 2: "zwei", 3: "drei", 4: "vier", 5: "fünf", 6: "sechs",
@@ -398,11 +435,27 @@ def extract_script_words(path: str | Path, stage_patterns: list[str] | None = No
         full_text = path.read_text(encoding="utf-8", errors="replace")
     full_text = INVISIBLE_CHARS_RE.sub("", full_text)
     full_text = DIVIDER_RUN_RE.sub("", full_text)
+    full_text = WORD_COUNT_RE.sub("", full_text)
     if stage_patterns:
         full_text = strip_bracket_stage_tags(full_text, stage_patterns)
         full_text = strip_paren_stage_tags(full_text)
         full_text = REVERB_MARKER_RE.sub("", full_text)
     return merge_punct_only(full_text.split())
+
+
+def unspoken_script_chunk(words: list[str]) -> bool:
+    """True when this script leftover is only a document header or a stage note.
+
+    The comparison must not paste it onto a subtitle. A real short difference
+    ("Kira" heard, "Keira" written) still has letters left after the strip,
+    and is not this."""
+    text = " ".join(words).strip()
+    if not text:
+        return False
+    text = WORD_COUNT_RE.sub(" ", text)
+    text = strip_bracket_stage_tags(text, list(STAGE_TAG_RE_DEFAULT))
+    text = strip_paren_stage_tags(text)
+    return not ALNUM_RE.search(text)
 
 
 def parse_srt(path: str | Path) -> list[dict]:

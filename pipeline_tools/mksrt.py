@@ -16,15 +16,22 @@ How:
 1. Whisper (faster-whisper "small", CPU, 60-s pieces, resumable, cached in W/asr = the cache `dubstitch.py words` uses)
    hears every word with its time. Invented credit lines ("Sottotitoli ... a cura di") are removed. Where the script
    has 2+ words Whisper skipped and the audio has room for them, that stretch is heard again with the script as a hint.
-2. Cleaning: the SRT-cleaning platform's method (srtclean.py = srt-cleaning-platform/pipeline.py, unchanged), run on a
-   one-word-per-row SRT so every word keeps its own time: the script decides spelling, names, punctuation, quotes.
-   Then small leftovers (1-3 words where voice and script still differ) take the script's words (--keep-heard: not).
+2. Cleaning: the SRT-cleaning platform's method (srtclean.py), run on a one-word-per-row SRT so every word keeps its
+   own time: the script decides spelling, names, punctuation, quotes. A "Word Count: N" header and a stage note such
+   as "[ambience voice]" are removed before that comparison. Then small leftovers (1-3 words where voice and script
+   still differ) take the script's words (--keep-heard: not).
 3. The cleaned words are grouped into the two SRTs above.
 `--engine mlx --model mlx-community/whisper-large-v3-turbo` uses the Apple GPU (better words without a script, less
 exact times).
 """
 import argparse, csv, difflib, json, os, re, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
+# When this file is staged into an episode's work folder, Python looks there
+# first, so the srtclean.py staged beside it is the one that runs. dubstitch.py
+# stays in the worker's scripts folder, which is the process's working directory.
+_cwd = os.getcwd()
+if _cwd not in sys.path:
+    sys.path.append(_cwd)
 
 
 def ts(t):
@@ -138,14 +145,17 @@ def parse_blocks(path):
 def script_wins(srt_path, script_words, max_words=3):
     """After the cleaning: small leftovers where the heard words and the script still differ (Whisper heard a stray
     'a'/'la'/'che', or missed a short word such as 'il', 'testa', '«Ah,') are settled in favour of the SCRIPT, so every
-    word is spelled as written. Runs of more than max_words words stay as the cleaning left them (and stay flagged)."""
+    word is spelled as written. Runs of more than max_words words stay as the cleaning left them (and stay flagged).
+    A leftover that is only a header ("Word Count: 1369") or a stage note ("[ambience voice]") is not spoken, so it
+    is not pasted onto a line."""
+    import srtclean as P
     script_words = glue(" ".join(script_words).split())
     blocks = [[i, t, glue(x.split())] for i, t, x in parse_blocks(srt_path)]
     W = [(w, bi) for bi, b in enumerate(blocks) for w in b[2]]
     sm = difflib.SequenceMatcher(None, [_n(w) for w, _ in W], [_n(w) for w in script_words], autojunk=False)
     out, done = [], []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == "equal" or max(i2 - i1, j2 - j1) > max_words:
+        if tag == "equal" or max(i2 - i1, j2 - j1) > max_words or P.unspoken_script_chunk(script_words[j1:j2]):
             out += W[i1:i2]; continue
         bi = W[i1][1] if i1 < len(W) else (W[-1][1] if W else 0)
         if i1 == i2 and i1 > 0: bi = W[i1 - 1][1]                  # missing words join the card of the word before them
