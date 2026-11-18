@@ -45,10 +45,17 @@ def _rows_of(path: Path):
     raise ValueError("the sheet must be a .csv or .xlsx file")
 
 
+def _header_name(cell):
+    """A column title, also when it ends in 'url' or 'link' ('source video url')."""
+    name = re.sub(r"\s+", " ", _cell(cell).lower())
+    found = _HEADER.get(name)
+    if found:
+        return found
+    return _HEADER.get(re.sub(r"\s+(url|link)$", "", name))
+
+
 def _header_map(row):
-    keys = []
-    for c in row:
-        keys.append(_HEADER.get(re.sub(r"\s+", " ", _cell(c).lower())))
+    keys = [_header_name(c) for c in row]
     if {"number", "video", "audio", "script"} <= set(keys):
         return {name: keys.index(name) for name in ("number", "video", "audio", "script")}
     return None

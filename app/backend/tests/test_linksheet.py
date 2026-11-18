@@ -83,6 +83,15 @@ def main():
     rows = linksheet.parse_sheet(csv_path)
     assert [r["number"] for r in rows] == [7, 8], rows
 
+    headed = ROOT / "headed.csv"
+    headed.write_text(
+        "episode,source video url,target audio,target script\n"
+        f"151,{base}/ep.mp4,{base}/ep.mp3,{base}/ep.txt\n",
+        encoding="utf-8",
+    )
+    one = linksheet.parse_sheet(headed)
+    assert one[0]["number"] == 151 and one[0]["video"].endswith("/ep.mp4"), one
+
     import openpyxl
     wb = openpyxl.Workbook()
     ws = wb.active
