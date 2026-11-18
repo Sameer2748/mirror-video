@@ -25,6 +25,46 @@ MEDIA = ROOT / "media"
 MEDIA.mkdir()
 
 
+def test_header_titles_are_read_by_their_words(tmp_path):
+    """A sheet whose audio or script title is worded differently still has its header read (not row 1 as data)."""
+    url = "https://example.com/f"
+    for titles in (
+        "Episode Number,Source Video Link,Audio Link,Script Link",
+        "Episode Number,Source Video,Audio File,Script File",
+        "Episode Number,Source Video,Dubbed Audio,Script",
+        "Episode Number,Source Video,Audio (mp3),Script (docx)",
+        "Episode Number,Source Video URL,Target Audio URL,Target Script URL",
+        "Episode Number,Video Link,Dub Audio Link,Dub Script Link",
+    ):
+        p = tmp_path / "s.csv"
+        p.write_text(f"{titles}\n3,{url}/v,{url}/a,{url}/s\n", encoding="utf-8")
+        rows = linksheet.parse_sheet(p)
+        assert [r["number"] for r in rows] == [3], titles
+        assert rows[0]["video"].endswith("/v") and rows[0]["audio"].endswith("/a") and rows[0]["script"].endswith("/s"), titles
+
+
+def test_a_sheet_with_unknown_titles_says_which_titles_it_found(tmp_path):
+    p = tmp_path / "s.csv"
+    p.write_text(f"Episode Number,Source Video,Name,Notes\n3,{'https://x.y/v'},a,b\n", encoding="utf-8")
+    try:
+        linksheet.parse_sheet(p)
+        raise SystemExit("unknown titles should be refused")
+    except ValueError as ex:
+        msg = str(ex)
+        assert "'Episode Number'" in msg and "'Source Video'" in msg and "'Notes'" in msg, msg
+        assert "not a whole number" not in msg
+
+
+def test_localisation_sheet_is_not_taken_for_a_link_sheet(tmp_path):
+    p = tmp_path / "names.csv"
+    p.write_text("source name,target name\naiden,Alessandro\n", encoding="utf-8")
+    try:
+        linksheet.parse_sheet(p)
+        raise SystemExit("a names sheet should be refused")
+    except ValueError as ex:
+        assert "first row" in str(ex)
+
+
 def _make_media():
     import subprocess
     subprocess.check_call([

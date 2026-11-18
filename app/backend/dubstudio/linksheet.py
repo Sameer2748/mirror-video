@@ -45,13 +45,34 @@ def _rows_of(path: Path):
     raise ValueError("the sheet must be a .csv or .xlsx file")
 
 
+_WORDS_FOR = (
+    # the order matters: "episode number" is a number, "source video" a video, "audio (mp3)" an audio
+    ("video", ("video", "movie", "footage")),
+    ("audio", ("audio", "sound", "voice")),
+    ("script", ("script", "docx", "doc")),
+    ("number", ("episode", "episodes", "ep", "number", "no")),
+)
+
+
 def _header_name(cell):
-    """A column title, also when it ends in 'url' or 'link' ('source video url')."""
-    name = re.sub(r"\s+", " ", _cell(cell).lower())
-    found = _HEADER.get(name)
-    if found:
-        return found
-    return _HEADER.get(re.sub(r"\s+(url|link)$", "", name))
+    """Which column a title belongs to, or None.
+
+    Titles are read by their words, so 'Dubbed Audio', 'Audio File', 'Audio (mp3)', 'Script (docx)' and
+    'source video url' all count. Words that only say what the cell links to ('url', 'link', 'file')
+    and the dub/target/source prefixes are ignored, so 'source name' and 'target name' do not match."""
+    name = re.sub(r"[^a-z0-9 ]+", " ", re.sub(r"\s+", " ", _cell(cell).lower())).strip()
+    if not name:
+        return None
+    if name in _HEADER:
+        return _HEADER[name]
+    words = [w for w in name.split() if w not in {"url", "urls", "link", "links", "file", "files", "address", "path",
+                                                   "the", "dub", "dubbed", "target", "src", "source"}]
+    for key, keywords in _WORDS_FOR:
+        if any(w in keywords for w in words):
+            if key == "number" and any(w in ("video", "audio", "script") for w in words):
+                continue
+            return key
+    return None
 
 
 def _header_map(row):
@@ -70,6 +91,14 @@ def parse_sheet(path):
     data = rows[1:] if header else rows
     start = 2 if header else 1
     if not header:
+        first = _cell(rows[0][0]) if rows[0] else ""
+        if not re.fullmatch(r"\d+(\.0+)?", first):
+            found = [_cell(c) for c in rows[0] if _cell(c)]
+            raise ValueError(
+                "the first row is read as column titles, but they do not name the four columns "
+                f"(found: {', '.join(repr(x) for x in found) or 'nothing'}). "
+                "Use: episode number, source video, audio, script (any title that says video, audio or script works), "
+                "or leave the titles out and put the four columns in that order")
         header = {"number": 0, "video": 1, "audio": 2, "script": 3}
     out, seen = [], set()
     for i, row in enumerate(data, start=start):
