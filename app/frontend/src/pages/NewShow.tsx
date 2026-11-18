@@ -13,6 +13,8 @@ const FIELDS: { key: string; label: string; type: "text" | "number" | "bool" | "
   { key: "transitions", label: "Transitions", type: "select", options: ["auto", "manual"],
     hint: "automatic = a transition on every cut at Render (your own picks win); manual = only the cuts you give one in the editor" },
   { key: "sub_style", label: "Subtitle style", type: "select", options: ["box", "strip", "dynamic"], hint: "strip covers burned-in captions (TDMB); dynamic = strip 2 or 3 lines tall following the source caption, cards fill it (HIH)" },
+  { key: "hide_source_subs", label: "Source videos have burned-in subtitles", type: "bool",
+    hint: "Render measures each episode and zooms from the top until those captions fall off the bottom. A taller caption zooms more; the framing does not jump inside an episode. Left off, the picture stays as it is, and an editor can still turn the zoom on for one episode." },
   { key: "output_dir", label: "Output folder", type: "text", hint: "inside the show folder; {N} = episode number" },
 ];
 

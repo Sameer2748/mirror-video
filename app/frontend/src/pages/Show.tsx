@@ -211,6 +211,7 @@ export default function ShowPage() {
         </table>
       )}
       <TransitionMode show={show} onSaved={setShow} />
+      <SourceSubsMode show={show} onSaved={setShow} />
       <NamesSheet show={show} />
       <FlagLimits show={show} onSaved={setShow} />
       <div className="footer-actions"><button className="ghost danger" onClick={remove}>Remove show</button></div>
@@ -306,6 +307,23 @@ function NamesSheet({ show }: { show: Show }) {
         <tbody>{n.names.map(([a, b], k) => <tr key={k}><td>{a}</td><td>{b}</td></tr>)}</tbody>
       </table>}
       {picking && <Picker start={show.folder} mode="file" onPick={(p) => { setPicking(false); choose(p); }} onClose={() => setPicking(false)} />}
+    </div>
+  );
+}
+
+// Burned-in captions on the source picture: Render zooms every episode of this show until they fall off the bottom.
+export function SourceSubsMode({ show, onSaved }: { show: Show; onSaved: (s: Show) => void }) {
+  const [err, setErr] = useState<string | null>(null);
+  const on = !!(show.profile || {}).hide_source_subs;
+  const set = (v: boolean) => api.patch<Show>(`/api/shows/${show.id}`, { profile: { hide_source_subs: v } }).then(onSaved).catch((e) => setErr(e.message));
+  return (
+    <div className="card" style={{ marginTop: 22 }}>
+      <h3 style={{ marginTop: 0 }}>Source subtitles</h3>
+      <ErrorBox error={err} />
+      <label className="radio-row"><input type="radio" checked={on} onChange={() => set(true)} />
+        <span><b>Source videos have burned-in subtitles</b><br /><span className="muted small-text">Every episode of this show, including a bulk sheet, is measured at Render. The picture zooms from the top just enough that those captions fall off the bottom. A taller caption on one episode zooms more than a short one on another. The framing does not jump inside an episode.</span></span></label>
+      <label className="radio-row"><input type="radio" checked={!on} onChange={() => set(false)} />
+        <span><b>Leave the source picture as it is</b><br /><span className="muted small-text">Render does not zoom. An editor can still turn Source subs: auto zoom on for one episode.</span></span></label>
     </div>
   );
 }

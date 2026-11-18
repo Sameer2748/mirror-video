@@ -2,10 +2,30 @@
 
 Each step: name, resource ('cpu' | 'gpu' | 'none'), needs (step names), and either a command (run as a
 subprocess with the pipeline python, cwd = the tools' scripts folder) or an internal function name."""
+import json
 import os
 from pathlib import Path
 from ..config import cfg
 from .. import presets, names as nm
+
+
+def render_subs_mode(prof, work):
+    """What `dubstitch render --subs` should do for this episode.
+
+    A show ticked "source videos have burned-in subtitles" zooms every episode.
+    An editor can turn the same zoom on for one episode of a show that was not ticked;
+    that choice is the small file hide_source_subs.json in the episode's work folder.
+    Anything else keeps the show's render_subs (normally "keep")."""
+    if prof.get("hide_source_subs"):
+        return "zoom"
+    marker = Path(work) / "hide_source_subs.json"
+    try:
+        if marker.is_file() and json.loads(marker.read_text(encoding="utf-8")).get("on"):
+            return "zoom"
+    except (OSError, ValueError):
+        pass
+    mode = prof.get("render_subs") or "keep"
+    return mode if mode in ("keep", "crop", "zoom") else "keep"
 
 
 def srt_as_script(srt, out):
@@ -156,7 +176,7 @@ def plan(show, episode, assets):
                        "--out", dyn_srt] + (["--font", cfg.font] if cfg.font else []), ["review", "captions"],
             label="Dynamic subtitles (cards fill a 2- or 3-line strip)")
         dub_sub = dyn_srt
-    add("render", [py, T("dubstitch.py"), "render", "--work", str(W), "--subs", prof.get("render_subs", "keep")],
+    add("render", [py, T("dubstitch.py"), "render", "--work", str(W), "--subs", render_subs_mode(prof, W)],
         ["review"], label="Render clips", duration=dur_dub)
     add("verify", [py, T("dubstitch.py"), "verify", "--work", str(W)], ["render"], label="Verify sync")
     clean = ctx["name_clean"]

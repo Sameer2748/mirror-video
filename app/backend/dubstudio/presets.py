@@ -21,7 +21,7 @@ BASE = {
     "dub_lang": "it", "src_lang": "en", "labels": "IT,US", "dub_label": "IT",
     "episode_offset": 0,             # source episode = dub episode + offset (MVS: German N = US N+2)
     "lip": True, "clauses": CLAUSE_WORDS, "group_size": GROUP_SIZE, "max_drift_ms": MAX_DRIFT_MS,
-    "transitions": False, "sub_style": "box", "render_subs": "keep", "ending": "auto",
+    "transitions": False, "sub_style": "box", "render_subs": "keep", "hide_source_subs": False, "ending": "auto",
     "translate_to": "en", "output_dir": "output/ep{N}",
     "file_prefix": "{SHOW}_EP{N}_{D}", "mapping_name": "{show}_ep{N}_{d}_{s}_mapping.xlsx",
     "flags": {"slow": 0.67, "slow_red": 0.5, "fast": 1.5, "fast_red": 2.0, "drift_ms": 500, "short_ms": 500, "blur": 0.25},

@@ -62,7 +62,7 @@ type Data = {
   timeline: Timeline; flags: Record<string, Flag[]>; counts: { red: number; yellow: number }; problems: string[];
   versions: Version[]; src_sentences: Sentence[]; dub_starts: number[]; lip_rows: number[]; subs: Subs; subs_edited: Record<Lang, boolean>;
   markers: Marker[]; proxy: Proxy; labels: string[]; sub_style: string; sub_styles: Partial<Record<Lang, SubStyle>>;
-  transitions: TransInfo;
+  transitions: TransInfo; hide_source_subs?: boolean; episode_hide_source_subs?: boolean;
   src_duration_ms: number | null; state: Record<string, string>; show: { id: number; code: string }; episode: { id: number; number: number; status: string };
 };
 type Snap = { clips: Clip[]; approved: string[]; subs: Subs; v2: Clip[] };
@@ -87,9 +87,17 @@ function applyMotion(c: Clip, zoom: number, pan_x: number, pan_y: number): Clip 
   out.pan_y = Math.round(clamp(pan_y, -1, 1) * 100) / 100;
   return out;
 }
-function paintMotion(el: HTMLVideoElement | null, clip: Clip | undefined, extra = 1) {
+function paintMotion(el: HTMLVideoElement | null, clip: Clip | undefined, extra = 1, hideZoom = 1) {
   if (!el) return;
   const z = Math.max(1, Math.min(Number(clip?.zoom) || 1, 8));
+  // Auto zoom to hide burned-in source subs: scale from the top so the bottom of the
+  // frame (where those subs sit) falls outside. A clip's own zoom still applies if it is larger.
+  if (hideZoom > 1.001) {
+    const scale = Math.max(z, hideZoom) * extra;
+    el.style.transformOrigin = "50% 0%";
+    el.style.transform = scale <= 1.001 ? "" : `scale(${scale})`;
+    return;
+  }
   const scale = z * extra;
   if (scale <= 1.001) { el.style.transform = ""; el.style.transformOrigin = ""; return; }
   const hasPan = clip?.pan_x != null || clip?.pan_y != null;
@@ -248,6 +256,9 @@ export default function Editor() {
   const [markIn, setMarkIn] = useState<number | null>(null);
   const [markOut, setMarkOut] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [hideSubs, setHideSubs] = useState<"off" | "zoom">("off");
+  const [hideZoom, setHideZoom] = useState(1);
+  const [hideBusy, setHideBusy] = useState(false);
   const [srcT, setSrcT] = useState(0);
   const [version, setVersion] = useState(0);
   const [saveState, setSaveState] = useState<"saved" | "editing" | "draft" | "saving">("saved");
@@ -320,6 +331,39 @@ export default function Editor() {
     } catch (e: any) { setErr(e.message); }
   }, [eid]);
   useEffect(() => { load(); }, [load]);
+
+  // A show ticked at creation, or this episode's own switch, starts the preview on the saved zoom.
+  useEffect(() => {
+    if (!data) return;
+    const showOn = !!data.hide_source_subs;
+    const epOn = !!data.episode_hide_source_subs;
+    const key = `${eid}:${showOn ? 1 : 0}:${epOn ? 1 : 0}`;
+    if (hideInit.current === key) return;
+    hideInit.current = key;
+    if (!showOn && !epOn) { setHideSubs("off"); setHideZoom(1); setHideBusy(false); return; }
+    const req = ++hideReq.current;
+    setHideSubs("zoom"); setHideBusy(true);
+    api.get<{ found: boolean; zoom: number; band_top: number | null; height: number }>(`/api/episodes/${eid}/source-sub-zoom`)
+      .then((r) => {
+        if (req !== hideReq.current) return;
+        setHideBusy(false);
+        if (!r.found || r.zoom <= 1.01) {
+          setHideZoom(1);
+          say(showOn
+            ? "This show zooms at Render. The preview could not measure a caption on this machine."
+            : "Auto zoom is on for this episode. Render measures the full source.");
+          return;
+        }
+        setHideZoom(r.zoom);
+      })
+      .catch(() => {
+        if (req !== hideReq.current) return;
+        setHideBusy(false); setHideZoom(1);
+        say(showOn
+          ? "This show zooms every episode at Render. The picture is not on this machine, so the preview stays as it is."
+          : "Auto zoom is saved for this episode. Render measures the full source.");
+      });
+  }, [data, eid]); // eslint-disable-line
 
   // ---- edits with undo ----
   const snap = (): Snap => ({ clips, approved, subs, v2 });
@@ -495,7 +539,10 @@ export default function Editor() {
   const byIdRef = useRef(byId); byIdRef.current = byId;
   const transRef = useRef<TransInfo | null>(null); transRef.current = data?.transitions || null;
   const fxRef = useRef<HTMLDivElement>(null);
+  const hideReq = useRef(0);
+  const hideInit = useRef("");
   const zoomRef = useRef(zoom); zoomRef.current = zoom;
+  const hideZoomRef = useRef(1); hideZoomRef.current = hideZoom;
 
   const placePlayhead = (t: number) => {
     if (playheadEl.current) playheadEl.current.style.transform = `translateX(${(t / 1000) * zoomRef.current}px)`;
@@ -579,7 +626,7 @@ export default function Editor() {
     const filt = !fx || solid ? "" : fx.st === "zoom_blur" ? `blur(${2 * w}px)` : fx.st === "glow" ? `brightness(${1 + 0.6 * w}) blur(${3 * w}px)`
       : fx.st === "light_leak" ? `brightness(${1 + 0.25 * w})` : `blur(${7 * w}px)`;
     V.style.filter = filt;
-    paintMotion(V, byIdRef.current.get(c.id!), fx && fx.st === "zoom_blur" ? 1 + 0.15 * w : 1);
+    paintMotion(V, byIdRef.current.get(c.id!), fx && fx.st === "zoom_blur" ? 1 + 0.15 * w : 1, hideZoomRef.current);
     paintMotion(S, undefined);
     if (fxRef.current) {
       fxRef.current.style.background = solid ? (fx!.st === "fade_black" ? "#000" : "#fff") : "";
@@ -687,7 +734,7 @@ export default function Editor() {
     else { A.currentTime = tRef.current / 1000; A.play().then(() => setPlaying(true)).catch((e) => say(`Cannot play: ${e.message}`, true)); }
   };
   useEffect(() => { if (data) setTimeout(() => showFrame(tRef.current, false), 300); }, [data]); // eslint-disable-line
-  useEffect(() => { if (!playing) showFrame(tRef.current, false); }, [clips, v2]); // eslint-disable-line
+  useEffect(() => { if (!playing) showFrame(tRef.current, false); }, [clips, v2, hideZoom]); // eslint-disable-line
 
   // ---- source monitor ----
   const srcVid = useRef<HTMLVideoElement>(null);
@@ -1162,6 +1209,42 @@ export default function Editor() {
           title="How cuts get transitions in this show (also on the show page)">
           <option value="auto">Transitions: auto</option>
           <option value="manual">Transitions: mine only</option>
+        </select>
+        <select className="trans-mode" value={data.hide_source_subs ? "zoom" : hideSubs} disabled={!!data.hide_source_subs}
+          title={data.hide_source_subs
+            ? "This show hides burned-in source subtitles on every episode. Render zooms from the top by the amount measured on that episode."
+            : "Zoom this episode's source picture from the top just enough that the burned-in subtitles fall off the bottom. Render uses the same zoom."}
+          onChange={async (e) => {
+            if (data.hide_source_subs) return;
+            const next = e.target.value === "zoom" ? "zoom" : "off";
+            const req = ++hideReq.current;
+            if (next === "off") {
+              setHideSubs("off"); setHideZoom(1); setHideBusy(false);
+              try { await api.post(`/api/episodes/${eid}/source-sub-zoom`, { on: false }); }
+              catch (err: any) { say(err.message, true); }
+              return;
+            }
+            setHideSubs("zoom"); setHideBusy(true);
+            try {
+              await api.post(`/api/episodes/${eid}/source-sub-zoom`, { on: true });
+              const r = await api.get<{ found: boolean; zoom: number; band_top: number | null; height: number }>(`/api/episodes/${eid}/source-sub-zoom`);
+              if (req !== hideReq.current) return;
+              setHideBusy(false);
+              if (!r.found || r.zoom <= 1.01) {
+                setHideZoom(1);
+                say("Auto zoom is on for this episode. No caption was measured here; Render measures the full source.");
+                return;
+              }
+              setHideZoom(r.zoom);
+              say(`Source subs hidden: zoom ${r.zoom.toFixed(2)}× (the caption starts ${r.band_top}px down a ${r.height}px frame). Render uses this.`);
+            } catch (err: any) {
+              if (req !== hideReq.current) return;
+              setHideBusy(false); setHideZoom(1);
+              say(err.message || "Auto zoom is saved. Render measures the full source.", true);
+            }
+          }}>
+          <option value="off">Source subs: show</option>
+          <option value="zoom">{hideBusy ? "Source subs: measuring…" : hideZoom > 1 ? `Source subs: auto zoom ${hideZoom.toFixed(2)}×` : "Source subs: auto zoom"}</option>
         </select>
         <button onClick={saveVersion} title="Save a version (⌘S)">Save</button>
         <button className="primary" onClick={render} disabled={busy || rendering || problems.length > 0}

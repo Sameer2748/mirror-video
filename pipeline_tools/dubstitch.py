@@ -1171,13 +1171,124 @@ def crop_filter(s):
             f"(iw-iw/{z:.4f})*{(px + 1) / 2:.4f}:(ih-ih/{z:.4f})*{(py + 1) / 2:.4f}")
 
 
-def seg_sig(s, nf, crop_h, W, H, FPS):
+def zoom_for_band(top_frac):
+    """Scale that puts a caption whose top is `top_frac` of the frame (0 at the top) just past the bottom.
+
+    Same rule as dubstudio/subzoom.py. One zoom for the whole episode, taken from the higher captions,
+    so a one-line card and a two-line card do not jump the framing."""
+    if top_frac <= 0 or top_frac >= 0.98:
+        return 1.0
+    keep = min(0.97, max(top_frac - 0.012, 0.42))
+    return round(min(2.4, max(1.0, 1.0 / keep)), 3)
+
+
+def _band_top_fraction(gray):
+    """Top of the bright block that sits on the bottom of this frame, as a fraction of height."""
+    h, w = gray.shape
+    if h < 8 or w < 8:
+        return None
+    frac = (gray > 185).mean(axis=1)
+    rows = frac > 0.035
+    y = h - 1
+    floor = int(h * 0.55)
+    while y > floor and not rows[y]:
+        y -= 1
+    if y <= floor:
+        return None
+    bottom = y
+    gap = 0
+    top = bottom
+    limit = int(h * 0.28)
+    while y > limit:
+        if rows[y]:
+            top = y
+            gap = 0
+        else:
+            gap += 1
+            if gap > 12:
+                break
+        y -= 1
+    if y <= limit and gap <= 12:
+        return None
+    if bottom - top < 2:
+        return None
+    return top / h
+
+
+def measure_source_sub_zoom(video, samples=12):
+    """How far to zoom `video` so its burned-in subtitles fall off the bottom. `found` is false when
+    no bottom caption shows up often enough to trust. The higher captions set the one zoom."""
+    import numpy as np
+    w, h, _ = probe_video(video)
+    dur = probe_duration_ms(video) / 1000.0
+    if w < 16 or h < 16 or dur <= 0:
+        return {"found": False, "zoom": 1.0, "height": h, "band_top": None, "samples": 0}
+    n = samples if dur >= 2 else max(2, int(dur * 4))
+    times = [dur * (i + 0.5) / n for i in range(n)]
+    sw = 480
+    sh = max(2, int(round(h * (sw / w))))
+    if sh % 2:
+        sh += 1
+    tops = []
+    for t in times:
+        raw = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", str(video), "-frames:v", "1",
+             "-vf", f"scale={sw}:{sh},format=gray", "-f", "rawvideo", "-"],
+            capture_output=True).stdout
+        if len(raw) < sw * sh:
+            continue
+        im = np.frombuffer(raw[: sw * sh], np.uint8).reshape(sh, sw)
+        top = _band_top_fraction(im)
+        if top is not None:
+            tops.append(top)
+    if len(tops) < 2:
+        return {"found": False, "zoom": 1.0, "height": h, "band_top": None, "samples": len(tops)}
+    tops.sort()
+    top_frac = tops[max(0, int(round(0.15 * (len(tops) - 1))))]
+    zoom = zoom_for_band(top_frac)
+    return {
+        "found": zoom > 1.01,
+        "zoom": zoom,
+        "height": h,
+        "band_top": int(round(top_frac * h)),
+        "samples": len(tops),
+    }
+
+
+def hide_frame(s, hide_z, W, H):
+    """Top-anchored zoom for a source segment, or None when this segment stays as it is.
+
+    Imported clips are left alone (they are not the source picture). A clip's own zoom still
+    applies when it is larger. Pan is ignored: a pan could slide the caption back into frame.
+    The crop keeps the same shape as the frame, scaled from the top centre, then scaled back
+    to WxH, so people are not stretched."""
+    try:
+        z = float(hide_z or 1)
+    except (TypeError, ValueError):
+        z = 1.0
+    if z <= 1.001 or not s or s.get("video"):
+        return None
+    try:
+        clip_z = float(s.get("zoom") or 1)
+    except (TypeError, ValueError):
+        clip_z = 1.0
+    z = max(z, min(max(clip_z, 1.0), 8.0))
+    return (f"crop=iw/{z:.4f}:ih/{z:.4f}:(iw-iw/{z:.4f})/2:0,scale={W}:{H}")
+
+
+def seg_sig(s, nf, crop_h, W, H, FPS, hide_z=None):
     """A rendered segment's cache key. A segment may name its own video ("video": an imported clip from the editor);
     the source video's segments keep the old key, so their cache stays valid."""
     sig = f"{s['us_start_ms']:.3f}|{s['us_end_ms']:.3f}|{nf}|{crop_h}|{W}x{H}@{FPS}"
     if s.get("zoom"): sig += f"|z{s['zoom']}"          # reused footage shown zoomed in (slow-clip B-roll)
     if s.get("pan_x") is not None: sig += f"|px{s['pan_x']}"
     if s.get("pan_y") is not None: sig += f"|py{s['pan_y']}"
+    try:
+        hz = float(hide_z or 0)
+    except (TypeError, ValueError):
+        hz = 0.0
+    if hz > 1.001 and not s.get("video"):
+        sig += f"|hz{hz:.3f}"                          # top-anchored hide zoom: do not reuse a bottom-anchored cache
     return sig + f"|{s['video']}" if s.get("video") else sig
 
 
@@ -1211,26 +1322,45 @@ def cmd_render(a):
     print(f"rendering {mname}: {len(segs)} segments")
     W, H, _src_fps = probe_video(cfg["src_video"]); FPS = out_fps(cfg)
     crop_h = None
+    hide_z = None
     if a.subs == "crop":
         cache = os.path.join(a.work, "crop.json")
         crop_h = load(a.work, "crop.json")["crop_h"] if os.path.exists(cache) else detect_subtitle_band(cfg["src_video"])
         save(a.work, "crop.json", dict(crop_h=crop_h)); print(f"subtitle crop: {crop_h}")
+    elif a.subs == "zoom":
+        # One measurement for the episode. A resumed render keeps the same zoom, so a
+        # one-line card and a two-line card do not change the framing halfway through.
+        zcache = os.path.join(a.work, "source_zoom.json")
+        measured = load(a.work, "source_zoom.json") if os.path.exists(zcache) else measure_source_sub_zoom(cfg["src_video"])
+        if not os.path.exists(zcache):
+            save(a.work, "source_zoom.json", measured)
+        hide_z = float(measured.get("zoom") or 1) if measured.get("found") else 1.0
+        if hide_z > 1.001:
+            print(f"source subs: zoom {hide_z:.3f}x from the top "
+                  f"(caption starts {measured.get('band_top')} px down a {measured.get('height')} px frame)")
+        else:
+            print("source subs: no burned-in caption block found, picture stays as it is")
+            hide_z = None
     d = os.path.join(a.work, "segs" + tag); os.makedirs(d, exist_ok=True)
     t_end = time.time() + a.max_seconds
     def job(i):
         s = segs[i]; out = os.path.join(d, f"{i:04d}.mp4")
         f0 = round(s["it_start_ms"] * FPS / 1000); f1 = round(s["it_end_ms"] * FPS / 1000); nf = max(f1 - f0, 1)
-        sig = seg_sig(s, nf, crop_h, W, H, FPS)
+        sig = seg_sig(s, nf, crop_h, W, H, FPS, hide_z)
         if time.time() > t_end:
             return
         if segment_mp4_ready(out, sig):
             return
         k = (nf / FPS) / max((s["us_end_ms"] - s["us_start_ms"]) / 1000, 0.04)
-        frame = (f"crop={W}:{crop_h}:0:0,pad={W}:{H}:0:0:black" if crop_h and not s.get("video") else
-                 f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2")
-        cf = crop_filter(s)
-        if cf:
-            frame = f"{cf},{frame}"
+        hf = hide_frame(s, hide_z, W, H)
+        if hf:
+            frame = hf
+        else:
+            frame = (f"crop={W}:{crop_h}:0:0,pad={W}:{H}:0:0:black" if crop_h and not s.get("video") else
+                     f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2")
+            cf = crop_filter(s)
+            if cf:
+                frame = f"{cf},{frame}"
         vf = f"setpts={k:.6f}*PTS,{frame},fps={FPS},tpad=stop_mode=clone:stop_duration=2"
         r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{s['us_start_ms'] / 1000:.3f}",
                             "-to", f"{s['us_end_ms'] / 1000:.3f}", "-i", s.get("video") or cfg["src_video"], "-vf", vf, "-frames:v", str(nf),
@@ -1251,7 +1381,7 @@ def cmd_render(a):
     def is_done(i):
         s = segs[i]; out = os.path.join(d, f"{i:04d}.mp4")
         nf = max(round(s["it_end_ms"] * FPS / 1000) - round(s["it_start_ms"] * FPS / 1000), 1)
-        return segment_mp4_ready(out, seg_sig(s, nf, crop_h, W, H, FPS))
+        return segment_mp4_ready(out, seg_sig(s, nf, crop_h, W, H, FPS, hide_z))
     done = sum(is_done(i) for i in range(len(segs)))
     print(f"rendered {done}/{len(segs)} segments")
     if done < len(segs):
@@ -1268,7 +1398,9 @@ def cmd_render(a):
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-i", cfg["dub_audio"], "-map", "0:v", "-map", "1:a",
                     "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", a.out], check=True)
-    cfg["video_out"] = os.path.abspath(a.out); cfg["video_manifest"] = mname; save(a.work, "config.json", cfg)
+    cfg["video_out"] = os.path.abspath(a.out); cfg["video_manifest"] = mname
+    cfg["source_sub_zoom"] = hide_z if hide_z and hide_z > 1.001 else None
+    save(a.work, "config.json", cfg)
     print(f"saved {a.out}: video {probe_duration_ms(silent) / 1000:.3f}s, dub audio {probe_duration_ms(cfg['dub_audio']) / 1000:.3f}s")
 
 # ---------------------------------------------------------------------------------
@@ -1283,14 +1415,25 @@ def cmd_verify(a):
     mname, M = active_manifest(a.work, cfg, cfg.get("video_manifest")); segs = M["segments"]
     print(f"checking {final} against {mname} ({len(segs)} segments)")
     FPS = out_fps(cfg)
+    try:
+        hide_z = float(cfg.get("source_sub_zoom") or 0) or None
+    except (TypeError, ValueError):
+        hide_z = None
+    if hide_z is not None and hide_z <= 1.001:
+        hide_z = None
     vd, ad = probe_duration_ms(final), probe_duration_ms(cfg["dub_audio"])
     print(f"final video {vd / 1000:.3f}s vs dub audio {ad / 1000:.3f}s (diff {abs(vd - ad)}ms)")
     ok_dur = abs(vd - ad) <= 2 * 1000 / FPS + 50
     def grab(path, t, seg=None):
-        cf = crop_filter(seg) if seg else ""
-        zf = (cf + ",") if cf else ""
+        hf = hide_frame(seg, hide_z, 64, 64) if seg is not None else None
+        if hf:
+            vf = hf + ",format=gray"
+        else:
+            cf = crop_filter(seg) if seg else ""
+            zf = (cf + ",") if cf else ""
+            vf = zf + "scale=64:64,format=gray"
         raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(t, 0):.3f}", "-i", path, "-frames:v", "1",
-                              "-vf", zf + "scale=64:64,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+                              "-vf", vf, "-f", "rawvideo", "-"], capture_output=True).stdout
         return np.frombuffer(raw, np.uint8).astype(float) if len(raw) == 4096 else None
     def corr(x, y):
         return float(np.corrcoef(x, y)[0, 1]) if x is not None and y is not None and x.std() > 0 and y.std() > 0 else 1.0
@@ -1791,7 +1934,8 @@ def cmd_bookends(a):
 #     little past its end in the source, at its own speed) with the incoming clip (starting a little earlier). No overlap
 #     is added, so the length and the sync with the dub voice never change. Resumable in chunks.
 # ---------------------------------------------------------------------------------
-TRANSITION_HALF = dict(light_leak=0.30, blur_dissolve=0.30, zoom_blur=0.25, glow=0.25)   # seconds on each side of the switch
+TRANSITION_HALF = dict(light_leak=0.30, blur_dissolve=0.30, zoom_blur=0.25, glow=0.25,
+                       fade_black=0.40, fade_white=0.40)   # seconds on each side of the switch
 
 def _ss(x):
     x = min(max(x, 0.0), 1.0); return x * x * (3 - 2 * x)
@@ -1835,6 +1979,16 @@ def transition_frame(style, a, b, x, w, p):
             out = acc / 8
     elif style == "glow":
         return glow_frame(a if x < 0 else b, w)
+    elif style in ("fade_black", "fade_white"):             # all the way to a solid colour, held, then the next clip
+        color = np.zeros_like(a) if style == "fade_black" else np.full_like(a, 255.0)
+        if p < 0.42:
+            t = p / 0.42
+            out = a * (1 - t) + color * t
+        elif p > 0.58:
+            t = (p - 0.58) / 0.42
+            out = color * (1 - t) + b * t
+        else:
+            out = color
     else:
         raise SystemExit(f"unknown transition {style}")
     return np.clip(out, 0, 255).astype(np.uint8)
@@ -3097,7 +3251,7 @@ def main():
     x = sp.add_parser("render"); x.add_argument("--work", required=True)
     x.add_argument("--manifest", help="edit list to render (default: the active one: manifest_groups.json after `groups`)")
     x.add_argument("--out", help="the rendered video WITHOUT subtitles (default: <work>/video_nosubs.mp4)")
-    x.add_argument("--subs", choices=["keep", "crop"], default="keep"); x.add_argument("--workers", type=int, default=4)
+    x.add_argument("--subs", choices=["keep", "crop", "zoom"], default="keep"); x.add_argument("--workers", type=int, default=4)
     x.add_argument("--max-seconds", type=int, default=100000)
     x = sp.add_parser("verify"); x.add_argument("--work", required=True); x.add_argument("--workers", type=int, default=4)
     x = sp.add_parser("subs"); x.add_argument("--work", required=True); x.add_argument("--out", required=True, help="the subtitled final video")
@@ -3136,7 +3290,7 @@ def main():
         x.add_argument("--out", required=True, help="the clean master WITH transitions (or a test clip with --until)")
         x.add_argument("--in", dest="input", help="default: the clean master from `bookends`")
         x.add_argument("--styles", default=dflt, help="comma list, used in random order, never twice in a row: "
-                       "light_leak, blur_dissolve, zoom_blur, glow")
+                       "light_leak, blur_dissolve, zoom_blur, glow, fade_black, fade_white")
         x.add_argument("--seed", type=int, default=24, help="random order seed (same seed = same order)")
         x.add_argument("--length", type=float, default=1.0, help="scale every transition's length (1.0 = 0.5-0.6 s)")
         x.add_argument("--min-jump", type=float, default=50, help="a source jump bigger than this (ms) counts as a clip switch")

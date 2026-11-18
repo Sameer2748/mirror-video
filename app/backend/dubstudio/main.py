@@ -9,7 +9,7 @@ from .config import cfg, ROOT
 from .db import DB, now
 from .events import bus
 from .runner import Runner
-from . import auth, envfile, gen, imports, linksheet, presets, scan, deliver, names as nm, settings as stg, storage, timeline as tlm
+from . import auth, envfile, gen, imports, linksheet, presets, scan, deliver, names as nm, settings as stg, storage, subzoom, timeline as tlm
 from .pipeline import steps as pipeline_steps
 from .pipeline import decisions as dec
 
@@ -1561,6 +1561,8 @@ def get_timeline(eid: int, pipeline: bool = False):
         **_subs(eid, ctx), "markers": _markers(eid), "proxy": tlm.proxy_state(work, _src_duration_s(eid)),
         "labels": (show["profile"].get("labels") or "DUB,SRC").split(","),
         "sub_style": show["profile"].get("sub_style", "box"), "sub_styles": show["profile"].get("sub_styles") or {},
+        "hide_source_subs": bool(show["profile"].get("hide_source_subs")),
+        "episode_hide_source_subs": _episode_hides_source_subs(work),
         "transitions": _transitions_info(show), "cuts": tlm.cuts(tl),
         "src_duration_ms": _src_duration_ms(eid), "state": _review_state(eid),
         "show": {"id": show["id"], "code": show["code"]}, "episode": {"id": ep["id"], "number": ep["number"], "status": ep["status"]},
@@ -2030,6 +2032,65 @@ def proxy_make(eid: int, force: bool = False):
         tlm.clear_thumb_fails(work)
     threading.Thread(target=go, daemon=True).start()
     return tlm.proxy_state(work, dur)
+
+
+def _hide_marker(work):
+    return Path(work) / "hide_source_subs.json"
+
+
+def _episode_hides_source_subs(work):
+    """The editor turned auto zoom on for this one episode. The show tick is separate."""
+    p = _hide_marker(work)
+    if not p.is_file():
+        return False
+    try:
+        return bool(json.loads(p.read_text(encoding="utf-8")).get("on"))
+    except (OSError, ValueError):
+        return False
+
+
+def _source_video_here(eid):
+    """The source file on this machine, original first, then the 540p preview. None when neither is here."""
+    e = _get("episodes", eid)
+    a = db().one("SELECT path FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    if a and Path(a["path"]).exists():
+        return a["path"]
+    p = tlm.proxy_path(e["work_dir"])
+    return str(p) if p else None
+
+
+@app.get("/api/episodes/{eid}/source-sub-zoom")
+def source_sub_zoom(eid: int):
+    """How far to zoom this episode's source so the burned-in subtitles fall off the bottom.
+
+    Measured from the picture, so a taller caption gets a larger zoom. The file has to be
+    on this machine (the original, or the 540p preview). Render measures the full source
+    again on the worker, so a missing preview here does not decide the episode."""
+    path = _source_video_here(eid)
+    if not path:
+        raise HTTPException(404, "the source video is not on this machine, so the subtitle height cannot be measured here")
+    return subzoom.measure(path)
+
+
+@app.post("/api/episodes/{eid}/source-sub-zoom")
+def set_source_sub_zoom(eid: int, body: dict = Body(...)):
+    """Remember the editor's auto-zoom choice for this episode. Render reads it.
+
+    A show that already hides source subtitles stays on: the editor cannot turn that off
+    for one episode. The choice is a small file in the work folder, so the next Render
+    (including one already planned) picks it up."""
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    show_on = bool((show.get("profile") or {}).get("hide_source_subs"))
+    on = True if show_on else bool(body.get("on"))
+    work = Path(e["work_dir"])
+    work.mkdir(parents=True, exist_ok=True)
+    marker = _hide_marker(work)
+    if on and not show_on:
+        marker.write_text(json.dumps({"on": True}), encoding="utf-8")
+    elif not show_on:
+        marker.unlink(missing_ok=True)
+    return {"on": on or show_on, "show": show_on}
 
 
 PLAY = {"Cache-Control": "private, max-age=3600"}
