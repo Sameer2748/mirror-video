@@ -716,7 +716,13 @@ def cmd_analyze(a):
         wt = os.path.join(a.work, f"sentences_{side}.json")       # Step 1A: exact times from the audio, if made
         if os.path.exists(wt) and not a.no_word_times:
             WT = load(a.work, f"sentences_{side}.json")
-            if os.path.abspath(WT["srt"]) == os.path.abspath(path) and not WT.get("first"):
+            stored = WT.get("srt") or ""
+            # Cloud jobs remap /app/output/.../work to /work, so abspath of the saved SRT will not match.
+            # Claude sentence rebuilds must still win: do not re-glue them with regex.
+            same = (bool(stored) and os.path.abspath(stored) == os.path.abspath(path))
+            same = same or (os.path.basename(stored) == os.path.basename(path))
+            same = same or str(WT.get("how") or "").startswith("claude")
+            if same and not WT.get("first"):
                 final = [Cue(i, r["start_ms"], r["end_ms"], r["text"]) for i, r in enumerate(WT["sentences"]) if r["end_ms"] > r["start_ms"]]
                 dropped, retimed = [], []
                 say(f"{side.upper()}: using word-timed sentences from {os.path.basename(wt)} ({len(final)} sentences, times from the audio)")
