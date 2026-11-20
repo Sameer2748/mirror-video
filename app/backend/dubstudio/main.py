@@ -1626,6 +1626,20 @@ def timeline_auto(eid: int):
     return {"clips": clips}
 
 
+@app.post("/api/episodes/{eid}/rerun-from/{step}")
+def rerun_from_step(eid: int, step: str):
+    """Re-run this step and every step that depends on it (latest run). Used after a groups/lipsync code change."""
+    _get("episodes", eid)
+    allowed = {"lipsync", "groups", "library", "scene_edit", "review", "render"}
+    if step not in allowed:
+        raise HTTPException(400, f"cannot rerun from {step}")
+    try:
+        steps = runner().rerun_from(eid, step)
+    except ValueError as ex:
+        raise HTTPException(409, str(ex))
+    return {"steps": steps}
+
+
 @app.post("/api/episodes/{eid}/scene/redo")
 def scene_redo(eid: int):
     """Redo the scene edit with fresh Claude answers: the cached answers move to W/scene/_old/<time>/ (nothing is
