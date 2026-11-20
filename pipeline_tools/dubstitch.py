@@ -714,19 +714,16 @@ def cmd_analyze(a):
         used_wt = False
         if os.path.exists(wt) and not a.no_word_times:
             WT = load(a.work, f"sentences_{side}.json")
-            stored = WT.get("srt") or ""
-            # Cloud jobs remap /app/output/.../work to /work, so abspath of the saved SRT will not match.
-            # Claude sentence rebuilds must still win: do not re-glue them with regex.
-            same = (bool(stored) and os.path.abspath(stored) == os.path.abspath(path))
-            same = same or (bool(stored) and os.path.basename(stored) == os.path.basename(path))
-            same = same or str(WT.get("how") or "").startswith("claude")
-            if same and not WT.get("first"):
+            # This work folder's sentences_*.json is this episode. Do not compare SRT abspaths:
+            # cloud remaps /app/output/.../work to /work, and that used to drop Claude cards and
+            # re-glue them with regex. `first` is only a test-range words pass.
+            if WT.get("sentences") and not WT.get("first"):
                 final = [Cue(i, r["start_ms"], r["end_ms"], r["text"]) for i, r in enumerate(WT["sentences"]) if r["end_ms"] > r["start_ms"]]
                 dropped, retimed, res = [], [], final
                 used_wt = True
                 say(f"{side.upper()}: using word-timed sentences from {os.path.basename(wt)} ({len(final)} sentences, times from the audio)")
             else:
-                say(f"{side.upper()}: {os.path.basename(wt)} is for another SRT or only a test range -- not used")
+                say(f"{side.upper()}: {os.path.basename(wt)} is a test range or empty -- not used")
         if not used_wt:
             res = resolve_overlaps(resegment_to_sentences(raw))
             kept, dropped = drop_single_word_zero_duration(res)

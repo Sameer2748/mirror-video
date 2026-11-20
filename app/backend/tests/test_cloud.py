@@ -529,6 +529,19 @@ def test_mksrt_job_ships_this_boxs_cleaner_not_the_baked_image(tmp_path):
     assert out[2:] == ["--work", str(work), "--script", str(work / "input" / "ep.docx")]
 
 
+def test_staged_dubstitch_keeps_work_folder_sentence_json_without_srt_path_match(tmp_path):
+    """EP71 live: worker /work vs /app/output/.../work made analyze ignore Claude cards and regex-glue them."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/dubstudio/scripts/dubstitch.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "analyze", "--work", str(work)]
+    out = cloud.point_dubstitch_at_staged(cmd, work)
+    text = Path(out[1]).read_text()
+    assert "Do not compare SRT abspaths" in text
+    assert 'WT.get("sentences") and not WT.get("first")' in text
+    assert "os.path.abspath(WT[\"srt\"]) == os.path.abspath(path)" not in text
+
+
 def test_render_tail_job_ships_this_boxs_dubstitch_not_the_baked_image(tmp_path):
     """The rented dubstitch concatenates leftover .ok files when the mp4s never arrived. The job takes THIS copy."""
     work = tmp_path / "W"; work.mkdir()
