@@ -11,6 +11,8 @@ BACKEND = Path(__file__).resolve().parents[1]
 SCRIPTS = (
     BACKEND / "dubstudio" / "pipeline" / "library.py",
     BACKEND / "dubstudio" / "pipeline" / "sceneedit.py",
+    BACKEND / "dubstudio" / "pipeline" / "slowfix_edit.py",
+    BACKEND / "dubstudio" / "pipeline" / "claude_sentences.py",
 )
 
 

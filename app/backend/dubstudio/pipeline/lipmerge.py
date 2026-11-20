@@ -94,16 +94,52 @@ def merge_pair(d, m, label=""):
     return d, note
 
 
+def list_range_files(nets):
+    """Every range_S_E.json on disk, in time order. The cloud ranges.json can omit windows
+    that were actually scanned (EP70/71: only 4 of ~36 pieces listed)."""
+    pieces = []
+    if not os.path.isdir(nets):
+        return pieces
+    for fn in os.listdir(nets):
+        if not (fn.startswith("range_") and fn.endswith(".json")):
+            continue
+        try:
+            a, b = fn[6:-5].split("_")
+            pieces.append([float(a), float(b)])
+        except ValueError:
+            continue
+    pieces.sort()
+    return pieces
+
+
+def rebuild_ranges(nets, duration=None):
+    """Write ranges.json from the files that exist (optionally drop windows at/after video end)."""
+    pieces = list_range_files(nets)
+    if duration is not None:
+        pieces = [[s, e] for s, e in pieces if s < float(duration)]
+    os.makedirs(nets, exist_ok=True)
+    json.dump(pieces, open(os.path.join(nets, "ranges.json"), "w"))
+    return pieces
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--nets", required=True)
     p.add_argument("--mesh", required=True)
     p.add_argument("--out", required=True)
     p.add_argument("--ranges", help="default: NETS_DIR/ranges.json")
+    p.add_argument("--duration", type=float, help="drop windows that start at or after this (video length, s)")
     a = p.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
     missing = []
-    ranges = json.load(open(a.ranges or os.path.join(a.nets, "ranges.json")))
+    listed = []
+    rp = a.ranges or os.path.join(a.nets, "ranges.json")
+    if os.path.isfile(rp):
+        listed = json.load(open(rp))
+    disk = rebuild_ranges(a.nets, a.duration)
+    if len(disk) > len(listed):
+        print(f"ranges.json had {len(listed)} windows; using {len(disk)} files on disk", flush=True)
+    ranges = disk or listed
     for s, e in ranges:
         label = f"{s:g}-{e:g}"
         nf = os.path.join(a.nets, f"range_{s:g}_{e:g}.json")

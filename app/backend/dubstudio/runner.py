@@ -673,8 +673,12 @@ class Runner:
         prm = j["params"]
         if j["step"] in ("groups", "lipsync"):
             # Clash trim + last-piece lip coverage live in our dubstitch.py. Never the Mac Desktop path on Render.
+            # Tests point DUBSTUDIO_TOOLS at a fake dubstitch.py — keep that, do not swap in the real script.
             script = self._app_pipeline_script("dubstitch.py")
-            if script:
+            tools_script = cfg.scripts / "dubstitch.py" if cfg.scripts else None
+            tools_s = str(tools_script or "")
+            desktop = "france-team" in tools_s or "/Desktop/" in tools_s
+            if script and (desktop or not (tools_script and tools_script.is_file())):
                 force_local = True
                 cmd = self._use_app_script(cmd or prm["cmd"], "dubstitch.py", script)
         if j["step"] == "lip_merge":
@@ -1544,29 +1548,45 @@ class Runner:
 
     # ---------- the scene edit (docs/06; the same as run_episode.sh) ----------
     def _fn_scene_edit(self, j):
-        """Copy the inputs into W/scene/ (the automatic edit: manifest_groups.auto.json if kept, else manifest_groups.json),
-        then sceneedit.py over the whole episode, 8 Claude calls at a time. A retry reuses Claude's cached answers."""
-        ctx = j["params"]["ctx"]; W = Path(ctx["W"]); SW = Path(ctx["scene_dir"]); LIB = ctx["library_dir"]
-        SW.mkdir(parents=True, exist_ok=True)
-        for f in ("sentences_dub.json", "sentences_src.json", "lipsync.json"):
-            shutil.copy(W / f, SW / f)
-        auto = W / "manifest_groups.auto.json"
-        src = auto if auto.exists() else W / "manifest_groups.json"
-        shutil.copy(src, SW / "manifest_groups.json")
-        tot = ctx.get("scene_until_s") or json.load(open(src))["total_ms"] / 1000     # a test window (e.g. 5 min) or all
-        PL = cfg.scene_dir
-        self._run_cmd(j, ["{py}", str(PL / "sceneedit.py"), str(SW), str(LIB), "0", str(tot), str(SW / "scene_manifest.json"),
-                          "--parallel", str(ctx.get("scene_parallel") or 8)],
-                      force_local=True)   # this Mac has the empty-reply cap; the rented image still retried $0.32 calls
+        """EP69-71 local scene edit: keep the grouping cut, Opus only fixes slow leftover units with ranked B-roll."""
+        ctx = j["params"]["ctx"]; W = Path(ctx["W"]); LIB = ctx["library_dir"]
+        g = W / "manifest_groups.json"
+        keep = W / "manifest_groups.grouping.json"
+        if g.exists() and not keep.exists():
+            shutil.copy(g, keep)
+        if not (W / "manifest_groups.auto.json").exists() and g.exists():
+            shutil.copy(g, W / "manifest_groups.auto.json")
+        from . import config as config_mod
+        PL = config_mod.cfg.scene_dir
+        cmd = ["{py}", str(PL / "slowfix_edit.py"), str(W), str(LIB)]
+        until = ctx.get("scene_until_s")
+        env_extra = {}
+        if until:
+            env_extra["SLOWFIX_UNTIL"] = str(until)
+        if env_extra:
+            old = os.environ.get("SLOWFIX_UNTIL")
+            os.environ["SLOWFIX_UNTIL"] = env_extra["SLOWFIX_UNTIL"]
+            try:
+                self._run_cmd(j, cmd, force_local=True)
+            finally:
+                if old is None:
+                    os.environ.pop("SLOWFIX_UNTIL", None)
+                else:
+                    os.environ["SLOWFIX_UNTIL"] = old
+        else:
+            self._run_cmd(j, cmd, force_local=True)
 
     @staticmethod
     def use_scene(W):
         """Keep the automatic edit as manifest_groups.auto.json (once) and write the scene edit as manifest_groups.json,
-        its last piece stretched to the end of the dub (run_episode.sh's use_scene, the same Python). -> pieces"""
+        its last piece stretched to the end of the dub. Prefers scene_slowfix (EP69-71) over sceneedit.py."""
         W = str(W)
         if not os.path.exists(f"{W}/manifest_groups.auto.json"):
             shutil.copy(f"{W}/manifest_groups.json", f"{W}/manifest_groups.auto.json")
-        a = json.load(open(f"{W}/manifest_groups.auto.json")); s = json.load(open(f"{W}/scene/scene_manifest.json"))
+        slow = f"{W}/scene_slowfix/manifest_slowfix.json"
+        scene = f"{W}/scene/scene_manifest.json"
+        src_scene = slow if os.path.exists(slow) else scene
+        a = json.load(open(f"{W}/manifest_groups.auto.json")); s = json.load(open(src_scene))
         # Claude may leave a hole or a placeholder with no footage. If matching already had a clip there, use it
         # (TAB EP11/12: 26–32 s black after a "placeholder" piece). Matching-not-found stays a hole.
         from . import timeline as tlm
@@ -1608,7 +1628,16 @@ class Runner:
         ep = self.db.one("SELECT * FROM episodes WHERE id=?", (j["episode_id"],))
         show = self.db.one("SELECT * FROM shows WHERE id=?", (ep["show_id"],))
         cmd, out = self._scene_sheet_argv(j, show, ep)
-        self._run_cmd(j, cmd)
+        slow_xlsx = W / "scene_slowfix" / "scene_edit.xlsx"
+        if slow_xlsx.is_file():
+            Path(out).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(slow_xlsx, out)
+            Path(j["log_path"]).parent.mkdir(parents=True, exist_ok=True)
+            with open(j["log_path"], "a", encoding="utf-8") as f:
+                f.write(f"copied {slow_xlsx} -> {out}\n")
+            self._set(j, status="done", progress=1, finished=now(), message=f"scene-edit sheet {out}")
+        else:
+            self._run_cmd(j, cmd)
         cp = W / "config.json"; c = json.load(open(cp)) if cp.exists() else {}
         c["groups_review"] = out                          # `check` looks for the review sheet here
         json.dump(c, open(cp, "w"), indent=1)

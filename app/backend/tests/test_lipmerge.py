@@ -1,4 +1,5 @@
 """lipmerge: 1-frame drift and last-piece EOF gaps are trimmed; an empty half is filled silent."""
+import json
 import sys
 from pathlib import Path
 
@@ -78,6 +79,17 @@ def test_both_halves_empty_use_the_window_length():
     assert out["scores"] == [-9.0] * 375
     assert out["mouth"] == [0.0] * 375
     assert "both halves empty" in note
+
+
+def test_rebuild_ranges_uses_every_file_on_disk(tmp_path):
+    from lipmerge import rebuild_ranges
+    nets = tmp_path / "nets"; nets.mkdir()
+    (nets / "ranges.json").write_text("[[0, 15], [15, 30]]")
+    for s, e in ((0, 15), (15, 30), (30, 45), (45, 60)):
+        (nets / f"range_{s:g}_{e:g}.json").write_text("{}")
+    got = rebuild_ranges(str(nets))
+    assert got == [[0, 15], [15, 30], [30, 45], [45, 60]]
+    assert json.loads((nets / "ranges.json").read_text()) == got
 
 
 def test_lip_merge_uses_the_app_script_not_the_rented_one():

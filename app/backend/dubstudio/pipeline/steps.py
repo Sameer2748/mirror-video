@@ -109,15 +109,19 @@ def plan(show, episode, assets):
                en_srt_burn=str(ed_en) if ed_en.exists() else ctx["name_en_srt"])
     cw, cl = presets.clause_mode(prof)                 # whole sentences, every show (owner, 2026-10-20)
     C = str(cw); CL = ["--clause-long", str(cl)] if cw and cl else []
+    PL = cfg.scene_dir
     add("words_src", [py, T("dubstitch.py"), "words", "--work", str(W), "--side", "src", "--srt", src_match, "--media",
                       assets["src_video"], "--lang", sl, "--models", M, "--clauses", C] + CL, [need_s],
         label=f"{S_lab} sentence times", duration=dur_src)
     add("words_dub", [py, T("dubstitch.py"), "words", "--work", str(W), "--side", "dub", "--srt", dub_match, "--media",
                       assets["dub_audio"], "--lang", dl, "--models", M, "--clauses", C] + CL, [need_d],
         label=f"{D} sentence times", duration=dur_dub)
+    add("sentences_src", [py, str(PL / "claude_sentences.py"), "--work", str(W), "--out-json",
+                          str(W / "sentences_src.json"), "--out-srt", src_match], ["words_src"], ai=True,
+        label="Source sentences (Sonnet from words)")
     add("analyze", [py, T("dubstitch.py"), "analyze", "--work", str(W), "--dub-srt", dub_match, "--dub-audio",
                     assets["dub_audio"], "--src-srt", src_match, "--src-video", assets["src_video"], "--models", M,
-                    "--clauses", C] + CL, ["words_src", "words_dub"], label="Automatic matching")
+                    "--clauses", C] + CL, ["words_src", "words_dub", "sentences_src"], label="Automatic matching")
     add("merged", fn="merged", needs=["analyze"], resource="none", label="Reading view (merged.txt)")
     add("decisions", fn="decisions_gate", needs=["merged"], resource="none", label="Check matching (decisions)")
     # The cut visit is one rented machine for the sheet through the shot library, and it also runs the
@@ -149,19 +153,20 @@ def plan(show, episode, assets):
         g_needs = ["lipsync"]
     # Step 4A: "7 with lip scan, 8 without" (skill show profile); the lip scan runs for every show, so mode 1, size 7
     add("groups", [py, T("dubstitch.py"), "groups", "--work", str(W), "--size", str(presets.GROUP_SIZE),
-                   "--max-drift", str(presets.MAX_DRIFT_MS), "--trim-fast", str(presets.FAST_THRESHOLD),
-                   "--trim-to", str(presets.FAST_TARGET)], g_needs, label="Groups")
-    # Step 4C, the scene edit (skill v21, docs/06; every show, owner 2026-10-30): the same commands, in the same order,
-    # as adaptation-tool/scripts/run_episode.sh. It replaces fastfix (the scene edit trims fast lines itself).
-    PL = cfg.scene_dir; LIB = W / "broll_library"
+                   "--max-drift", str(presets.MAX_DRIFT_MS)], g_needs, label="Groups")
+    # Step 4C as the EP69-71 local run: library + face map, Opus slow-only scene edit, then fast-trim
+    # (two cases, from last). Groups do not trim-fast — that cut happens after the scene edit.
+    LIB = W / "broll_library"
     add("library", [py, str(PL / "library.py"), str(W), str(LIB)], ["groups"], ai=True,
         label="Shot library (Claude labels every shot)")
     add("facemap", ["{fpy}", T("facemap.py"), "--video", assets["src_video"], "--library", str(LIB / "broll_library.json"),
                     "--lips", str(W / "lips_nets"), "--app", str(Path(__file__).resolve().parents[2])], ["library", "lip_gpu"], resource="gpu",
         ai=True, label="Face map (who is on screen, who talks)", duration=dur_src)
     add("scene_edit", fn="scene_edit", needs=["facemap"], resource="none", ai=True,
-        label="Scene edit (Claude, B-roll for slow lines)")
+        label="Scene edit (Opus, slow clips + ranked B-roll)")
     add("use_scene", fn="use_scene", needs=["scene_edit"], resource="none", label="Use the scene edit")
+    add("fast_trim", [py, str(PL / "fast_trim.py"), str(W)], ["use_scene"],
+        label="Fast trim (over 1.25x, from last)")
     ctx.update(scene_dir=str(W / "scene"), library_dir=str(LIB), scene_parallel=8)
     # a test window: the scene edit (the expensive Claude step) only cuts the first N seconds. The profile's
     # `scene_until_s`, else DUBSTUDIO_SCENE_SECONDS. Empty = the whole episode, which is what a real run does.
@@ -169,7 +174,7 @@ def plan(show, episode, assets):
     if until:
         ctx["scene_until_s"] = float(until)
     # the editor's stop: the episode opens as a timeline; render starts when the editor presses Render
-    add("review", fn="review_gate", needs=["use_scene"] if dynamic else ["use_scene", "translate"], resource="none",
+    add("review", fn="review_gate", needs=["fast_trim"] if dynamic else ["fast_trim", "translate"], resource="none",
         label="Review & edit (editor)")
     if dynamic:   # the cards follow the FINAL edit list (after the editor), so they are made after review
         add("dynsrt", [py, T("dubstitch.py"), "dynsrt", "--work", str(W), "--words", str(dub_sub_orig)[:-4] + "_words.json",
@@ -188,7 +193,8 @@ def plan(show, episode, assets):
         ["verify"], label="Opening + ending")
     add("trans_plan", [py, str(PL / "scene_transitions.py"), str(W), str(LIB / "broll_library.json")], ["bookends"],
         fn="trans_plan", label="Transition plan")
-    add("transitions", [py, T("dubstitch.py"), "transitions", "--work", str(W), "--out", clean, "--plan", str(tplan)],
+    add("transitions", [py, T("dubstitch.py"), "transitions", "--work", str(W), "--out", clean, "--plan", str(tplan),
+                    "--styles", "fade_black,fade_white,light_leak,blur_dissolve,zoom_blur", "--seed", "24"],
         ["trans_plan"], label="Transitions", duration=dur_dub)
     last = "transitions"
     font = ["--font", cfg.font] if cfg.font else []

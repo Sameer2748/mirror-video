@@ -120,6 +120,22 @@ def main():
     left = 0
     if a.ranges:
         ranges = json.load(open(a.ranges))
+        nets = os.path.dirname(os.path.abspath(a.ranges))
+        extra = []
+        if os.path.isdir(nets):
+            for fn in os.listdir(nets):
+                if not (fn.startswith("range_") and fn.endswith(".json")):
+                    continue
+                try:
+                    x, y = fn[6:-5].split("_")
+                    extra.append([float(x), float(y)])
+                except ValueError:
+                    continue
+            extra.sort()
+        if len(extra) > len(ranges):
+            print(f"ranges.json had {len(ranges)} windows; mesh will scan {len(extra)} files on disk", flush=True)
+            ranges = extra
+            json.dump(ranges, open(a.ranges, "w"))
     else:
         import lipgpu
         L = lipgpu.video_length(a.video)

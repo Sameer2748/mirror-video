@@ -12,9 +12,7 @@ SUB_WORDS = 7             # burned-in subtitle rows: at most 7 words ...
 SUB_SECONDS = 4           # ... and 4 s
 FAST_THRESHOLD = 1.25     # no clip plays faster than this (owner, 2026-10-22) ...
 FAST_TARGET = 1.2         # ... a faster clip is trimmed to about this speed
-# Step 4C, the scene edit (shot library, face map, Claude's scene edit with B-roll for slow lines, transition plan,
-# scene-edit sheet; skill v21, docs/06): mandatory for every show (owner, 2026-10-30). It trims fast lines itself, so
-# the older `fastfix` step does not run with it.
+# Step 4C as the EP69-71 local run: Opus slow-only scene edit, then fast_trim (no groups --trim-fast).
 SCENE_EDIT = True
 
 BASE = {
@@ -39,6 +37,7 @@ PRESETS = {
     # TGS: German dub of the US show; the US video has burned-in captions -> the white strip (as the owner's ep34 tests)
     "TGS": dict(BASE, name="TGS (German dub vs US)", labels="DE,US", dub_label="DE", dub_lang="de", src_lang="en",
                 sub_style="strip"),
+    "IMTS": dict(BASE, name="IMTS (German dub vs US)", labels="DE,US", dub_label="DE", dub_lang="de", src_lang="en"),
     "NEW": dict(BASE, name="New show"),
 }
 

@@ -49,15 +49,24 @@ def test_full_run_with_gate_resume_and_outputs(env):
     steps = [j["step"] for j in r["jobs"]]
     assert steps[:4] == ["fetch", "ingest", "mksrt_dub", "mksrt_src"] and "lip_gpu" in steps and "fastfix" not in steps
     assert steps.index("groups") < steps.index("library") < steps.index("facemap") < steps.index("scene_edit") \
-        < steps.index("use_scene") < steps.index("review")                         # Step 4C, every show (owner, 2026-10-30)
+        < steps.index("use_scene") < steps.index("fast_trim") < steps.index("review")
     # the gate waits for decisions
-    wait_for(lambda: any(j["step"] == "decisions" and j["status"] == "needs_input"
-                         for j in c.get(f"/api/episodes/{e['id']}").json()["jobs"]))
+    try:
+        wait_for(lambda: any(j["step"] == "decisions" and j["status"] == "needs_input"
+                             for j in c.get(f"/api/episodes/{e['id']}").json()["jobs"]))
+    except AssertionError:
+        jobs = c.get(f"/api/episodes/{e['id']}").json()["jobs"]
+        raise AssertionError("not at decisions: " + str([(j["step"], j["status"], j.get("message")) for j in jobs]))
     st = c.get(f"/api/episodes/{e['id']}/decisions").json()
     assert [x["idx"] for x in st["flagged"]] == [1, 2] and st["missing"] == [1, 2]
     assert c.post(f"/api/episodes/{e['id']}/decisions/auto").json() == {"confirmed": 1, "gaps": 1}
     # nothing renders until the editor presses Render
-    wait_for(lambda: c.get(f"/api/episodes/{e['id']}").json()["status"] == "review")
+    try:
+        wait_for(lambda: c.get(f"/api/episodes/{e['id']}").json()["status"] == "review")
+    except AssertionError:
+        ep = c.get(f"/api/episodes/{e['id']}").json()
+        raise AssertionError("not review: " + ep["status"] + " " +
+                             str([(j["step"], j["status"], j.get("message")) for j in ep["jobs"]]))
     tl = c.get(f"/api/episodes/{e['id']}/timeline").json()["timeline"]
     assert c.post(f"/api/episodes/{e['id']}/timeline/render", json=tl).json()["steps"] == ["review"]
     ep = wait_for(lambda: (lambda x: x if x["status"] == "done" else None)(c.get(f"/api/episodes/{e['id']}").json()))
@@ -179,7 +188,7 @@ def test_hih_plan_has_dynamic_subtitles(env):
     ctx, st = plan(show, ep, {"src_video": "/v.mp4", "dub_audio": "/a.wav", "dub_script": "/s.docx"})
     by = {s["step"]: s for s in st}
     assert by["captions"]["needs"] == ["ingest"] and "/v.mp4" in by["captions"]["cmd"]
-    assert by["review"]["needs"] == ["use_scene"]
+    assert by["review"]["needs"] == ["fast_trim"]
     assert by["dynsrt"]["needs"] == ["review", "captions"]
     dy = " ".join(by["dynsrt"]["cmd"])
     assert "--words /w/HIH_EP55_IT_words.json" in dy and "--out /w/HIH_EP55_IT_dynamic.srt" in dy
@@ -197,23 +206,28 @@ def test_hih_plan_has_dynamic_subtitles(env):
 
 
 def test_scene_edit_steps_in_the_order_of_docs06():
-    """docs/06 section 1: groups -> library -> facemap -> scene_edit -> use_scene -> review -> render -> verify ->
-    bookends -> trans_plan -> transitions -> subs -> scene_sheet -> check; fastfix not with the scene edit; the AI steps
-    are marked for the gate; the face map runs in its own Python."""
+    """EP69-71 flow: groups (no trim-fast) -> library -> facemap -> scene_edit -> use_scene -> fast_trim -> review ->
+    render -> verify -> bookends -> trans_plan -> transitions (5 styles, seed 24) -> subs; Sonnet sentences_src;
+    the AI steps are marked for the gate; the face map runs in its own Python."""
     from dubstudio.pipeline.steps import plan
     from dubstudio import presets
     show = {"code": "TGS", "profile": presets.preset("TGS")}
     ep = {"number": 34, "work_dir": "/w", "output_dir": "/o"}
     ctx, st = plan(show, ep, {"src_video": "/v.mp4", "dub_audio": "/a.mp3", "dub_script": "/s.docx"})
     names = [s["step"] for s in st]; by = {s["step"]: s for s in st}
-    order = ["groups", "library", "facemap", "scene_edit", "use_scene", "review", "render", "verify", "bookends",
-             "trans_plan", "transitions", "subs_dub", "subs_en", "scene_sheet", "qc", "check", "notes",
+    order = ["groups", "library", "facemap", "scene_edit", "use_scene", "fast_trim", "review", "render", "verify",
+             "bookends", "trans_plan", "transitions", "subs_dub", "subs_en", "scene_sheet", "qc", "check", "notes",
              "publish", "cleanup"]
     assert [n for n in names if n in order] == order and "fastfix" not in names
-    assert {s["step"] for s in st if s.get("ai")} == {"library", "facemap", "scene_edit", "qc"}
+    assert "sentences_src" in names and names.index("sentences_src") < names.index("analyze")
+    assert {s["step"] for s in st if s.get("ai")} == {"sentences_src", "library", "facemap", "scene_edit", "qc"}
     assert by["facemap"]["cmd"][0] == "{fpy}" and by["facemap"]["resource"] == "gpu"
     assert by["facemap"]["needs"] == ["library", "lip_gpu"] and "--lips" in by["facemap"]["cmd"]
-    assert by["transitions"]["cmd"][-2:] == ["--plan", "/w/transitions_plan.json"]
+    tr = " ".join(by["transitions"]["cmd"])
+    assert "--plan /w/transitions_plan.json" in tr
+    assert "--seed 24" in tr and "fade_black,fade_white,light_leak,blur_dissolve,zoom_blur" in tr
+    gcmd = " ".join(by["groups"]["cmd"])
+    assert "--size 7" in gcmd and "--max-drift 500" in gcmd and "--trim-fast" not in gcmd
     assert "--max-lead" in by["subs_en"]["cmd"] and by["check"]["needs"] == ["qc"] and by["qc"]["needs"] == ["scene_sheet"]
     q = by["qc"]["cmd"]
     assert q[q.index("--videos") + 1:q.index("--videos") + 4] == ["/o/TGS_EP34_DE_final_clean.mp4", "/o/TGS_EP34_DE_final_de_subs.mp4",

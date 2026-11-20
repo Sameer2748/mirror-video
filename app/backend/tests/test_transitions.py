@@ -25,7 +25,7 @@ def test_plan_file_and_cuts(tmp_path):
     assert json.loads((w / tlm.TPLAN).read_text())["cuts"] == {"1000": "none"}
     use = tlm.transition_use([{"clips": [{"tin": "glow"}, {"tin": "glow"}, {"tin": "auto"}]}],
                              [{"transitions": {"plan": [{"style": "zoom_blur"}]}}])
-    assert use == {"light_leak": 0, "blur_dissolve": 0, "zoom_blur": 1, "glow": 2}
+    assert use == {"light_leak": 0, "blur_dissolve": 0, "zoom_blur": 1, "glow": 2, "fade_black": 0, "fade_white": 0}
 
 
 def test_scene_plan_then_the_editors_own_picks(env):

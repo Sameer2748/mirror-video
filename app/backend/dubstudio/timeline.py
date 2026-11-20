@@ -397,7 +397,8 @@ def fmt(ms):
 # ---------------- transitions per cut ----------------
 # the pipeline's styles (dubstitch.TRANSITION_HALF: seconds on each side of the cut at length 1.0)
 TRANSITIONS = {"light_leak": ("Light leak", 0.30), "blur_dissolve": ("Blur dissolve", 0.30),
-               "zoom_blur": ("Zoom blur", 0.25), "glow": ("Glow", 0.25)}
+               "zoom_blur": ("Zoom blur", 0.25), "glow": ("Glow", 0.25),
+               "fade_black": ("Black", 0.40), "fade_white": ("White", 0.40)}
 TPLAN = "transitions_plan.json"
 
 

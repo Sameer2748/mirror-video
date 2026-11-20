@@ -21,6 +21,8 @@ elif cmd == "analyze":
             "src": [{"text": "Hello", "start_ms": 0, "end_ms": 900}, {"text": "How are you", "start_ms": 1000, "end_ms": 1900}],
             "auto": {"0": {"src": 0, "kind": "DP match"}, "1": {"src": 1, "kind": "Case A reuse"}}}
     (W / "prep.json").write_text(json.dumps(prep)); (W / "decisions.json").write_text(json.dumps({"groups": []}))
+    if not (W / "config.json").exists():
+        (W / "config.json").write_text("{}")
     print("2 rows must be read by meaning")
 elif cmd == "groups":
     segs = [dict(kind="clip", it_idx=k, it_start_ms=k * 1000.0, it_end_ms=(k + 1) * 1000.0, us_start_ms=k * 900.0,
@@ -91,6 +93,31 @@ Path(OUT).write_text(json.dumps(dict(m, segments=segs)))
 Path(OUT.replace(".json", ".edl.json")).write_text(json.dumps({"stretches": [], "window": [float(A0), float(A1)]}))
 print(f"{len(segs)} pieces, 1 B-roll, problems left 0")
 '''
+FAKE_SLOWFIX = r'''
+import json, sys
+from pathlib import Path
+W = Path(sys.argv[1])
+src = W / "manifest_groups.grouping.json"
+if not src.exists():
+    src = W / "manifest_groups.json"
+m = json.loads(src.read_text()); segs = m.get("segments") or []
+if segs:
+    segs[-1] = dict(segs[-1], broll=True, zoom=1.08, note="scene edit: B-roll for a slow line")
+    m = dict(m, segments=segs)
+out = W / "scene_slowfix"; out.mkdir(parents=True, exist_ok=True)
+(out / "manifest_slowfix.json").write_text(json.dumps(m))
+(out / "scene_edit.xlsx").write_text("xlsx")
+print("0 slow units, scene_slowfix written")
+'''
+FAKE_FAST_TRIM = r'''
+import sys
+from pathlib import Path
+W = Path(sys.argv[1])
+print("fast-trim: 0 groups, 0 clips, 0.0s source cut; still over 1.25x: none")
+'''
+FAKE_SENTENCES = r'''
+print("sentences_src: skip Claude rebuild in tests")
+'''
 FAKE_TRANS = r'''
 import json, sys
 from pathlib import Path
@@ -141,6 +168,8 @@ def env(tmp_path, monkeypatch):
     (tools / "scripts" / "run_report.py").write_text("import sys; open(sys.argv[2], 'w').write('| # | Step |')\n")
     scene = tmp_path / "scene_scripts"; scene.mkdir()
     for name, body in (("library.py", FAKE_LIBRARY), ("sceneedit.py", FAKE_SCENEEDIT),
+                       ("slowfix_edit.py", FAKE_SLOWFIX), ("fast_trim.py", FAKE_FAST_TRIM),
+                       ("claude_sentences.py", FAKE_SENTENCES),
                        ("scene_transitions.py", FAKE_TRANS), ("sceneedit_sheet.py", FAKE_SHEET), ("qc_final.py", FAKE_QC)):
         (scene / name).write_text(body)
     monkeypatch.setenv("DUBSTUDIO_SCENE_DIR", str(scene))
@@ -168,7 +197,9 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("AUTH_REQUIRED", "true")
     monkeypatch.setenv("ADMIN_USERNAME", ADMIN[0])
     monkeypatch.setenv("ADMIN_PASSWORD", ADMIN[1])
-    for k in ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_ENDPOINT", "R2_PREFIX"):
+    for k in ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_ENDPOINT", "R2_PREFIX",
+              "CLOUD_STEPS", "CLOUD_AI", "RUNPOD_API_KEY", "RUNPOD_CPU_ENDPOINT", "RUNPOD_GPU_ENDPOINT",
+              "OPENROUTER_API_KEY"):
         monkeypatch.delenv(k, raising=False)
     # the tests never see the owner's AI key (app/.env): no real gateway calls, no cost; tests that need the AI stub it
     if not os.environ.get("DUBSTUDIO_LIVE_AI"):
