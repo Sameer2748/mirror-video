@@ -10,7 +10,7 @@ The reference runner that does every step in order is `pipeline_tools/run_episod
 | # | Step | Command (cwd = adaptation-tool/scripts, `{py}` = pipeline python, `{fpy}` = face python) | Needs | Resource |
 |---|---|---|---|---|
 | 1 | `lip_gpu` (exists) | `{py} lipgpu.py --video SRC --out-dir W/lips_nets` — **now also saves every face track's own TalkNet scores + boxes** (`lipfast.py`, 2026-10-29); the talking intervals are unchanged | ingest | gpu |
-| 2 | `groups` (exists) | unchanged (the app's presets: size 7, max drift, `--trim-fast/--trim-to`) | lipsync | cpu |
+| 2 | `groups` (exists) | `--size 7 --max-drift 500`, **no** `--trim-fast`. Lip groups: first source start → last source end, unused middle kept. Slow singles may eat unused edges. See `docs/15_QC_LOCKED_FLOW.md`. | lipsync | cpu |
 | 3 | `library` (NEW) | `{py} {backend}/dubstudio/pipeline/library.py W W/broll_library` | groups | cpu + AI |
 | 4 | `facemap` (NEW) | `{fpy} facemap.py --video SRC --library W/broll_library/broll_library.json --lips W/lips_nets --app {backend}` | library, lip_gpu | gpu (+ AI, cents) |
 | 5 | `scene_edit` (NEW) | copy `W/sentences_dub.json W/sentences_src.json W/lipsync.json` and `W/manifest_groups.auto.json` (if it exists, else `W/manifest_groups.json`) into `W/scene/` as `manifest_groups.json`, then `{py} {backend}/dubstudio/pipeline/sceneedit.py W/scene W/broll_library 0 <total_s> W/scene/scene_manifest.json --parallel 8` | facemap | AI (8 calls at a time) |

@@ -1529,3 +1529,15 @@ TAB EP11 editor was reset to that pipeline cut (Retry `use_scene`, no new Claude
 ## Editor transitions while Automatic is on (2026-11-09)
 
 Show-level Automatic still means Render rotates a style on every picture jump. That used to light every cut as if it already had a transition, and the inspector hid the list unless the clip was a source jump. Now: click any clip except the first → Inspector always has Light leak / Blur dissolve / Zoom blur / Glow / Automatic / None. A pick is kept even if the footage continues from the clip before. Timeline ✦ is bright only for a pick you made; Automatic default is a faint mark.
+
+## Week log 3–11 Nov 2026 (issues + features)
+
+Index of what broke and what we added this week (disk ENOSPC, lip-scan empty slices, matching-clip fill, bulk, Motion zoom, 200 GB disk, EP31 lost English SRT pointer): `docs/13_WEEK_ISSUES_AND_FEATURES.md`.
+
+## TAB EP31 translated SRT missing (2026-11-10, live)
+
+Render made all three videos (673.960s). Final check then printed `BAD translated SRT: None` and threw the masters away. Translate had already written `TABPGCIT_EP31_IT_english_google.srt`; scene/cut unpacked an older `config.json` and wiped `translation.out`. Check only looked at that pointer. QC story/black FAIL rows did not fail this check. Fix (`232f32b`): find the SRT next to the videos, keep `translation` keys on unpack, land `/out` even when check fails, insert `point_translation` before `check`. Matching / stitch / render / QC rules unchanged. Retry was **Render clips** only.
+
+## Lip groups keep unused source (2026-11-20, IMTS EP71 QC)
+
+Cloud evened a lip group so rice picture played on the lunch question. Local QC: play the group as **one take** from the first matched source start to the last source end (unused middle kept; no inner-join even). A slow single clip may eat unused source immediately before/after it so stretch enters 0.8–1.25×. Fast clips do not. Membership rules unchanged (size 7, max-drift 500, 0.4 s lips, no groups `--trim-fast`). Live: `groups` in `app/backend/pipeline_tools/dubstitch.py`. Doc: `docs/15_QC_LOCKED_FLOW.md`.

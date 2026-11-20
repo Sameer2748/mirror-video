@@ -1,4 +1,4 @@
-"""Lip groups keep each line's own source in/out (IMTS EP71 lunch vs rice)."""
+"""Lip groups play first matched source start → last source end as one take."""
 import importlib.util
 from pathlib import Path
 
@@ -7,7 +7,7 @@ SRC = HERE.parents[1] / "pipeline_tools" / "dubstitch.py"
 
 
 def load_stitch():
-    spec = importlib.util.spec_from_file_location("dubstitch_own_lines", SRC)
+    spec = importlib.util.spec_from_file_location("dubstitch_span", SRC)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
@@ -23,10 +23,11 @@ def _row(idx, src0, src1, dub0, dub1, text):
                 src_text=text, dub_text=text)
 
 
-def test_lunch_question_keeps_its_own_us_not_rice():
+def test_lunch_rice_group_keeps_unused_middle_as_one_clip():
     st = load_stitch()
     lunch_us = (107400.0, 108920.0)
     rice_us = (110050.0, 114040.0)
+    unused_after_lunch = (108920.0, 110050.0)
     segs = [
         _seg(22, 128760, 132225, *lunch_us, "what did you eat for lunch today"),
         _seg(23, 132225, 136680, *rice_us, "I had rice chicken soup and celery"),
@@ -35,20 +36,49 @@ def test_lunch_question_keeps_its_own_us_not_rice():
         22: _row(22, lunch_us[0], lunch_us[1], 128760, 132225, segs[0]["us_text"]),
         23: _row(23, rice_us[0], rice_us[1], 132225, 136680, segs[1]["us_text"]),
     }
-    lip = {22: {}, 23: {}}
+    clips, _ = st.lip_group_span_clip([0, 1], segs, rows)
+    assert len(clips) == 2
+    assert clips[0]["us_start_ms"] == lunch_us[0]
+    assert clips[-1]["us_end_ms"] == rice_us[1]
+    assert clips[0]["it_start_ms"] == 128760
+    assert clips[-1]["it_end_ms"] == 136680
+    # unused 108.920-110.050 sits inside the continuous take
+    assert clips[0]["us_start_ms"] < unused_after_lunch[0] < unused_after_lunch[1] < clips[-1]["us_end_ms"]
+    assert abs(clips[0]["us_end_ms"] - clips[1]["us_start_ms"]) < 1
+    assert abs(clips[0]["stretch_factor"] - clips[1]["stretch_factor"]) < 0.01
+    # rice 3.99s no longer plays alone in 1.75s (0.44x)
+    assert clips[0]["stretch_factor"] > 0.8
+    assert clips[1]["stretch_factor"] > 0.8
 
-    def lip_window(i, it_len):
-        r = rows[i]
-        return (r["src_start"], r["src_end"]), False
 
-    clips, _ = st.lip_group_own_line_clips([0, 1], segs, rows, lip, lip_window, 1.5)
-    by = {c["it_idx"]: c for c in clips}
-    lunch, rice = by[22], by[23]
-    mid = (lunch_us[1] + rice_us[0]) / 2
-    assert lunch["us_start_ms"] == lunch_us[0]
-    assert abs(lunch["us_end_ms"] - mid) < 1
-    assert abs(rice["us_start_ms"] - mid) < 1
-    assert rice["us_end_ms"] == rice_us[1]
-    # rice mouth (from 110.05s) must not play during the lunch-question dub
-    assert lunch["us_end_ms"] <= rice_us[0] + 1
-    assert lunch["us_end_ms"] < 111740
+def _g(idx, it0, it1, us0, us1):
+    return dict(rows=[idx], it0=it0, it1=it1, us0=us0, us1=us1, stretch=(it1 - it0) / (us1 - us0),
+                kept=us1 - us0, segments=[dict(kind="clip", it_idx=idx, it_start_ms=it0, it_end_ms=it1,
+                                               us_start_ms=us0, us_end_ms=us1, it_text="", us_text="",
+                                               stretch_factor=(it1 - it0) / (us1 - us0), note="")])
+
+
+def test_slow_single_eats_unused_after():
+    st = load_stitch()
+    groups = [
+        _g(10, 0, 2000, 1000, 1800),      # 2.5x slow; unused 1800-2500 before neighbour
+        _g(11, 2000, 3000, 2500, 3500),   # 1.0x
+    ]
+    filled = st.expand_groups_into_unused(groups, target=1.25)
+    assert filled
+    assert groups[0]["us1"] > 1800
+    assert groups[0]["us1"] <= 2460      # 40ms guard before neighbour
+    assert groups[1]["us0"] == 2500
+    assert groups[0]["stretch"] < 2.5
+    assert groups[0]["stretch"] <= 1.25 + 1e-6 or groups[0]["us1"] >= 2460 - 1
+
+
+def test_fast_clip_does_not_eat_unused():
+    st = load_stitch()
+    groups = [
+        _g(1, 0, 1000, 0, 3000),          # 0.33x fast
+        _g(2, 1000, 2000, 4000, 5000),
+    ]
+    filled = st.expand_groups_into_unused(groups, target=1.25)
+    assert filled == []
+    assert groups[0]["us0"] == 0 and groups[0]["us1"] == 3000

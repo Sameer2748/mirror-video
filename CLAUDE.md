@@ -13,8 +13,10 @@ Read these, in this order, before writing code:
 1. `docs/01_PROJECT_CONTEXT.md` — what the pipeline does, the shows, every decision made so far and why.
 2. `docs/02_PLATFORM_DESIGN.md` — the approved design (architecture, data model, editor, flags, milestones).
 3. `docs/03_PROGRESS.md` — what is built, what is next. **Update it after every piece of work.**
+   `docs/13_WEEK_ISSUES_AND_FEATURES.md` — 3–11 Nov 2026: issues by type (disk, lip scan, scene edit, render tail, EP31 lost SRT pointer, editor) and features added. Stitch/match/render logic was not rewritten.
 4. `docs/04_PIPELINE_REFERENCE.md` — the run sheet per show and every data file format, with real examples.
    `docs/05_AI_GATEWAY.md` — calling Claude through the owner's AI gateway (Step 2 matching), with test results.
+   `docs/15_QC_LOCKED_FLOW.md` — IMTS EP69–71 QC’d live flow (groups unused-middle take, unused-edge fill, scene edit).
    `docs/06_BROLL_SCENE_EDIT.md` — the steps after `groups` (shot library, face map, scene edit with B-roll for slow
    lines, transition plan, scene-edit sheet): order, exact commands, files, rules and the done-test (2026-10-30).
    `docs/PROMPT_scene_edit_integration.md` — the task to wire those steps into the app.

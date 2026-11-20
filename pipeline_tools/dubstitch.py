@@ -2379,49 +2379,107 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
     return n
 
 
-def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed):
-    """A lip group is still one conversation (no transition between the lines).
-
-    Each row plays its own source in/out over its own dub slot. Source pauses
-    meet halfway so the take stays continuous. Speeds left outside 0.8-1.25x
-    are for scene edit / B-roll — not for sliding the next sentence's mouth
-    onto this line (IMTS EP71: lunch question vs rice).
+def lip_group_span_clip(members, segs, rows):
+    """One lip-group take: first matched source start → last matched source end
+    over first dub start → last dub end. Unused source between the sentences
+    stays in (no cut in the middle). One speed for the whole conversation.
     """
-    wins = []
+    first, last = segs[members[0]], segs[members[-1]]
+    it0, it1 = first["it_start_ms"], last["it_end_ms"]
+    us0, us1 = None, None
+    for j in members:
+        r = rows[segs[j]["it_idx"]]
+        ua = r["src_start"] if r.get("src_start") is not None else segs[j]["us_start_ms"]
+        ub = r["src_end"] if r.get("src_end") is not None else segs[j]["us_end_ms"]
+        us0 = float(ua) if us0 is None else min(us0, float(ua))
+        us1 = float(ub) if us1 is None else max(us1, float(ub))
+    if it1 - it0 <= 1 or us1 - us0 <= 1:
+        return [], []
+    f = (it1 - it0) / max(us1 - us0, 1)
+    clips = []
+    span_it = it1 - it0
+    span_us = us1 - us0
     for j in members:
         s_ = segs[j]
-        r = rows[s_["it_idx"]]
-        ua = r["src_start"] if r.get("src_start") is not None else s_["us_start_ms"]
-        ub = r["src_end"] if r.get("src_end") is not None else s_["us_end_ms"]
         d0, d1 = s_["it_start_ms"], s_["it_end_ms"]
-        cut = False
-        if lip_max_speed > 0 and s_["it_idx"] in lip:
-            (x0, x1), cut = lip_window(s_["it_idx"], d1 - d0)
-            if cut:
-                ua, ub = x0, x1
-        wins.append([d0, d1, float(ua), float(ub), cut])
-    for q in range(len(wins) - 1):
-        if wins[q][4] or wins[q + 1][4]:
+        if d1 - d0 <= 1:
             continue
-        a_end, b_start = wins[q][3], wins[q + 1][2]
-        if b_start + 40 >= a_end:
-            mid = (a_end + b_start) / 2
-            wins[q][3] = mid
-            wins[q + 1][2] = mid
-    clips, flags = [], []
-    for q, j in enumerate(members):
-        d0, d1, ua, ub, _ = wins[q]
-        if d1 - d0 <= 1 or ub - ua <= 1:
-            continue
-        s_ = segs[j]
-        f = (d1 - d0) / max(ub - ua, 1)
+        ua = us0 + (d0 - it0) / span_it * span_us
+        ub = us0 + (d1 - it0) / span_it * span_us
         clips.append(dict(kind="clip", it_idx=s_["it_idx"], it_start_ms=round(d0, 3), it_end_ms=round(d1, 3),
                           us_start_ms=round(ua, 3), us_end_ms=round(ub, 3),
                           it_text=s_.get("it_text", ""), us_text=s_.get("us_text", ""),
-                          stretch_factor=round(f, 3), note="lip group"))
-        if f > 2.5 or f < 0.4:
-            flags.append(f"IT#{s_['it_idx']} piece plays x{f:.2f}")
+                          stretch_factor=round(f, 3),
+                          note="lip group: first source start to last source end, unused middle kept"))
+    flags = []
+    if f > 2.5 or f < 0.4:
+        flags.append(f"IT#{first['it_idx']}-{last['it_idx']} group plays x{f:.2f}")
     return clips, flags
+
+
+def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed):
+    """Back-compat name: lip groups are one first-to-last source span."""
+    return lip_group_span_clip(members, segs, rows)
+
+
+def expand_groups_into_unused(groups, target=1.25):
+    """If a group or single clip is slower than `target` (dub/src), eat unused
+    source immediately before/after that no other group plays. Unused in the
+    middle of a group is already kept by first-to-last span; this is the leftover
+    edges and lone clips. Never steal another row's footage. Fast clips (too much
+    source) are not expanded.
+    """
+    filled = []
+    for i, g in enumerate(groups):
+        segs = g.get("segments") or []
+        if not segs:
+            continue
+        it0, it1 = segs[0]["it_start_ms"], segs[-1]["it_end_ms"]
+        us0 = min(s["us_start_ms"] for s in segs)
+        us1 = max(s["us_end_ms"] for s in segs)
+        it_dur, us_dur = it1 - it0, us1 - us0
+        if it_dur <= 1 or us_dur <= 1:
+            continue
+        stretch = it_dur / us_dur
+        if stretch <= target + 1e-6:
+            continue
+        need = it_dur / target - us_dur
+        others = []
+        for j, h in enumerate(groups):
+            if j == i:
+                continue
+            hs = h.get("segments") or []
+            if not hs:
+                continue
+            others.append((min(s["us_start_ms"] for s in hs), max(s["us_end_ms"] for s in hs)))
+        prev_end = max((b for a, b in others if b <= us0 + 40), default=None)
+        next_start = min((a for a, b in others if a >= us1 - 40), default=None)
+        rb = max(0.0, (us0 - prev_end) - 40) if prev_end is not None else 0.0
+        ra = max(0.0, (next_start - us1) - 40) if next_start is not None else 0.0
+        ta = min(ra, need / 2)
+        tb = min(rb, need - ta)
+        ta = min(ra, need - tb)
+        if ta + tb <= 1:
+            continue
+        new0, new1 = us0 - tb, us1 + ta
+        span_old = us1 - us0
+        span_new = new1 - new0
+        for s in segs:
+            t0 = (s["us_start_ms"] - us0) / span_old
+            t1 = (s["us_end_ms"] - us0) / span_old
+            s["us_start_ms"] = round(new0 + t0 * span_new, 3)
+            s["us_end_ms"] = round(new1 + t1 * span_new, 3)
+            s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+            extra = f"unused edges +{tb / 1000:.2f}s before +{ta / 1000:.2f}s after"
+            note = (s.get("note") or "").strip()
+            if extra not in note:
+                s["note"] = (note + "; " + extra).lstrip("; ")
+        g["us0"], g["us1"] = new0, new1
+        g["stretch"] = (it1 - it0) / max(new1 - new0, 1)
+        g["kept"] = new1 - new0
+        filled.append((g["rows"][0], g["rows"][-1], round(tb), round(ta), round(g["stretch"], 3)))
+    return filled
+
 
 
 def cmd_groups(a):
@@ -2443,10 +2501,9 @@ def cmd_groups(a):
                 if k + 1 < len(segs): segs[k + 1]["it_start_ms"] = p_["slot"][1]
         bad = [s_["it_idx"] for s_ in segs if s_["it_end_ms"] <= s_["it_start_ms"]]
         if bad: raise SystemExit(f"lip-sync slots leave rows {bad} without time -- re-run `lipsync` after `manifest`")
-        # ---- lip groups: lip-sync rows that follow each other in the source (a phone call, a dialogue), with at most
-        # --lip-group-narr narration rows between them, stay ONE group (no transition). Each row still plays its own
-        # source sentence on its own dub line; pauses meet halfway so the take is continuous. Do not even US time
-        # across the chain (that puts the next mouth on this line). Scene edit / B-roll fix leftover speed.
+        # ---- lip groups: lip-sync rows that follow each other in the source stay ONE group (no transition).
+        # Play first matched source start → last matched source end over first dub start → last dub end.
+        # Unused source between the sentences is kept; do not cut in the middle.
         islip = lambda k: segs[k]["it_idx"] in lip
         def link(k, m):                                       # can lip seg k and the next lip seg m be one piece?
             mid = segs[k + 1:m]
@@ -2478,18 +2535,42 @@ def cmd_groups(a):
             w0 = (l0 + l1) / 2 - Lk / 2 if Lk >= l1 - l0 else l0
             w0 = min(max(w0, u0), u1 - Lk)
             return (w0, w0 + Lk), True
-        chains = []
+        chains = []                                          # (lip indices, link kinds, first seg, last seg, why)
         if not a.no_lip_groups:
-            lipk = [k for k in range(len(segs)) if islip(k)]; i = 0
-            while i < len(lipk):
-                ch, links = [lipk[i]], []
-                while i + 1 < len(lipk):
-                    how = link(lipk[i], lipk[i + 1])
-                    if not how: break
-                    links.append(how); ch.append(lipk[i + 1]); i += 1
-                i += 1
-                if len(ch) >= 2: chains.append((ch, links))
-        inchain = {k for ch, _ in chains for k in range(ch[0], ch[-1] + 1)}
+            cap = a.size                                      # 7: longest same-type run in one group
+            def blocked(prev, k):
+                if segs[k]["it_idx"] in repeat_rows or segs[prev]["it_idx"] in repeat_rows: return True
+                rp, rk_ = rows[segs[prev]["it_idx"]], rows[segs[k]["it_idx"]]
+                if rp.get("src_end") is None or rk_.get("src_start") is None: return True
+                if rk_["src_start"] < rp["src_end"] - 40: return True
+                if rk_["src_start"] - rp["src_end"] > a.max_gap: return True
+                return False
+            pieces, i, nseg = [], 0, len(segs)
+            while i < nseg:
+                main = islip(i); group = [i]; i += 1
+                while i < nseg and len(group) < cap and islip(i) == main and not blocked(group[-1], i):
+                    group.append(i); i += 1
+                if (i + 1 < nseg and len(group) + 2 <= cap and islip(i) != main and islip(i + 1) == main
+                        and not blocked(group[-1], i) and link(group[-1], i + 1) == "between"):
+                    group.append(i); i += 1
+                    while i < nseg and len(group) < cap and islip(i) == main and not blocked(group[-1], i):
+                        group.append(i); i += 1
+                pieces.append(group)
+            for members in pieces:
+                if not any(islip(k) for k in members): continue
+                ch = [k for k in members if islip(k)]
+                links = ["between" if b > a_ + 1 else "meet" for a_, b in zip(ch, ch[1:])]
+                n_narr = len(members) - len(ch)
+                if n_narr and len(ch) > 1:
+                    why = f"{len(ch)} lip rows with one narration row in the middle (max {cap} rows, footage between the lips 0.5x-2x)"
+                elif n_narr:
+                    why = f"one lip row in the middle of {n_narr} narration row(s) (max {cap} rows, footage across the lip 0.5x-2x)"
+                elif len(ch) == 1:
+                    why = "one lip row on its own"
+                else:
+                    why = f"{len(ch)} continuous lip rows, same type (max {cap})"
+                chains.append((ch, links, members[0], members[-1], why))
+        inchain = {k for c in chains for k in range(c[2], c[3] + 1)}
         single_trims = []
         for k, s_ in enumerate(segs):                         # single lip rows too (TRIM mode)
             if a.lip_max_speed > 0 and islip(k) and k not in inchain:
@@ -2497,10 +2578,9 @@ def cmd_groups(a):
                 if cut:
                     s_["us_start_ms"], s_["us_end_ms"] = x0, x1; single_trims.append((s_["it_idx"], round(x1 - x0)))
         chain_groups = []
-        for ch, links in chains:
-            k0, k1 = ch[0], ch[-1]
+        for ch, links, k0, k1, why in chains:
             members = list(range(k0, k1 + 1))
-            out_s, flags = lip_group_own_line_clips(members, segs, rows, lip, lip_window, a.lip_max_speed)
+            out_s, flags = lip_group_span_clip(members, segs, rows)
             for j in members:
                 mine = [o for o in out_s if o["it_idx"] == segs[j]["it_idx"]]
                 if mine:
@@ -2514,10 +2594,10 @@ def cmd_groups(a):
                 it0, it1 = segs[k0]["it_start_ms"], segs[k1]["it_end_ms"]
                 us0, us1 = segs[k0]["us_start_ms"], segs[k1]["us_end_ms"]
             chain_groups.append(dict(rows=[segs[j]["it_idx"] for j in members], it0=it0, it1=it1, us0=us0, us1=us1, trims=[], flags=flags,
-                                     note=(f"lip group: {nl} lip-sync rows + {len(members) - nl} narration rows; "
-                                           f"each line plays its own source in/out"), removed=[], kept=us1 - us0,
+                                     note=(f"lip piece: {nl} lip row(s) + {len(members) - nl} narration row(s); {why}; "
+                                           f"first source start to last source end, unused middle kept"), removed=[], kept=us1 - us0,
                                      stretch=(it1 - it0) / max(us1 - us0, 1), removed_ms=0, segments=out_s, drift={}, max_drift=0,
-                                     lip=True, lipgroup=True, why="lip group", first_seg=k0, break_before="lip group"))
+                                     lip=True, lipgroup=True, why=why, first_seg=k0, break_before="lip group"))
         # A grouped row next to a lip-sync row now also carries the silence next to it. Instead of only slowing down, it
         # runs on into the FREE source footage between it and the lip clip (what comes right before/after in the source),
         # at most up to normal speed. Footage any other row uses is never taken.
@@ -2595,6 +2675,7 @@ def cmd_groups(a):
         groups.append(info)
     groups += chain_groups
     groups.sort(key=lambda g: g["it0"])
+    unused_fill = expand_groups_into_unused(groups, target=getattr(a, "max_stretch", 1.25) or 1.25)
     for g in groups:
         k = g["first_seg"]
         if "break_before" not in g: g["break_before"] = brk.get(k, "start" if k == 0 else f"block of {a.size} rows")
@@ -2629,13 +2710,15 @@ def cmd_groups(a):
               + ("  ** " + "; ".join(g["flags"]) if g["flags"] else ""))
     if lip:
         print(f"  {sum(1 for g in groups if g.get('lip') and not g.get('lipgroup'))} single lip-sync rows play their own clip; "
-              f"{len(chain_groups)} lip groups play {sum(len(g['rows']) for g in chain_groups)} rows (own source in/out, no even) "
+              f"{len(chain_groups)} lip groups play {sum(len(g['rows']) for g in chain_groups)} rows (first-to-last source span) "
               f"({sum(1 for g in chain_groups for r in g['rows'] if r in lip)} lip-sync + "
               f"{sum(1 for g in chain_groups for r in g['rows'] if r not in lip)} narration rows)")
         tr_ = [f for g in chain_groups for f in g["flags"] if f.startswith("trimmed")]
         if single_trims or tr_: print(f"  lip sentences trimmed to their lip part (max x{a.lip_max_speed}): single rows {single_trims}; in lip groups {tr_}")
         if lipfill: print(f"  {len(lipfill)} grouped rows next to a lip-sync row ran on into free source footage instead of slowing down "
                           f"(row, ms before, ms after): {lipfill}")
+    if unused_fill:
+        print(f"  {len(unused_fill)} slow groups/clips ate unused source at the edges (row, row, ms before, ms after, stretch): {unused_fill}")
     print(f"saved manifest_groups.json (render/verify/bookends now use it) and {review}")
 
 def _groups_workbook(path, groups, rows, L):
@@ -3225,8 +3308,8 @@ def main():
     x.add_argument("--lip-max-speed", type=float, default=1.5,
                    help="TRIM mode (with --lip-anchor both): a lip sentence that would play faster than this is cut down to its lip part")
     x.add_argument("--lip-trim-above", type=float, default=1.6, help="TRIM mode: only sentences faster than this are trimmed")
-    x.add_argument("--lip-smooth-ms", type=float, default=0, help="ignored: lip groups keep each line's own source in/out (scene edit handles speed)")
-    x.add_argument("--lip-group-speed-ok", type=float, default=1.5, help="ignored: lip groups no longer even US time across the chain")
+    x.add_argument("--lip-smooth-ms", type=float, default=0, help="ignored: lip groups play first-to-last source as one take")
+    x.add_argument("--lip-group-speed-ok", type=float, default=1.5, help="ignored: lip groups play first-to-last source as one take")
     x.add_argument("--no-lip-groups", action="store_true", help="every lip-sync row plays alone (no continuous lip groups)")
     x.add_argument("--lip-group-narr", type=int, default=2, help="narration rows allowed between two lip-sync rows of one lip group")
     x.add_argument("--lip-group-speed", type=float, default=2.0, help="footage between two lip sentences may play between 1/x and x speed")
