@@ -710,24 +710,27 @@ def cmd_analyze(a):
     sides = {}
     for side, path in (("dub", cfg["dub_srt"]), ("src", cfg["src_srt"])):
         raw = shift_cues(parse_srt(path), src_off_ms if side == "src" else 0)
-        res = resolve_overlaps(resegment_to_sentences(raw))
-        kept, dropped = drop_single_word_zero_duration(res)
-        final, retimed = retime_zero_duration(kept)
         wt = os.path.join(a.work, f"sentences_{side}.json")       # Step 1A: exact times from the audio, if made
+        used_wt = False
         if os.path.exists(wt) and not a.no_word_times:
             WT = load(a.work, f"sentences_{side}.json")
             stored = WT.get("srt") or ""
             # Cloud jobs remap /app/output/.../work to /work, so abspath of the saved SRT will not match.
             # Claude sentence rebuilds must still win: do not re-glue them with regex.
             same = (bool(stored) and os.path.abspath(stored) == os.path.abspath(path))
-            same = same or (os.path.basename(stored) == os.path.basename(path))
+            same = same or (bool(stored) and os.path.basename(stored) == os.path.basename(path))
             same = same or str(WT.get("how") or "").startswith("claude")
             if same and not WT.get("first"):
                 final = [Cue(i, r["start_ms"], r["end_ms"], r["text"]) for i, r in enumerate(WT["sentences"]) if r["end_ms"] > r["start_ms"]]
-                dropped, retimed = [], []
+                dropped, retimed, res = [], [], final
+                used_wt = True
                 say(f"{side.upper()}: using word-timed sentences from {os.path.basename(wt)} ({len(final)} sentences, times from the audio)")
             else:
                 say(f"{side.upper()}: {os.path.basename(wt)} is for another SRT or only a test range -- not used")
+        if not used_wt:
+            res = resolve_overlaps(resegment_to_sentences(raw))
+            kept, dropped = drop_single_word_zero_duration(res)
+            final, retimed = retime_zero_duration(kept)
         sides[side] = final
         say(f"{side.upper()}: raw cues={len(raw)} (0ms in raw file={sum(c.start_ms == c.end_ms for c in raw)}) -> "
             f"sentences={len(res)} (0ms after overlap resolution={sum(c.start_ms == c.end_ms for c in res)}) -> "
