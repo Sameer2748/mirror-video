@@ -1326,7 +1326,8 @@ def cancel_episode(eid: int):
         bus.publish("episode_status", eid, status="left the queue")
     else:
         runner().cancel_run(eid)
-        db().update("episodes", eid, queued=None)
+        db().update("episodes", eid, status="cancelled", queued=None, updated=now())
+        bus.publish("episode_status", eid, status="cancelled")
     runner().start_next()
     return _episode_full(eid)
 

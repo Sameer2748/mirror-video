@@ -215,7 +215,7 @@ class Runner:
             if p:
                 self._kill(p)
         j = self.db.one("SELECT * FROM jobs WHERE id=?", (job_id,))
-        if j and j["status"] in ("waiting", "needs_input"):
+        if j and j["status"] in ("waiting", "needs_input", "running", "blocked"):
             self._set(j, status="cancelled", finished=now(), message="cancelled")
 
     def cancel_run(self, ep_id):
