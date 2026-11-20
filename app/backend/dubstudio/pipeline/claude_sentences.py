@@ -1,9 +1,12 @@
 """Rebuild source sentences from word-level times with Claude Sonnet (EP69-71 local flow).
 
-Usage: claude_sentences.py --work W [--out-srt PATH]
+Usage: claude_sentences.py --work W [--out-json PATH] [--out-srt PATH]
 Reads W/sentences_src.json (from `dubstitch words --side src`) and overwrites it plus the SRT.
+
+Claude makes every sentence. No time cap. Punctuation first (. ? !), then unpunctuated
+paragraphs are split where the sentences actually end.
 """
-import argparse, json, time
+import argparse, json, re, time
 from pathlib import Path
 import sys
 
@@ -19,6 +22,10 @@ sys.path.insert(0, str(_app_dir(__file__)))
 from dubstudio import ai  # noqa: E402
 
 MODEL = "claude-sonnet-5-5"
+
+# Titles that end with a dot are not sentence ends.
+_ABBREV = re.compile(r"\b(?:Mr|Mrs|Ms|Miss|Dr|Prof|Sr|Jr|vs|etc|Inc|Ltd|St)\s*\.\s*$", re.I)
+_END_PUNCT = re.compile(r'[.!?…]["»«“”’›‹\']*\s*$')
 
 
 def srt_t(ms):
@@ -46,18 +53,88 @@ def flat_words(doc):
     return out
 
 
+def needs_paragraph_split(tx, n_words):
+    """True when this card may still be several sentences (Claude decides how to cut)."""
+    t = (tx or "").strip()
+    if n_words < 16:
+        return False
+    marks = [m.start() for m in re.finditer(r'[.!?…]', t)]
+    real = []
+    for i in marks:
+        if _ABBREV.search(t[:i + 1]):
+            continue
+        real.append(i)
+    if len(real) >= 2:
+        return True
+    if not real:
+        return True
+    return False
+
+
 RULES = """You cut source-language word-level ASR into SENTENCES for a dubbing pipeline.
 
-Why: each source sentence is matched to one dub line. The picture of that source time is what
-the viewer sees. If one source "sentence" is 20 seconds of several questions and answers,
-six dub lines share one mouth and lip-sync is wrong.
+Every sentence you emit is used as one source card. Do not leave two real sentences in one card,
+and do not cut a sentence in the middle.
 
-- Split on a real question, a new speaker, a new action, a new beat.
-- Do NOT split titles/names: "Mrs." + "Horton", "Ms." + "Olsen", "Mr." + "Allen".
-- Do NOT make tiny cards under ~1.2 s or under 4 words unless it is a short reply.
-- Aim 2–8 seconds. Hard cap about 10 s unless it is truly one spoken utterance.
-- Keep word order. Every word index used exactly once, in order, no gaps.
+How to split (in this order):
+
+1) Punctuation first. End a sentence at . ? ! … (quotes after the mark stay on that sentence).
+   Do NOT split titles/names: "Mrs." "Mr." "Ms." "Dr." plus the name that follows.
+
+2) Then unpunctuated paragraphs. If a stretch has no . ? ! but is clearly several sentences
+   (new speaker, a question then an answer, a new action), split where those sentences end.
+   Use the words and the pauses between them. No clock. No "aim N seconds".
+
+3) One spoken turn = one sentence. Nothing extra from the next turn, nothing missing from this one.
+
+Keep word order. Every word index used exactly once, in order, no gaps.
 """
+
+
+def claude_spans(words, start, end, extra, cost):
+    lines = [f"{i}\t{words[i][0]:.2f}-{words[i][1]:.2f}\t{words[i][2]}" for i in range(start, end)]
+    prompt = (
+        RULES
+        + extra
+        + f"\nWord indexes {start} through {end - 1} inclusive. Cover EVERY index in that range.\n\n"
+        + "\n".join(lines)
+        + '\n\nAnswer ONLY JSON:\n{"sentences":[{"w0":%d,"w1":%d,"text":"exact words joined with spaces"}]}\n'
+        "w0 inclusive, w1 exclusive." % (start, end)
+    )
+    t0 = time.time()
+    text, usage = ai.chat(prompt, model=MODEL, max_tokens=8000, reasoning={"effort": "medium"})
+    c = float((usage or {}).get("cost") or 0)
+    cost[0] += c
+    print(f"claude {start}-{end} {time.time()-t0:.1f}s cost ${c:.4f}", flush=True)
+    try:
+        part = ai.extract_json(text, "sentences")["sentences"]
+    except Exception:
+        part = []
+    out = []
+    for s in part or []:
+        a, b = int(s["w0"]), int(s["w1"])
+        if b <= a or a < start or b > end:
+            continue
+        out.append((a, b, s.get("text") or " ".join(w[2] for w in words[a:b])))
+    out.sort()
+    return out
+
+
+def fill_cover(spans, start, end, words):
+    filled, cursor = [], start
+    for a, b, tx in spans:
+        if a > cursor:
+            filled.append((cursor, a, " ".join(w[2] for w in words[cursor:a])))
+        if a < cursor:
+            a = cursor
+            if b <= a:
+                continue
+            tx = " ".join(w[2] for w in words[a:b])
+        filled.append((a, b, tx))
+        cursor = b
+    if cursor < end:
+        filled.append((cursor, end, " ".join(w[2] for w in words[cursor:end])))
+    return filled
 
 
 def main():
@@ -76,81 +153,29 @@ def main():
         print(f"sentences_src: {len(words)} words, skip Claude rebuild")
         return 0
     OUT_SRT = Path(args.out_srt) if args.out_srt else Path(old.get("srt") or (W / "src_sentences.srt"))
-    CHUNK, got, cost = 380, [], 0.0
+    CHUNK, cost = 380, [0.0]
+    got = []
     for start in range(0, len(words), CHUNK):
         end = min(len(words), start + CHUNK)
-        lines = [f"{i}\t{words[i][0]:.2f}-{words[i][1]:.2f}\t{words[i][2]}" for i in range(start, end)]
-        prompt = (
-            RULES
-            + f"\nThis chunk is word indexes {start} through {end - 1} inclusive ({end - start} tokens). "
-            f"Cover EVERY index in that range.\n\n"
-            + "\n".join(lines)
-            + '\n\nAnswer ONLY JSON:\n{"sentences":[{"w0":%d,"w1":%d,"text":"exact words joined with spaces"}]}\n'
-            "w0 inclusive, w1 exclusive." % (start, end)
-        )
-        t0 = time.time()
-        text, usage = ai.chat(prompt, model=MODEL, max_tokens=8000, reasoning={"effort": "medium"})
-        c = float((usage or {}).get("cost") or 0)
-        cost += c
-        print(f"chunk {start}-{end} {time.time()-t0:.1f}s cost ${c:.4f}", flush=True)
-        part = ai.extract_json(text, "sentences")["sentences"]
-        got.extend(part)
-
-    sents_raw = []
-    for s in got:
-        a, b = int(s["w0"]), int(s["w1"])
-        if b <= a or a < 0 or b > len(words):
-            continue
-        sents_raw.append((a, b, s.get("text") or " ".join(w[2] for w in words[a:b])))
-    sents_raw.sort()
-    filled, cursor = [], 0
-    for a, b, tx in sents_raw:
-        if a > cursor:
-            filled.append((cursor, a, " ".join(w[2] for w in words[cursor:a])))
-        if a < cursor:
-            a = cursor
-            if b <= a:
-                continue
-            tx = " ".join(w[2] for w in words[a:b])
-        filled.append((a, b, tx))
-        cursor = b
-    if cursor < len(words):
-        filled.append((cursor, len(words), " ".join(w[2] for w in words[cursor:])))
+        got.extend(claude_spans(words, start, end, "\nThis is one chunk of the episode.\n", cost))
+    filled = fill_cover(got, 0, len(words), words)
 
     out_spans = []
     for a, b, tx in filled:
-        dur = words[b - 1][1] - words[a][0]
-        if dur <= 10.5 or b - a < 12:
+        if not needs_paragraph_split(tx, b - a):
             out_spans.append((a, b, tx))
             continue
-        lines = [f"{i}\t{words[i][0]:.2f}-{words[i][1]:.2f}\t{words[i][2]}" for i in range(a, b)]
-        prompt = (RULES + f"\nThis one card is TOO LONG ({dur:.1f}s), words {a}-{b-1}. Split it.\n\n"
-                  + "\n".join(lines)
-                  + '\n\nAnswer ONLY JSON: {"sentences":[{"w0":..,"w1":..,"text":"..."}]}')
-        text, usage = ai.chat(prompt, model=MODEL, max_tokens=4000, reasoning={"effort": "medium"})
-        cost += float((usage or {}).get("cost") or 0)
-        try:
-            part = ai.extract_json(text, "sentences")["sentences"]
-        except Exception:
-            part = []
-        parts = []
-        for s in part:
-            x, y = int(s["w0"]), int(s["w1"])
-            if y <= x or x < a or y > b:
-                continue
-            parts.append((x, y, s.get("text") or " ".join(w[2] for w in words[x:y])))
-        parts.sort()
+        print(f"unpunctuated paragraph words {a}-{b} ({b - a} tokens) → Claude", flush=True)
+        parts = claude_spans(
+            words, a, b,
+            "\nThis card has no usable . ? ! (or several sentences stuck together). "
+            "Split it into the real sentences inside it. Do not add or drop words.\n",
+            cost,
+        )
         if not parts:
             out_spans.append((a, b, tx))
             continue
-        cur = a
-        for x, y, t2 in parts:
-            if x > cur:
-                out_spans.append((cur, x, " ".join(w[2] for w in words[cur:x])))
-            out_spans.append((x, y, t2))
-            cur = y
-        if cur < b:
-            out_spans.append((cur, b, " ".join(w[2] for w in words[cur:b])))
+        out_spans.extend(fill_cover(parts, a, b, words))
 
     rows = []
     for i, (a, b, tx) in enumerate(out_spans):
@@ -173,14 +198,14 @@ def main():
     if OUT_JSON.is_file() and not bak.is_file():
         bak.write_bytes(OUT_JSON.read_bytes())
     OUT_SRT.parent.mkdir(parents=True, exist_ok=True)
-    doc = dict(old, srt=str(OUT_SRT.resolve()), sentences=rows, how="claude_sonnet_medium_from_words")
+    doc = dict(old, srt=str(OUT_SRT.resolve()), sentences=rows, how="claude_sonnet_punct_then_paragraph")
     json.dump(doc, open(OUT_JSON, "w"), indent=1, ensure_ascii=False)
     with open(OUT_SRT, "w", encoding="utf-8") as f:
         for r in rows:
             f.write(f"{r['idx']+1}\n{srt_t(r['start_ms'])} --> {srt_t(r['end_ms'])}\n{r['text']}\n\n")
     durs = [(r["end_ms"] - r["start_ms"]) / 1000 for r in rows] or [0]
     print(f"wrote {len(rows)} sentences (was {len(old.get('sentences') or [])}) "
-          f"median {sorted(durs)[len(durs)//2]:.1f}s max {max(durs):.1f}s claude_cost ${cost:.4f}")
+          f"median {sorted(durs)[len(durs)//2]:.1f}s max {max(durs):.1f}s claude_cost ${cost[0]:.4f}")
     return 0
 
 
