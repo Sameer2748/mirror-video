@@ -10,7 +10,7 @@ import { api } from "../api";
 import GenPanel, { GenClip } from "./GenPanel";
 import { BrandMark } from "../App";
 
-type Clip = { id: string; row: number | null; t0: number; t1: number; s0: number; s1: number; dub_text: string; src_text: string; note?: string; locked?: boolean; tin?: string; media?: string; broll?: boolean; zoom?: number; pan_x?: number; pan_y?: number; orig?: { t0: number; t1: number; s0: number; s1: number } };
+type Clip = { id: string; row: number | null; rows?: number[]; t0: number; t1: number; s0: number; s1: number; dub_text: string; src_text: string; note?: string; locked?: boolean; tin?: string; media?: string; broll?: boolean; zoom?: number; pan_x?: number; pan_y?: number; orig?: { t0: number; t1: number; s0: number; s1: number } };
 // the project bin: clips imported for this episode + the episode's own files
 type Imp = { id: string; name: string; duration_ms: number; width: number; height: number; size: number; preview: string };
 type BinFile = { kind: string; label: string; name: string; size: number };
@@ -75,7 +75,13 @@ const fmt = (ms: number, dec = 1) => {
   return `${neg ? "-" : ""}${String(m).padStart(2, "0")}:${(s % 60).toFixed(dec).padStart(dec ? 3 + dec : 2, "0")}`;
 };
 const speedOf = (c: Clip) => (c.s1 - c.s0) / Math.max(c.t1 - c.t0, 1);
-const label = (c: Clip) => (c.row != null ? `IT#${c.row}` : c.media ? `${(c.src_text || "imported").slice(0, 18)}` : `clip ${fmt(c.s0)}`);
+const clipRows = (c: Clip) => (c.rows && c.rows.length ? c.rows : c.row != null ? [c.row] : []);
+const label = (c: Clip) => {
+  const rows = clipRows(c);
+  if (rows.length > 1) return `IT#${rows[0]}–${rows[rows.length - 1]}`;
+  if (rows.length === 1) return `IT#${rows[0]}`;
+  return c.media ? `${(c.src_text || "imported").slice(0, 18)}` : `clip ${fmt(c.s0)}`;
+};
 const clamp = (x: number, a: number, b: number) => Math.min(Math.max(x, a), b);
 const MOTION_Z_MAX = 4;
 function applyMotion(c: Clip, zoom: number, pan_x: number, pan_y: number): Clip {
@@ -1179,7 +1185,7 @@ export default function Editor() {
       {/* ---------- top bar ---------- */}
       <div className="ed-top">
         <Link to={`/episodes/${eid}`} title="Back to the episode"><BrandMark /></Link>
-        <div className="ed-title"><b>{data.show.code} · Ep {data.episode.number}</b><span className="wide-only">{fmt(total, 1)} · locked to the {D} dub</span><span className="built-by">Built by Sameer</span></div>
+        <div className="ed-title"><b>{data.show.code} · Ep {data.episode.number}</b><span className="wide-only">{fmt(total, 1)} · locked to the {D} dub · one block = one picture take</span><span className="built-by">Built by Sameer</span></div>
         <div className="tools">
           <button className={`tool ${tool === "select" ? "on" : ""}`} onClick={() => setTool("select")} title="Select, drag a clip onto another to swap footage, drag an edge to move a cut">Select <kbd>V</kbd></button>
           <button className={`tool ${tool === "razor" ? "on" : ""}`} onClick={() => setTool("razor")} title="Click a clip to cut it in two">Razor <kbd>C</kbd></button>
@@ -1451,7 +1457,7 @@ export default function Editor() {
                 </div>
               </div>
             )}
-            {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} onPasteV2={pasteOnV2} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={selClip.row != null && lipSet.has(selClip.row)}
+            {!cueSel && selClip && <Inspector c={selClip} clipboard={clipboard?.from || null} onLock={() => toggleLock()} onCopy={copyClip} onPaste={pasteClip} onPasteV2={pasteOnV2} fl={flags[selClip.id] || []} approved={approved.includes(selClip.id)} lip={clipRows(selClip).some((r) => lipSet.has(r))}
               D={D} S={S} srcDur={durOf(selClip.media)}
               onChange={(c) => updateSel(c)} onMotion={setSelMotion} onApprove={() => toggleApprove()} onReset={resetClip}
               track={selV2 >= 0 ? 2 : 1} onCopyToV2={() => selClip && copyToV2(selClip)} v2Locked={!!tracks.v2?.locked}
@@ -1460,7 +1466,7 @@ export default function Editor() {
                 const prev = k > 0 ? ord[k - 1] : clips.filter((x) => x.t1 <= selClip.t0 + 1).pop(); const next = k >= 0 ? ord[k + 1] : clips.find((x) => x.t0 >= selClip.t1 - 1);
                 setGenClip({ id: selClip.id, label: label(selClip), row: selClip.row, t0: selClip.t0, t1: selClip.t1, s0: selClip.s0, s1: selClip.s1,
                   dub_text: selClip.dub_text, src_text: selClip.src_text, media: selClip.media, prev_text: prev?.dub_text || "", next_text: next?.dub_text || "",
-                  lip: selClip.row != null && lipSet.has(selClip.row), flags: (flags[selClip.id] || []).filter((f) => f.sev !== "info").map((f) => f.msg) });
+                  lip: clipRows(selClip).some((r) => lipSet.has(r)), flags: (flags[selClip.id] || []).filter((f) => f.sev !== "info").map((f) => f.msg) });
                 if (!inspOpen) toggleInsp(); }}
               onPlay={() => { seek(selClip.t0); if (!playing) togglePlay(); }} onDelete={() => doDelete(false)}
               onFitSentence={() => {
@@ -1588,8 +1594,8 @@ function Inspector({ c, fl, approved, lip, D, S, srcDur, clipboard, onChange, on
     <div className="insp">
       <div className="insp-title">{track === 2 && <span className="chip chip-violet" title="This clip is on V2, over V1">V2</span>}{label(c)} <span className="arrow">←</span> {S} {fmt(c.s0)} {lip && <span className="chip chip-violet" title="lip-sync row">lips</span>}
         {lk && <span className="chip chip-grey" title="Locked: no edit can change it">🔒 locked</span>}</div>
-      <div className="insp-block"><div className="lbl">{D} line · {fmt(c.t0)}–{fmt(c.t1)} · {((c.t1 - c.t0) / 1000).toFixed(2)} s</div>{c.dub_text || <span className="muted">—</span>}</div>
-      <div className="insp-block"><div className="lbl">{S} footage · {((c.s1 - c.s0) / 1000).toFixed(2)} s</div>{c.src_text || <span className="muted">—</span>}</div>
+      <div className="insp-block"><div className="lbl">{D} {clipRows(c).length > 1 ? `lines ${clipRows(c)[0]}–${clipRows(c)[clipRows(c).length - 1]}` : "line"} · {fmt(c.t0)}–{fmt(c.t1)} · {((c.t1 - c.t0) / 1000).toFixed(2)} s</div><div style={{ whiteSpace: "pre-wrap" }}>{c.dub_text || <span className="muted">—</span>}</div></div>
+      <div className="insp-block"><div className="lbl">{S} footage · {((c.s1 - c.s0) / 1000).toFixed(2)} s</div><div style={{ whiteSpace: "pre-wrap" }}>{c.src_text || <span className="muted">—</span>}</div></div>
       <div className="row" style={{ alignItems: "baseline", gap: 10 }}>
         <span className={`speed ${cls}`}>×{sp.toFixed(2)}</span>
         <span className="muted small-text">{sp < 0.97 ? "slow motion" : sp > 1.03 ? "faster than real" : "real speed"}</span>
@@ -2011,7 +2017,7 @@ function TimelineView(p: {
         {w > 34 && <div className="cl">{c.locked ? "🔒 " : ""}{c.broll ? <span className="broll-tag">B-roll</span> : null}{label(c)}</div>}
         {w > 70 && c.zoom ? <span className="zoom-tag" title={`A repeat of footage used before, shown zoomed in ×${c.zoom}`}>repeat</span> : null}
         {w > 46 && <span className="cs" style={{ color: sp < 0.67 || sp > 1.5 ? "var(--yellow)" : undefined }}>×{sp.toFixed(2)}</span>}
-        {w > 80 && c.row != null && p.lipSet.has(c.row) && <span className="lipi">👄</span>}
+        {w > 80 && clipRows(c).some((r) => p.lipSet.has(r)) && <span className="lipi">👄</span>}
         {p.tool === "select" && <span className="edge l" onPointerDown={(e) => trimDown(e, track, i, "l")} />}
         {(p.cutIds.has(c.id) || c.tin) && (() => {
           const picked = c.tin;

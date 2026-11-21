@@ -25,8 +25,8 @@ elif cmd == "analyze":
         (W / "config.json").write_text("{}")
     print("2 rows must be read by meaning")
 elif cmd == "groups":
-    segs = [dict(kind="clip", it_idx=k, it_start_ms=k * 1000.0, it_end_ms=(k + 1) * 1000.0, us_start_ms=k * 900.0,
-                 us_end_ms=k * 900.0 + 900.0, it_text=f"riga {k}", us_text=f"line {k}", stretch_factor=1.111, note="")
+    segs = [dict(kind="clip", it_idx=k, it_start_ms=k * 1000.0, it_end_ms=(k + 1) * 1000.0, us_start_ms=k * 2000.0,
+                 us_end_ms=k * 2000.0 + 900.0, it_text=f"riga {k}", us_text=f"line {k}", stretch_factor=1.111, note="")
             for k in range(3)]
     (W / "manifest_groups.json").write_text(json.dumps(dict(total_ms=3000, segments=segs, bleed_report=[], groups=[])))
 elif cmd == "render":

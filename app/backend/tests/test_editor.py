@@ -13,6 +13,28 @@ def write_manifest(w, segs, total):
              us_text=f"line {k}", stretch_factor=1.0, note="") for k, (a, b, c, d) in enumerate(segs)], groups=[])))
 
 
+def test_editor_merges_one_grouping_take_and_keeps_scene_edit_cuts(tmp_path):
+    """Lip-group slices of the same source span are one timeline clip; B-roll is still a cut."""
+    w = tmp_path / "w"; w.mkdir()
+    segs = [
+        dict(kind="clip", it_idx=18, it_start_ms=109240, it_end_ms=110675, us_start_ms=93630, us_end_ms=94714,
+             it_text="Na gut.", us_text="alright", stretch_factor=1.324,
+             note="lip group: first source start to last source end, unused middle kept"),
+        dict(kind="clip", it_idx=19, it_start_ms=110675, it_end_ms=116040, us_start_ms=94714, us_end_ms=98767,
+             it_text="Horton looked surprised", us_text="Horton looked surprised", stretch_factor=1.324,
+             note="lip group: first source start to last source end, unused middle kept"),
+        dict(kind="clip", it_idx=25, it_start_ms=116040, it_end_ms=120000, us_start_ms=119400, us_end_ms=122000,
+             it_text="boss", us_text="boss", stretch_factor=1.0, note="slowfix case 1: B-roll shot 8", broll=True),
+    ]
+    (w / "manifest_groups.json").write_text(json.dumps(dict(total_ms=120000, segments=segs, groups=[])))
+    tl = tlm.build_v1(w)
+    assert len(tl["clips"]) == 2
+    a, b = tl["clips"]
+    assert a["t0"] == 109240 and a["t1"] == 116040 and a["s0"] == 93630 and a["s1"] == 98767
+    assert a["rows"] == [18, 19] and "Na gut" in a["dub_text"] and "Horton" in a["dub_text"]
+    assert b.get("broll") is True and b["row"] == 25
+
+
 def test_flags_and_checks(tmp_path):
     w = tmp_path / "w"
     # 0: real speed; 1: x0.2 (very slow); 2: x1.8 (fast); 3: a flash; 4: shows clip 0's footage again

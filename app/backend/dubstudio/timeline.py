@@ -40,8 +40,72 @@ def base_id(manifest):
     return hashlib.sha1(json.dumps(segs).encode()).hexdigest()[:12]
 
 
+def _speed(c):
+    return (c["s1"] - c["s0"]) / max(c["t1"] - c["t0"], 1)
+
+
+def same_picture_take(a, b, src_eps=40, speed_eps=0.02):
+    """True when a→b is one continuous source play (no picture cut in the finished video)."""
+    if abs(a["t1"] - b["t0"]) > 1:
+        return False
+    if abs(a["s1"] - b["s0"]) > src_eps:
+        return False
+    if bool(a.get("broll")) != bool(b.get("broll")):
+        return False
+    if a.get("media") != b.get("media"):
+        return False
+    if bool(a.get("zoom")) != bool(b.get("zoom")):
+        return False
+    if (a.get("pan_x"), a.get("pan_y")) != (b.get("pan_x"), b.get("pan_y")):
+        return False
+    if abs(_speed(a) - _speed(b)) > speed_eps:
+        return False
+    return True
+
+
+def _join_text(a, b):
+    a, b = (a or "").strip(), (b or "").strip()
+    if not b:
+        return a
+    if not a or b in a:
+        return a or b
+    return a + "\n" + b
+
+
+def merge_render_takes(clips):
+    """One editor clip per picture take: grouping span + unused middle stay one block; B-roll / speed /
+    source jumps stay cuts (what render actually shows)."""
+    if not clips:
+        return clips
+    out, cur = [], dict(clips[0])
+    rows = [cur["row"]] if cur.get("row") is not None else []
+    for c in clips[1:]:
+        if same_picture_take(cur, c):
+            cur["t1"], cur["s1"] = c["t1"], c["s1"]
+            cur["dub_text"] = _join_text(cur.get("dub_text"), c.get("dub_text"))
+            cur["src_text"] = _join_text(cur.get("src_text"), c.get("src_text"))
+            if c.get("row") is not None and c["row"] not in rows:
+                rows.append(c["row"])
+            note = (cur.get("note") or "") + " " + (c.get("note") or "")
+            if "lip group" in note or "unused middle" in note:
+                cur["note"] = "one take (grouping): first source start to last source end, unused middle kept"
+            continue
+        if len(rows) > 1:
+            cur["rows"] = rows
+        cur["orig"] = dict(t0=cur["t0"], t1=cur["t1"], s0=cur["s0"], s1=cur["s1"])
+        out.append(cur)
+        cur, rows = dict(c), ([c["row"]] if c.get("row") is not None else [])
+    if len(rows) > 1:
+        cur["rows"] = rows
+    cur["orig"] = dict(t0=cur["t0"], t1=cur["t1"], s0=cur["s0"], s1=cur["s1"])
+    out.append(cur)
+    for k, c in enumerate(out):
+        c["id"] = f"c{k}"
+    return out
+
+
 def build_v1(work):
-    """Timeline version 1 = the pipeline's edit list, one clip per segment."""
+    """Timeline version 1 = the pipeline's edit list, one clip per picture take (grouping / scene edit)."""
     m = pipeline_manifest(work)
     if m is None:
         return None
@@ -61,6 +125,7 @@ def build_v1(work):
         holes = []
     else:
         clips, holes = _cut_holes(clips, _matching_notes(Path(work))["not_found"])
+    clips = merge_render_takes(clips)
     return dict(base=base_id(m), total_ms=m["total_ms"], clips=clips, v2=[], approved=[], version=0, holes=holes)
 
 
@@ -80,9 +145,12 @@ def auto_edit(work):
     m = _load(Path(work) / "manifest_groups.auto.json")
     if not m:
         return None
-    return [dict(t0=round(s["it_start_ms"], 3), t1=round(s["it_end_ms"], 3), s0=round(s["us_start_ms"], 3),
-                 s1=round(s["us_end_ms"], 3), row=s.get("it_idx"), note=s.get("note") or "")
-            for s in sorted(m["segments"], key=lambda s: s["it_start_ms"])]
+    clips = [dict(t0=round(s["it_start_ms"], 3), t1=round(s["it_end_ms"], 3), s0=round(s["us_start_ms"], 3),
+                  s1=round(s["us_end_ms"], 3), row=s.get("it_idx"), note=s.get("note") or "",
+                  dub_text=s.get("it_text") or "", src_text=s.get("us_text") or "",
+                  broll=s.get("broll"), zoom=s.get("zoom"), media=s.get("video"))
+             for s in sorted(m["segments"], key=lambda s: s["it_start_ms"])]
+    return merge_render_takes(clips)
 
 
 def _cut_holes(clips, not_found):

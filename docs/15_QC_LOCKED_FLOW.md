@@ -15,6 +15,8 @@ Live code: `app/backend/pipeline_tools/dubstitch.py` + `app/backend/dubstudio/pi
 7. Use scene → **fast trim** (over 1.25×, from last; lip groups skip groups `--trim-fast`)
 8. Review → render → verify → bookends → transitions (5 styles, seed 24) → subs
 
+The editor timeline is **one block per picture take** (a lip group with unused middle is one clip; a scene-edit B-roll is a cut). Sentence text is still in the inspector. Razor still splits a take if you want a different cut.
+
 ## Groups — who is in a group (unchanged)
 
 - Same type (lip or narration), at most 7 rows.
