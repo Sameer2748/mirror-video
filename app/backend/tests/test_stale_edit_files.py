@@ -2,7 +2,8 @@
 import json
 from pathlib import Path
 
-from dubstudio.runner import drop_stale_edit_files, drop_previous_render, reset_work_for_new_run, snapshot_latest_groups
+from dubstudio.runner import clear_output_dir, drop_stale_edit_files, drop_previous_render, reset_work_for_new_run, snapshot_latest_groups
+from dubstudio.storage import latest_uploads
 
 
 def _write(p, body):
@@ -56,10 +57,34 @@ def test_render_drops_previous_segment_cache(tmp_path):
     (W / "segs_groups").mkdir()
     (W / "video_groups_nosubs.mp4").write_text("old picture")
     (O / "SHOW_EP1_before.mp4").write_text("old before")
+    (O / "SHOW_EP1_timeline_v2.xml").write_text("<xml/>")
     dropped = drop_previous_render(W, O)
     assert "segs_groups" in dropped and "video_groups_nosubs.mp4" in dropped
     assert "SHOW_EP1_before.mp4" in dropped
+    assert "SHOW_EP1_timeline_v2.xml" in dropped
     assert not (W / "video_groups_nosubs.mp4").exists()
+    assert not (O / "SHOW_EP1_timeline_v2.xml").exists()
+
+
+def test_process_again_clears_previous_output_files(tmp_path):
+    O = tmp_path / "out"; O.mkdir()
+    (O / "SHOW_EP1_final_en_subs.mp4").write_text("old")
+    (O / "SHOW_EP1_timeline_v2.xml").write_text("<xml/>")
+    dropped = clear_output_dir(O)
+    assert "SHOW_EP1_final_en_subs.mp4" in dropped
+    assert list(O.iterdir()) == []
+
+
+def test_deliverables_list_is_latest_kind_only():
+    rows = [
+        {"id": 9, "kind": "premiere", "name": "v3.xml"},
+        {"id": 8, "kind": "en_subs", "name": "en.mp4"},
+        {"id": 4, "kind": "premiere", "name": "v2.xml"},
+        {"id": 3, "kind": "en_subs", "name": "en.mp4"},
+        {"id": 2, "kind": "scene_sheet", "name": "scene.xlsx"},
+    ]
+    got = latest_uploads(rows)
+    assert [r["name"] for r in got] == ["v3.xml", "en.mp4", "scene.xlsx"]
 
 
 def test_snapshot_skips_editor_save(tmp_path):

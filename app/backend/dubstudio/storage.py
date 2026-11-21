@@ -477,8 +477,21 @@ def queue_uploads(db, show, ep, files, user_id=None):
     return rows
 
 
+def latest_uploads(rows):
+    """One row per kind (newest id first). Re-renders used to leave every previous XML/video in this list."""
+    seen, out = set(), []
+    for r in rows or []:
+        k = r.get("kind") or r.get("name")
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(r)
+    return out
+
+
 def uploads_of(db, eid, limit=100):
-    return db.q("SELECT * FROM uploads WHERE episode_id=? ORDER BY id DESC LIMIT ?", (eid, limit))
+    rows = db.q("SELECT * FROM uploads WHERE episode_id=? ORDER BY id DESC LIMIT ?", (eid, max(limit, 200)))
+    return latest_uploads(rows)
 
 
 def retry_upload(db, uid):
@@ -563,6 +576,32 @@ def _work_wanted(rel):
         elif "/" not in rel and fnmatch(rel, pat):
             return True
     return False
+
+
+def drop_cloud_work(show, ep, log=None):
+    """Process again: remove the previous run's small work files from R2 so they cannot be fetched back."""
+    _work_fetched.discard(str(ep.get("work_dir") or ""))
+    if not configured() or not show or not ep:
+        return 0
+    n = 0
+    try:
+        objects = listing(f"shows/{safe_name(show['code'])}/ep{ep['number']}/work", limit=1000)["objects"]
+    except Exception as ex:
+        if log:
+            log(f"could not clear previous work files in the cloud: {ex}")
+        return 0
+    for o in objects:
+        key = o.get("key") or ""
+        if "/work/" not in key:
+            continue
+        try:
+            delete(key)
+            n += 1
+        except Exception:
+            continue
+    if n and log:
+        log(f"dropped {n} previous work files from the cloud")
+    return n
 
 
 def fetch_work_files(show, ep, log=None):

@@ -75,6 +75,23 @@ def reset_work_for_new_run(work):
     return dropped
 
 
+def clear_output_dir(output_dir):
+    """Process again: finished files of the previous run must not sit next to the new ones."""
+    O = Path(output_dir) if output_dir else None
+    if not O or not O.is_dir():
+        return []
+    dropped = []
+    for p in list(O.iterdir()):
+        if p.name.startswith("."):
+            continue
+        if p.is_dir():
+            shutil.rmtree(p, ignore_errors=True)
+        else:
+            p.unlink(missing_ok=True)
+        dropped.append(p.name)
+    return dropped
+
+
 def drop_previous_render(work, output_dir=None):
     """Rebuild picture + transitions from the current edit list; do not concat leftover segment files."""
     W = Path(work)
@@ -90,7 +107,11 @@ def drop_previous_render(work, output_dir=None):
             p.unlink()
             dropped.append(name)
     if output_dir:
-        for p in Path(output_dir).glob("*_before.mp4"):
+        O = Path(output_dir)
+        for p in O.glob("*_before.mp4"):
+            p.unlink(missing_ok=True)
+            dropped.append(p.name)
+        for p in O.glob("*_timeline_v*.xml"):
             p.unlink(missing_ok=True)
             dropped.append(p.name)
     return dropped
@@ -212,6 +233,11 @@ class Runner:
         Path(ep["work_dir"]).mkdir(parents=True, exist_ok=True)
         Path(ep["output_dir"]).mkdir(parents=True, exist_ok=True)
         reset_work_for_new_run(ep["work_dir"])
+        clear_output_dir(ep["output_dir"])
+        try:
+            storage.drop_cloud_work(show, ep)
+        except Exception:
+            pass
         ctx, plan = pipeline_steps.plan(show, ep, assets)
         run = (self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))["r"] or 0) + 1
         rt = Path(ep["work_dir"]) / "run_times.tsv"         # a new run starts its own time + cost table
