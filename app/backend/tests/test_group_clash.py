@@ -56,6 +56,23 @@ def test_fully_inside_leftover_parks_before_lip_span():
     assert not st.group_footage_clash(out, gi, set(), lip)
 
 
+def test_both_leftover_rows_trimmed_off_lip_span():
+    """Same leftover group: IT#16 is already clear, IT#17 still hangs into Horton — trim 17 too."""
+    st = load_stitch()
+    a = _seg(16, 100860, 106040, 86540, 90640)
+    b = _seg(17, 106040, 109240, 90640, 94700)
+    lip18 = _seg(18, 109240, 109740, 93630, 94010)
+    lip19 = _seg(19, 109740, 114560, 94010, 97920)
+    out = [a, b, lip18, lip19]
+    gi = {id(a): 0, id(b): 0, id(lip18): 1, id(lip19): 1}
+    n = st.trim_shared_footage(out, gi, set(), lip={18: {}, 19: {}})
+    assert n >= 1
+    assert a["us_start_ms"] == 86540 and a["us_end_ms"] == 90640
+    assert b["us_end_ms"] <= 93630 + 0.001
+    assert b["us_start_ms"] == 90640
+    assert not st.group_footage_clash(out, gi, set(), lip={18: {}, 19: {}})
+
+
 def test_leftover_beside_lip_group_is_not_eaten():
     """Kira-look leftover 86.5–93.2 must stay when Horton lip group is 93.63–118.74."""
     st = load_stitch()

@@ -2365,14 +2365,51 @@ def group_footage_clash(out, gi, repeat_rows, lip=None):
     return hits
 
 
+def _trim_cut_to_span(cut, k0, k1, keep_idx, lip_keep):
+    """Move `cut` off [k0, k1). No-op when they do not overlap. Never expand a clip to fill the gap."""
+    shared = min(k1, cut["us_end_ms"]) - max(k0, cut["us_start_ms"])
+    if shared <= 1:
+        return 0.0
+    c0, c1 = cut["us_start_ms"], cut["us_end_ms"]
+    if c0 < k0 <= c1:
+        cut["us_end_ms"] = k0
+        if cut["us_end_ms"] - cut["us_start_ms"] < 1:
+            cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
+    elif c0 < k1 <= c1:
+        cut["us_start_ms"] = k1
+        if cut["us_end_ms"] - cut["us_start_ms"] < 1:
+            cut["us_start_ms"], cut["us_end_ms"] = k1, k1 + 1
+    elif k0 <= c0 and c1 <= k1:
+        cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
+    else:
+        left = k0 - c0
+        right = c1 - k1
+        if right >= left:
+            cut["us_start_ms"] = k1
+        else:
+            cut["us_end_ms"] = k0
+    if cut["us_end_ms"] - cut["us_start_ms"] < 80 and not lip_keep:
+        old0, old1 = cut["us_start_ms"], cut["us_end_ms"]
+        if cut["us_start_ms"] >= k1:
+            cut["us_end_ms"] = cut["us_start_ms"] + 80
+        elif cut["us_end_ms"] <= k0:
+            cut["us_start_ms"] = cut["us_end_ms"] - 80
+        if min(cut["us_end_ms"], k1) - max(cut["us_start_ms"], k0) > 1:
+            cut["us_start_ms"], cut["us_end_ms"] = old0, old1
+    cut["stretch_factor"] = round((cut["it_end_ms"] - cut["it_start_ms"]) / max(cut["us_end_ms"] - cut["us_start_ms"], 1), 3)
+    cut["note"] = ((cut.get("note") or "") + f"; trimmed {shared / 1000:.2f}s that IT#{keep_idx} already plays").lstrip("; ")
+    return shared
+
+
 def trim_shared_footage(out, gi, repeat_rows, lip=None):
     """Two groups sharing source time (a lip window spilled into the next row, or the dub
     plays source lines out of order) used to kill the episode. TGS ep33 IT#156/157 overlapped
     113 ms after lipsync padded 157 into 156. Keep the lip-sync row (or the earlier dub line)
     and trim the other. Never fail the run for this.
 
-    Never pad a leftover to 80 ms *inside* a lip group's span: that 80 ms still overlaps
-    the next slice, the loop repeats, and the leftover becomes a ×0.02 sliver.
+    A lip group is one span. Trim every leftover segment that sits in that span — not only the
+    first row of the leftover group (EP71: IT#16 was clipped, IT#17 kept Horton). Never pad
+    80 ms inside the lip take.
     """
     lip = lip or {}
     lip_g = _lip_group_ids(out, gi, lip)
@@ -2388,39 +2425,19 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
         kx = gi[id(keep)]
         if kx in lip_g:
             k0, k1 = _group_us_span(out, gi, kx)
+            cg = gi[id(cut)]
+            did = 0
+            for s in out:
+                if gi[id(s)] != cg or s["it_idx"] in lip:
+                    continue
+                if _trim_cut_to_span(s, k0, k1, keep["it_idx"], True) > 1:
+                    did += 1
+            if did == 0:
+                return n
         else:
             k0, k1 = keep["us_start_ms"], keep["us_end_ms"]
-        shared = min(k1, cut["us_end_ms"]) - max(k0, cut["us_start_ms"])
-        c0, c1 = cut["us_start_ms"], cut["us_end_ms"]
-        if c0 < k0 <= c1:
-            cut["us_end_ms"] = k0
-            if cut["us_end_ms"] - cut["us_start_ms"] < 1:
-                cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
-        elif c0 < k1 <= c1:
-            cut["us_start_ms"] = k1
-            if cut["us_end_ms"] - cut["us_start_ms"] < 1:
-                cut["us_start_ms"], cut["us_end_ms"] = k1, k1 + 1
-        elif k0 <= c0 and c1 <= k1:
-            cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
-        else:
-            left = k0 - c0
-            right = c1 - k1
-            if right >= left:
-                cut["us_start_ms"] = k1
-            else:
-                cut["us_end_ms"] = k0
-        # 80 ms pad only when it stays outside the keep span (leftover vs leftover).
-        # Never pad into a lip-group take.
-        if cut["us_end_ms"] - cut["us_start_ms"] < 80 and kx not in lip_g:
-            old0, old1 = cut["us_start_ms"], cut["us_end_ms"]
-            if cut["us_start_ms"] >= k1:
-                cut["us_end_ms"] = cut["us_start_ms"] + 80
-            elif cut["us_end_ms"] <= k0:
-                cut["us_start_ms"] = cut["us_end_ms"] - 80
-            if min(cut["us_end_ms"], k1) - max(cut["us_start_ms"], k0) > 1:
-                cut["us_start_ms"], cut["us_end_ms"] = old0, old1
-        cut["stretch_factor"] = round((cut["it_end_ms"] - cut["it_start_ms"]) / max(cut["us_end_ms"] - cut["us_start_ms"], 1), 3)
-        cut["note"] = ((cut.get("note") or "") + f"; trimmed {shared / 1000:.2f}s that IT#{keep['it_idx']} already plays").lstrip("; ")
+            if _trim_cut_to_span(cut, k0, k1, keep["it_idx"], False) <= 1:
+                return n
         n += 1
     return n
 
