@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import cfg, ROOT
 from .db import DB, now
 from .events import bus
-from .runner import Runner
+from .runner import Runner, drop_previous_render
 from . import auth, envfile, gen, imports, linksheet, presets, scan, deliver, names as nm, settings as stg, storage, subzoom, timeline as tlm
 from .pipeline import steps as pipeline_steps
 from .pipeline import decisions as dec
@@ -1681,6 +1681,7 @@ def _kick_render(eid, body, note=None, force=False):
     tl["base"] = v1["base"]
     v = _new_version(eid, tl, "render", note or "rendered")
     tlm.write_manifest(work, tl, v)
+    drop_previous_render(work, e.get("output_dir"))
     (Path(work) / "timeline_draft.json").unlink(missing_ok=True)
     _, _, _, ctx = _ep_ctx(eid)
     _deliver_en_srt(work, ctx)

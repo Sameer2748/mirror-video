@@ -50,6 +50,52 @@ def drop_stale_edit_files(work):
     return dropped
 
 
+KEEP_WORK_ON_SCRATCH = {"input"}
+RENDER_CACHE_DIRS = ("segs", "segs_groups", "segs_groups.auto", "bookends")
+RENDER_CACHE_FILES = (
+    "video_groups_nosubs.mp4", "silent_groups.mp4", "concat_groups.txt",
+    "silent_groups.auto.mp4", "concat_groups.auto.txt", "clean_noglow.mp4",
+)
+
+
+def reset_work_for_new_run(work):
+    """Process again from the first step: drop every leftover of the previous run except input files."""
+    W = Path(work)
+    if not W.is_dir():
+        return []
+    dropped = []
+    for p in list(W.iterdir()):
+        if p.name in KEEP_WORK_ON_SCRATCH:
+            continue
+        if p.is_dir():
+            shutil.rmtree(p, ignore_errors=True)
+        else:
+            p.unlink(missing_ok=True)
+        dropped.append(p.name)
+    return dropped
+
+
+def drop_previous_render(work, output_dir=None):
+    """Rebuild picture + transitions from the current edit list; do not concat leftover segment files."""
+    W = Path(work)
+    dropped = []
+    for name in RENDER_CACHE_DIRS:
+        p = W / name
+        if p.is_dir():
+            shutil.rmtree(p, ignore_errors=True)
+            dropped.append(name)
+    for name in RENDER_CACHE_FILES:
+        p = W / name
+        if p.exists():
+            p.unlink()
+            dropped.append(name)
+    if output_dir:
+        for p in Path(output_dir).glob("*_before.mp4"):
+            p.unlink(missing_ok=True)
+            dropped.append(p.name)
+    return dropped
+
+
 def snapshot_latest_groups(work):
     """Point scene edit + the editor at this groups output (overwrite any leftover snapshot)."""
     if not work:
@@ -165,7 +211,7 @@ class Runner:
             raise ValueError(f"missing input files: {', '.join(missing)}")
         Path(ep["work_dir"]).mkdir(parents=True, exist_ok=True)
         Path(ep["output_dir"]).mkdir(parents=True, exist_ok=True)
-        drop_stale_edit_files(ep["work_dir"])
+        reset_work_for_new_run(ep["work_dir"])
         ctx, plan = pipeline_steps.plan(show, ep, assets)
         run = (self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))["r"] or 0) + 1
         rt = Path(ep["work_dir"]) / "run_times.tsv"         # a new run starts its own time + cost table

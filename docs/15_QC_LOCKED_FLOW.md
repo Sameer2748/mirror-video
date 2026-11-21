@@ -44,6 +44,8 @@ Do **not** add unused source to a clip that is already too fast. Do **not** eat 
 
 Groups always overwrites `manifest_groups.grouping.json` from this run’s groups output. Process-again and rerun-from groups drop leftover grouping / automatic-edit / editor draft / render-gate files so scene edit, the editor, and render never keep a previous run’s cut.
 
+**Process again** clears the work folder except `input/` (no leftover lips, matching, grouping, or segment cache). **Render** (bulk first draft or after an editor change) drops `segs_groups` and the previous concat so picture and transitions are built from the current timeline.
+
 ## Scene edit — do not reopen
 
 B-roll only for slow leftovers (and wrong-person). Lip-sync conversation already in range stays the grouping take. Fast leftovers: `fast_trim` from last after scene edit.

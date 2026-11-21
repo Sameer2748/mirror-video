@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-from dubstudio.runner import drop_stale_edit_files, snapshot_latest_groups
+from dubstudio.runner import drop_stale_edit_files, drop_previous_render, reset_work_for_new_run, snapshot_latest_groups
 
 
 def _write(p, body):
@@ -34,6 +34,32 @@ def test_snapshot_overwrites_old_grouping(tmp_path):
     kept = json.loads((W / "manifest_groups.grouping.json").read_text())
     assert kept["segments"][0]["it_idx"] == 18
     assert "span" in kept["segments"][0]["note"]
+
+
+def test_process_again_keeps_only_input(tmp_path):
+    W = Path(tmp_path)
+    (W / "input").mkdir()
+    (W / "input" / "src.mp4").write_text("vid")
+    (W / "segs_groups").mkdir()
+    (W / "segs_groups" / "part.mp4").write_text("old")
+    (W / "lipsync.json").write_text("{}")
+    (W / "manifest_groups.json").write_text("{}")
+    dropped = reset_work_for_new_run(W)
+    assert "lipsync.json" in dropped and "segs_groups" in dropped
+    assert (W / "input" / "src.mp4").exists()
+    assert not (W / "lipsync.json").exists()
+    assert not (W / "segs_groups").exists()
+
+
+def test_render_drops_previous_segment_cache(tmp_path):
+    W = Path(tmp_path); O = tmp_path / "out"; O.mkdir()
+    (W / "segs_groups").mkdir()
+    (W / "video_groups_nosubs.mp4").write_text("old picture")
+    (O / "SHOW_EP1_before.mp4").write_text("old before")
+    dropped = drop_previous_render(W, O)
+    assert "segs_groups" in dropped and "video_groups_nosubs.mp4" in dropped
+    assert "SHOW_EP1_before.mp4" in dropped
+    assert not (W / "video_groups_nosubs.mp4").exists()
 
 
 def test_snapshot_skips_editor_save(tmp_path):

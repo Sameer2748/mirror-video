@@ -567,7 +567,9 @@ export default function Editor() {
       if (I.dataset.m !== c.media) { I.dataset.m = c.media; I.src = url; return; }   // onLoadedData shows the frame
       I.classList.remove("hidden");
       paintMotion(I, byIdRef.current.get(c.id!));
-      const sp = (c.s1! - c.s0!) / Math.max(c.t1 - c.t0, 1); const want = (c.s0! + (t - c.t0) * sp) / 1000 + (play ? leadOf(I) : 0);
+      const sp = (c.s1! - c.s0!) / Math.max(c.t1 - c.t0, 1);
+      const clipLo = (c.s0! || 0) / 1000, clipHi = Math.max(clipLo, (c.s1! || 0) / 1000 - 1 / 30);
+      const want = clamp((c.s0! + (t - c.t0) * sp) / 1000 + (play ? leadOf(I) : 0), clipLo, clipHi);
       const base = clamp(sp, 0.0625, 16); let rate = base;
       if (play) {
         if (I.paused) I.play().catch(() => {});
@@ -590,7 +592,10 @@ export default function Editor() {
       return;
     }
     const key = `${c.id}@${Math.round(c.t0)}`; const sp = (c.s1! - c.s0!) / Math.max(c.t1 - c.t0, 1);
-    const want = (c.s0! + (t - c.t0) * sp) / 1000 + (play ? leadOf(vids[act.current].current!) : 0);
+    const clipLo = (c.s0! || 0) / 1000;
+    const clipHi = Math.max(clipLo, (c.s1! || 0) / 1000 - 1 / 30);
+    const raw = (c.s0! + (t - c.t0) * sp) / 1000;
+    const want = clamp(raw + (play ? leadOf(vids[act.current].current!) : 0), clipLo, clipHi);
     if (vClip.current[a] !== key) {
       if (vClip.current[1 - a] === key) { a = 1 - a; act.current = a; }    // the standby player is already here
       vClip.current[a] = key;
@@ -604,11 +609,20 @@ export default function Editor() {
     const base = clamp(sp, 0.0625, 16);
     let rate = base;
     if (play) {
-      if (V.paused) V.play().catch(() => {});
-      const err = V.currentTime - want, now = performance.now();       // + = picture ahead of the voice
-      // a hard seek every 250 ms keeps the player in "seeking" and pauses the voice on a cutty stretch (TAB EP22)
-      if (Math.abs(err) > 0.8 && now - lastFix.current > 500 && !V.seeking) { V.currentTime = want; lastFix.current = now; }
-      else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
+      // Hold the last in-clip frame. The source file continues after s1; without a clamp the monitor
+      // shows ~1 s of the next shot that is not on this clip (the finished render does not).
+      if (raw >= clipHi - 0.02) {
+        if (!V.paused) V.pause();
+        if (Math.abs(V.currentTime - clipHi) > 0.02 && !V.seeking) V.currentTime = clipHi;
+        rate = base;
+      } else {
+        if (V.paused) V.play().catch(() => {});
+        const err = V.currentTime - want, now = performance.now();       // + = picture ahead of the voice
+        // a hard seek every 250 ms keeps the player in "seeking" and pauses the voice on a cutty stretch (TAB EP22)
+        if (V.currentTime > clipHi + 0.02 && !V.seeking) { V.currentTime = clipHi; lastFix.current = now; }
+        else if (Math.abs(err) > 0.8 && now - lastFix.current > 500 && !V.seeking) { V.currentTime = want; lastFix.current = now; }
+        else if (Math.abs(err) > 0.015) rate = clamp(base * (1 - clamp(err * 2, -0.25, 0.25)), 0.0625, 16);
+      }
     }
     if (Math.abs(V.playbackRate - rate) > 0.001) V.playbackRate = rate;
     // HAVE_CURRENT_DATA (2) is enough to show a frame; R2 often sits here while playing
@@ -2036,9 +2050,11 @@ function TimelineView(p: {
   const thumbsFor = (c: Clip, w: number, laneH = H.v1) => {
     if (c.media) return null;                                       // an imported clip: no frames from the source video
     const n = w < 16 ? 1 : clamp(Math.ceil(w / Math.max(laneH * 1.2, 40)), 1, 8);
-    const span = Math.max((c.s1 || 0) - (c.s0 || 0), 1);
+    const s0 = c.s0 || 0, s1 = c.s1 || 0;
+    const span = Math.max(s1 - s0, 1);
     return Array.from({ length: n }, (_, k) => {
-      const ms = Math.round(((c.s0 || 0) + ((k + 0.5) / n) * span) / 500) * 500;
+      const raw = s0 + ((k + 0.5) / n) * span;
+      const ms = clamp(Math.round(raw / 500) * 500, s0, Math.max(s0, s1 - 1));
       return <img key={`${p.thumbRev}-${k}`} src={`/api/episodes/${p.eid}/thumb?ms=${ms}&h=80&r=${p.thumbRev}`} loading="lazy" alt="" draggable={false}
         onError={(e) => { const el = e.currentTarget; el.onerror = null; el.remove(); }} />;
     });
