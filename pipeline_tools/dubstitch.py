@@ -34,7 +34,7 @@ Run in order, always with the same --work folder:
   lipmark   (tests) mark each word-timed sentence "speaking on screen" or not, from lipdetect.py --range results
   listen    (optional) transcribe a stretch of the dub audio, e.g. to confirm a repeat
 """
-import argparse, difflib, hashlib, io, json, math, os, re, shutil, subprocess, sys, time
+import argparse, difflib, glob, hashlib, io, json, math, os, re, shutil, subprocess, sys, time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
@@ -2422,6 +2422,9 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
         keep, cut = (x, y) if (x["it_idx"] in lip) != (y["it_idx"] in lip) and x["it_idx"] in lip \
             else (y, x) if (x["it_idx"] in lip) != (y["it_idx"] in lip) \
             else (x, y) if x["it_start_ms"] <= y["it_start_ms"] else (y, x)
+        # Lip group is one take: never carve it to feed a leftover (prev TGS rule: lip keeps the overlap).
+        if gi[id(cut)] in lip_g and gi[id(keep)] not in lip_g:
+            keep, cut = cut, keep
         kx = gi[id(keep)]
         if kx in lip_g:
             k0, k1 = _group_us_span(out, gi, kx)
@@ -2485,6 +2488,67 @@ def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed
     return lip_group_span_clip(members, segs, rows)
 
 
+def _span_of(g):
+    ss = g.get("segments") or []
+    if not ss:
+        return None
+    return min(s["us_start_ms"] for s in ss), max(s["us_end_ms"] for s in ss)
+
+
+def other_group_spans(groups, g):
+    out = []
+    for h in groups:
+        if h is g:
+            continue
+        sp = _span_of(h)
+        if sp:
+            out.append(sp)
+    return out
+
+
+def fit_segments_to_span(ss, new0, new1):
+    """Play [new0, new1) over first dub start → last dub end. One speed."""
+    if not ss or new1 - new0 <= 1:
+        return
+    it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
+    span_it, span_us = it1 - it0, new1 - new0
+    if span_it <= 1:
+        return
+    for s in ss:
+        s["us_start_ms"] = round(new0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
+        s["us_end_ms"] = round(new0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
+        s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+
+
+def leftover_off_others(g, others, pad=50):
+    """Lip (and any other group) keeps its take. Leftover source is cut off that span."""
+    if g.get("lipgroup") or g.get("lip"):
+        return False
+    ss = g.get("segments") or []
+    sp = _span_of(g)
+    if not ss or not sp:
+        return False
+    us0, us1 = sp
+    n0, n1 = clamp_span_to_others(us0, us1, others, pad)
+    if abs(n0 - us0) < 0.5 and abs(n1 - us1) < 0.5:
+        return False
+    fit_segments_to_span(ss, n0, n1)
+    g["us0"], g["us1"] = n0, n1
+    g["kept"] = n1 - n0
+    it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
+    g["stretch"] = (it1 - it0) / max(n1 - n0, 1)
+    return True
+
+
+def enforce_leftover_off_others(groups, pad=50):
+    """Single owner: after any leftover US write, leftover must not sit on another group's take."""
+    n = 0
+    for g in groups:
+        if leftover_off_others(g, other_group_spans(groups, g), pad):
+            n += 1
+    return n
+
+
 def expand_groups_into_unused(groups, target=1.25):
     """If a group or single clip is slower than `target` (dub/src), eat unused
     source immediately before/after that no other group plays. Unused in the
@@ -2511,16 +2575,10 @@ def expand_groups_into_unused(groups, target=1.25):
         if stretch <= target + 1e-6:
             continue
         need = it_dur / target - us_dur
-        others = []
-        for j, h in enumerate(groups):
-            if j == i:
-                continue
-            hs = h.get("segments") or []
-            if not hs:
-                continue
-            others.append((min(s["us_start_ms"] for s in hs), max(s["us_end_ms"] for s in hs)))
-        prev_end = max((b for a, b in others if b <= us0 + 40), default=None)
-        next_start = min((a for a, b in others if a >= us1 - 40), default=None)
+        others = other_group_spans(groups, g)
+        # Occupied = any other group's span, including one we already overlap.
+        prev_end = max((b for a, b in others if a < us1 - 40), default=None)
+        next_start = min((a for a, b in others if b > us0 + 40), default=None)
         rb = max(0.0, (us0 - prev_end) - 40) if prev_end is not None else 0.0
         ra = max(0.0, (next_start - us1) - 40) if next_start is not None else 0.0
         ta = min(ra, need / 2)
@@ -2535,7 +2593,7 @@ def expand_groups_into_unused(groups, target=1.25):
             t0 = (s["us_start_ms"] - us0) / span_old
             t1 = (s["us_end_ms"] - us0) / span_old
             s["us_start_ms"] = round(new0 + t0 * span_new, 3)
-            s["us_end_ms"] = round(new1 + t1 * span_new, 3)
+            s["us_end_ms"] = round(new0 + t1 * span_new, 3)
             s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
             extra = f"unused edges +{tb / 1000:.2f}s before +{ta / 1000:.2f}s after"
             note = (s.get("note") or "").strip()
@@ -2547,6 +2605,22 @@ def expand_groups_into_unused(groups, target=1.25):
         filled.append((g["rows"][0], g["rows"][-1], round(tb), round(ta), round(g["stretch"], 3)))
     return filled
 
+
+def clamp_span_to_others(us0, us1, others, pad=50):
+    """Keep a leftover span out of another group's take (lip first). Local-tested helper."""
+    for a, b in others:
+        if min(us1, b) - max(us0, a) <= pad:
+            continue
+        left, right = a - us0, us1 - b
+        if left >= right and left > pad:
+            us1 = a
+        elif right > pad:
+            us0 = b
+        else:
+            us1 = a
+            if us1 - us0 < 1:
+                us0, us1 = a - 1, a
+    return us0, us1
 
 
 def cmd_groups(a):
@@ -2743,6 +2817,7 @@ def cmd_groups(a):
     groups += chain_groups
     groups.sort(key=lambda g: g["it0"])
     unused_fill = expand_groups_into_unused(groups, target=getattr(a, "max_stretch", 1.25) or 1.25)
+    enforce_leftover_off_others(groups)
     for g in groups:
         k = g["first_seg"]
         if "break_before" not in g: g["break_before"] = brk.get(k, "start" if k == 0 else f"block of {a.size} rows")
@@ -2767,18 +2842,16 @@ def cmd_groups(a):
                    for x, y in zip(ss, ss[1:])):
             continue
         it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
-        us0 = min(s["us_start_ms"] for s in ss)
-        us1 = max(s["us_end_ms"] for s in ss)
-        span_it, span_us = it1 - it0, us1 - us0
-        if span_it <= 1 or span_us <= 1:
+        us0, us1 = clamp_span_to_others(*_span_of(g), other_group_spans(groups, g))
+        if it1 - it0 <= 1 or us1 - us0 <= 1:
             continue
-        for s in ss:
-            s["us_start_ms"] = round(us0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
-            s["us_end_ms"] = round(us0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
-            s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+        fit_segments_to_span(ss, us0, us1)
         n_span += 1
+    n_off = enforce_leftover_off_others(groups)
     if n_span:
         print(f"groups: {n_span} leftover group(s) shared overlapping source — played as one forward span")
+    if n_off:
+        print(f"groups: {n_off} leftover group(s) pulled off another group's take")
     leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows, lip)]
     for g in groups:
         ss = g.get("segments") or []
@@ -3088,13 +3161,82 @@ def cmd_dynsrt(a):
     dynsubs.make_plan(a.work, words, a.out, find_font(a.font, a.size), (W, H), size=a.size)
     cfg = load(a.work, "config.json"); cfg["dynamic_srt"] = os.path.abspath(a.out); save(a.work, "config.json", cfg)
 
+def _resolve_output_path(p, cfg, work=None):
+    """The file on this machine, even when config.json still names the worker's `/out/...`.
+
+    `subs_outputs` is keyed by the video path. Unpacking used to rewrite values but not keys, so
+    check looked for `/out/SHOW_EPN_IT_final_en_subs.mp4` after the files had landed next to the
+    clean master (IMTS EP69/70)."""
+    if p and os.path.isfile(p):
+        return os.path.abspath(p)
+    name = os.path.basename(p or "")
+    if not name:
+        return p
+    dirs = []
+    for key in ("clean_final", "sheet_out", "groups_review"):
+        q = cfg.get(key)
+        if q:
+            dirs.append(os.path.dirname(q))
+    if work:
+        dirs.append(work)
+    for d in dirs:
+        cand = os.path.join(d, name)
+        if os.path.isfile(cand):
+            return os.path.abspath(cand)
+    return p
+
+
+def _heal_subs_outputs(cfg, work=None):
+    """Rewrite leftover `/out/...` keys in `subs_outputs` (and `clean_final`) to files on this disk."""
+    changed = False
+    clean = cfg.get("clean_final")
+    q = _resolve_output_path(clean, cfg, work)
+    if q and q != clean:
+        cfg["clean_final"] = q
+        changed = True
+    healed = {}
+    for p, meta in (cfg.get("subs_outputs") or {}).items():
+        r = _resolve_output_path(p, cfg, work)
+        if r != p:
+            changed = True
+        healed[r] = meta
+    if healed:
+        cfg["subs_outputs"] = healed
+    return changed
+
+
+def _find_translated_srt(work, cfg):
+    """The English SRT on disk, even when config.json lost `translation.out`.
+
+    Translate writes it under the output folder. A later cloud visit unpacks an older config.json
+    (scene/cut packed before the AI fallback finished) and wipes the pointer; the file stays."""
+    cands = []
+    cur = (cfg.get("translation") or {}).get("out")
+    if cur:
+        cands.append(cur)
+    for key in ("sheet_out", "clean_final", "groups_review"):
+        p = cfg.get(key)
+        if p:
+            d = os.path.dirname(p)
+            cands.extend(sorted(glob.glob(os.path.join(d, "*english*.srt"))))
+    cands.extend(sorted(glob.glob(os.path.join(work, "*english*.srt"))))
+    cands.append(os.path.join(work, "english_translation_original.srt"))
+    for p in cands:
+        if p and os.path.isfile(p):
+            return os.path.abspath(p)
+    return None
+
+
 def cmd_check(a):
     from PIL import Image, ImageDraw
     cfg = load(a.work, "config.json"); bad = []
+    if _heal_subs_outputs(cfg, a.work):
+        save(a.work, "config.json", cfg)
     clean = cfg.get("clean_final"); subs = cfg.get("subs_outputs") or {}
     vids = ([("clean", clean)] if clean else []) + [(os.path.basename(v["srt"]), p) for p, v in subs.items()]
     if not clean or not os.path.exists(clean): bad.append("no clean master (run `bookends --out ...`)")
-    if len([p for p in subs if os.path.exists(p)]) < a.expect_subs: bad.append(f"only {len(subs)} subtitled videos, expected {a.expect_subs}")
+    have = [p for p in subs if os.path.exists(p)]
+    if len(have) < a.expect_subs: bad.append(f"only {len(have)} subtitled videos, expected {a.expect_subs}")
     ref = probe_duration_ms(clean) if clean and os.path.exists(clean) else None
     FPS = out_fps(cfg)
     for name, p in vids:
@@ -3105,8 +3247,16 @@ def cmd_check(a):
         ok = "video" in st and "audio" in st and (ref is None or abs(d - ref) <= 2 * 1000 / FPS + 60)
         print(f"{'OK ' if ok else 'BAD'} {os.path.basename(p)}: {d / 1000:.3f}s, streams {sorted(set(st))}")
         if not ok: bad.append(f"{os.path.basename(p)}: streams {st}, {d} ms vs clean {ref} ms")
+    t_srt = (cfg.get("translation") or {}).get("out")
+    if not (t_srt and os.path.exists(t_srt)):
+        # AI translate writes the SRT; a later cloud unpack of config.json (scene/cut) can wipe
+        # translation.out. The file is still next to the videos. TAB EP31: check printed None.
+        t_srt = _find_translated_srt(a.work, cfg)
+        if t_srt:
+            cfg.setdefault("translation", {})["out"] = t_srt
+            save(a.work, "config.json", cfg)
     for label, p in (("mapping sheet", cfg.get("sheet_out")), ("dynamic-group review", cfg.get("groups_review")),
-                     ("translated SRT", (cfg.get("translation") or {}).get("out"))):
+                     ("translated SRT", t_srt)):
         good = bool(p) and os.path.exists(p)
         print(f"{'OK ' if good else 'BAD'} {label}: {p}")
         if not good: bad.append(f"{label} missing")

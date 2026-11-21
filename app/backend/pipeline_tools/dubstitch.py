@@ -2422,6 +2422,9 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
         keep, cut = (x, y) if (x["it_idx"] in lip) != (y["it_idx"] in lip) and x["it_idx"] in lip \
             else (y, x) if (x["it_idx"] in lip) != (y["it_idx"] in lip) \
             else (x, y) if x["it_start_ms"] <= y["it_start_ms"] else (y, x)
+        # Lip group is one take: never carve it to feed a leftover (prev TGS rule: lip keeps the overlap).
+        if gi[id(cut)] in lip_g and gi[id(keep)] not in lip_g:
+            keep, cut = cut, keep
         kx = gi[id(keep)]
         if kx in lip_g:
             k0, k1 = _group_us_span(out, gi, kx)
@@ -2485,6 +2488,67 @@ def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed
     return lip_group_span_clip(members, segs, rows)
 
 
+def _span_of(g):
+    ss = g.get("segments") or []
+    if not ss:
+        return None
+    return min(s["us_start_ms"] for s in ss), max(s["us_end_ms"] for s in ss)
+
+
+def other_group_spans(groups, g):
+    out = []
+    for h in groups:
+        if h is g:
+            continue
+        sp = _span_of(h)
+        if sp:
+            out.append(sp)
+    return out
+
+
+def fit_segments_to_span(ss, new0, new1):
+    """Play [new0, new1) over first dub start → last dub end. One speed."""
+    if not ss or new1 - new0 <= 1:
+        return
+    it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
+    span_it, span_us = it1 - it0, new1 - new0
+    if span_it <= 1:
+        return
+    for s in ss:
+        s["us_start_ms"] = round(new0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
+        s["us_end_ms"] = round(new0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
+        s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+
+
+def leftover_off_others(g, others, pad=50):
+    """Lip (and any other group) keeps its take. Leftover source is cut off that span."""
+    if g.get("lipgroup") or g.get("lip"):
+        return False
+    ss = g.get("segments") or []
+    sp = _span_of(g)
+    if not ss or not sp:
+        return False
+    us0, us1 = sp
+    n0, n1 = clamp_span_to_others(us0, us1, others, pad)
+    if abs(n0 - us0) < 0.5 and abs(n1 - us1) < 0.5:
+        return False
+    fit_segments_to_span(ss, n0, n1)
+    g["us0"], g["us1"] = n0, n1
+    g["kept"] = n1 - n0
+    it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
+    g["stretch"] = (it1 - it0) / max(n1 - n0, 1)
+    return True
+
+
+def enforce_leftover_off_others(groups, pad=50):
+    """Single owner: after any leftover US write, leftover must not sit on another group's take."""
+    n = 0
+    for g in groups:
+        if leftover_off_others(g, other_group_spans(groups, g), pad):
+            n += 1
+    return n
+
+
 def expand_groups_into_unused(groups, target=1.25):
     """If a group or single clip is slower than `target` (dub/src), eat unused
     source immediately before/after that no other group plays. Unused in the
@@ -2511,16 +2575,10 @@ def expand_groups_into_unused(groups, target=1.25):
         if stretch <= target + 1e-6:
             continue
         need = it_dur / target - us_dur
-        others = []
-        for j, h in enumerate(groups):
-            if j == i:
-                continue
-            hs = h.get("segments") or []
-            if not hs:
-                continue
-            others.append((min(s["us_start_ms"] for s in hs), max(s["us_end_ms"] for s in hs)))
-        prev_end = max((b for a, b in others if b <= us0 + 40), default=None)
-        next_start = min((a for a, b in others if a >= us1 - 40), default=None)
+        others = other_group_spans(groups, g)
+        # Occupied = any other group's span, including one we already overlap.
+        prev_end = max((b for a, b in others if a < us1 - 40), default=None)
+        next_start = min((a for a, b in others if b > us0 + 40), default=None)
         rb = max(0.0, (us0 - prev_end) - 40) if prev_end is not None else 0.0
         ra = max(0.0, (next_start - us1) - 40) if next_start is not None else 0.0
         ta = min(ra, need / 2)
@@ -2535,7 +2593,7 @@ def expand_groups_into_unused(groups, target=1.25):
             t0 = (s["us_start_ms"] - us0) / span_old
             t1 = (s["us_end_ms"] - us0) / span_old
             s["us_start_ms"] = round(new0 + t0 * span_new, 3)
-            s["us_end_ms"] = round(new1 + t1 * span_new, 3)
+            s["us_end_ms"] = round(new0 + t1 * span_new, 3)
             s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
             extra = f"unused edges +{tb / 1000:.2f}s before +{ta / 1000:.2f}s after"
             note = (s.get("note") or "").strip()
@@ -2546,6 +2604,23 @@ def expand_groups_into_unused(groups, target=1.25):
         g["kept"] = new1 - new0
         filled.append((g["rows"][0], g["rows"][-1], round(tb), round(ta), round(g["stretch"], 3)))
     return filled
+
+
+def clamp_span_to_others(us0, us1, others, pad=50):
+    """Keep a leftover span out of another group's take (lip first). Local-tested helper."""
+    for a, b in others:
+        if min(us1, b) - max(us0, a) <= pad:
+            continue
+        left, right = a - us0, us1 - b
+        if left >= right and left > pad:
+            us1 = a
+        elif right > pad:
+            us0 = b
+        else:
+            us1 = a
+            if us1 - us0 < 1:
+                us0, us1 = a - 1, a
+    return us0, us1
 
 
 def cmd_groups(a):
@@ -2742,6 +2817,7 @@ def cmd_groups(a):
     groups += chain_groups
     groups.sort(key=lambda g: g["it0"])
     unused_fill = expand_groups_into_unused(groups, target=getattr(a, "max_stretch", 1.25) or 1.25)
+    enforce_leftover_off_others(groups)
     for g in groups:
         k = g["first_seg"]
         if "break_before" not in g: g["break_before"] = brk.get(k, "start" if k == 0 else f"block of {a.size} rows")
@@ -2766,18 +2842,16 @@ def cmd_groups(a):
                    for x, y in zip(ss, ss[1:])):
             continue
         it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
-        us0 = min(s["us_start_ms"] for s in ss)
-        us1 = max(s["us_end_ms"] for s in ss)
-        span_it, span_us = it1 - it0, us1 - us0
-        if span_it <= 1 or span_us <= 1:
+        us0, us1 = clamp_span_to_others(*_span_of(g), other_group_spans(groups, g))
+        if it1 - it0 <= 1 or us1 - us0 <= 1:
             continue
-        for s in ss:
-            s["us_start_ms"] = round(us0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
-            s["us_end_ms"] = round(us0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
-            s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+        fit_segments_to_span(ss, us0, us1)
         n_span += 1
+    n_off = enforce_leftover_off_others(groups)
     if n_span:
         print(f"groups: {n_span} leftover group(s) shared overlapping source — played as one forward span")
+    if n_off:
+        print(f"groups: {n_off} leftover group(s) pulled off another group's take")
     leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows, lip)]
     for g in groups:
         ss = g.get("segments") or []

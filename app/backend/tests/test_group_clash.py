@@ -102,3 +102,66 @@ def test_lip_window_spill_is_trimmed_not_raised():
     assert a["us_start_ms"] >= b["us_end_ms"] - 0.001
     assert b["us_start_ms"] == 511130 and b["us_end_ms"] == 514333.301
     assert "156" in (a.get("note") or "") or "157" in (a.get("note") or "")
+
+
+def test_unused_edge_does_not_grow_through_overlapping_lip():
+    """Prev rule: leftover unused-edge never steals lip footage, even if spans already overlap."""
+    st = load_stitch()
+    leftover = _seg(27, 151390, 161770, 131420, 132640)
+    lip = _seg(25, 142500, 151390, 118780, 132000)
+    groups = [
+        dict(rows=[25], lipgroup=True, segments=[lip]),
+        dict(rows=[27, 28], lipgroup=False, segments=[leftover]),
+    ]
+    before0, before1 = leftover["us_start_ms"], leftover["us_end_ms"]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert leftover["us_start_ms"] == before0
+    assert leftover["us_end_ms"] == before1
+
+
+def test_unused_edge_still_fills_the_gap_before_the_next_lip_group():
+    st = load_stitch()
+    leftover = _seg(16, 100860, 106040, 86540, 90640)
+    lip = _seg(18, 109240, 142480, 93630, 118740)
+    groups = [
+        dict(rows=[16, 17], lipgroup=False, segments=[leftover]),
+        dict(rows=[18], lipgroup=True, segments=[lip]),
+    ]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert leftover["us_end_ms"] <= 93630 - 40 + 1
+    assert leftover["us_end_ms"] >= 90640
+    assert leftover["us_end_ms"] < 92000
+
+
+def test_trim_does_not_carve_lip_when_leftover_dub_is_earlier():
+    """IT#61: leftover 60 overlapped Tom sigh; lip group keeps its window."""
+    st = load_stitch()
+    leftover = _seg(60, 337740, 346930, 283780, 298480)
+    lip = _seg(61, 346930, 348780, 283700, 295000)
+    out = [leftover, lip]
+    gi = {id(leftover): 0, id(lip): 1}
+    st.trim_shared_footage(out, gi, set(), lip={61: {}})
+    assert lip["us_start_ms"] == 283700 and lip["us_end_ms"] == 295000
+    assert leftover["us_end_ms"] <= 283700 + 0.001 or leftover["us_start_ms"] >= 295000 - 0.001
+
+
+def test_clamp_span_stops_at_next_lip_group():
+    st = load_stitch()
+    us0, us1 = st.clamp_span_to_others(459760, 505560, [(482700, 510300)])
+    assert us0 == 459760
+    assert us1 <= 482700
+
+
+def test_enforce_leftover_off_others_is_the_owner():
+    """After unused-edge / leftover-span / trim, leftover must not sit on the lip take."""
+    st = load_stitch()
+    leftover = _seg(66, 300000, 310000, 250000, 270000)
+    lip = _seg(67, 310000, 320000, 260000, 280000)
+    groups = [
+        dict(rows=[66], lipgroup=False, segments=[leftover], it0=300000, it1=310000),
+        dict(rows=[67], lipgroup=True, lip=True, segments=[lip]),
+    ]
+    n = st.enforce_leftover_off_others(groups)
+    assert n == 1
+    assert leftover["us_end_ms"] <= 260000 + 0.001
+    assert lip["us_start_ms"] == 260000 and lip["us_end_ms"] == 280000
