@@ -2324,16 +2324,43 @@ def clamp_to_fade(segs, fade, margin=100):
     return n
 
 
-def group_footage_clash(out, gi, repeat_rows):
-    """Segments in different groups that share more than 1 ms of source time."""
-    hits = []
+def _group_us_span(out, gi, idx):
+    ss = [s for s in out if gi[id(s)] == idx]
+    return min(s["us_start_ms"] for s in ss), max(s["us_end_ms"] for s in ss)
+
+
+def _lip_group_ids(out, gi, lip):
+    lip = lip or {}
+    return {gi[id(s)] for s in out if s["it_idx"] in lip}
+
+
+def group_footage_clash(out, gi, repeat_rows, lip=None):
+    """Segments in different groups that share more than 1 ms of source time.
+
+    A lip group is one take (first source start → last source end). Clash against
+    that whole span, not each member's proportional slice — otherwise a leftover
+    is trimmed against IT#18, padded 80 ms into IT#19, and ping-pongs to a 0.02×
+    sliver inside the conversation (EP71 IT#16).
+    """
+    lip_g = _lip_group_ids(out, gi, lip)
+    hits, seen = [], set()
     for k, x in enumerate(out):
         for y in out[k + 1:]:
             if gi[id(x)] == gi[id(y)]:
                 continue
             if x["it_idx"] in repeat_rows or y["it_idx"] in repeat_rows:
                 continue
-            if min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > 1:
+            ix, iy = gi[id(x)], gi[id(y)]
+            if ix in lip_g or iy in lip_g:
+                pair = (min(ix, iy), max(ix, iy))
+                if pair in seen:
+                    continue
+                a0, a1 = _group_us_span(out, gi, ix)
+                b0, b1 = _group_us_span(out, gi, iy)
+                if min(a1, b1) - max(a0, b0) > 1:
+                    seen.add(pair)
+                    hits.append((x, y))
+            elif min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > 1:
                 hits.append((x, y))
     return hits
 
@@ -2342,37 +2369,56 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
     """Two groups sharing source time (a lip window spilled into the next row, or the dub
     plays source lines out of order) used to kill the episode. TGS ep33 IT#156/157 overlapped
     113 ms after lipsync padded 157 into 156. Keep the lip-sync row (or the earlier dub line)
-    and trim the other. Never fail the run for this."""
+    and trim the other. Never fail the run for this.
+
+    Never pad a leftover to 80 ms *inside* a lip group's span: that 80 ms still overlaps
+    the next slice, the loop repeats, and the leftover becomes a ×0.02 sliver.
+    """
     lip = lip or {}
+    lip_g = _lip_group_ids(out, gi, lip)
     n = 0
     while n < 50:
-        clash = group_footage_clash(out, gi, repeat_rows)
+        clash = group_footage_clash(out, gi, repeat_rows, lip)
         if not clash:
             return n
         x, y = clash[0]
         keep, cut = (x, y) if (x["it_idx"] in lip) != (y["it_idx"] in lip) and x["it_idx"] in lip \
             else (y, x) if (x["it_idx"] in lip) != (y["it_idx"] in lip) \
             else (x, y) if x["it_start_ms"] <= y["it_start_ms"] else (y, x)
-        shared = min(keep["us_end_ms"], cut["us_end_ms"]) - max(keep["us_start_ms"], cut["us_start_ms"])
-        if cut["us_start_ms"] < keep["us_end_ms"] <= cut["us_end_ms"]:
-            cut["us_start_ms"] = keep["us_end_ms"]
-        elif cut["us_end_ms"] > keep["us_start_ms"] >= cut["us_start_ms"]:
-            cut["us_end_ms"] = keep["us_start_ms"]
+        kx = gi[id(keep)]
+        if kx in lip_g:
+            k0, k1 = _group_us_span(out, gi, kx)
         else:
-            left = keep["us_start_ms"] - cut["us_start_ms"]
-            right = cut["us_end_ms"] - keep["us_end_ms"]
+            k0, k1 = keep["us_start_ms"], keep["us_end_ms"]
+        shared = min(k1, cut["us_end_ms"]) - max(k0, cut["us_start_ms"])
+        c0, c1 = cut["us_start_ms"], cut["us_end_ms"]
+        if c0 < k0 <= c1:
+            cut["us_end_ms"] = k0
+            if cut["us_end_ms"] - cut["us_start_ms"] < 1:
+                cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
+        elif c0 < k1 <= c1:
+            cut["us_start_ms"] = k1
+            if cut["us_end_ms"] - cut["us_start_ms"] < 1:
+                cut["us_start_ms"], cut["us_end_ms"] = k1, k1 + 1
+        elif k0 <= c0 and c1 <= k1:
+            cut["us_start_ms"], cut["us_end_ms"] = k0 - 1, k0
+        else:
+            left = k0 - c0
+            right = c1 - k1
             if right >= left:
-                cut["us_start_ms"] = keep["us_end_ms"]
+                cut["us_start_ms"] = k1
             else:
-                cut["us_end_ms"] = keep["us_start_ms"]
-        if cut["us_end_ms"] - cut["us_start_ms"] < 80:
-            if cut["us_start_ms"] >= keep["us_end_ms"]:
+                cut["us_end_ms"] = k0
+        # 80 ms pad only when it stays outside the keep span (leftover vs leftover).
+        # Never pad into a lip-group take.
+        if cut["us_end_ms"] - cut["us_start_ms"] < 80 and kx not in lip_g:
+            old0, old1 = cut["us_start_ms"], cut["us_end_ms"]
+            if cut["us_start_ms"] >= k1:
                 cut["us_end_ms"] = cut["us_start_ms"] + 80
-            elif cut["us_end_ms"] <= keep["us_start_ms"]:
+            elif cut["us_end_ms"] <= k0:
                 cut["us_start_ms"] = cut["us_end_ms"] - 80
-            else:
-                cut["us_start_ms"] = keep["us_end_ms"]
-                cut["us_end_ms"] = keep["us_end_ms"] + 80
+            if min(cut["us_end_ms"], k1) - max(cut["us_start_ms"], k0) > 1:
+                cut["us_start_ms"], cut["us_end_ms"] = old0, old1
         cut["stretch_factor"] = round((cut["it_end_ms"] - cut["it_start_ms"]) / max(cut["us_end_ms"] - cut["us_start_ms"], 1), 3)
         cut["note"] = ((cut.get("note") or "") + f"; trimmed {shared / 1000:.2f}s that IT#{keep['it_idx']} already plays").lstrip("; ")
         n += 1
@@ -2692,7 +2738,15 @@ def cmd_groups(a):
     n_trim = trim_shared_footage(out, gi, repeat_rows, lip)
     if n_trim:
         print(f"groups: trimmed {n_trim} shared-footage overlap(s) (lip window or out-of-order lines); not failing")
-    leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows)]
+    leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows, lip)]
+    for g in groups:
+        ss = g.get("segments") or []
+        if not ss:
+            continue
+        g["us0"] = min(s["us_start_ms"] for s in ss)
+        g["us1"] = max(s["us_end_ms"] for s in ss)
+        g["kept"] = sum(s["us_end_ms"] - s["us_start_ms"] for s in ss)
+        g["stretch"] = (g["it1"] - g["it0"]) / max(g["kept"], 1)
     if leftover:
         print(f"groups: leftover overlap after trim {leftover[:5]} (kept the first owner)")
     groups_body = dict(total_ms=total_ms, segments=out, bleed_report=[],

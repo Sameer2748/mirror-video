@@ -118,6 +118,11 @@ def span(rows):
     return dict(dub=dub, src=src, speed=src / dub if dub else 0, ordered=ordered)
 
 
+def _clip_play(s):
+    """Playback = source / dub. Same 0.8–1.25 window as grouping. Use the clip, not group us0/us1."""
+    return (s["us_end_ms"] - s["us_start_ms"]) / max(s["it_end_ms"] - s["it_start_ms"], 1)
+
+
 def make_unit(rows, gi):
     segs = sorted((s for r in rows for s in by_row[r]), key=lambda s: s["it_start_ms"])
     u = dict(group=gi, rows=rows, segs=segs)
@@ -153,11 +158,18 @@ def make_unit(rows, gi):
 
 
 # Slow runs: the rows of each group that are left over after the in-range sub-split (same rule as before).
+# Lip groups still use the group span (one take). Leftovers use each clip's source/dub after
+# overlap-trim — group us0/us1 can still look 1.25× while one row is an 80 ms sliver.
 runs = []
 for gi, g in enumerate(grp["groups"]):
     rows = [r for r in g["rows"] if r in by_row]
+    segs_g = [s for r in rows for s in by_row[r]]
     sp = (g["us1"] - g["us0"]) / max(g["it1"] - g["it0"], 1)
-    if sp >= LO:
+    lip_take = bool(g.get("lipgroup") or g.get("lip"))
+    if lip_take:
+        if sp >= LO:
+            continue
+    elif segs_g and all(_clip_play(s) >= LO for s in segs_g) and sp >= LO:
         continue
     i, left = 0, []
     while i < len(rows):
@@ -408,6 +420,10 @@ Edit like a human:
 7. At most 3 visual transitions in a sentence. Do not retime every sentence. Other rows keep grouping.
 8. If a B-roll source is 1.3 s, it may play 2 s (steal 0.7 s from the previous own clip). Code does that.
 9. If you are not sure, keep_whole. A safe matched cut beats a clever B-roll.
+10. A leftover row playing under 0.40x or under 0.5 s of source is a script hole (overlap-trim), not a
+    creative slow-mo. Do not B-roll a lip-sync conversation to fill it. If a neighbor leftover still
+    plays this row's matched English sentence, keep_whole on that leftover picture (the matched take).
+    Only B-roll when that matched leftover is gone.
 
 Answer only JSON for THIS group:
 {"g": <id>, "keep_whole": true/false, "row": <row or null>, "broll_s": <seconds or 0>,

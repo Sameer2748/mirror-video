@@ -82,6 +82,27 @@ for v in vis:
         if talk and who not in talk:
             c6.append(dict(at=fmt(a0), line=d["text"][:70], speaker=who, on_screen_talking=", ".join(talk), shot=v["shot"]))
 res[6] = ("Speaker", "during a dialogue line nobody but its speaker talks on screen", "FAIL" if c6 else "PASS", len(c6), c6)
+# 7. clip playback — group us0/us1 can look in-range while one leftover is 80 ms of source
+c7 = []
+for s in segs:
+    note = s.get("note") or ""
+    if "lip group:" in note or s.get("lipgroup"):
+        continue
+    dub_s = (s["it_end_ms"] - s["it_start_ms"]) / 1000
+    src_s = (s["us_end_ms"] - s["us_start_ms"]) / 1000
+    if dub_s <= 0.04:
+        continue
+    play = src_s / dub_s
+    if play < 0.4 or src_s < 0.5:
+        c7.append(dict(at=fmt(s["it_start_ms"] / 1000), row=s.get("it_idx"), seconds_src=round(src_s, 3),
+                       playback=round(play, 3), level="FAIL",
+                       lines=" | ".join(x["text"][:50] for x in lines_at(s["it_start_ms"] / 1000, s["it_end_ms"] / 1000))))
+    elif play < 0.8:
+        c7.append(dict(at=fmt(s["it_start_ms"] / 1000), row=s.get("it_idx"), seconds_src=round(src_s, 3),
+                       playback=round(play, 3), level="WARN",
+                       lines=" | ".join(x["text"][:50] for x in lines_at(s["it_start_ms"] / 1000, s["it_end_ms"] / 1000))))
+res[7] = ("Clip speed", "each leftover clip at least 0.80x playback (0.40x / <0.5s source = FAIL)",
+          "FAIL" if any(x["level"] == "FAIL" for x in c7) else ("WARN" if c7 else "PASS"), len(c7), c7)
 # 4. black frames, 5. frame rate
 c4, c5, video_missing = [], [], False
 for vp in a.videos:
