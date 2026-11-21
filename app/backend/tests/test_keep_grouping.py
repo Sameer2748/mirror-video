@@ -1,4 +1,4 @@
-from dubstudio.pipeline.keep_grouping import grouping_takes
+from dubstudio.pipeline.keep_grouping import grouping_takes, fit_overlapping_ms
 
 
 def test_keep_grouping_is_one_take_not_one_clip_per_library_shot():
@@ -12,6 +12,26 @@ def test_keep_grouping_is_one_take_not_one_clip_per_library_shot():
     assert got[0]["kept_grouping"] is True
     assert got[0]["us0"] == 459.76 and abs(got[0]["us1"] - 476.11) < 1e-6
     assert got[0]["it0"] == 586.93 and abs(got[0]["it1"] - 611.68) < 1e-6
+
+
+def test_overlapping_tom_rows_become_one_forward_take():
+    """EP71 IT#49–51: same Tom close-up must not rewind four times."""
+    segs = [
+        dict(it_idx=49, it_start_ms=282520, it_end_ms=286555, us_start_ms=237580, us_end_ms=242623),
+        dict(it_idx=49, it_start_ms=286555, it_end_ms=287777, us_start_ms=240231, us_end_ms=241759),
+        dict(it_idx=50, it_start_ms=287777, it_end_ms=289613, us_start_ms=241034, us_end_ms=243329),
+        dict(it_idx=51, it_start_ms=289613, it_end_ms=292260, us_start_ms=242240, us_end_ms=244020),
+    ]
+    got = grouping_takes(segs)
+    assert len(got) == 1
+    assert got[0]["us0"] == 237.580
+    assert abs(got[0]["us1"] - 244.020) < 1e-6
+    assert abs(got[0]["it0"] - 282.520) < 1e-6
+    assert abs(got[0]["it1"] - 292.260) < 1e-6
+    assert fit_overlapping_ms(segs) is True
+    for a, b in zip(segs, segs[1:]):
+        assert b["us_start_ms"] + 1 >= a["us_end_ms"]
+        assert a["us_start_ms"] <= b["us_start_ms"]
 
 
 def test_keep_grouping_stays_two_takes_when_source_jumps():

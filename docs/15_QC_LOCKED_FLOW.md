@@ -56,6 +56,8 @@ B-roll only for slow leftovers (and wrong-person). Lip-sync conversation already
 
 **Keep grouping is one take.** Shot-library labels are for who is on screen, not extra cuts. If Opus (or the fallback) keeps grouping, write the grouping segment(s) — do not emit one clip per library shot. EP71: one leftover unit over shots 123–134 became 39 flashes and extra transitions; Opus had said keep as one slowed piece.
 
+**Leftover rows that share source stay one forward take.** If IT#49–51 all sit on the same Tom close-up (overlapping in/out), play first source start → last source end over those dub lines, then split in time order. Do not play, jump back, play again. `fast_trim` from last of that take, not each overlapping row. QC case 8 fails leftover rewind. True source jumps (no overlap) stay cuts.
+
 ---
 
 ## Editor
@@ -97,5 +99,6 @@ IMTS 69/70. IMTS leftover 197–258. Show **IMTSITDE** (including future queue).
 | Deliverables showed v2+v3 XML and two copies of the same videos/sheets | Every R2 upload row kept; Premiere XML is versioned | List **latest per kind** only; drop old `timeline_v*.xml` on a new render |
 | Live editor fix missing after a backend-only commit | Docker copies prebuilt `app/backend/frontend_dist` | Run `app/backend/build_frontend.sh` and commit the new JS when Editor.tsx changes |
 | EP71 IT#16 ×0.02 (Kira look) | `trim_shared_footage` clashed leftover vs **each lip-group slice**, padded 80 ms into the next slice, looped 50×; scene-edit/QC used **group** 1.25× | Clash leftover vs the **lip-group span**; trim **every** leftover row in that group (not only IT#16); never pad 80 ms inside that span; scene-edit leftover units + QC case 7 use **clip** source/dub; Opus only on those leftovers |
+| EP71 ~04:42 Tom four times (IT#49–51) | Leftover rows kept overlapping US of one close-up; unused-edge + `fast_trim` from last on **each** row rewound the same face; editor pink marks = source jump | Overlapping leftover US = **one forward span** (groups + `grouping_takes` + `fast_trim`); QC case 8 fails leftover rewind |
 
 EP71 check after the locked grouping + unused-middle: diverted US 102.14–108.38, lunch 108.38–110.99, stretch 1.324× (same as the good local QC). First-draft rebuild (timeline v3): 156/156 segments encoded, final check passed, 703.640 s.

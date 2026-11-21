@@ -14,6 +14,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from dubstudio.pipeline.keep_grouping import fit_overlapping_ms
+
 THRESHOLD = 1.25
 MIN_KEEP_MS = 400
 MIN_CUT_MS = 80
@@ -110,12 +112,14 @@ def run(W: Path):
         gs = segs_for(g)
         if not gs:
             continue
-        before_g = gspd(gs)
-        if before_g <= THRESHOLD + 0.005:
-            continue
         lip_in = [s for s in gs if s["it_idx"] in lip_rows]
         note = (g.get("note") or "") + " " + " ".join(g.get("flags") or [])
         is_lip_group = bool(g.get("lip") or g.get("lipgroup") or lip_in or "lip" in note.lower())
+        if not is_lip_group:
+            fit_overlapping_ms(gs)
+        before_g = gspd(gs)
+        if before_g <= THRESHOLD + 0.005:
+            continue
         case = "lip" if is_lip_group else "narration"
         actions = []
         if case == "narration":

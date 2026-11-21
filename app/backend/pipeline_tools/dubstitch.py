@@ -2755,6 +2755,29 @@ def cmd_groups(a):
     n_trim = trim_shared_footage(out, gi, repeat_rows, lip)
     if n_trim:
         print(f"groups: trimmed {n_trim} shared-footage overlap(s) (lip window or out-of-order lines); not failing")
+    n_span = 0
+    for g in groups:
+        if g.get("lipgroup") or g.get("lip"):
+            continue
+        ss = g.get("segments") or []
+        if len(ss) < 2 or any(s["it_idx"] in lip for s in ss):
+            continue
+        if not any(min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > 50
+                   for x, y in zip(ss, ss[1:])):
+            continue
+        it0, it1 = ss[0]["it_start_ms"], ss[-1]["it_end_ms"]
+        us0 = min(s["us_start_ms"] for s in ss)
+        us1 = max(s["us_end_ms"] for s in ss)
+        span_it, span_us = it1 - it0, us1 - us0
+        if span_it <= 1 or span_us <= 1:
+            continue
+        for s in ss:
+            s["us_start_ms"] = round(us0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
+            s["us_end_ms"] = round(us0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
+            s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+        n_span += 1
+    if n_span:
+        print(f"groups: {n_span} leftover group(s) shared overlapping source — played as one forward span")
     leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows, lip)]
     for g in groups:
         ss = g.get("segments") or []

@@ -103,6 +103,21 @@ for s in segs:
                        lines=" | ".join(x["text"][:50] for x in lines_at(s["it_start_ms"] / 1000, s["it_end_ms"] / 1000))))
 res[7] = ("Clip speed", "each leftover clip at least 0.80x playback (0.40x / <0.5s source = FAIL)",
           "FAIL" if any(x["level"] == "FAIL" for x in c7) else ("WARN" if c7 else "PASS"), len(c7), c7)
+# 8. leftover rewind — same source played, then jumped back (EP71 Tom IT#49–51)
+c8 = []
+for x, y in zip(segs, segs[1:]):
+    if y["it_start_ms"] - x["it_end_ms"] > 40:
+        continue
+    nx, ny = (x.get("note") or ""), (y.get("note") or "")
+    if "lip group:" in nx or "lip group:" in ny:
+        continue
+    ov = min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"])
+    if ov > 50:
+        c8.append(dict(at=fmt(x["it_end_ms"] / 1000), row=f"{x.get('it_idx')}-{y.get('it_idx')}",
+                       overlap_s=round(ov / 1000, 2),
+                       us=f"{x['us_start_ms']/1000:.2f}-{x['us_end_ms']/1000:.2f} -> {y['us_start_ms']/1000:.2f}-{y['us_end_ms']/1000:.2f}"))
+res[8] = ("Source rewind", "leftover clips must not replay overlapping source (same face four times)",
+          "FAIL" if c8 else "PASS", len(c8), c8)
 # 4. black frames, 5. frame rate
 c4, c5, video_missing = [], [], False
 for vp in a.videos:
