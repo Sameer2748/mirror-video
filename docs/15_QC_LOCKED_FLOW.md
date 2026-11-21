@@ -1,55 +1,97 @@
 # 15 — Locked episode flow (QC’d IMTS EP69–71)
 
-The flow we keep on live. Do not drop a step or a grouping rule without a new QC. Detail for grouping: `IMTS_EP69_one_lip/GROUPING_LOGIC.md`. Full local notes: `IMTS_EP69_one_lip/STEPS.md`.
+**Do not change this logic unless Sameer says to change it.** Bugs in the editor, deliverables list, or leftover-file cleanup may still be fixed. Matching, grouping membership, how a group is played, unused-edge fill, scene-edit scope, stretch 0.8–1.25×, and the step order are frozen.
 
-Live code: `app/backend/pipeline_tools/dubstitch.py` + `app/backend/dubstudio/pipeline/steps.py`. Groups command: `--size 7 --max-drift 500` (no `--trim-fast`).
+Live: `handover-doc-review` → https://dubstudio-yg5s.onrender.com (`srv-dar686jncjis73c9rr90`). Code: `app/backend/pipeline_tools/dubstitch.py`, `app/backend/dubstudio/pipeline/steps.py`, `app/backend/dubstudio/timeline.py`, `app/backend/dubstudio/runner.py`. Groups: `--size 7 --max-drift 500` (no `--trim-fast`).
+
+Older grouping notes: `IMTS_EP69_one_lip/GROUPING_LOGIC.md`. TAB-week platform issues: `docs/13_WEEK_ISSUES_AND_FEATURES.md` (that week did not rewrite stitch logic).
+
+---
 
 ## Step order (after matching)
 
 1. Mapping sheet → edit list (`manifest`)
 2. Lip scan (0.4 s of moving lips on the **source sentence** = lip row)
 3. Lip-sync rows
-4. **Groups** (below)
+4. **Groups** (membership + playback below)
 5. Shot library → face map
 6. Scene edit (Opus, **slow leftovers only**, 0.8–1.25× already left alone)
 7. Use scene → **fast trim** (over 1.25×, from last; lip groups skip groups `--trim-fast`)
 8. Review → render → verify → bookends → transitions (5 styles, seed 24) → subs
 
-The editor timeline is **one block per picture take** (a lip group with unused middle is one clip; a scene-edit B-roll is a cut). Sentence text is still in the inspector. Razor still splits a take if you want a different cut.
+Matching (locked with this flow): Claude punctuation-first source cards; ignore SRT file paths and always use this episode’s sentence JSON so cloud matching cannot re-glue cards.
+
+Speed window for picture: **0.8×–1.25×**. Stretch_factor = dub duration / source duration.
+
+---
 
 ## Groups — who is in a group (unchanged)
 
-- Same type (lip or narration), at most 7 rows.
-- One row of the other type may sit in the middle only when that type continues after it and the footage across it plays 0.5×–2×.
+- Same type (lip or narration), at most **7** rows.
+- One row of the other type may sit in the middle only when that type continues after it and the footage across it plays **0.5×–2×**.
 - Breaks: dub repeat, source goes backwards, source jump > 2 s, footage between the rows used elsewhere, picture/voice drift > 0.5 s (split).
 
 ## Groups — how a group is played (EP71 QC)
 
-**This is the lunch/rice fix.** A lip group is one take:
+**This is the lunch/rice fix.** A lip group is **one take**:
 
 - First matched **source start** → last matched **source end**
 - over first **dub start** → last **dub end**
-- Unused source **in the middle** stays in (do not cut 01:48.920–01:50.050 between lunch and rice)
-- One speed. Do not even inner joins (`lip-smooth` off). Evening put rice picture on the lunch question.
+- Unused source **in the middle** stays in (do not cut unused US between lunch and rice)
+- One speed. Do **not** even inner joins (`lip-smooth` off). Evening put rice/lunch picture on the wrong line.
 
 Narration blocks: first source start → last source end the same way. Unused between members stays in.
 
+If several matched rows share one picture span, they still play that span (not empty black).
+
 ## Unused edges on a single clip
 
-If a **lone clip or leftover group** is still slower than 1.25× (not enough source for the dub), eat unused source immediately **before and/or after** it. Only the gap no other clip plays (40 ms guard). That lengthens source so stretch moves into 0.8–1.25×.
+If a **lone clip or leftover group** is still slower than 1.25×, eat unused source immediately **before and/or after** it. Only the gap no other clip plays (40 ms guard). That lengthens source so stretch can enter 0.8–1.25×.
 
-Do **not** add unused source to a clip that is already too fast. Do **not** eat unused edges on a lip group: that group already kept unused middle as one take; stretching the edges shifts lunch picture onto the diverted line.
-
-## Latest run only
-
-Groups always overwrites `manifest_groups.grouping.json` from this run’s groups output. Process-again and rerun-from groups drop leftover grouping / automatic-edit / editor draft / render-gate files so scene edit, the editor, and render never keep a previous run’s cut.
-
-**Process again** clears the work folder except `input/` (no leftover lips, matching, grouping, or segment cache). **Render** (bulk first draft or after an editor change) drops `segs_groups` and the previous concat so picture and transitions are built from the current timeline.
+Do **not** add unused source to a clip that is already too fast. Do **not** eat unused edges on a **lip group**: that group already kept unused middle as one take; stretching the edges shifted lunch picture onto “he diverted the conversation”.
 
 ## Scene edit — do not reopen
 
 B-roll only for slow leftovers (and wrong-person). Lip-sync conversation already in range stays the grouping take. Fast leftovers: `fast_trim` from last after scene edit.
 
+---
+
+## Editor
+
+- Timeline is **one block per picture take** (a lip group with unused middle is one clip; a scene-edit B-roll is a cut). Sentence text stays in the inspector. Razor still splits a take.
+- Monitor must stay inside the clip’s source in/out. The HTML player used to run ~1 s past out-point (hard-seek only if lag > 0.8 s). Final ffmpeg was already correct. Live screens are rebuilt `frontend_dist` (`index-_ydW0bIB.js`): clamp to last in-clip frame; thumbs do not round past out.
+- A leftover **< 40 ms** hole between takes is one frame of float, not a black gap. Absorb it into the previous clip. Do not block first-draft / bulk render on it.
+
+## Latest files only
+
+- Groups always overwrites `manifest_groups.grouping.json` from **this run’s** groups output.
+- **Process again** (`create_run`): wipe work except `input/`; clear the output folder; delete this episode’s previous **work** files on R2 so old grouping/matching JSON cannot be fetched back.
+- **Rerun from groups**: drop leftover grouping / automatic-edit / editor draft / render-gate files. Keep lips/ASR (that is a partial rerun, not Process again).
+- **Render** (bulk first draft or after an editor change): drop `segs` / `segs_groups` / concat / `video_groups_nosubs.mp4` / `_before.mp4` / old `*_timeline_v*.xml`. Picture and transitions rebuild from the **current** timeline. Same-named masters are overwritten.
+- **Deliverables**: one row per kind (latest XML version, one of each video/sheet). Do not list previous render + new render together.
+
+---
+
 ## Do not process unless asked
 
-IMTS 69/70. IMTS leftover 197–258. Show IMTSITDE.
+IMTS 69/70. IMTS leftover 197–258. Show **IMTSITDE** (including future queue).
+
+---
+
+## Issues we hit and what is locked as the fix
+
+| What we saw | Cause | Locked fix |
+| --- | --- | --- |
+| EP71: lunch / rice / Tom picture early even though texts matched 1:1 | Lip-group **evening** (each line did not keep its own US in/out; later the evened 11-row Horton–Tom group) | Do not even. Play **first US start → last US end** over the group’s dub, unused **middle** kept |
+| Local span video was right; first cloud review still showed lunch on “diverted the conversation” | Leftover `grouping.json` from an older evened run. Scene edit copied it if present and ignored the new groups file | Snapshot `manifest_groups.grouping.json` after groups; drop stale edit files on Process again and rerun-from groups |
+| Same lunch-on-diverted after unused-edge fill | Unused-**edge** eat on a **lip group** grew US past the diverted line | Unused edges only on slow **singles / leftover groups**, never on lip groups |
+| Cloud matching re-glued Claude source cards | SRT path / remapped work paths | Ignore SRT paths; always this episode’s sentence JSON; Claude cards before regex split |
+| Sheet fail `SRC#36` missing prefix | mkdec assert on a glued source line | Same: keep Claude source sentences on cloud |
+| Editor looked like a cut every sentence | One timeline clip per lip-group slice | `merge_render_takes`: one clip per picture take; B-roll / speed / source jump stay cuts |
+| Editor flash of ~1 s at clip end; trim did not remove it; final render OK | HTML5 player ran past `s1`; seek tolerance 0.8 s; thumbs rounded to 500 ms past out | Clamp monitor + thumbs to in/out; pause on last in-clip frame. **Rebuild `frontend_dist`** or live keeps the old JS |
+| First-draft / bulk render 400 “gap 10:11.1–10:11.1” | 34.3 ms float hole; `gaps` used 34 ms | Treat < 40 ms as hairline; absorb into previous clip |
+| Re-render / Process again still looked like an old cut | `scene_edit` reused leftover grouping; render skipped existing `segs_groups` / `_before.mp4`; Process again did not wipe work | Latest-run snapshot; drop render cache on every kick render; Process again wipes work except `input/` plus output dir plus R2 **work** json |
+| Deliverables showed v2+v3 XML and two copies of the same videos/sheets | Every R2 upload row kept; Premiere XML is versioned | List **latest per kind** only; drop old `timeline_v*.xml` on a new render |
+| Live editor fix missing after a backend-only commit | Docker copies prebuilt `app/backend/frontend_dist` | Run `app/backend/build_frontend.sh` and commit the new JS when Editor.tsx changes |
+
+EP71 check after the locked grouping + unused-middle: diverted US 102.14–108.38, lunch 108.38–110.99, stretch 1.324× (same as the good local QC). First-draft rebuild (timeline v3): 156/156 segments encoded, final check passed, 703.640 s.

@@ -1,0 +1,14 @@
+---
+description: Do not change QC-locked grouping, scene-edit, or render-from-timeline logic unless Sameer explicitly asks.
+alwaysApply: true
+---
+
+# Locked pipeline (Sameer)
+
+Do **not** change matching, grouping membership, how a lip group is played, unused-edge fill, scene-edit scope, 0.8–1.25× stretch, or the step order unless the user **explicitly** says to change that logic.
+
+Canonical write-up: `docs/15_QC_LOCKED_FLOW.md`.
+
+Allowed without that ask: leftover-file cleanup, deliverables list, editor monitor clamp, docs, tests that assert the locked rules.
+
+Do not Process IMTS 69/70, leftover 197–258, or show IMTSITDE unless asked.
