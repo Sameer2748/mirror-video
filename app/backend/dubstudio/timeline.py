@@ -15,6 +15,7 @@ from pathlib import Path
 PIPELINE_COPY = "manifest_groups.pipeline.json"
 REVIEW_OK = "review_ok.json"
 QUOTES = re.compile(r"[«»“”\"„]|^\s*[—–-]")
+HAIRLINE_MS = 40        # one frame at 25 fps; float leftovers under this are not a black gap
 
 
 def _load(p, default=None):
@@ -283,7 +284,7 @@ def flatten(tl):
     return out
 
 
-def gaps(tl, min_ms=34):
+def gaps(tl, min_ms=HAIRLINE_MS):
     return [p for p in flatten(tl) if p.get("gap") and p["t1"] - p["t0"] >= min_ms]
 
 
@@ -553,7 +554,7 @@ def transition_use(bodies, configs):
 
 # ---------------- scene edit: fall back to matching when Claude leaves a hole ----------------
 _MIN_FILL_MS = 50       # smaller than this is rounding, not a real hole
-_MIN_FOOTAGE_MS = 34    # one frame at 25 fps — a piece with no source is a placeholder
+_MIN_FOOTAGE_MS = 34    # one frame at 30 fps — a piece with no source is a placeholder
 
 
 def _slice_matching(seg, t0, t1):
@@ -674,7 +675,7 @@ def to_manifest(tl, work, version):
     for k, c in enumerate(flat):                       # what plays: V2 over V1 (a hair-thin gap goes to the clip before)
         if c.get("gap"):
             continue
-        if k + 1 < len(flat) and flat[k + 1].get("gap") and flat[k + 1]["t1"] - flat[k + 1]["t0"] < 34:
+        if k + 1 < len(flat) and flat[k + 1].get("gap") and flat[k + 1]["t1"] - flat[k + 1]["t0"] < HAIRLINE_MS:
             g = flat[k + 1]; c = dict(c, t1=g["t1"], s1=c["s1"] + (g["t1"] - c["t1"]) * (c["s1"] - c["s0"]) / max(c["t1"] - c["t0"], 1))
         slot = c["t1"] - c["t0"]; src = c["s1"] - c["s0"]
         segs.append(dict(kind="clip", it_idx=c.get("row"), it_start_ms=round(c["t0"], 3), it_end_ms=round(c["t1"], 3),

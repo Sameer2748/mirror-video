@@ -58,6 +58,15 @@ def test_flags_and_checks(tmp_path):
     assert not any("outside" in p for p in tlm.validate(hair, src_duration_ms=50_000))
 
 
+def test_one_frame_hole_is_absorbed_not_a_render_block():
+    """EP71 first-draft: 34.3 ms between takes is one 25 fps frame of float leftover, not a black gap."""
+    tl = dict(total_ms=8000, clips=[
+        dict(id="c0", row=0, t0=0, t1=4000, s0=0, s1=4000, dub_text="", src_text=""),
+        dict(id="c1", row=1, t0=4034.3, t1=8000, s0=5000, s1=8965.7, dub_text="", src_text="")], v2=[])
+    assert tlm.validate(tl) == []
+    assert tlm.gaps(tl) == []
+
+
 def test_fit_episode_trims_a_clip_past_the_dub():
     tl = dict(total_ms=8000, clips=[
         dict(id="c0", row=0, t0=0, t1=6000, s0=0, s1=6000, dub_text="", src_text=""),
