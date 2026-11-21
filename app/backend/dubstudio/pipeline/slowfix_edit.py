@@ -22,6 +22,7 @@ def _app_dir(script):
 
 sys.path.insert(0, str(_app_dir(__file__)))
 from dubstudio import ai  # noqa: E402
+from dubstudio.pipeline.keep_grouping import grouping_takes  # noqa: E402
 
 W = Path(sys.argv[1]).resolve()
 LIBD = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else (W / "broll_library")
@@ -702,10 +703,9 @@ def solve(u):
     res = dict(need=need, listener=listener, why=w.get("why", ""), case=2 if wrong else 1, pieces=[], problems=[],
                choice="")
     if u.get("skip_group_broll"):
-        res.update(pieces=own_scaled(u["parts"], u["t0"], S / D),
+        shot = u["parts"][0]["shot"] if u["parts"] else None
+        res.update(pieces=grouping_takes(u["segs"], shot),
                    choice="kept grouping: " + (u.get("claude_why") or "Claude: no B-roll here"))
-        for p in res["pieces"]:
-            p["kept_grouping"] = True
         return res
     if not wrong:
         # Own clip target: just reach 0.80x with as little B-roll as possible. A lip leftover is never
@@ -808,10 +808,12 @@ def solve(u):
                 res["problems"].append(f"{n_jumps(seq)} transition(s) inside this sentence (cap {MAX_TRANSITIONS})")
             return res
         if need_b > b_hi + 1e-6:
-            res.update(pieces=own_scaled(u["parts"], u["t0"], S / D), choice="kept: no room for a 2 s B-roll at 1.25x")
+            shot = u["parts"][0]["shot"] if u["parts"] else None
+            res.update(pieces=grouping_takes(u["segs"], shot), choice="kept: no room for a 2 s B-roll at 1.25x")
             res["problems"].append(f"needs {D - S / LO:.1f} s of B-roll, below the 2 s minimum, and the clip cannot run faster than 1.25x")
             return res
-        res.update(pieces=own_scaled(u["parts"], u["t0"], S / D), choice="kept: no B-roll of these people at this place")
+        shot = u["parts"][0]["shot"] if u["parts"] else None
+        res.update(pieces=grouping_takes(u["segs"], shot), choice="kept: no B-roll of these people at this place")
         res["problems"].append(f"no B-roll of {', '.join(broll_need) or 'the place'} at {u['loc']} fits {max(need_b, MIN_BROLL):.1f}-{max(b_hi, 0):.1f} s in one shot")
         return res
 
@@ -911,8 +913,8 @@ def keep_if_worse(u, r):
         reasons.append(f"right person {g_share:.0%} to {n_share:.0%}")
     if not reasons:
         return
-    r["pieces"] = [dict(shot=p["shot"], us0=p["us0"], us1=p["us1"], it0=p["it0"], it1=p["it1"],
-                        row=p["row"], own=True, kept_grouping=True) for p in u["parts"]]
+    shot = u["parts"][0]["shot"] if u["parts"] else None
+    r["pieces"] = grouping_takes(u["segs"], shot)
     why = "; ".join(reasons)
     r["choice"] = f"kept the grouping cut: {why}"
     r["problems"].append(f"new cut was worse than the grouping cut ({why}), so the grouping cut stays")

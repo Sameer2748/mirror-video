@@ -54,6 +54,8 @@ Do **not** add unused source to a clip that is already too fast. Do **not** eat 
 
 B-roll only for slow leftovers (and wrong-person). Lip-sync conversation already in range stays the grouping take. Fast leftovers: `fast_trim` from last after scene edit.
 
+**Keep grouping is one take.** Shot-library labels are for who is on screen, not extra cuts. If Opus (or the fallback) keeps grouping, write the grouping segment(s) — do not emit one clip per library shot. EP71: one leftover unit over shots 123–134 became 39 flashes and extra transitions; Opus had said keep as one slowed piece.
+
 ---
 
 ## Editor
@@ -88,6 +90,7 @@ IMTS 69/70. IMTS leftover 197–258. Show **IMTSITDE** (including future queue).
 | Cloud matching re-glued Claude source cards | SRT path / remapped work paths | Ignore SRT paths; always this episode’s sentence JSON; Claude cards before regex split |
 | Sheet fail `SRC#36` missing prefix | mkdec assert on a glued source line | Same: keep Claude source sentences on cloud |
 | Editor looked like a cut every sentence | One timeline clip per lip-group slice | `merge_render_takes`: one clip per picture take; B-roll / speed / source jump stay cuts |
+| Keep-grouping leftover became 28–39 clips of 0.2 s (EP71 rows 114–116, Tom’s eyes) | Scene edit sliced grouping US on every **library shot**, then wrote each slice; Opus had said keep one piece | Keep grouping writes grouping segments only, not `shots_over` parts |
 | Editor flash of ~1 s at clip end; trim did not remove it; final render OK | HTML5 player ran past `s1`; seek tolerance 0.8 s; thumbs rounded to 500 ms past out | Clamp monitor + thumbs to in/out; pause on last in-clip frame. **Rebuild `frontend_dist`** or live keeps the old JS |
 | First-draft / bulk render 400 “gap 10:11.1–10:11.1” | 34.3 ms float hole; `gaps` used 34 ms | Treat < 40 ms as hairline; absorb into previous clip |
 | Re-render / Process again still looked like an old cut | `scene_edit` reused leftover grouping; render skipped existing `segs_groups` / `_before.mp4`; Process again did not wipe work | Latest-run snapshot; drop render cache on every kick render; Process again wipes work except `input/` plus output dir plus R2 **work** json |
