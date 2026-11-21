@@ -36,7 +36,11 @@ Narration blocks: first source start → last source end the same way. Unused be
 
 If a **lone clip or leftover group** is still slower than 1.25× (not enough source for the dub), eat unused source immediately **before and/or after** it. Only the gap no other clip plays (40 ms guard). That lengthens source so stretch moves into 0.8–1.25×.
 
-Do **not** add unused source to a clip that is already too fast.
+Do **not** add unused source to a clip that is already too fast. Do **not** eat unused edges on a lip group: that group already kept unused middle as one take; stretching the edges shifts lunch picture onto the diverted line.
+
+## Latest run only
+
+Groups always overwrites `manifest_groups.grouping.json` from this run’s groups output. Process-again and rerun-from groups drop leftover grouping / automatic-edit / editor draft / render-gate files so scene edit, the editor, and render never keep a previous run’s cut.
 
 ## Scene edit — do not reopen
 

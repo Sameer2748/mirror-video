@@ -2440,6 +2440,10 @@ def expand_groups_into_unused(groups, target=1.25):
         it_dur, us_dur = it1 - it0, us1 - us0
         if it_dur <= 1 or us_dur <= 1:
             continue
+        # Lip groups already keep unused source in the middle (first→last span).
+        # Eating unused edges on those groups shifts which picture sits on which line.
+        if g.get("lipgroup"):
+            continue
         stretch = it_dur / us_dur
         if stretch <= target + 1e-6:
             continue
@@ -2692,8 +2696,10 @@ def cmd_groups(a):
     leftover = [(x["it_idx"], y["it_idx"]) for x, y in group_footage_clash(out, gi, repeat_rows)]
     if leftover:
         print(f"groups: leftover overlap after trim {leftover[:5]} (kept the first owner)")
-    save(a.work, "manifest_groups.json", dict(total_ms=total_ms, segments=out, bleed_report=[],
-         groups=[{k: v for k, v in g.items() if k != "segments"} for g in groups]))
+    groups_body = dict(total_ms=total_ms, segments=out, bleed_report=[],
+         groups=[{k: v for k, v in g.items() if k != "segments"} for g in groups])
+    save(a.work, "manifest_groups.json", groups_body)
+    save(a.work, "manifest_groups.grouping.json", groups_body)
     review = a.review or (re.sub(r"_[a-z]{2}_[a-z]{2}_mapping[^/]*\.xlsx$", "_dynamic_groups_review.xlsx", cfg["sheet_out"])
                           if cfg.get("sheet_out") and re.search(r"_[a-z]{2}_[a-z]{2}_mapping[^/]*\.xlsx$", cfg["sheet_out"]) else os.path.join(a.work, "dynamic_groups_review.xlsx"))
     _groups_workbook(review, groups, rows, cfg.get("labels", "IT,US").split(","))

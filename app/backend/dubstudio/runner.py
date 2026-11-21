@@ -20,6 +20,53 @@ NOISE = re.compile(r"Warning:|^\s+torch\.")   # library warnings: kept in the lo
 PIECE_PAT = re.compile(r"piece\s+(\d+)\s*/\s*(\d+)", re.I)
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
+# Leftover editor/scene files from a previous run. Groups must snapshot a new
+# grouping.json; scene edit / the editor / render must not keep the old cut.
+STALE_EDIT_FILES = (
+    "manifest_groups.grouping.json",
+    "manifest_groups.auto.json",
+    "manifest_groups.pipeline.json",
+    "manifest_groups.before_fast_trim.json",
+    "timeline_draft.json",
+    "review_ok.json",
+)
+
+
+def drop_stale_edit_files(work):
+    """Forget the previous run's grouping snapshot, automatic edit, editor draft, and render gate."""
+    W = Path(work)
+    dropped = []
+    for name in STALE_EDIT_FILES:
+        p = W / name
+        if p.exists():
+            p.unlink()
+            dropped.append(name)
+    ss = W / "scene_slowfix"
+    if ss.is_dir():
+        for p in ss.iterdir():
+            if p.is_file():
+                p.unlink()
+                dropped.append(f"scene_slowfix/{p.name}")
+    return dropped
+
+
+def snapshot_latest_groups(work):
+    """Point scene edit + the editor at this groups output (overwrite any leftover snapshot)."""
+    if not work:
+        return False
+    W = Path(work)
+    g = W / "manifest_groups.json"
+    if not g.is_file():
+        return False
+    try:
+        data = json.loads(g.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if data.get("dub_studio"):
+        return False
+    shutil.copy(g, W / "manifest_groups.grouping.json")
+    return True
+
 
 def is_key_limit_error(exc):
     """OpenRouter refused the key because its spend cap is used up.
@@ -118,6 +165,7 @@ class Runner:
             raise ValueError(f"missing input files: {', '.join(missing)}")
         Path(ep["work_dir"]).mkdir(parents=True, exist_ok=True)
         Path(ep["output_dir"]).mkdir(parents=True, exist_ok=True)
+        drop_stale_edit_files(ep["work_dir"])
         ctx, plan = pipeline_steps.plan(show, ep, assets)
         run = (self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))["r"] or 0) + 1
         rt = Path(ep["work_dir"]) / "run_times.tsv"         # a new run starts its own time + cost table
@@ -743,6 +791,8 @@ class Runner:
                     tail = self.log_tail(j["log_path"], 6)
                     raise RuntimeError(f"exit code {rc}: {tail[-1] if tail else ''}")
                 break
+        if j["step"] == "groups":
+            snapshot_latest_groups((j.get("params") or {}).get("ctx", {}).get("W") or "")
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done in {time.time() - t0:.0f} s" + (f" ({rounds} rounds)" if rounds > 1 else ""))
 
@@ -779,6 +829,8 @@ class Runner:
                                     timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]))
         if res.get("rc") == 3:                             # "not finished -- run again (it resumes)"
             return self._run_cmd_cloud(j, cmd)
+        if j["step"] == "groups":
+            snapshot_latest_groups(ep["work_dir"])
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done on a rented machine in {time.time() - t0:.0f} s")
 
@@ -1554,8 +1606,10 @@ class Runner:
         keep = W / "manifest_groups.grouping.json"
         if g.exists() and not keep.exists():
             shutil.copy(g, keep)
-        if not (W / "manifest_groups.auto.json").exists() and g.exists():
-            shutil.copy(g, W / "manifest_groups.auto.json")
+        auto = W / "manifest_groups.auto.json"
+        src_auto = keep if keep.exists() else g
+        if src_auto.exists() and not auto.exists():
+            shutil.copy(src_auto, auto)
         from . import config as config_mod
         PL = config_mod.cfg.scene_dir
         cmd = ["{py}", str(PL / "slowfix_edit.py"), str(W), str(LIB)]
@@ -1581,8 +1635,11 @@ class Runner:
         """Keep the automatic edit as manifest_groups.auto.json (once) and write the scene edit as manifest_groups.json,
         its last piece stretched to the end of the dub. Prefers scene_slowfix (EP69-71) over sceneedit.py."""
         W = str(W)
-        if not os.path.exists(f"{W}/manifest_groups.auto.json"):
-            shutil.copy(f"{W}/manifest_groups.json", f"{W}/manifest_groups.auto.json")
+        grouping = f"{W}/manifest_groups.grouping.json"
+        auto = f"{W}/manifest_groups.auto.json"
+        if not os.path.exists(auto):
+            src = grouping if os.path.exists(grouping) else f"{W}/manifest_groups.json"
+            shutil.copy(src, auto)
         slow = f"{W}/scene_slowfix/manifest_slowfix.json"
         scene = f"{W}/scene/scene_manifest.json"
         src_scene = slow if os.path.exists(slow) else scene
@@ -1674,6 +1731,9 @@ class Runner:
                     todo.add(j["step"]); grew = True
         if any(by[s]["status"] in ACTIVE for s in todo):
             raise ValueError("these steps are running now")
+        if todo & {"lipsync", "groups"}:
+            _, ep, _ = self.episode_context(ep_id)
+            drop_stale_edit_files(ep["work_dir"])
         ids = [by[s]["id"] for s in todo]
         self._refresh_params(ids, ep_id)
         for s in todo:

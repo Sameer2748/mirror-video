@@ -73,6 +73,17 @@ def test_slow_single_eats_unused_after():
     assert groups[0]["stretch"] <= 1.25 + 1e-6 or groups[0]["us1"] >= 2460 - 1
 
 
+def test_lip_group_does_not_eat_unused_edges():
+    st = load_stitch()
+    groups = [
+        dict(_g(18, 109240, 142480, 93630, 118740), lipgroup=True),
+        _g(25, 142480, 148000, 119400, 122000),
+    ]
+    filled = st.expand_groups_into_unused(groups, target=1.25)
+    assert all(row[0] != 18 for row in filled)
+    assert groups[0]["us0"] == 93630 and groups[0]["us1"] == 118740
+
+
 def test_fast_clip_does_not_eat_unused():
     st = load_stitch()
     groups = [
