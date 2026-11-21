@@ -133,6 +133,67 @@ def test_unused_edge_still_fills_the_gap_before_the_next_lip_group():
     assert leftover["us_end_ms"] < 92000
 
 
+def test_in_window_group_does_not_eat_unused():
+    st = load_stitch()
+    leftover = _seg(16, 0, 1000, 10000, 11000)  # 1.0×
+    lip = _seg(18, 2000, 5000, 20000, 25000)
+    groups = [
+        dict(rows=[16], lipgroup=False, segments=[leftover]),
+        dict(rows=[18], lipgroup=True, segments=[lip]),
+    ]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert leftover["us_start_ms"] == 10000 and leftover["us_end_ms"] == 11000
+
+
+def test_one_unused_piece_then_stop_if_group_in_range():
+    """5s unused before would be enough; do not also eat after."""
+    st = load_stitch()
+    leftover = _seg(1, 0, 10000, 20000, 24000)  # 2.5×, need 4s to hit 1.25
+    nxt = _seg(8, 12000, 15000, 40000, 45000)
+    groups = [
+        dict(rows=[1], lipgroup=False, segments=[leftover]),
+        dict(rows=[8], lipgroup=True, segments=[nxt]),
+    ]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert leftover["us_start_ms"] == 16000  # ate 4s before, not all 20s
+    assert leftover["us_end_ms"] == 24000    # after unused unused
+
+
+def test_second_unused_only_if_first_was_not_enough():
+    st = load_stitch()
+    prev = _seg(0, -1000, 0, 0, 3960)
+    leftover = _seg(1, 0, 10000, 5000, 9000)  # 2.5×; ~1s free before
+    nxt = _seg(8, 12000, 15000, 15000, 20000)
+    groups = [
+        dict(rows=[0], lipgroup=True, segments=[prev]),
+        dict(rows=[1], lipgroup=False, segments=[leftover]),
+        dict(rows=[8], lipgroup=True, segments=[nxt]),
+    ]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert leftover["us_start_ms"] < 5000
+    assert leftover["us_end_ms"] > 9000
+    assert leftover["us_end_ms"] <= 15000 - 40 + 1
+
+
+def test_slow_lip_group_eats_edge_unused_without_remapping_middle():
+    st = load_stitch()
+    prev = _seg(10, -2000, 0, 0, 9960)
+    a = _seg(18, 0, 4000, 10000, 11000)
+    b = _seg(19, 4000, 8000, 11000, 12000)  # group 4×
+    nxt = _seg(30, 9000, 10000, 20000, 22000)
+    groups = [
+        dict(rows=[10], lipgroup=False, segments=[prev]),
+        dict(rows=[18, 19], lipgroup=True, lip=True, segments=[a, b]),
+        dict(rows=[30], lipgroup=False, segments=[nxt]),
+    ]
+    st.expand_groups_into_unused(groups, target=1.25)
+    assert a["us_start_ms"] == 10000
+    assert a["us_end_ms"] == 11000
+    assert b["us_start_ms"] == 11000
+    assert b["us_end_ms"] > 12000
+    assert b["us_end_ms"] <= 20000 - 40 + 1
+
+
 def test_trim_does_not_carve_lip_when_leftover_dub_is_earlier():
     """IT#61: leftover 60 overlapped Tom sigh; lip group keeps its window."""
     st = load_stitch()

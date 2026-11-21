@@ -44,11 +44,14 @@ Narration blocks: first source start → last source end the same way. Unused be
 
 If several matched rows share one picture span, they still play that span (not empty black).
 
-## Unused edges on a single clip
+## Unused edges (only when the group is slow)
 
-If a **lone clip or leftover group** is still slower than 1.25×, eat unused source immediately **before and/or after** it. Only the gap no other clip plays (40 ms guard). That lengthens source so stretch can enter 0.8–1.25×.
+Unused source is pause + visual. Use it at grouping time **only if that group is slower than 1.25×**, and only the unused immediately **before/after a clip in that group** that nobody else is matched to (40 ms guard). Source order stays; no B-roll here.
 
-Do **not** add unused source to a clip that is already too fast. Do **not** eat unused edges on a **lip group**: that group already kept unused middle as one take; stretching the edges shifted lunch picture onto “he diverted the conversation”.
+- One unused piece, then stop if the **group** is in 0.8–1.25×. If not, try the other edge. Do not eat both at once.
+- Do **not** add unused when the group is already in range (or too fast).
+- Lip groups already keep unused **middle**. Extra unused is only before the first clip or after the last. Do **not** remap middle lines (lunch/rice stay on the matched take).
+- Leftover vs lip: leftover still must not occupy another group's take. Scene-edit B-roll is after grouping, if the group is still slow.
 
 ## Scene edit — do not reopen
 
@@ -88,7 +91,7 @@ IMTS 69/70. IMTS leftover 197–258. Show **IMTSITDE** (including future queue).
 | --- | --- | --- |
 | EP71: lunch / rice / Tom picture early even though texts matched 1:1 | Lip-group **evening** (each line did not keep its own US in/out; later the evened 11-row Horton–Tom group) | Do not even. Play **first US start → last US end** over the group’s dub, unused **middle** kept |
 | Local span video was right; first cloud review still showed lunch on “diverted the conversation” | Leftover `grouping.json` from an older evened run. Scene edit copied it if present and ignored the new groups file | Snapshot `manifest_groups.grouping.json` after groups; drop stale edit files on Process again and rerun-from groups |
-| Same lunch-on-diverted after unused-edge fill | Unused-**edge** eat on a **lip group** grew US past the diverted line | Unused edges only on slow **singles / leftover groups**, never on lip groups |
+| Same lunch-on-diverted after unused-edge fill | Unused-**edge** remapped the whole lip take into the next line | Unused only if the **group is slow**; one adjacent unused piece at a time; lip **middle** not remapped; never the next group's match |
 | Cloud matching re-glued Claude source cards | SRT path / remapped work paths | Ignore SRT paths; always this episode’s sentence JSON; Claude cards before regex split |
 | Sheet fail `SRC#36` missing prefix | mkdec assert on a glued source line | Same: keep Claude source sentences on cloud |
 | Editor looked like a cut every sentence | One timeline clip per lip-group slice | `merge_render_takes`: one clip per picture take; B-roll / speed / source jump stay cuts |

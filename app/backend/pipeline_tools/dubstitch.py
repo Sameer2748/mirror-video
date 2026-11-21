@@ -2549,60 +2549,78 @@ def enforce_leftover_off_others(groups, pad=50):
     return n
 
 
+def _adjacent_unused(us0, us1, others, guard=40):
+    """Free source immediately before/after this span. Occupied includes overlapping takes."""
+    prev_end = max((b for a, b in others if a < us1 - guard), default=None)
+    next_start = min((a for a, b in others if b > us0 + guard), default=None)
+    rb = max(0.0, (us0 - prev_end) - guard) if prev_end is not None else max(0.0, us0 - guard)
+    ra = max(0.0, (next_start - us1) - guard) if next_start is not None else 1e12
+    return rb, ra
+
+
+def _nudge_group_edge(ss, side, take):
+    """Attach unused to the clip that has it (first before / last after). Do not remap the rest."""
+    clip = ss[0] if side == "before" else ss[-1]
+    if side == "before":
+        clip["us_start_ms"] = round(clip["us_start_ms"] - take, 3)
+    else:
+        clip["us_end_ms"] = round(clip["us_end_ms"] + take, 3)
+    clip["stretch_factor"] = round(
+        (clip["it_end_ms"] - clip["it_start_ms"]) / max(clip["us_end_ms"] - clip["us_start_ms"], 1), 3)
+    extra = f"unused {side} +{take / 1000:.2f}s"
+    note = (clip.get("note") or "").strip()
+    if extra not in note:
+        clip["note"] = (note + "; " + extra).lstrip("; ")
+
+
 def expand_groups_into_unused(groups, target=1.25):
-    """If a group or single clip is slower than `target` (dub/src), eat unused
-    source immediately before/after that no other group plays. Unused in the
-    middle of a group is already kept by first-to-last span; this is the leftover
-    edges and lone clips. Never steal another row's footage. Fast clips (too much
-    source) are not expanded.
+    """If a group is slower than `target`, attach unused source that sits immediately
+    before/after a clip in that group (source pause + visual, nobody else matched).
+
+    One unused piece, then stop if the group is in 0.8–1.25×. If not, try the other
+    edge. Never both at once. Never remap middle clips (lip lunch/rice stay put).
+    Unused middle inside first→last is already in the take. Fast groups are left alone.
     """
     filled = []
-    for i, g in enumerate(groups):
+    for g in groups:
         segs = g.get("segments") or []
         if not segs:
             continue
         it0, it1 = segs[0]["it_start_ms"], segs[-1]["it_end_ms"]
-        us0 = min(s["us_start_ms"] for s in segs)
-        us1 = max(s["us_end_ms"] for s in segs)
-        it_dur, us_dur = it1 - it0, us1 - us0
-        if it_dur <= 1 or us_dur <= 1:
+        it_dur = it1 - it0
+        if it_dur <= 1:
             continue
-        # Lip groups already keep unused source in the middle (first→last span).
-        # Eating unused edges on those groups shifts which picture sits on which line.
-        if g.get("lipgroup"):
-            continue
-        stretch = it_dur / us_dur
-        if stretch <= target + 1e-6:
-            continue
-        need = it_dur / target - us_dur
         others = other_group_spans(groups, g)
-        # Occupied = any other group's span, including one we already overlap.
-        prev_end = max((b for a, b in others if a < us1 - 40), default=None)
-        next_start = min((a for a, b in others if b > us0 + 40), default=None)
-        rb = max(0.0, (us0 - prev_end) - 40) if prev_end is not None else 0.0
-        ra = max(0.0, (next_start - us1) - 40) if next_start is not None else 0.0
-        ta = min(ra, need / 2)
-        tb = min(rb, need - ta)
-        ta = min(ra, need - tb)
-        if ta + tb <= 1:
-            continue
-        new0, new1 = us0 - tb, us1 + ta
-        span_old = us1 - us0
-        span_new = new1 - new0
-        for s in segs:
-            t0 = (s["us_start_ms"] - us0) / span_old
-            t1 = (s["us_end_ms"] - us0) / span_old
-            s["us_start_ms"] = round(new0 + t0 * span_new, 3)
-            s["us_end_ms"] = round(new0 + t1 * span_new, 3)
-            s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
-            extra = f"unused edges +{tb / 1000:.2f}s before +{ta / 1000:.2f}s after"
-            note = (s.get("note") or "").strip()
-            if extra not in note:
-                s["note"] = (note + "; " + extra).lstrip("; ")
-        g["us0"], g["us1"] = new0, new1
-        g["stretch"] = (it1 - it0) / max(new1 - new0, 1)
-        g["kept"] = new1 - new0
-        filled.append((g["rows"][0], g["rows"][-1], round(tb), round(ta), round(g["stretch"], 3)))
+        used_b = used_a = 0.0
+        for side in ("before", "after"):
+            sp = _span_of(g)
+            if not sp:
+                break
+            us0, us1 = sp
+            us_dur = us1 - us0
+            if us_dur <= 1:
+                break
+            stretch = it_dur / us_dur
+            if stretch <= target + 1e-6:
+                break
+            need = it_dur / target - us_dur
+            rb, ra = _adjacent_unused(us0, us1, others)
+            room = rb if side == "before" else ra
+            take = min(room, need)
+            if take <= 1:
+                continue
+            _nudge_group_edge(segs, side, take)
+            if side == "before":
+                used_b = take
+            else:
+                used_a = take
+        sp = _span_of(g)
+        if sp:
+            g["us0"], g["us1"] = sp
+            g["kept"] = sp[1] - sp[0]
+            g["stretch"] = it_dur / max(sp[1] - sp[0], 1)
+        if used_b + used_a > 1:
+            filled.append((g["rows"][0], g["rows"][-1], round(used_b), round(used_a), round(g["stretch"], 3)))
     return filled
 
 
