@@ -14,8 +14,6 @@ import shutil
 import sys
 from pathlib import Path
 
-from dubstudio.pipeline.keep_grouping import fit_overlapping_ms
-
 THRESHOLD = 1.25
 MIN_KEEP_MS = 400
 MIN_CUT_MS = 80
@@ -32,6 +30,27 @@ def spd(s):
     d = s["it_end_ms"] - s["it_start_ms"]
     u = s["us_end_ms"] - s["us_start_ms"]
     return (u / d) if d > 1 else 0.0
+
+
+def fit_overlapping_ms(segs, min_overlap_ms=50):
+    """Same as keep_grouping.fit_overlapping_ms — inlined so RunPod has no dubstudio import."""
+    if not segs or len(segs) < 2:
+        return False
+    ordered = sorted(segs, key=lambda s: s["it_start_ms"])
+    if not any(min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"]) > min_overlap_ms
+               for x, y in zip(ordered, ordered[1:])):
+        return False
+    us0 = min(s["us_start_ms"] for s in ordered)
+    us1 = max(s["us_end_ms"] for s in ordered)
+    it0, it1 = ordered[0]["it_start_ms"], ordered[-1]["it_end_ms"]
+    span_it, span_us = it1 - it0, us1 - us0
+    if span_it <= 1 or span_us <= 1:
+        return False
+    for s in ordered:
+        s["us_start_ms"] = round(us0 + (s["it_start_ms"] - it0) / span_it * span_us, 3)
+        s["us_end_ms"] = round(us0 + (s["it_end_ms"] - it0) / span_it * span_us, 3)
+        s["stretch_factor"] = round((s["it_end_ms"] - s["it_start_ms"]) / max(s["us_end_ms"] - s["us_start_ms"], 1), 3)
+    return True
 
 
 def gspd(segs):
