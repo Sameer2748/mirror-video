@@ -1,4 +1,4 @@
-"""Lip groups play first matched source start → last source end as one take."""
+"""Lip groups: each line keeps its own matched source. A pause between lines is split halfway."""
 import importlib.util
 from pathlib import Path
 
@@ -23,11 +23,10 @@ def _row(idx, src0, src1, dub0, dub1, text):
                 src_text=text, dub_text=text)
 
 
-def test_lunch_rice_group_keeps_unused_middle_as_one_clip():
+def test_lunch_rice_each_line_keeps_its_mouth():
     st = load_stitch()
     lunch_us = (107400.0, 108920.0)
     rice_us = (110050.0, 114040.0)
-    unused_after_lunch = (108920.0, 110050.0)
     segs = [
         _seg(22, 128760, 132225, *lunch_us, "what did you eat for lunch today"),
         _seg(23, 132225, 136680, *rice_us, "I had rice chicken soup and celery"),
@@ -36,19 +35,16 @@ def test_lunch_rice_group_keeps_unused_middle_as_one_clip():
         22: _row(22, lunch_us[0], lunch_us[1], 128760, 132225, segs[0]["us_text"]),
         23: _row(23, rice_us[0], rice_us[1], 132225, 136680, segs[1]["us_text"]),
     }
-    clips, _ = st.lip_group_span_clip([0, 1], segs, rows)
+    clips, _ = st.lip_group_own_line_clips([0, 1], segs, rows, {}, lambda i, n: ((0, 0), False), 0)
     assert len(clips) == 2
     assert clips[0]["us_start_ms"] == lunch_us[0]
     assert clips[-1]["us_end_ms"] == rice_us[1]
-    assert clips[0]["it_start_ms"] == 128760
-    assert clips[-1]["it_end_ms"] == 136680
-    # unused 108.920-110.050 sits inside the continuous take
-    assert clips[0]["us_start_ms"] < unused_after_lunch[0] < unused_after_lunch[1] < clips[-1]["us_end_ms"]
-    assert abs(clips[0]["us_end_ms"] - clips[1]["us_start_ms"]) < 1
-    assert abs(clips[0]["stretch_factor"] - clips[1]["stretch_factor"]) < 0.01
-    # rice 3.99s no longer plays alone in 1.75s (0.44x)
-    assert clips[0]["stretch_factor"] > 0.8
-    assert clips[1]["stretch_factor"] > 0.8
+    mid = (lunch_us[1] + rice_us[0]) / 2
+    assert abs(clips[0]["us_end_ms"] - mid) < 1
+    assert abs(clips[1]["us_start_ms"] - mid) < 1
+    assert clips[0]["us_end_ms"] < rice_us[0]
+    assert clips[1]["us_start_ms"] > lunch_us[1]
+    assert abs(clips[0]["stretch_factor"] - clips[1]["stretch_factor"]) > 0.05
 
 
 def _g(idx, it0, it1, us0, us1):
@@ -64,7 +60,7 @@ def test_slow_single_eats_unused_after():
         _g(10, 0, 2000, 1000, 1800),      # 2.5x slow; unused 1800-2500 before neighbour
         _g(11, 2000, 3000, 2500, 3500),   # 1.0x
     ]
-    filled = st.expand_groups_into_unused(groups, target=1.25)
+    filled = st.apply_approved_unused(groups, {0: dict(unused="after")}, target=1.25)
     assert filled
     assert groups[0]["us1"] > 1800
     assert groups[0]["us1"] <= 2460      # 40ms guard before neighbour
@@ -82,6 +78,29 @@ def test_lip_group_does_not_eat_unused_edges():
     filled = st.expand_groups_into_unused(groups, target=1.25)
     assert all(row[0] != 18 for row in filled)
     assert groups[0]["us0"] == 93630 and groups[0]["us1"] == 118740
+
+
+def test_opus_unused_only_when_approved_on_leftover():
+    st = load_stitch()
+    leftover = _g(10, 0, 10000, 20000, 24000)  # 2.5× slow
+    nxt = _g(11, 10000, 12000, 40000, 45000)
+    groups = [leftover, nxt]
+    assert st.apply_approved_unused(groups, {0: dict(unused="none")}, target=1.25) == []
+    assert leftover["us0"] == 20000
+    filled = st.apply_approved_unused(groups, {0: dict(unused="before", unused_s=4.0)}, target=1.25)
+    assert filled
+    assert leftover["segments"][0]["us_start_ms"] == 16000
+    assert leftover["segments"][0]["us_end_ms"] == 24000
+    assert nxt["segments"][0]["us_start_ms"] == 40000
+
+
+def test_opus_unused_never_on_lip_group():
+    st = load_stitch()
+    lip = dict(_g(18, 0, 8000, 10000, 12000), lipgroup=True)
+    groups = [lip]
+    filled = st.apply_approved_unused(groups, {0: dict(unused="before", unused_s=5.0)}, target=1.25)
+    assert filled == []
+    assert lip["segments"][0]["us_start_ms"] == 10000
 
 
 def test_fast_clip_does_not_eat_unused():

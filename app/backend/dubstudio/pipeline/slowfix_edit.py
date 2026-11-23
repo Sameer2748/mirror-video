@@ -23,6 +23,13 @@ def _app_dir(script):
 sys.path.insert(0, str(_app_dir(__file__)))
 from dubstudio import ai  # noqa: E402
 from dubstudio.pipeline.keep_grouping import grouping_takes  # noqa: E402
+_pt = Path(__file__).resolve().parents[2] / "pipeline_tools"
+if _pt.is_dir():
+    sys.path.insert(0, str(_pt))
+try:
+    import dubstitch as stitch  # noqa: E402
+except Exception:
+    stitch = None
 
 W = Path(sys.argv[1]).resolve()
 LIBD = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else (W / "broll_library")
@@ -329,12 +336,35 @@ def _group_brief(gi, g, us):
     btxt = ", ".join(f"shot {r['n']} {r['type']} {r['start']:.1f}-{r['end']:.1f}s "
                      f"({', '.join(people_of(r['n'])) or 'place'})" for r in brolls) or "none"
     leftover = [u["rows"] for u in us]
+    unused_txt = "UNUSED EDGES (not in grouping; matching stays unless you set unused): none (lip group)"
+    if stitch and not (g.get("lipgroup") or g.get("lip")):
+        Gtmp = []
+        for h in grp["groups"]:
+            segs_h = sorted((s for r in h["rows"] for s in by_row.get(r, [])),
+                            key=lambda s: s["it_start_ms"])
+            hh = dict(h)
+            hh["segments"] = segs_h
+            Gtmp.append(hh)
+        gi_g = Gtmp[gi] if gi < len(Gtmp) else None
+        if gi_g and stitch._span_of(gi_g):
+            us0, us1 = stitch._span_of(gi_g)
+            rb, ra = stitch._adjacent_unused(us0, us1, stitch.other_group_spans(Gtmp, gi_g))
+            rb_s, ra_s = (rb / 1000 if rb < 1e11 else 0), (ra / 1000 if ra < 1e11 else 0)
+            lip_g = bool(g.get("lipgroup") or g.get("lip"))
+            unused_txt = (
+                f"UNUSED EDGES (not in grouping; matching stays unless you opt in):\n"
+                f"  before: {rb_s:.2f}s immediately left of US {us0/1000:.2f}s\n"
+                f"  after: {ra_s:.2f}s immediately right of US {us1/1000:.2f}s\n"
+                f"  lip group: {lip_g} — if true, unused MUST be none\n"
+                f"  using unused must not cover another group's matched take"
+            )
     return (
         f"GROUP {gi} dub {g['it0']/1000:.2f}-{g['it1']/1000:.2f}s ({D:.1f}s) | "
         f"source span {g['us0']/1000:.2f}-{g['us1']/1000:.2f}s ({S:.1f}s) | "
         f"if played as one clip: {S / D if D else 0:.2f}x (allowed 0.80-1.25x)\n"
         f"grouping note: {g.get('why') or g.get('note') or '-'}\n"
         f"scene-edit leftover units (slow after in-range sub-split): {leftover}\n"
+        f"{unused_txt}\n"
         f"location: {loc}\n"
         f"same-place B-roll available: {btxt}\n"
         + "\n".join(lines)
@@ -419,18 +449,27 @@ Edit like a human:
 5. Pick the B-roll from the RANKED list only (shot number must be on that list). Prefer a higher rank
    (exact people, same place). You MAY pick a lower rank if the picture is a better reaction for this
    line (a one-person reaction of someone in a multi-person line is allowed). Do not invent a shot.
-6. Unused continuous source between two matched rows is already in the grouping cut — keep it.
-7. At most 3 visual transitions in a sentence. Do not retime every sentence. Other rows keep grouping.
-8. If a B-roll source is 1.3 s, it may play 2 s (steal 0.7 s from the previous own clip). Code does that.
-9. If you are not sure, keep_whole. A safe matched cut beats a clever B-roll.
-10. A leftover row playing under 0.40x or under 0.5 s of source is a script hole (overlap-trim), not a
+6. Unused *middle* inside a lip group take is already in the grouping cut — keep it. Unused *edges*
+   (listed below) are NOT in the grouping cut. Matching stays on the matched line until you opt in.
+7. You may attach unused before/after ONLY when ALL of these hold: (a) this is a leftover narration
+   group, not a lip-sync group, (b) the leftover is slower than 0.80x, (c) the unused is immediately
+   adjacent and nobody else is matched to it, (d) using it will NOT put another line's talking mouth
+   on this line or this line's mouth on another. If any of those fail, unused=none.
+8. Lip-sync / conversation groups: unused=none always. Slightly slow matched picture is better than
+   stealing unused that unsyncs the match.
+9. At most 3 visual transitions in a sentence. Do not retime every sentence. Other rows keep grouping.
+10. If a B-roll source is 1.3 s, it may play 2 s (steal 0.7 s from the previous own clip). Code does that.
+11. If you are not sure, keep_whole and unused=none. A safe matched cut beats unused fill or B-roll.
+12. A leftover row playing under 0.40x or under 0.5 s of source is a script hole (overlap-trim), not a
     creative slow-mo. Do not B-roll a lip-sync conversation to fill it. If a neighbor leftover still
     plays this row's matched English sentence, keep_whole on that leftover picture (the matched take).
     Only B-roll when that matched leftover is gone.
 
 Answer only JSON for THIS group:
 {"g": <id>, "keep_whole": true/false, "row": <row or null>, "broll_s": <seconds or 0>,
- "where": "after"|"before"|"none", "shot": <broll shot number or null>, "why": "one short sentence"}
+ "where": "after"|"before"|"none", "shot": <broll shot number or null>,
+ "unused": "before"|"after"|"none", "unused_s": <seconds or 0>,
+ "why": "one short sentence"}
 """
 
 plan_p = OUT / "broll_plan_editor.json"
@@ -507,11 +546,13 @@ else:
                 p = p["groups"][0]
         except Exception as ex:
             print(f"  editor G{gi}: JSON fail ({ex}); keep whole", flush=True)
-            p = dict(g=gi, keep_whole=True, row=None, broll_s=0, where="none", shot=None, why="editor JSON fail")
+            p = dict(g=gi, keep_whole=True, row=None, broll_s=0, where="none", shot=None,
+                     unused="none", unused_s=0, why="editor JSON fail")
         p["g"] = gi
         measured[gi] = p
         print(f"  editor G{gi}: {len(ranked)} ranked brolls keep_whole={p.get('keep_whole')} row={p.get('row')} "
-              f"broll={p.get('broll_s')} {p.get('where')} shot={p.get('shot')} | {p.get('why')}", flush=True)
+              f"broll={p.get('broll_s')} {p.get('where')} shot={p.get('shot')} "
+              f"unused={p.get('unused')} {p.get('unused_s')} | {p.get('why')}", flush=True)
     if not keep_plan:
         broll_plan = measured
         json.dump({str(k): v for k, v in broll_plan.items()}, open(plan_p, "w"), indent=1, ensure_ascii=False)
@@ -521,6 +562,35 @@ else:
               open(usage_p, "w"), indent=1)
     print(f"editor plan: {time.time() - t0:.1f}s, ${cost_ed:.4f}, {len(measured)} groups, "
           f"in {tok_in} out {tok_out} calls {n_ed}, model {EDITOR}", flush=True)
+
+if stitch:
+    G = []
+    for g in grp["groups"]:
+        segs = sorted((s for r in g["rows"] for s in by_row.get(r, [])), key=lambda s: s["it_start_ms"])
+        gg = dict(g)
+        gg["segments"] = segs
+        G.append(gg)
+    plan_idx = {}
+    for gi, p in (broll_plan or {}).items():
+        idx = int(gi)
+        plan_idx[idx] = p
+        if 0 <= idx < len(G) and (G[idx].get("lipgroup") or G[idx].get("lip")):
+            plan_idx[idx] = dict(p, unused="none", unused_s=0)
+    unused_ok = stitch.apply_approved_unused(G, plan_idx, target=1.0 / LO)
+    if unused_ok:
+        print(f"opus unused-edge on leftovers: {unused_ok}", flush=True)
+        for gi, gg in enumerate(G):
+            if "us0" in gg:
+                grp["groups"][gi]["us0"] = gg["us0"]
+                grp["groups"][gi]["us1"] = gg["us1"]
+        for u in units:
+            segs = u["segs"]
+            u["src"] = sum(s["us_end_ms"] - s["us_start_ms"] for s in segs) / 1000
+            u["speed"] = u["src"] / max(u["t1"] - u["t0"], 1e-6)
+            if u["speed"] >= LO:
+                u["skip_group_broll"] = True
+    else:
+        print("opus unused-edge: none applied (matched takes kept)", flush=True)
 
 for u in units:
     p = broll_plan.get(u["group"]) or {}

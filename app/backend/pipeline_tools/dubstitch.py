@@ -2445,47 +2445,51 @@ def trim_shared_footage(out, gi, repeat_rows, lip=None):
     return n
 
 
-def lip_group_span_clip(members, segs, rows):
-    """One lip-group take: first matched source start → last matched source end
-    over first dub start → last dub end. Unused source between the sentences
-    stays in (no cut in the middle). One speed for the whole conversation.
+def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed):
+    """A lip group is one conversation. Each line plays its own matched source
+    over its own dub slot. A pause between two lines is split halfway so the
+    take stays continuous, without sliding the next mouth onto this line.
     """
-    first, last = segs[members[0]], segs[members[-1]]
-    it0, it1 = first["it_start_ms"], last["it_end_ms"]
-    us0, us1 = None, None
-    for j in members:
-        r = rows[segs[j]["it_idx"]]
-        ua = r["src_start"] if r.get("src_start") is not None else segs[j]["us_start_ms"]
-        ub = r["src_end"] if r.get("src_end") is not None else segs[j]["us_end_ms"]
-        us0 = float(ua) if us0 is None else min(us0, float(ua))
-        us1 = float(ub) if us1 is None else max(us1, float(ub))
-    if it1 - it0 <= 1 or us1 - us0 <= 1:
-        return [], []
-    f = (it1 - it0) / max(us1 - us0, 1)
-    clips = []
-    span_it = it1 - it0
-    span_us = us1 - us0
+    wins = []
     for j in members:
         s_ = segs[j]
+        r = rows[s_["it_idx"]]
+        ua = r["src_start"] if r.get("src_start") is not None else s_["us_start_ms"]
+        ub = r["src_end"] if r.get("src_end") is not None else s_["us_end_ms"]
         d0, d1 = s_["it_start_ms"], s_["it_end_ms"]
-        if d1 - d0 <= 1:
+        cut = False
+        if lip_max_speed > 0 and s_["it_idx"] in lip:
+            (x0, x1), cut = lip_window(s_["it_idx"], d1 - d0)
+            if cut:
+                ua, ub = x0, x1
+        wins.append([d0, d1, float(ua), float(ub), cut])
+    for q in range(len(wins) - 1):
+        if wins[q][4] or wins[q + 1][4]:
             continue
-        ua = us0 + (d0 - it0) / span_it * span_us
-        ub = us0 + (d1 - it0) / span_it * span_us
+        a_end, b_start = wins[q][3], wins[q + 1][2]
+        if b_start + 40 >= a_end:
+            mid = (a_end + b_start) / 2
+            wins[q][3] = mid
+            wins[q + 1][2] = mid
+    clips, flags = [], []
+    for q, j in enumerate(members):
+        d0, d1, ua, ub, _ = wins[q]
+        if d1 - d0 <= 1 or ub - ua <= 1:
+            continue
+        s_ = segs[j]
+        f = (d1 - d0) / max(ub - ua, 1)
         clips.append(dict(kind="clip", it_idx=s_["it_idx"], it_start_ms=round(d0, 3), it_end_ms=round(d1, 3),
                           us_start_ms=round(ua, 3), us_end_ms=round(ub, 3),
                           it_text=s_.get("it_text", ""), us_text=s_.get("us_text", ""),
-                          stretch_factor=round(f, 3),
-                          note="lip group: first source start to last source end, unused middle kept"))
-    flags = []
-    if f > 2.5 or f < 0.4:
-        flags.append(f"IT#{first['it_idx']}-{last['it_idx']} group plays x{f:.2f}")
+                          stretch_factor=round(f, 3), note="lip group"))
+        if f > 2.5 or f < 0.4:
+            flags.append(f"IT#{s_['it_idx']} piece plays x{f:.2f}")
     return clips, flags
 
 
-def lip_group_own_line_clips(members, segs, rows, lip, lip_window, lip_max_speed):
-    """Back-compat name: lip groups are one first-to-last source span."""
-    return lip_group_span_clip(members, segs, rows)
+def lip_group_span_clip(members, segs, rows):
+    """Kept for tests. Playback is per line; this only forwards with no lip trim."""
+    return lip_group_own_line_clips(members, segs, rows, {}, lambda i, n: ((0, 0), False), 0)
 
 
 def _span_of(g):
@@ -2574,17 +2578,22 @@ def _nudge_group_edge(ss, side, take):
 
 
 def expand_groups_into_unused(groups, target=1.25):
-    """If a group is slower than `target`, attach unused source that sits immediately
-    before/after a clip in that group (source pause + visual, nobody else matched).
+    """If a leftover group is slower than `target`, attach unused source that sits
+    immediately before/after that leftover (nobody else matched).
 
-    One unused piece, then stop if the group is in 0.8–1.25×. If not, try the other
-    edge. Never both at once. Never remap middle clips (lip lunch/rice stay put).
-    Unused middle inside first→last is already in the take. Fast groups are left alone.
+    Lip groups do not eat unused edges. Unused *middle* is already in the
+    first→last take; extra before/after only nudges the first/last line and
+    pulls a matched mouth onto the wrong sentence.
+
+    One unused piece, then stop if the leftover is in 0.8–1.25×. If not, try
+    the other edge. Never both at once. Fast leftovers are left alone.
     """
     filled = []
     for g in groups:
         segs = g.get("segments") or []
         if not segs:
+            continue
+        if g.get("lipgroup") or g.get("lip"):
             continue
         it0, it1 = segs[0]["it_start_ms"], segs[-1]["it_end_ms"]
         it_dur = it1 - it0
@@ -2621,6 +2630,61 @@ def expand_groups_into_unused(groups, target=1.25):
             g["stretch"] = it_dur / max(sp[1] - sp[0], 1)
         if used_b + used_a > 1:
             filled.append((g["rows"][0], g["rows"][-1], round(used_b), round(used_a), round(g["stretch"], 3)))
+    return filled
+
+
+def apply_approved_unused(groups, plan, target=1.25):
+    """Attach unused edges only where scene-edit Opus said to. Lip groups never.
+    Grouping itself does not call this — matching output stays put until Opus."""
+    filled = []
+    if not plan:
+        return filled
+    for i, g in enumerate(groups):
+        if g.get("lipgroup") or g.get("lip"):
+            continue
+        p = plan.get(i) if isinstance(plan, dict) else None
+        if not isinstance(p, dict):
+            p = plan.get(str(i)) if isinstance(plan, dict) else None
+        if not isinstance(p, dict):
+            p = {}
+        side = str(p.get("unused") or "none").lower()
+        if side not in ("before", "after"):
+            continue
+        segs = g.get("segments") or []
+        if not segs:
+            continue
+        it0, it1 = segs[0]["it_start_ms"], segs[-1]["it_end_ms"]
+        it_dur = it1 - it0
+        sp = _span_of(g)
+        if it_dur <= 1 or not sp:
+            continue
+        us0, us1 = sp
+        us_dur = us1 - us0
+        if us_dur <= 1:
+            continue
+        stretch = it_dur / us_dur
+        if stretch <= target + 1e-6:
+            continue
+        need = it_dur / target - us_dur
+        others = other_group_spans(groups, g)
+        rb, ra = _adjacent_unused(us0, us1, others)
+        room = rb if side == "before" else ra
+        take = min(room, need)
+        want = float(p.get("unused_s") or 0) * 1000.0
+        if want > 1:
+            take = min(take, want)
+        if take <= 1:
+            continue
+        _nudge_group_edge(segs, side, take)
+        sp = _span_of(g)
+        g["us0"], g["us1"] = sp
+        g["kept"] = sp[1] - sp[0]
+        g["stretch"] = it_dur / max(g["kept"], 1)
+        extra = f"unused {side} +{take / 1000:.2f}s (opus)"
+        note = (segs[0 if side == "before" else -1].get("note") or "")
+        if extra not in note:
+            segs[0 if side == "before" else -1]["note"] = (note + "; " + extra).lstrip("; ")
+        filled.append((g["rows"][0], g["rows"][-1], side, round(take), round(g["stretch"], 3)))
     return filled
 
 
@@ -2739,7 +2803,7 @@ def cmd_groups(a):
         chain_groups = []
         for ch, links, k0, k1, why in chains:
             members = list(range(k0, k1 + 1))
-            out_s, flags = lip_group_span_clip(members, segs, rows)
+            out_s, flags = lip_group_own_line_clips(members, segs, rows, lip, lip_window, a.lip_max_speed)
             for j in members:
                 mine = [o for o in out_s if o["it_idx"] == segs[j]["it_idx"]]
                 if mine:
@@ -2754,7 +2818,7 @@ def cmd_groups(a):
                 us0, us1 = segs[k0]["us_start_ms"], segs[k1]["us_end_ms"]
             chain_groups.append(dict(rows=[segs[j]["it_idx"] for j in members], it0=it0, it1=it1, us0=us0, us1=us1, trims=[], flags=flags,
                                      note=(f"lip piece: {nl} lip row(s) + {len(members) - nl} narration row(s); {why}; "
-                                           f"first source start to last source end, unused middle kept"), removed=[], kept=us1 - us0,
+                                           f"each line plays its own source in/out"), removed=[], kept=us1 - us0,
                                      stretch=(it1 - it0) / max(us1 - us0, 1), removed_ms=0, segments=out_s, drift={}, max_drift=0,
                                      lip=True, lipgroup=True, why=why, first_seg=k0, break_before="lip group"))
         # A grouped row next to a lip-sync row now also carries the silence next to it. Instead of only slowing down, it
@@ -2834,7 +2898,8 @@ def cmd_groups(a):
         groups.append(info)
     groups += chain_groups
     groups.sort(key=lambda g: g["it0"])
-    unused_fill = expand_groups_into_unused(groups, target=getattr(a, "max_stretch", 1.25) or 1.25)
+    unused_fill = []
+    print("  unused-edge skipped at grouping (matched takes stay; Opus scene-edit may attach leftover unused later)")
     enforce_leftover_off_others(groups)
     for g in groups:
         k = g["first_seg"]
@@ -2901,7 +2966,7 @@ def cmd_groups(a):
               + ("  ** " + "; ".join(g["flags"]) if g["flags"] else ""))
     if lip:
         print(f"  {sum(1 for g in groups if g.get('lip') and not g.get('lipgroup'))} single lip-sync rows play their own clip; "
-              f"{len(chain_groups)} lip groups play {sum(len(g['rows']) for g in chain_groups)} rows (first-to-last source span) "
+              f"{len(chain_groups)} lip groups play {sum(len(g['rows']) for g in chain_groups)} rows (each line on its own source) "
               f"({sum(1 for g in chain_groups for r in g['rows'] if r in lip)} lip-sync + "
               f"{sum(1 for g in chain_groups for r in g['rows'] if r not in lip)} narration rows)")
         tr_ = [f for g in chain_groups for f in g["flags"] if f.startswith("trimmed")]

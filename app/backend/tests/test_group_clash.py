@@ -175,7 +175,8 @@ def test_second_unused_only_if_first_was_not_enough():
     assert leftover["us_end_ms"] <= 15000 - 40 + 1
 
 
-def test_slow_lip_group_eats_edge_unused_without_remapping_middle():
+def test_slow_lip_group_does_not_eat_edge_unused():
+    """Matched lip lines keep their take. Leftovers may still fill unused edges."""
     st = load_stitch()
     prev = _seg(10, -2000, 0, 0, 9960)
     a = _seg(18, 0, 4000, 10000, 11000)
@@ -190,8 +191,7 @@ def test_slow_lip_group_eats_edge_unused_without_remapping_middle():
     assert a["us_start_ms"] == 10000
     assert a["us_end_ms"] == 11000
     assert b["us_start_ms"] == 11000
-    assert b["us_end_ms"] > 12000
-    assert b["us_end_ms"] <= 20000 - 40 + 1
+    assert b["us_end_ms"] == 12000
 
 
 def test_trim_does_not_carve_lip_when_leftover_dub_is_earlier():

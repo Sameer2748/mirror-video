@@ -33,25 +33,17 @@ Speed window for picture: **0.8×–1.25×**. Stretch_factor = dub duration / so
 
 ## Groups — how a group is played (EP71 QC)
 
-**This is the lunch/rice fix.** A lip group is **one take**:
-
-- First matched **source start** → last matched **source end**
-- over first **dub start** → last **dub end**
-- Unused source **in the middle** stays in (do not cut unused US between lunch and rice)
-- One speed. Do **not** even inner joins (`lip-smooth` off). Evening put rice/lunch picture on the wrong line.
+**Each lip line plays its own matched source** over its own dub slot (EP69). A pause between two lines is split halfway so the take stays continuous. Do not even the whole group to one speed — that puts the next mouth on this line. Unused before/after is not added here; scene-edit Claude decides that on leftovers.
 
 Narration blocks: first source start → last source end the same way. Unused between members stays in.
 
 If several matched rows share one picture span, they still play that span (not empty black).
 
-## Unused edges (only when the group is slow)
+## Unused edges (Opus on leftovers only)
 
-Unused source is pause + visual. Use it at grouping time **only if that group is slower than 1.25×**, and only the unused immediately **before/after a clip in that group** that nobody else is matched to (40 ms guard). Source order stays; no B-roll here.
+Grouping does **not** attach unused before/after. Matched takes stay as matching+lip-group play left them. Unused *middle* inside a lip group take still stays (lunch/rice).
 
-- One unused piece, then stop if the **group** is in 0.8–1.25×. If not, try the other edge. Do not eat both at once.
-- Do **not** add unused when the group is already in range (or too fast).
-- Lip groups already keep unused **middle**. Extra unused is only before the first clip or after the last. Do **not** remap middle lines (lunch/rice stay on the matched take).
-- Leftover vs lip: leftover still must not occupy another group's take. Scene-edit B-roll is after grouping, if the group is still slow.
+Scene-edit **Opus** may attach one adjacent unused piece on a **slow leftover** only when all of these hold: leftover (not lip), slower than 0.80×, unused immediately before/after with nobody else matched (40 ms guard), and it will not put another line's mouth on this line. Code refuses unused on lip groups even if Opus asks. If unsure, unused=none.
 
 ## Scene edit — do not reopen
 
@@ -91,7 +83,8 @@ IMTS 69/70. IMTS leftover 197–258. Show **IMTSITDE** (including future queue).
 | --- | --- | --- |
 | EP71: lunch / rice / Tom picture early even though texts matched 1:1 | Lip-group **evening** (each line did not keep its own US in/out; later the evened 11-row Horton–Tom group) | Do not even. Play **first US start → last US end** over the group’s dub, unused **middle** kept |
 | Local span video was right; first cloud review still showed lunch on “diverted the conversation” | Leftover `grouping.json` from an older evened run. Scene edit copied it if present and ignored the new groups file | Snapshot `manifest_groups.grouping.json` after groups; drop stale edit files on Process again and rerun-from groups |
-| Same lunch-on-diverted after unused-edge fill | Unused-**edge** remapped the whole lip take into the next line | Unused only if the **group is slow**; one adjacent unused piece at a time; lip **middle** not remapped; never the next group's match |
+| Same lunch-on-diverted after unused-edge fill | Unused-**edge** remapped the whole lip take into the next line | Unused-edge is **leftovers only** (and only if slow); lip groups keep unused **middle**, never unused before/after; leftover never the next group's match |
+| EP69 opening: matched D0/D1 off in the cut | One speed across the lip group, plus unused-edge on that group | Each lip line keeps its own source; Claude decides unused on leftovers only |
 | Cloud matching re-glued Claude source cards | SRT path / remapped work paths | Ignore SRT paths; always this episode’s sentence JSON; Claude cards before regex split |
 | Sheet fail `SRC#36` missing prefix | mkdec assert on a glued source line | Same: keep Claude source sentences on cloud |
 | Editor looked like a cut every sentence | One timeline clip per lip-group slice | `merge_render_takes`: one clip per picture take; B-roll / speed / source jump stay cuts |
