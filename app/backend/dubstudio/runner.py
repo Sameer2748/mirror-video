@@ -1003,9 +1003,20 @@ class Runner:
         self._mark_visit(to_mark, msg)
 
     def _scene_sheet_argv(self, j, show, ep):
-        """The scene-edit sheet command. The same one the local step runs."""
+        """The scene-edit sheet command. Slowfix already wrote the xlsx; the old EDL sheet is only for sceneedit.py."""
         ctx = j["params"]["ctx"]
         out = ctx["name_scene_sheet"]
+        W = Path(ctx.get("W") or ep.get("work_dir") or "")
+        slow_xlsx = W / "scene_slowfix" / "scene_edit.xlsx"
+        if slow_xlsx.is_file():
+            cmd = ["{py}", "-c",
+                   "import os, shutil, sys\n"
+                   "src, dest = sys.argv[1], sys.argv[2]\n"
+                   "os.makedirs(os.path.dirname(dest) or '.', exist_ok=True)\n"
+                   "shutil.copy(src, dest)\n"
+                   "print('scene-edit sheet', dest)\n",
+                   str(slow_xlsx), out]
+            return cmd, out
         en = ctx.get("en_srt_burn") or ctx["name_en_srt"]
         cmd = ["{py}", str(cfg.scene_dir / "sceneedit_sheet.py"),
                str(Path(ctx["scene_dir"]) / "scene_manifest.edl.json"),
@@ -1184,6 +1195,11 @@ class Runner:
         by = {x["step"]: x for x in jobs}
 
         work = (j["params"] or {}).get("ctx", {}).get("W") or ep["work_dir"]
+        if not Path(work, "config.json").exists() or not Path(work, "manifest_groups.json").exists():
+            Path(j["log_path"]).parent.mkdir(parents=True, exist_ok=True)
+            with open(j["log_path"], "a", encoding="utf-8") as f:
+                storage.fetch_work_files(show, ep, log=lambda m: (f.write(str(m).rstrip() + "\n"), f.flush()),
+                                         force=True)
         tp = by.get("trans_plan")
         if tp and tp["status"] not in DONE:
             self._run_cmd(tp, force_local=True)

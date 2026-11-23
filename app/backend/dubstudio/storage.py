@@ -557,7 +557,7 @@ def send_one(db, row):
 # ---------------- what a worker does with storage (docs/09 §3) ----------------
 MEDIA_KINDS = ("src_video", "dub_audio")                 # the big ones: fetched by the `fetch` step
 WORK_KEEP = ("*.json", "*.tsv", "*.txt", "*.srt", "*.py", "*.jpg", "scene/*.json", "broll_library/*.json",
-             "broll_library/*.xlsx")                     # small work files worth keeping (a rerun then costs $0)
+             "broll_library/*.xlsx", "scene_slowfix/*")  # small work files worth keeping (a rerun then costs $0)
 # `*.jpg` is the top level only (the QC sheet and the final-check frame), not the thousands of thumbs/*.jpg.
 
 _work_fetched = set()
@@ -604,7 +604,7 @@ def drop_cloud_work(show, ep, log=None):
     return n
 
 
-def fetch_work_files(show, ep, log=None):
+def fetch_work_files(show, ep, log=None, force=False):
     """Bring this episode's small work files down from R2 if they are not here.
 
     The editor is built out of them -- the edit list, the rows, the lip-sync, the sentences, the SRTs -- so on a
@@ -613,6 +613,8 @@ def fetch_work_files(show, ep, log=None):
     per episode per process. -> how many came down."""
     # keyed on the work folder, not the episode id: two libraries can hold the same ids
     key = str(ep["work_dir"])
+    if force:
+        _work_fetched.discard(key)
     if not configured() or key in _work_fetched:
         return 0
     W = Path(ep["work_dir"])

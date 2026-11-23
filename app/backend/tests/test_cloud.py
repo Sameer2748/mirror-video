@@ -950,6 +950,37 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     assert [j["step"] for j in jobs] == ["scene_sheet"]
 
 
+def test_render_tail_copies_the_slowfix_sheet_instead_of_the_old_edl(tmp_path):
+    """New flow never writes scene_manifest.edl.json. The rented tail used to open that path and fail
+    the whole visit after the videos were already cut."""
+    from dubstudio.runner import Runner
+    work = tmp_path / "work"
+    work.mkdir()
+    xlsx = work / "scene_slowfix" / "scene_edit.xlsx"
+    xlsx.parent.mkdir()
+    xlsx.write_bytes(b"xlsx")
+    out = tmp_path / "IMTS_ep69_scene_edit.xlsx"
+    ctx = {"W": str(work), "scene_dir": str(work / "scene"), "library_dir": str(work / "lib"),
+           "name_scene_sheet": str(out), "name_en_srt": str(tmp_path / "en.srt")}
+    j = {"params": {"ctx": ctx}}
+    cmd, dest = Runner(None)._scene_sheet_argv(j, {"code": "IMTS"}, {"number": 69, "work_dir": str(work)})
+    assert dest == str(out)
+    assert "sceneedit_sheet.py" not in " ".join(cmd)
+    assert "scene_manifest.edl.json" not in " ".join(cmd)
+    assert str(xlsx) in cmd
+    runner = Runner(None)
+    closing, _ = runner._tail_closing(
+        {"code": "IMTS"}, {"number": 69, "work_dir": str(work)},
+        {"scene_sheet": {"id": 9, "episode_id": 1, "run": 1, "step": "scene_sheet", "status": "waiting",
+                         "log_path": str(tmp_path / "j.log"), "params": {"cmd": None, "ctx": ctx}},
+         "qc": {"id": 10, "episode_id": 1, "run": 1, "step": "qc", "status": "waiting",
+                "log_path": str(tmp_path / "j.log"), "params": {"cmd": None, "ctx": ctx}},
+         "check": {"id": 11, "episode_id": 1, "run": 1, "step": "check", "status": "waiting",
+                   "log_path": str(tmp_path / "j.log"), "params": {"cmd": None, "ctx": ctx}}})
+    assert closing[0][0] == "scene_sheet"
+    assert "scene_manifest.edl.json" not in " ".join(closing[0][1])
+
+
 def test_a_file_named_only_in_config_still_travels(tmp_path):
     """`dubstitch.py manifest --work W` is the whole command -- and then `cmd_manifest` ffprobes
     `cfg["src_video"]`. The first real cloud run of it died on `could not convert string to float: ''`, which is

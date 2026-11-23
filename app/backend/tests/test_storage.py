@@ -430,15 +430,17 @@ def test_the_small_work_files_come_down_so_the_editor_can_open(r2):
     storage.put_bytes(storage.work_key(s, e, "rows.json"), b'{"rows": []}')
     storage.put_bytes(storage.work_key(s, e, "SHOW_EP24.srt"), b"1\n")
     storage.put_bytes(storage.work_key(s, e, "scene/answer.json"), b"{}")
+    storage.put_bytes(storage.work_key(s, e, "scene_slowfix/scene_edit.xlsx"), b"xlsx")
     storage.put_bytes(storage.work_key(s, e, "final_check.jpg"), b"\xff\xd8jpeg")
     storage.put_bytes(storage.work_key(s, e, "clean_noglow.mp4"), b"x" * 4096)      # big: stays in the cloud
     storage.put_bytes(storage.work_key(s, e, "thumbs/00001000_120.jpg"), b"thumb")  # thousands of these: not wanted
 
     got = storage.fetch_work_files(s, e)
     work = Path(e["work_dir"])
-    assert got == 5
+    assert got == 6
     assert (work / "manifest_groups.json").read_bytes() == b'{"segments": []}'
     assert (work / "scene" / "answer.json").exists() and (work / "final_check.jpg").exists()
+    assert (work / "scene_slowfix" / "scene_edit.xlsx").read_bytes() == b"xlsx"
     assert not (work / "clean_noglow.mp4").exists()
     assert not (work / "thumbs" / "00001000_120.jpg").exists()
     assert storage.fetch_work_files(s, e) == 0                 # once per episode, not on every request
