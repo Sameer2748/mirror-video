@@ -449,6 +449,32 @@ def ensure_local(show, ep, rel):
         return p if p.exists() else None
 
 
+def ensure_out_local(show, ep, filename, dest=None):
+    """A deliverable in the output folder: the file here, or the copy from R2 `out/`.
+
+    Translate always writes `{SHOW}_EP{N}_english_google.srt` there. The editor S2 track and the bin
+    read that path; after cleanup (or on a new API box) it lives only under `…/epN/out/`."""
+    name = Path(filename).name
+    p = Path(dest) if dest else Path(ep.get("output_dir") or "") / name
+    if p.exists() and p.stat().st_size > 0:
+        return p
+    if not configured() or not str(p):
+        return p if p.exists() else None
+    key = out_key(show, ep, name)
+    info = head(key)
+    if not info:
+        return p if p.exists() else None
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".part")
+    try:
+        download(key, tmp)
+        tmp.replace(p)
+        return p
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        return p if p.exists() else None
+
+
 def upload_mode():
     """'proxy' (the API passes the bytes through, works everywhere) or 'direct' (the browser PUTs straight to R2,
     needs a CORS rule on the bucket -- see docs/09 §3)."""

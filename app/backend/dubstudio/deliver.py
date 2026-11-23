@@ -91,10 +91,19 @@ def deliverables(show, ep, ctx):
             ("en_srt", "English subtitles (SRT)", names["en_srt"]),
             ("mapping", "Mapping sheet", names["mapping"])]
     files = []
+    from . import storage
     for kind, label, name in want:
         p = out / name
-        files.append(dict(kind=kind, label=label, name=name, path=str(p), exists=p.exists(),
-                          size=p.stat().st_size if p.exists() else None, mtime=p.stat().st_mtime if p.exists() else None))
+        exists = p.exists()
+        size = p.stat().st_size if exists else None
+        mtime = p.stat().st_mtime if exists else None
+        in_cloud = False
+        if not exists and kind == "en_srt" and storage.configured():
+            info = storage.head(storage.out_key(show, ep, name))
+            if info:
+                exists, size, in_cloud = True, int(info.get("size") or 0), True
+        files.append(dict(kind=kind, label=label, name=name, path=str(p), exists=exists,
+                          size=size, mtime=mtime, in_cloud=in_cloud))
     for kind, label, pat in (("qc", "Final QC sheet (PASS / WARN / FAIL per check)", "*_qc.xlsx"),
                              ("scene_sheet", "Scene-edit sheet (every stretch, B-roll, Claude's reasons)", "*_scene_edit.xlsx"),
                              ("run_times", "Time and Claude cost of every step", "*_run_times.md"),

@@ -446,6 +446,34 @@ def test_the_small_work_files_come_down_so_the_editor_can_open(r2):
     assert storage.fetch_work_files(s, e) == 0                 # once per episode, not on every request
 
 
+def test_english_srt_comes_from_r2_out_when_the_box_is_empty(r2):
+    """Translate writes `{pre}_english_google.srt` under `…/epN/out/`. An empty API disk still lists it
+    in the bin and fills S2 from that object — same local-or-cloud path as the other bin files."""
+    from dubstudio import storage
+    from test_uploads_queue import episode_with_files
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = episode_with_files(c, s, number=27)
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    show, ep_row, assets, ctx = main._ep_ctx(ep["id"])
+    name = Path(ctx["name_en_srt"]).name
+    assert not Path(ctx["name_en_srt"]).exists()
+    body = b"1\n00:00:00,000 --> 00:00:01,500\nhello from out\n"
+    storage.put_bytes(storage.out_key(s, e, name), body)
+
+    files = c.get(f"/api/episodes/{ep['id']}/bin").json()["files"]
+    row = next((f for f in files if f["kind"] == "en_srt"), None)
+    assert row and row.get("in_cloud") is True and row["name"] == name
+    r = c.get(f"/api/episodes/{ep['id']}/bin/file/en_srt", follow_redirects=False)
+    assert r.status_code == 307 and "X-Amz-Signature=" in r.headers["location"]
+    assert httpx.get(r.headers["location"]).content == body
+
+    cues = main._subs(ep["id"], ctx)["subs"]["en"]
+    assert any("hello from out" in (c.get("text") or "") for c in cues)
+    assert Path(ctx["name_en_srt"]).read_bytes() == body
+
+
 def test_the_bin_lists_a_file_that_is_only_in_the_cloud(r2):
     """After `cleanup` the SRTs are not on disk any more. The bin still offers them, and downloading one goes
     straight to R2."""

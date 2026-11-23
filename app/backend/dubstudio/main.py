@@ -1795,6 +1795,8 @@ def deliverables_zip(eid: int):
             if f.get("exists") and f.get("path") and Path(f["path"]).is_file():
                 continue
             key = by_kind.get(f["kind"])
+            if not key and f.get("kind") == "en_srt" and storage.configured():
+                key = storage.out_key(show, ep, f["name"])
             if not key or not storage.configured():
                 continue
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=Path(f["name"]).suffix)
@@ -1868,11 +1870,18 @@ SUB_LANGS = ("dub", "en")
 
 def _subs(eid, ctx):
     """Each track as the editor sees it: the edited cues if any, else the SRT the pipeline uses."""
+    e = _get("episodes", eid); show = _get("shows", e["show_id"])
     out, edited = {}, {}
     for lang in SUB_LANGS:
         row = db().one("SELECT cues FROM subtitle_tracks WHERE episode_id=? AND language=?", (eid, lang))
         edited[lang] = bool(row)
-        out[lang] = row["cues"] if row else tlm.parse_srt(ctx.get("sub_srt_orig" if lang == "dub" else "name_en_srt") or "")
+        if row:
+            out[lang] = row["cues"]
+            continue
+        path = ctx.get("sub_srt_orig" if lang == "dub" else "name_en_srt") or ""
+        if lang == "en" and path and not Path(path).exists():
+            storage.ensure_out_local(show, e, Path(path).name, path)
+        out[lang] = tlm.parse_srt(path)
     return {"subs": out, "subs_edited": edited}
 
 
@@ -2214,7 +2223,10 @@ def bin_items(eid: int):
         add(kind, label, path, _input_in_cloud(show, ep, a, kind) if a else None)
     add("dub_srt", f"{S[0]} subtitles (SRT)", ctx.get("sub_srt"), work_key(ctx.get("sub_srt")))
     add("src_srt", f"{S[1]} subtitles (SRT)", ctx.get("src_srt"), work_key(ctx.get("src_srt")))
-    add("en_srt", "Translated subtitles (EN SRT)", ctx.get("en_srt_burn"), work_key(ctx.get("en_srt_burn")))
+    en_local = ctx.get("en_srt_burn") if ctx.get("en_srt_burn") and Path(ctx["en_srt_burn"]).exists() else ctx.get("name_en_srt")
+    en_name = Path(ctx.get("name_en_srt") or en_local or "").name
+    en_cloud = storage.out_key(show, ep, en_name) if en_name and storage.configured() else None
+    add("en_srt", "Translated subtitles (EN SRT)", en_local, en_cloud)
     return {"imports": imports.items(work), "files": files}
 
 
@@ -2227,7 +2239,11 @@ def bin_file(eid: int, kind: str):
         return FileResponse(f["path"], filename=f["name"])
     show, ep, assets, ctx = _ep_ctx(eid)
     a = db().one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (eid, kind))
-    key = _input_in_cloud(show, ep, a, kind) if a else storage.work_key(show, ep, f["name"])
+    key = _input_in_cloud(show, ep, a, kind) if a else None
+    if not key and kind == "en_srt":
+        key = storage.out_key(show, ep, f["name"])
+    elif not key:
+        key = storage.work_key(show, ep, f["name"])
     if key and storage.head(key):
         return RedirectResponse(storage.presign(key, 3600, download_name=f["name"]), status_code=307)
     raise HTTPException(404, "no such file")
