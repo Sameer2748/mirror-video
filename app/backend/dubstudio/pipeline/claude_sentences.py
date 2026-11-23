@@ -104,8 +104,12 @@ def claude_spans(words, start, end, extra, cost):
     t0 = time.time()
     text, usage = ai.chat(prompt, model=MODEL, max_tokens=8000, reasoning={"effort": "medium"})
     c = float((usage or {}).get("cost") or 0)
+    pin, pout = int((usage or {}).get("prompt_tokens") or 0), int((usage or {}).get("completion_tokens") or 0)
     cost[0] += c
-    print(f"claude {start}-{end} {time.time()-t0:.1f}s cost ${c:.4f}", flush=True)
+    cost[1] += pin
+    cost[2] += pout
+    cost[3] += 1
+    print(f"claude {start}-{end} {time.time()-t0:.1f}s in {pin} out {pout} cost ${c:.4f}", flush=True)
     try:
         part = ai.extract_json(text, "sentences")["sentences"]
     except Exception:
@@ -153,7 +157,7 @@ def main():
         print(f"sentences_src: {len(words)} words, skip Claude rebuild")
         return 0
     OUT_SRT = Path(args.out_srt) if args.out_srt else Path(old.get("srt") or (W / "src_sentences.srt"))
-    CHUNK, cost = 380, [0.0]
+    CHUNK, cost = 380, [0.0, 0, 0, 0]  # dollars, prompt tokens, completion tokens, calls
     got = []
     for start in range(0, len(words), CHUNK):
         end = min(len(words), start + CHUNK)
@@ -205,7 +209,10 @@ def main():
             f.write(f"{r['idx']+1}\n{srt_t(r['start_ms'])} --> {srt_t(r['end_ms'])}\n{r['text']}\n\n")
     durs = [(r["end_ms"] - r["start_ms"]) / 1000 for r in rows] or [0]
     print(f"wrote {len(rows)} sentences (was {len(old.get('sentences') or [])}) "
-          f"median {sorted(durs)[len(durs)//2]:.1f}s max {max(durs):.1f}s claude_cost ${cost[0]:.4f}")
+          f"median {sorted(durs)[len(durs)//2]:.1f}s max {max(durs):.1f}s "
+          f"claude_cost ${cost[0]:.4f} in {cost[1]} out {cost[2]} calls {cost[3]}")
+    usage_doc = dict(calls=cost[3], prompt_tokens=cost[1], completion_tokens=cost[2], cost=cost[0])
+    json.dump(usage_doc, open(W / "sentences_src_usage.json", "w"), indent=1)
     return 0
 
 

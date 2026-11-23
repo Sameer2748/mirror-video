@@ -202,6 +202,7 @@ if not row_units:
     print("no slow leftover units; grouping cut kept")
     raise SystemExit(0)
 cache_p = OUT / "who_row_cache.json"
+who_usage = dict(calls=0, prompt_tokens=0, completion_tokens=0, cost=0.0)
 if cache_p.is_file():
     who = json.load(open(cache_p))
     cost = 0.0
@@ -235,7 +236,9 @@ else:
         raise SystemExit(f"who call gave no answer for rows {missing}; not running the scene edit")
     json.dump(who, open(cache_p, "w"), indent=1, ensure_ascii=False)
     cost = float((usage or {}).get("cost") or 0)
-    print(f"who call: {time.time() - t:.1f} s, in {usage.get('prompt_tokens')} out {usage.get('completion_tokens')}, "
+    who_usage = dict(calls=1, prompt_tokens=int((usage or {}).get("prompt_tokens") or 0),
+                     completion_tokens=int((usage or {}).get("completion_tokens") or 0), cost=cost)
+    print(f"who call: {time.time() - t:.1f} s, in {who_usage['prompt_tokens']} out {who_usage['completion_tokens']}, "
           f"${cost:.4f}", flush=True)
 
 
@@ -431,17 +434,22 @@ Answer only JSON for THIS group:
 """
 
 plan_p = OUT / "broll_plan_editor.json"
+usage_p = OUT / "claude_usage.json"
 slow_gs = []
 seen_g = []
 for u in units:
     if u["group"] not in seen_g:
         seen_g.append(u["group"])
         slow_gs.append(u["group"])
-if plan_p.is_file():
+keep_plan = plan_p.is_file()
+if keep_plan:
     broll_plan = {int(k): v for k, v in json.load(open(plan_p)).items()}
     print(f"editor plan: {len(broll_plan)} groups from cache ({EDITOR})", flush=True)
+if keep_plan and usage_p.is_file():
+    pass
 else:
-    broll_plan, cost_ed = {}, 0.0
+    measured, cost_ed = {}, 0.0
+    tok_in, tok_out, n_ed = 0, 0, 0
     t0 = time.time()
     for gi in slow_gs:
         g = grp["groups"][gi]
@@ -490,6 +498,9 @@ else:
                                 f"{r['start']:.1f}-{r['end']:.1f}s ({r['end']-r['start']:.1f}s)")
         text, usage = ai.chat(content, model=EDITOR, max_tokens=800, reasoning={"effort": "low"})
         cost_ed += float((usage or {}).get("cost") or 0)
+        pin, pout = int((usage or {}).get("prompt_tokens") or 0), int((usage or {}).get("completion_tokens") or 0)
+        tok_in += pin; tok_out += pout; n_ed += 1
+        print(f"  editor G{gi}: in {pin} out {pout} ${float((usage or {}).get('cost') or 0):.4f}", flush=True)
         try:
             p = ai.extract_json(text)
             if "g" not in p and isinstance(p.get("groups"), list) and p["groups"]:
@@ -498,11 +509,18 @@ else:
             print(f"  editor G{gi}: JSON fail ({ex}); keep whole", flush=True)
             p = dict(g=gi, keep_whole=True, row=None, broll_s=0, where="none", shot=None, why="editor JSON fail")
         p["g"] = gi
-        broll_plan[gi] = p
+        measured[gi] = p
         print(f"  editor G{gi}: {len(ranked)} ranked brolls keep_whole={p.get('keep_whole')} row={p.get('row')} "
               f"broll={p.get('broll_s')} {p.get('where')} shot={p.get('shot')} | {p.get('why')}", flush=True)
-    json.dump({str(k): v for k, v in broll_plan.items()}, open(plan_p, "w"), indent=1, ensure_ascii=False)
-    print(f"editor plan: {time.time() - t0:.1f}s, ${cost_ed:.4f}, {len(broll_plan)} groups, model {EDITOR}", flush=True)
+    if not keep_plan:
+        broll_plan = measured
+        json.dump({str(k): v for k, v in broll_plan.items()}, open(plan_p, "w"), indent=1, ensure_ascii=False)
+    json.dump(dict(who=who_usage,
+                   editor=dict(calls=n_ed, prompt_tokens=tok_in, completion_tokens=tok_out, cost=cost_ed),
+                   model=EDITOR),
+              open(usage_p, "w"), indent=1)
+    print(f"editor plan: {time.time() - t0:.1f}s, ${cost_ed:.4f}, {len(measured)} groups, "
+          f"in {tok_in} out {tok_out} calls {n_ed}, model {EDITOR}", flush=True)
 
 for u in units:
     p = broll_plan.get(u["group"]) or {}
