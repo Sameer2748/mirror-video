@@ -120,7 +120,8 @@ export default function ShowPage() {
           )}
           <Link to={`/shows/${sid}/new-episode`} className="button primary">+ New episode</Link>
           <Link to={`/shows/${sid}/bulk`} className="button">Bulk generation</Link>
-          <button className="button" disabled={!!busy} onClick={() => sheetRef.current?.click()}>
+          <button className="button" disabled={!!busy} onClick={() => sheetRef.current?.click()}
+            title="Episode number, source video, audio, script. .xlsx keeps Drive hyperlinks under the filename; .csv needs the URL as the cell text.">
             {busy === "sheet" ? "Reading the sheet…" : "Sheet upload"}
           </button>
           <button className="button" disabled={busy === "export"} onClick={exportCsv}

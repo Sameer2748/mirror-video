@@ -106,6 +106,56 @@ def _wait(db, iid, timeout=30):
     raise AssertionError(f"import {iid} still running")
 
 
+def test_xlsx_uses_the_url_under_a_filename_hyperlink(tmp_path):
+    """Paste from Drive: the cell shows TGS EPISODE 05.mp4, the Drive URL is the hyperlink."""
+    import openpyxl
+    drive = "https://drive.google.com/open?id=1uTM2OaZCK9dVideo05"
+    audio = "https://drive.google.com/file/d/audio05id/view"
+    script = "https://docs.google.com/document/d/script05id/edit"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["Episode", "Source video", "Audio", "Script"])
+    ws.append([5, "TGS EPISODE 05.mp4", "ep05.mp3", "ep05.docx"])
+    ws.cell(2, 2).hyperlink = drive
+    ws.cell(2, 3).hyperlink = audio
+    ws.cell(2, 4).value = f'=HYPERLINK("{script}","ep05.docx")'
+    p = tmp_path / "drive_names.xlsx"
+    wb.save(p)
+    rows = linksheet.parse_sheet(p)
+    assert rows[0]["number"] == 5
+    assert rows[0]["video"] == drive
+    assert rows[0]["audio"] == audio
+    assert rows[0]["script"] == script
+    assert "export=download" in linksheet.direct_url(rows[0]["video"])
+    assert "1uTM2OaZCK9dVideo05" in linksheet.direct_url(rows[0]["video"])
+
+
+def test_sheets_google_url_wrapper_is_unwrapped(tmp_path):
+    import openpyxl
+    real = "https://drive.google.com/file/d/abc123xyz/view"
+    wrapped = "https://www.google.com/url?q=" + real + "&sa=D&source=editors"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["Episode", "Source video", "Audio", "Script"])
+    ws.append([6, "clip.mp4", "https://example.com/a.mp3", "https://example.com/s.docx"])
+    ws.cell(2, 2).hyperlink = wrapped
+    p = tmp_path / "wrap.xlsx"
+    wb.save(p)
+    rows = linksheet.parse_sheet(p)
+    assert rows[0]["video"] == real
+
+
+def test_csv_filename_without_a_url_is_still_refused(tmp_path):
+    p = tmp_path / "names_only.csv"
+    p.write_text("Episode,Source video,Audio,Script\n5,TGS EPISODE 05.mp4,https://x.y/a.mp3,https://x.y/s.docx\n",
+                 encoding="utf-8")
+    try:
+        linksheet.parse_sheet(p)
+        raise SystemExit("a filename with no URL should be refused")
+    except ValueError as ex:
+        assert "http" in str(ex) and "xlsx" in str(ex)
+
+
 def main():
     _make_media()
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)

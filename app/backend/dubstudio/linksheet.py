@@ -5,7 +5,7 @@ runs at a time, on its own slot, so it never takes a pipeline CPU.
 """
 import csv, re
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 from urllib.request import Request, urlopen
 
 EXTS = {
@@ -29,6 +29,57 @@ def _cell(v):
     return str(v).strip()
 
 
+def _as_url(v):
+    s = _cell(v)
+    if not s.lower().startswith(("http://", "https://")):
+        return ""
+    # Sheets sometimes wraps the Drive file in google.com/url?q=
+    if "google.com/url" in s.lower() and "q=" in s:
+        q = (parse_qs(urlparse(s).query).get("q") or [""])[0]
+        if q.lower().startswith(("http://", "https://")):
+            return q
+    return s
+
+
+def _hyperlink_target(cell):
+    """The URL sitting under a Drive/Sheets filename (the blue underlined text)."""
+    hl = getattr(cell, "hyperlink", None)
+    if not hl:
+        return ""
+    for attr in ("target", "location"):
+        u = _as_url(getattr(hl, attr, None))
+        if u:
+            return u
+    return _as_url(hl)
+
+
+def _hyperlink_formula(val):
+    s = _cell(val)
+    if not s.lstrip().upper().startswith("=HYPERLINK"):
+        return ""
+    m = re.search(r'HYPERLINK\s*\(\s*"([^"]+)"', s, re.I) or re.search(r"HYPERLINK\s*\(\s*'([^']+)'", s, re.I)
+    return _as_url(m.group(1)) if m else ""
+
+
+def _resolved_cell(cell, extra=None):
+    """Visible text if it is already a URL, otherwise the hyperlink under it."""
+    if not hasattr(cell, "value"):
+        return _cell(cell)
+    return (_as_url(cell.value) or _hyperlink_target(cell) or _hyperlink_formula(cell.value)
+            or (extra or {}).get(cell.coordinate) or _cell(cell.value))
+
+
+def _sheet_hyperlinks(ws):
+    """Drive links Google Sheets stores on the worksheet when the cell text is only the filename."""
+    out = {}
+    for hl in getattr(ws, "_hyperlinks", None) or []:
+        ref = getattr(hl, "ref", None)
+        tgt = _as_url(getattr(hl, "target", None))
+        if ref and tgt and ":" not in str(ref):
+            out[str(ref)] = tgt
+    return out
+
+
 def _rows_of(path: Path):
     suf = path.suffix.lower()
     if suf == ".csv":
@@ -36,10 +87,17 @@ def _rows_of(path: Path):
         return [list(r) for r in csv.reader(text.splitlines()) if any(_cell(c) for c in r)]
     if suf in (".xlsx", ".xlsm"):
         import openpyxl
-        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+        # not read_only: that drops the hyperlink under "TGS EPISODE 05.mp4"
+        wb = openpyxl.load_workbook(path, data_only=False)
         try:
             ws = wb.worksheets[0]
-            return [[c.value for c in row] for row in ws.iter_rows() if any(_cell(c.value) for c in row)]
+            extra = _sheet_hyperlinks(ws)
+            rows = []
+            for row in ws.iter_rows():
+                vals = [_resolved_cell(c, extra) for c in row]
+                if any(_cell(v) for v in vals):
+                    rows.append(vals)
+            return rows
         finally:
             wb.close()
     raise ValueError("the sheet must be a .csv or .xlsx file")
@@ -118,7 +176,9 @@ def parse_sheet(path):
         for key, label in (("video", "source video"), ("audio", "audio"), ("script", "script")):
             url = _cell(row[header[key]])
             if not url.lower().startswith(("http://", "https://")):
-                raise ValueError(f"row {i}: the {label} link must start with http:// or https://")
+                raise ValueError(
+                    f"row {i}: the {label} link must start with http:// or https:// (got {url!r}). "
+                    "If the Drive file is a hyperlink under the filename, upload .xlsx not .csv")
             item[key] = url
         out.append(item)
     if not out:
