@@ -1051,30 +1051,29 @@ SIGNED_LINK_MAX = 604800          # S3/R2 signed links last at most 7 days
 
 @app.get("/api/shows/{sid}/export-csv")
 def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
-    """Episode number + the final target-language subtitle video of every episode of the show, as a CSV.
+    """Episode number + the final target-language subtitle video, as a CSV.
 
-    Only when every episode of the show is done and its subtitle video is in the cloud; otherwise 409 names
-    the episodes that hold it up."""
+    Episodes that are not done, or whose subtitle video is not in the cloud yet, are left out.
+    The rows that are included stay in episode order, so a finished run (for example through 200)
+    can be downloaded and uploaded while later episodes are still rendering."""
     show = _get("shows", sid)
     eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     if not eps:
         raise HTTPException(409, "this show has no episodes yet")
-    not_done = [e["number"] for e in eps if e["status"] != "done"]
-    if not_done:
-        raise HTTPException(409, "not finished yet: EP " + ", EP ".join(str(n) for n in not_done))
     if not storage.configured():
         raise HTTPException(409, "R2 storage is not set up (Settings -> Cloud storage)")
-    rows, missing = [], []
+    rows = []
     for e in eps:
+        if e["status"] != "done":
+            continue
         up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
                       "ORDER BY id DESC LIMIT 1", (e["id"],))
         if not up:
-            missing.append(e["number"])
             continue
         rows.append([e["number"], storage.presign(up["key"], seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
                                                   download_name=up["name"])])
-    if missing:
-        raise HTTPException(409, "subtitle video not in the cloud yet: EP " + ", EP ".join(str(n) for n in missing))
+    if not rows:
+        raise HTTPException(409, "no finished episode has its subtitle video in the cloud yet")
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["media_file_title", "media_url"])

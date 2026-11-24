@@ -38,8 +38,8 @@ export default function ShowPage() {
     return () => clearInterval(t);
   }, [bringing, load]);
 
-  // Every episode of the show done: the CSV of each episode's final target-language subtitle video (signed R2 link).
-  const allDone = !!eps && eps.length > 0 && eps.every((e) => e.status === "done");
+  // CSV of each finished episode's final target-language subtitle video, in episode order.
+  // Episodes that are still running are left out, so a finished stretch can be downloaded on its own.
   async function exportCsv() {
     setBusy("export"); setErr(null);
     try {
@@ -123,8 +123,8 @@ export default function ShowPage() {
           <button className="button" disabled={!!busy} onClick={() => sheetRef.current?.click()}>
             {busy === "sheet" ? "Reading the sheet…" : "Sheet upload"}
           </button>
-          <button className="button" disabled={!allDone || !!busy} onClick={exportCsv}
-            title={allDone ? "Download each episode's final subtitle video link as CSV" : "Available when every episode of this show is done"}>
+          <button className="button" disabled={busy === "export"} onClick={exportCsv}
+            title="Download the final subtitle video link for every episode that is already done, in episode order">
             {busy === "export" ? "Exporting…" : "Export CSV"}
           </button>
           <input ref={sheetRef} type="file" accept=".csv,.xlsx,.xlsm" hidden onChange={async (ev) => {

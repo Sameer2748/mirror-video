@@ -1,4 +1,4 @@
-"""Export CSV: episode number + final target-language subtitle video link, only when every episode is done.
+"""Export CSV: episode number + final target-language subtitle video link for episodes that are done.
 
 Throwaway SQLite database, R2 faked: no real bucket is touched.
 """
@@ -65,17 +65,27 @@ def main_test():
     assert "expires=604800" in rows[1][1], rows[1]          # the 7-day cap
     print("ok: all done -> CSV with links")
 
-    # 2. one episode still processing -> refused, named
-    sid = make_show("NOTDONE", [1, 2], ["done", "processing"], uploads=[1, 2])
-    code, detail = run(sid)
-    assert code == 409 and "EP 2" in detail, (code, detail)
-    print("ok: unfinished episode refused:", detail)
+    # 2. one episode still processing -> the finished one is exported, in order
+    sid = make_show("NOTDONE", [1, 2, 4], ["done", "processing", "done"], uploads=[1, 2, 4])
+    code, body = run(sid)
+    assert code == 200, (code, body)
+    rows = rows_of(body)
+    assert [r[0] for r in rows[1:]] == ["1", "4"], rows
+    print("ok: unfinished episodes left out")
 
-    # 3. all done but one subtitle video not in the cloud -> refused, named
+    # 3. a done episode with no subtitle video in the cloud is left out; the one that has it is exported
     sid = make_show("NOUP", [5, 6], ["done", "done"], uploads=[5])
+    code, body = run(sid)
+    assert code == 200, (code, body)
+    rows = rows_of(body)
+    assert [r[0] for r in rows[1:]] == ["5"], rows
+    print("ok: done episode missing its video is left out")
+
+    # 3b. nothing finished -> refused
+    sid = make_show("NONE", [8, 9], ["processing", "review"], uploads=[8])
     code, detail = run(sid)
-    assert code == 409 and "EP 6" in detail, (code, detail)
-    print("ok: missing subtitle video refused:", detail)
+    assert code == 409 and "no finished" in detail, (code, detail)
+    print("ok: nothing finished refused:", detail)
 
     # 4. a show with no episodes -> refused
     sid = make_show("EMPTY", [], [])
