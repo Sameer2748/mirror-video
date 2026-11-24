@@ -885,8 +885,7 @@ def test_verify_failing_one_picture_does_not_stop_the_visit(tmp_path):
 
 
 def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
-    """The cut is mkdec, the sheet, the edit list, lip-sync, then captions.
-    Groups stay on this Mac. The library rides along once groups has written its file.
+    """The cut is one CPU visit: mkdec, the sheet, the edit list, lip-sync, groups, the shot library, then captions.
     The face map is not in that list. The final check is on the render machine, after the sheet it reads."""
     from dubstudio.runner import Runner
     work = tmp_path / "work"
@@ -931,16 +930,15 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
 
     runner._run_cut(sheet)
     assert sent["name"] == "cut"
-    # groups stays on this Mac (shared-footage trim); library waits until that file exists
-    assert sent["steps"] == ["mkdec", "sheet", "manifest", "captions"]
-    assert "facemap" not in sent["steps"] and "groups" not in sent["steps"]
-    assert "lipsync" not in sent["steps"] and "library" not in sent["steps"]
-    assert [s for s, st in marked if st == "done"] == ["captions", "manifest", "sheet"]
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "groups", "library", "captions"]
+    assert "facemap" not in sent["steps"]
+    assert [s for s, st in marked if st == "done"] == [
+        "captions", "library", "groups", "lipsync", "manifest", "sheet"]
 
     (work / "manifest_groups.json").write_text("{}")
     marked.clear(); sent.clear()
     runner._run_cut(sheet)
-    assert sent["steps"] == ["mkdec", "sheet", "manifest", "captions"]
+    assert sent["steps"] == ["mkdec", "sheet", "manifest", "lipsync", "groups", "library", "captions"]
 
     marked.clear()
     runner._run_match(by["analyze"])
@@ -962,6 +960,42 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
          "check": job("check", 11, ["{py}", "check"])})
     assert [n for n, _ in closing] == ["scene_sheet", "groups_review"]
     assert [j["step"] for j in jobs] == ["scene_sheet"]
+
+
+def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch):
+    """Lip merge rides the lip-mesh CPU visit. Scene edit is one CPU job with this box's script, not the web process."""
+    from dubstudio.runner import Runner
+    work = tmp_path / "work"
+    work.mkdir()
+    log = tmp_path / "job.log"
+    mesh = {"id": 1, "episode_id": 1, "run": 1, "step": "lip_mesh", "status": "waiting",
+            "log_path": str(log), "params": {"cmd": ["{py}", "{scripts}/lipmesh.py", "--out-dir", str(work)]}}
+    merge = {"id": 2, "episode_id": 1, "run": 1, "step": "lip_merge", "status": "waiting",
+             "log_path": str(log), "params": {"cmd": ["{py}", "{scripts}/lipmerge.py", "--out", str(work)]}}
+    sent = {}
+
+    def fake_chain(db, show, ep, named, cfg, **kw):
+        sent["name"] = kw.get("name")
+        sent["steps"] = [n for n, _ in named]
+        sent["cmds"] = [c for _, c in named]
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(cloud, "run_chain", fake_chain)
+    monkeypatch.setattr(cloud, "enabled_for", lambda step: step in ("lip_mesh", "lip_merge"))
+    runner = Runner(None)
+    runner._jobs_by_step = lambda j: {"lip_mesh": mesh, "lip_merge": merge}
+    runner.episode_context = lambda eid: ({"code": "IMTS", "id": 1}, {"id": 1, "number": 151, "work_dir": str(work)}, {})
+    runner._set = lambda j, **vals: None
+    runner._run_cmd(mesh)
+    assert sent["name"] == "lips" and sent["steps"] == ["lip_mesh", "lip_merge"]
+    assert sent["cmds"][1][1].endswith("lipmerge.py")
+
+    script = cloud.stage_scene(work)
+    assert script.is_file() and script.name == "slowfix_edit.py"
+    app = work / "_app"
+    assert (app / "dubstudio" / "ai.py").is_file()
+    assert (app / "dubstudio" / "pipeline" / "keep_grouping.py").is_file()
+    assert (app / "pipeline_tools" / "dubstitch.py").is_file()
 
 
 def test_render_tail_copies_the_slowfix_sheet_instead_of_the_old_edl(tmp_path):

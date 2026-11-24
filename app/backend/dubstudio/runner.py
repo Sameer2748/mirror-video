@@ -854,11 +854,12 @@ class Runner:
             if script and (desktop or not (tools_script and tools_script.is_file())):
                 force_local = True
                 cmd = self._use_app_script(cmd or prm["cmd"], "dubstitch.py", script)
-        if j["step"] == "lip_merge":
-            # The rented image's lipmerge still dies on a 1-frame 29.97→25 fps gap (376 vs 375).
-            # This merge is a JSON join; run the app's copy here so Retry trims that gap.
+        if j["step"] == "lip_merge" and not cloud.enabled_for("lip_merge"):
+            # No rented machine: run this box's lipmerge. The rented image still drops a 1-frame gap.
             force_local = True
             cmd = self._lipmerge_local_cmd(cmd or prm["cmd"])
+        if not force_local and j["step"] == "lip_mesh" and cloud.enabled_for("lip_mesh"):
+            return self._run_lips(j)
         # library is not force_local: W/_app carries this box's ai.py (truncated-JSON closer) with the cloud job.
         if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
             return self._run_match(j)
@@ -986,6 +987,20 @@ class Runner:
         for sj in reversed(jobs):
             self._set(sj, status="done", progress=1, finished=now(), eta=0, message=message)
 
+    def _run_lips(self, j):
+        """Lip opening and the merge, on the one CPU that already has the scan. The merge is a JSON join."""
+        t0 = time.time()
+        by = self._jobs_by_step(j)
+        named = [("lip_mesh", self._expand((j["params"] or {})["cmd"]))]
+        to_mark = [j]
+        merge = by.get("lip_merge")
+        if merge and merge["status"] not in DONE:
+            cmd = (merge["params"] or {}).get("cmd")
+            if cmd:
+                named.append(("lip_merge", self._expand(cmd)))
+                to_mark.append(merge)
+        self._send_visit(j, "lips", named, to_mark, t0, "lip mesh on one rented machine")
+
     def _run_match(self, j):
         """Automatic matching and the reading view, on one CPU. The decision pause stays here."""
         t0 = time.time()
@@ -1019,8 +1034,6 @@ class Runner:
             sj = by.get(step)
             if not sj or sj["status"] in DONE:
                 continue
-            if step in ("groups", "lipsync", "library"):
-                continue          # our copies (clash trim, last-piece lips, truncated JSON); rented image is older
             cmd = (sj["params"] or {}).get("cmd")
             if not cmd:
                 continue
@@ -1051,6 +1064,8 @@ class Runner:
         if res.get("rc") == 3:
             if name == "match":
                 return self._run_match(j)
+            if name == "lips":
+                return self._run_lips(j)
             return self._run_cut(j)
         msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
         self._mark_visit(to_mark, msg)
@@ -1758,6 +1773,9 @@ class Runner:
         env_extra = {}
         if until:
             env_extra["SLOWFIX_UNTIL"] = str(until)
+        from . import cloud
+        if not until and cloud.stretch("scene") and cloud.ai_key_allowed():
+            return self._run_scene_cloud(j, W, LIB)
         if env_extra:
             old = os.environ.get("SLOWFIX_UNTIL")
             os.environ["SLOWFIX_UNTIL"] = env_extra["SLOWFIX_UNTIL"]
@@ -1770,6 +1788,22 @@ class Runner:
                     os.environ["SLOWFIX_UNTIL"] = old
         else:
             self._run_cmd(j, cmd, force_local=True)
+
+    def _run_scene_cloud(self, j, work, library):
+        """The slow-clip scene edit on one CPU. This box's script travels with the job."""
+        from . import cloud
+        show, ep, _ = self.episode_context(j["episode_id"])
+        script = cloud.stage_scene(work)
+        cmd = [str(cfg.pipeline_python), str(script), str(work), str(library)]
+        t0 = time.time()
+        with open(j["log_path"], "a", encoding="utf-8") as f:
+            def log(msg):
+                f.write(str(msg).rstrip() + "\n"); f.flush()
+            self._set(j, message="sending the scene edit to one rented machine")
+            cloud.run_command(self.db, show, ep, "scene_edit", cmd, cfg, log=log,
+                              timeout=cfg.step_max_seconds or 7200, release_log=j["log_path"])
+        self._set(j, status="done", progress=1, finished=now(),
+                  message=f"scene edit on one rented machine in {time.time() - t0:.0f} s")
 
     @staticmethod
     def use_scene(W):

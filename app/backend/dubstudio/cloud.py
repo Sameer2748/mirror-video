@@ -918,6 +918,58 @@ def stage_lipmesh(work):
     return dest
 
 
+def stage_lipmerge(work):
+    """Copy this image's lipmerge.py into W/_pipe. The rented image still drops a 1-frame gap."""
+    src = Path(__file__).resolve().parent / "pipeline" / "lipmerge.py"
+    dest_dir = Path(work) / "_pipe"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / "lipmerge.py"
+    shutil.copy2(src, dest)
+    return dest
+
+
+def point_lipmerge_at_staged(cmd, work):
+    """Rewrite a lip_merge command so the worker runs the copy we just staged under W/_pipe."""
+    script = stage_lipmerge(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("lipmerge.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
+def stage_scene(work):
+    """Copy the scene edit this box is running into W/_app, plus the grouping helper and dubstitch it imports.
+
+    The rented image would otherwise run an older scene edit. The script looks for dubstudio next to itself
+    and for dubstitch under pipeline_tools two folders up. -> the slowfix_edit.py path."""
+    pkg = Path(__file__).resolve().parent
+    app = Path(work) / "_app"
+    dest = app / "dubstudio"
+    dest.mkdir(parents=True, exist_ok=True)
+    init = pkg / "__init__.py"
+    if init.is_file():
+        shutil.copy2(init, dest / "__init__.py")
+    shutil.copy2(pkg / "ai.py", dest / "ai.py")
+    pipe = dest / "pipeline"
+    pipe.mkdir(parents=True, exist_ok=True)
+    pinit = pkg / "pipeline" / "__init__.py"
+    if pinit.is_file():
+        shutil.copy2(pinit, pipe / "__init__.py")
+    for name in ("slowfix_edit.py", "keep_grouping.py"):
+        shutil.copy2(pkg / "pipeline" / name, pipe / name)
+    stage_dubstitch(work)
+    tools = app / "pipeline_tools"
+    tools.mkdir(parents=True, exist_ok=True)
+    for name in ("dubstitch.py", "pngsubs.py", "dynsubs.py"):
+        src = Path(work) / "_pipe" / name
+        if src.is_file():
+            shutil.copy2(src, tools / name)
+    return pipe / "slowfix_edit.py"
+
+
 def point_lipmesh_at_staged(cmd, work):
     """Rewrite a lip_mesh command so the worker runs the copy we just staged under W/_pipe."""
     script = stage_lipmesh(work)
@@ -1140,6 +1192,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     if name == "facemap" or any(str(c).endswith("facemap.py") for c in (cmd or [])):
         cmd = point_facemap_at_staged(cmd, W)
         log("facemap: this box's facemap.py travels with the job (the rented image dies when Claude names a missing group)")
+    if any(str(c).endswith("lipmerge.py") for c in (cmd or [])):
+        cmd = point_lipmerge_at_staged(cmd, W)
+        log("lip merge: this box's lipmerge.py travels with the job (the rented image drops a 1-frame gap)")
     if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
         cmd = point_dubstitch_at_staged(cmd, W)
         log("this box's dubstitch.py travels with the job (the rented image concatenates leftover .ok files without the mp4)")
@@ -1364,6 +1419,14 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     files, packed = {}, []
     staged = False
     for step_name, cmd in named_cmds:
+        if any(str(c).endswith("library.py") for c in (cmd or [])):
+            cmd = point_library_at_staged_app(cmd, W)
+            log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
+        if any(str(c).endswith("lipmesh.py") for c in (cmd or [])):
+            cmd = point_lipmesh_at_staged(cmd, W)
+        if any(str(c).endswith("lipmerge.py") for c in (cmd or [])):
+            cmd = point_lipmerge_at_staged(cmd, W)
+            log("lip merge: this box's lipmerge.py travels with the job (the rented image drops a 1-frame gap)")
         if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
             cmd = point_dubstitch_at_staged(cmd, W)
             staged = True
