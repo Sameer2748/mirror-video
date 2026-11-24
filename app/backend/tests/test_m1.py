@@ -232,7 +232,7 @@ def test_scene_edit_steps_in_the_order_of_docs06():
     q = by["qc"]["cmd"]
     assert q[q.index("--videos") + 1:q.index("--videos") + 4] == ["/o/TGS_EP34_DE_final_clean.mp4", "/o/TGS_EP34_DE_final_de_subs.mp4",
                                                                 "/o/TGS_EP34_DE_final_en_subs.mp4"] and q[-1] == "/o/tgs_ep34_qc.xlsx"
-    assert by["subs_dub"]["cmd"][by["subs_dub"]["cmd"].index("--style") + 1] == "strip"      # TGS: the white strip
+    assert by["subs_dub"]["cmd"][by["subs_dub"]["cmd"].index("--style") + 1] == "box"
     assert ctx["name_scene_sheet"] == "/o/tgs_ep34_scene_edit.xlsx"
 
 

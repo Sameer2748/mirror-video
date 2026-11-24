@@ -135,6 +135,13 @@ export function useLive(fn: Listener) {
 
 export const reveal = (path: string) => api.post("/api/reveal", { path });
 
+/** Stored keys stay box / strip / dynamic. These are the names shown in the UI. */
+export const SUB_STYLE_LABEL: Record<string, string> = {
+  box: "Transparent style",
+  strip: "White box",
+  dynamic: "White box (follows source caption)",
+};
+
 // ---------------- accounts ----------------
 export type Me = { user: User | null; required: boolean; ttl_seconds?: number };
 export const auth = {

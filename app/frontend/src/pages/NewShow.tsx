@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Profile, Show } from "../api";
+import { api, Profile, Show, SUB_STYLE_LABEL } from "../api";
 import { ErrorBox, Picker, uploadFile } from "../ui";
 
 // The profile fields the editor sets here; everything else keeps the preset's value. Sentences, groups, max drift,
@@ -12,7 +12,8 @@ const FIELDS: { key: string; label: string; type: "text" | "number" | "bool" | "
   { key: "episode_offset", label: "Episode offset", type: "number", hint: "source episode = dub episode + this (MVS: 2)" },
   { key: "transitions", label: "Transitions", type: "select", options: ["auto", "manual"],
     hint: "automatic = a transition on every cut at Render (your own picks win); manual = only the cuts you give one in the editor" },
-  { key: "sub_style", label: "Subtitle style", type: "select", options: ["box", "strip", "dynamic"], hint: "strip covers burned-in captions (TDMB); dynamic = strip 2 or 3 lines tall following the source caption, cards fill it (HIH)" },
+  { key: "sub_style", label: "Subtitle style", type: "select", options: ["box", "strip", "dynamic"],
+    hint: "Transparent style = white text on a dark see-through box (size, height from the bottom, and shade can be set per language in the editor). White box = a solid white bar of fixed height covering the bottom. White box (follows source caption) = the same white bar, but 2 or 3 lines tall to match the burned-in caption on that shot." },
   { key: "hide_source_subs", label: "Source videos have burned-in subtitles", type: "bool",
     hint: "Render measures each episode and zooms from the top until those captions fall off the bottom. A taller caption zooms more; the framing does not jump inside an episode. Left off, the picture stays as it is, and an editor can still turn the zoom on for one episode." },
   { key: "output_dir", label: "Output folder", type: "text", hint: "inside the show folder; {N} = episode number" },
@@ -57,7 +58,7 @@ export default function NewShow() {
             <div className="card-title">{k}</div>
             <div className="small-text">{p.name}</div>
             <div className="muted small-text">
-              {p.sub_style} subs{p.transitions ? " · automatic transitions" : " · manual transitions"}
+              {SUB_STYLE_LABEL[p.sub_style] || p.sub_style}{p.transitions ? " · automatic transitions" : " · manual transitions"}
             </div>
           </button>
         ))}
@@ -108,6 +109,10 @@ export default function NewShow() {
                       <select value={prof.transitions ? "auto" : "manual"} onChange={(e) => setProf({ ...prof, transitions: e.target.value === "auto" })}>
                         <option value="auto">Automatic at render (every cut)</option>
                         <option value="manual">Manual (the editor adds them)</option>
+                      </select>
+                    ) : f.key === "sub_style" ? (
+                      <select value={prof.sub_style ?? "box"} onChange={(e) => setProf({ ...prof, sub_style: e.target.value })}>
+                        {f.options!.map((o) => <option key={o} value={o}>{SUB_STYLE_LABEL[o] || o}</option>)}
                       </select>
                     ) : f.type === "select" ? (
                       <select value={prof[f.key] ?? ""} onChange={(e) => setProf({ ...prof, [f.key]: e.target.value })}>

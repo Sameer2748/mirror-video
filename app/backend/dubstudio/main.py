@@ -2087,17 +2087,35 @@ def _source_video_here(eid):
     return str(p) if p else None
 
 
+def _source_video_for_measure(eid):
+    """A path or a signed link the subtitle measurement can read.
+
+    The editor often plays the picture from cloud storage after the local copy was
+    cleared. Measuring that same file is what puts the zoom on the final frame."""
+    path = _source_video_here(eid)
+    if path:
+        return path
+    if not storage.configured():
+        return None
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    a = db().one("SELECT r2_key FROM assets WHERE episode_id=? AND kind='src_video' AND role='input'", (eid,))
+    if a and a.get("r2_key"):
+        return storage.presign(a["r2_key"], seconds=3600)
+    return storage.media_link(show, e, tlm.PROXY, seconds=3600)
+
+
 @app.get("/api/episodes/{eid}/source-sub-zoom")
 def source_sub_zoom(eid: int):
     """How far to zoom this episode's source so the burned-in subtitles fall off the bottom.
 
-    Measured from the picture, so a taller caption gets a larger zoom. The file has to be
-    on this machine (the original, or the 540p preview). Render measures the full source
-    again on the worker, so a missing preview here does not decide the episode."""
-    path = _source_video_here(eid)
-    if not path:
+    Measured from the picture, so a taller caption gets a larger zoom. The original on
+    this machine is used when it is here; otherwise the cloud copy. Render measures the
+    full source again on the worker."""
+    src = _source_video_for_measure(eid)
+    if not src:
         raise HTTPException(404, "the source video is not on this machine, so the subtitle height cannot be measured here")
-    return subzoom.measure(path)
+    return subzoom.measure(src)
 
 
 @app.post("/api/episodes/{eid}/source-sub-zoom")

@@ -6,7 +6,7 @@
 // the 540-px preview copy once it exists. Render writes the timeline as the pipeline's edit list and runs render → check.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { api } from "../api";
+import { api, SUB_STYLE_LABEL } from "../api";
 import GenPanel, { GenClip } from "./GenPanel";
 import { BrandMark } from "../App";
 
@@ -93,17 +93,40 @@ function applyMotion(c: Clip, zoom: number, pan_x: number, pan_y: number): Clip 
   out.pan_y = Math.round(clamp(pan_y, -1, 1) * 100) / 100;
   return out;
 }
+function clearHideBox(el: HTMLVideoElement) {
+  el.style.inset = "";
+  el.style.width = "";
+  el.style.height = "";
+  el.style.left = "";
+  el.style.right = "";
+  el.style.top = "";
+  el.style.bottom = "";
+  el.style.objectFit = "";
+  el.style.zIndex = "";
+}
 function paintMotion(el: HTMLVideoElement | null, clip: Clip | undefined, extra = 1, hideZoom = 1) {
   if (!el) return;
   const z = Math.max(1, Math.min(Number(clip?.zoom) || 1, 8));
-  // Auto zoom to hide burned-in source subs: scale from the top so the bottom of the
-  // frame (where those subs sit) falls outside. A clip's own zoom still applies if it is larger.
+  // Auto zoom hides burned-in source subs inside the program frame only.
+  // The video is drawn larger than that 1:1 box, anchored at the top, so the
+  // caption falls outside it. The box itself, the transport controls and the
+  // DE/EN line stay the same size and sit on top of the picture.
   if (hideZoom > 1.001) {
     const scale = Math.max(z, hideZoom) * extra;
-    el.style.transformOrigin = "50% 0%";
-    el.style.transform = scale <= 1.001 ? "" : `scale(${scale})`;
+    el.style.transform = "none";
+    el.style.transformOrigin = "";
+    el.style.objectFit = "cover";
+    el.style.zIndex = "0";
+    el.style.inset = "auto";
+    el.style.top = "0";
+    el.style.bottom = "auto";
+    el.style.right = "auto";
+    el.style.height = `${scale * 100}%`;
+    el.style.width = `${scale * 100}%`;
+    el.style.left = `${(1 - scale) * 50}%`;
     return;
   }
+  clearHideBox(el);
   const scale = z * extra;
   if (scale <= 1.001) { el.style.transform = ""; el.style.transformOrigin = ""; return; }
   const hasPan = clip?.pan_x != null || clip?.pan_y != null;
@@ -759,6 +782,12 @@ export default function Editor() {
   // ---- source monitor ----
   const srcVid = useRef<HTMLVideoElement>(null);
   const seekSrc = (ms: number) => { const v = srcVid.current; if (v) { v.currentTime = Math.max(0, ms / 1000); setSrcT(ms); } };
+  // The source pane stays the full picture, including its own controls. Auto zoom
+  // is only the program frame (the output). Clear a crop left from an older build.
+  useEffect(() => {
+    const v = srcVid.current; if (!v) return;
+    clearHideBox(v); v.style.transform = ""; v.style.transformOrigin = "";
+  }, [hideZoom, srcMedia]);
   useEffect(() => { if (selClip) { setSrcMedia(selClip.media || null); seekSrc(selClip.s0); setMarkIn(selClip.s0); setMarkOut(selClip.s1); } }, [sel]); // eslint-disable-line
   const showImport = (x: Imp) => { setSrcMedia(x.id); setSrcT(0); seekSrc(0); setMarkIn(0); setMarkOut(x.duration_ms); if (!srcOpen) toggleSrc();
     say(`${x.name} on the source monitor (In/Out = the whole clip): drag it from the bin onto V1, a gap or V2, or mark In/Out and press Replace / ▲ V2`); };
@@ -1359,7 +1388,7 @@ export default function Editor() {
               {proxy.ready ? "540p preview" : proxy.error ? "original (preview copy failed)" : `making 540p ${Math.round((proxy.progress || 0) * 100)}%`}</span>
             {selClip && <span className="mono" style={{ textTransform: "none", marginLeft: 8 }}>{label(selClip)}</span>}</div>
           <div className="monitor">
-            <video ref={srcVid} src={srcMedia ? impUrl(srcMedia) : videoUrl} preload="metadata" playsInline controls onLoadedData={() => seekSrc(srcT)}
+            <video ref={srcVid} src={srcMedia ? impUrl(srcMedia) : videoUrl} preload="metadata" playsInline controls onLoadedData={() => { const v = srcVid.current; if (v) { clearHideBox(v); v.style.transform = ""; } seekSrc(srcT); }}
               onTimeUpdate={(e) => setSrcT(e.currentTarget.currentTime * 1000)} />
             {markIn != null && <span className="mon-badge">In {fmt(markIn)} · Out {markOut != null ? fmt(markOut) : "—"}</span>}
           </div>
@@ -1399,20 +1428,22 @@ export default function Editor() {
             </div>
           </div>
           <div className="monitor" onClick={togglePlay} ref={(el) => { if (el && !monRO.current) { monRO.current = new ResizeObserver(() => setMonH(el.clientHeight)); monRO.current.observe(el); } }}>
-            <div className={`prog-frame ${cur?.zoom && cur.zoom > 1.001 ? "zoomed" : ""}`}
+            <div className={`prog-frame ${((cur?.zoom && cur.zoom > 1.001) || hideZoom > 1.001) ? "zoomed" : ""} ${hideZoom > 1.001 ? "hide-subs" : ""}`}
               style={{ ["--src-ar" as string]: String(srcAR) }}
               title="This box is the final video frame. Zoom crops the picture inside it; the black around it is not in the file.">
-              <video ref={vids[0]} src={videoUrl} preload="auto" muted playsInline onLoadedData={(e) => {
-                const v = e.currentTarget; if (v.videoWidth) setSrcAR(v.videoWidth / v.videoHeight);
-                vClip.current[0] = ""; if (act.current === 0) showFrame(tRef.current, playing);
-              }} />
-              <video ref={vids[1]} className="hidden" src={videoUrl} preload="auto" muted playsInline onLoadedData={() => { vClip.current[1] = ""; if (act.current === 1) showFrame(tRef.current, playing); }} />
-              <video ref={impV} className="hidden" preload="auto" muted playsInline onLoadedData={() => showFrame(tRef.current, !!audio.current && !audio.current.paused)} />
-              <div className="mon-fx" ref={fxRef} />
+              <div className="prog-picture">
+                <video ref={vids[0]} src={videoUrl} preload="auto" muted playsInline onLoadedData={(e) => {
+                  const v = e.currentTarget; if (v.videoWidth) setSrcAR(v.videoWidth / v.videoHeight);
+                  vClip.current[0] = ""; if (act.current === 0) showFrame(tRef.current, playing);
+                }} />
+                <video ref={vids[1]} className="hidden" src={videoUrl} preload="auto" muted playsInline onLoadedData={() => { vClip.current[1] = ""; if (act.current === 1) showFrame(tRef.current, playing); }} />
+                <video ref={impV} className="hidden" preload="auto" muted playsInline onLoadedData={() => showFrame(tRef.current, !!audio.current && !audio.current.paused)} />
+                <div className="mon-fx" ref={fxRef} />
+              </div>
               {sub && (() => {
                 const lang: Lang = subMode === "en" ? "en" : "dub"; const st = styleOf(lang); const k = monH / 1080;
                 return st.style === "strip"
-                  ? <div className="mon-sub strip" style={{ bottom: `${8 * k}px`, fontSize: `${st.size * k}px` }}><span>{sub.text}</span></div>
+                  ? <div className="mon-sub strip" style={{ bottom: `${8 * k}px` }}><span style={{ fontSize: `${st.size * k}px` }}>{sub.text}</span></div>
                   : <div className="mon-sub" style={{ bottom: `${st.bottom * k}px` }}><span style={{ fontSize: `${st.size * k}px`, background: `rgba(0,0,0,${st.alpha})` }}>{sub.text}</span></div>;
               })()}
             </div>
@@ -2254,7 +2285,9 @@ function TrackDialog({ lang, name, show, cur, edited, n, onClose, onSave, onImpo
           <div className="muted small-text">Style of the {lang === "dub" ? "dub" : "English"} subtitle video for every episode of {show}, used from the next Render. The program monitor shows it.</div>
           <div className="kv">
             <label>Style<select value={st.style} onChange={(e) => { const v = e.target.value as "box" | "strip"; setSt({ ...st, style: v, size: String(STYLE_DEFAULT[v].size) }); }}>
-              <option value="box">Box (white text on a soft box)</option><option value="strip">Strip (covers burned-in captions)</option></select></label>
+              <option value="box">{SUB_STYLE_LABEL.box}</option>
+              <option value="strip">{SUB_STYLE_LABEL.strip}</option>
+            </select></label>
             <label>Text size (px on 1080)<input value={st.size} onChange={(e) => setSt({ ...st, size: e.target.value })} placeholder={String(STYLE_DEFAULT[st.style].size)} /></label>
             {box && <label>From the bottom (px)<input value={st.bottom} onChange={(e) => setSt({ ...st, bottom: e.target.value })} placeholder="71" /></label>}
             {box && <label>Box shade (%)<input value={st.alpha} onChange={(e) => setSt({ ...st, alpha: e.target.value })} placeholder="30" /></label>}

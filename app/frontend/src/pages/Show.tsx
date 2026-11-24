@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { api, Batch, Episode, Show, useLive } from "../api";
+import { api, Batch, Episode, Show, SUB_STYLE_LABEL, useLive } from "../api";
 import { Chip, ErrorBox, fmtWhen, Picker, uploadFile } from "../ui";
 
 export default function ShowPage() {
@@ -108,7 +108,7 @@ export default function ShowPage() {
           <div className="muted small-text"><code>{show.folder}</code></div>
           <div className="muted small-text">
             {p.dub_lang} dub vs {p.src_lang} source · Whisper SRTs + script · whole sentences · lip scan · groups 7 · max drift 0.5 s
-            {p.transitions ? " · automatic transitions" : " · manual transitions"} · {p.sub_style} subs (7 words / 4 s) · ending stops before a fade
+            {p.transitions ? " · automatic transitions" : " · manual transitions"} · {SUB_STYLE_LABEL[p.sub_style] || p.sub_style} (7 words / 4 s) · ending stops before a fade
             {p.episode_offset ? ` · source episode = dub + ${p.episode_offset}` : ""}
           </div>
         </div>

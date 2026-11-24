@@ -34,9 +34,10 @@ PRESETS = {
     # 3 where a 3-line US caption is on screen, with Italian cards that fill it (owner, 2026-10-22). Other shows get it
     # only when the owner says so.
     "HIH": dict(BASE, name="HIH (Italian dub vs US)", labels="IT,US", src_lang="en", sub_style="dynamic"),
-    # TGS: German dub of the US show; the US video has burned-in captions -> the white strip (as the owner's ep34 tests)
+    # TGS: German dub of the US show. Burned-in US captions are hidden by hide_source_subs;
+    # overlay style is chosen per show (box / strip / dynamic), not locked.
     "TGS": dict(BASE, name="TGS (German dub vs US)", labels="DE,US", dub_label="DE", dub_lang="de", src_lang="en",
-                sub_style="strip"),
+                hide_source_subs=True),
     "IMTS": dict(BASE, name="IMTS (German dub vs US)", labels="DE,US", dub_label="DE", dub_lang="de", src_lang="en"),
     "NEW": dict(BASE, name="New show"),
 }

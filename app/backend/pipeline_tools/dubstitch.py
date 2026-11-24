@@ -1189,36 +1189,40 @@ def zoom_for_band(top_frac):
 
 
 def _band_top_fraction(gray):
-    """Top of the bright block that sits on the bottom of this frame, as a fraction of height."""
+    """Top of the burned-in caption in the lower part of this frame, as a fraction of height.
+
+    Same rule as dubstudio/subzoom.py. A short partly-bright run that starts inside the
+    lower band is a caption. A run already bright at the top of that band is the picture."""
     h, w = gray.shape
     if h < 8 or w < 8:
         return None
-    frac = (gray > 185).mean(axis=1)
-    rows = frac > 0.035
-    y = h - 1
-    floor = int(h * 0.55)
-    while y > floor and not rows[y]:
-        y -= 1
-    if y <= floor:
-        return None
-    bottom = y
+    frac = (gray > 170).mean(axis=1)
+    y0 = int(h * 0.58)
+    rows = (frac[y0:] > 0.015) & (frac[y0:] < 0.92)
+    runs = []
+    start = None
     gap = 0
-    top = bottom
-    limit = int(h * 0.28)
-    while y > limit:
-        if rows[y]:
-            top = y
+    last = None
+    for i, on in enumerate(rows):
+        if on:
+            if start is None:
+                start = i
             gap = 0
-        else:
+            last = i
+        elif start is not None:
             gap += 1
-            if gap > 12:
-                break
-        y -= 1
-    if y <= limit and gap <= 12:
+            if gap > 5:
+                runs.append((start, last))
+                start = None
+    if start is not None:
+        runs.append((start, last))
+    min_h = max(3, int(h * 0.018))
+    max_h = max(min_h, int(h * 0.18))
+    good = [(a, b) for a, b in runs if a > 0 and min_h <= (b - a + 1) <= max_h]
+    if not good:
         return None
-    if bottom - top < 2:
-        return None
-    return top / h
+    a, _b = max(good, key=lambda r: r[1])
+    return (y0 + a) / h
 
 
 def measure_source_sub_zoom(video, samples=12):
@@ -2128,7 +2132,8 @@ def cmd_transitions(a):
         for ext in ("", ".ok"):
             q = os.path.join(d, f"part{k:03d}.mp4{ext}")
             if os.path.exists(q): os.remove(q)
-    os.remove(silent)
+    if os.path.exists(silent):
+        os.remove(silent)
     rows = [q for q in plan if q["t"] < n / FPS]
     if a.until:
         print(f"saved TEST {out}: first {vd / 1000:.3f}s only (the clean master is unchanged)"); return
