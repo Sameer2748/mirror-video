@@ -162,6 +162,7 @@ class Runner:
             self._stop_orphan(j["log_path"])
             self.db.update("jobs", j["id"], status="waiting", message="resumed after a restart")
         self._resume_link_imports()
+        self._enforce_cap()
         self.thread = threading.Thread(target=self._loop, name="dubstudio-runner", daemon=True)
         self.thread.start()
 
@@ -250,7 +251,7 @@ class Runner:
                                    "ai": s.get("ai", False), "ctx": ctx},
                            log_path=str(Path(ep["work_dir"]) / "logs" / f"run{run}_{k:02d}_{s['step']}.log"),
                            created=now())
-        self.db.update("episodes", ep_id, status="processing", updated=now())
+        self.db.update("episodes", ep_id, status="processing", queued=None, resume=None, updated=now())
         bus.publish("run_created", ep_id, run=run, steps=len(plan))
         self.wake.set()
         return run
@@ -272,9 +273,9 @@ class Runner:
         missing = [k for k in ("src_video", "dub_audio") if not assets.get(k)]
         if missing:
             raise ValueError(f"missing input files: {', '.join(missing)}")
-        active = [e for e in self.active_episodes() if e != ep_id]
-        if len(active) >= self.max_active():
-            self.db.update("episodes", ep_id, status="queued", queued=now(), updated=now())
+        if not self._room_for(ep_id):
+            # Process starts a new run when a slot opens. A render waiting in the line keeps resume=1 instead.
+            self.db.update("episodes", ep_id, status="queued", queued=now(), resume=None, updated=now())
             bus.publish("episode_status", ep_id, status="queued")
             pos = self.queue_position(ep_id)
             return {"queued": True, "position": pos, "message": f"in the line: {pos} ahead of this one"
@@ -289,17 +290,61 @@ class Runner:
         n = self.db.one("SELECT COUNT(*) AS n FROM episodes WHERE status='queued' AND queued < ?", (row["queued"],))
         return (n or {}).get("n", 0) + 1
 
+    def _room_for(self, ep_id):
+        """True when this episode may be one of the max_active episodes being worked on."""
+        active = [e for e in self.active_episodes() if e != ep_id]
+        return len(active) < self.max_active()
+
+    def _park(self, ep_id, queued_at=None):
+        """The cap is full. Leave this episode's jobs as they are and wait for a free slot.
+
+        resume=1 tells start_next to continue this run. A new run would wipe the episode."""
+        row = self.db.one("SELECT queued FROM episodes WHERE id=?", (ep_id,))
+        at = queued_at if queued_at is not None else ((row or {}).get("queued") or now())
+        self.db.update("episodes", ep_id, status="queued", queued=at, resume=1, updated=now())
+        bus.publish("episode_status", ep_id, status="queued")
+
+    def _enforce_cap(self):
+        """Only max_active episodes stay on Processing. The rest wait in the line, same run.
+
+        An episode already on a machine keeps its slot. The free slots go to the lowest episode
+        numbers. A restart puts every job back to waiting first, so this also parks the overflow
+        before any of them is sent out again."""
+        cap = self.max_active()
+        rows = self.db.q("SELECT id, number FROM episodes WHERE status='processing' ORDER BY number, id")
+        if len(rows) <= cap:
+            return
+        running = {r["episode_id"] for r in self.db.q(
+            "SELECT DISTINCT episode_id FROM jobs WHERE status='running'")}
+        keep_running = [r for r in rows if r["id"] in running]
+        rest = [r for r in rows if r["id"] not in running]
+        room = max(0, cap - len(keep_running))
+        overflow = rest[room:]
+        if not overflow:
+            return
+        base = now()
+        for i, r in enumerate(overflow):
+            self._park(r["id"], queued_at=base + i * 0.001)
+
     def start_next(self):
-        """A machine came free: take the oldest episode out of the line (never more than max_active at once)."""
+        """A slot came free: take the oldest episode out of the line (never more than max_active at once).
+
+        An episode queued from Render or Retry already has its jobs (resume=1): set it to processing.
+        An episode queued from Process has no run yet: start one. That path is the one that wipes."""
         while len(self.active_episodes()) < self.max_active():
-            nxt = self.db.one("SELECT * FROM episodes WHERE status='queued' ORDER BY queued LIMIT 1")
+            nxt = self.db.one("SELECT * FROM episodes WHERE status='queued' ORDER BY queued, id LIMIT 1")
             if not nxt:
                 return
+            if nxt.get("resume"):
+                self.db.update("episodes", nxt["id"], status="processing", queued=None, resume=None, updated=now())
+                bus.publish("episode_status", nxt["id"], status="processing")
+                self.wake.set()
+                continue
             try:
                 self.create_run(nxt["id"])
-                self.db.update("episodes", nxt["id"], queued=None)
+                self.db.update("episodes", nxt["id"], queued=None, resume=None)
             except Exception as ex:
-                self.db.update("episodes", nxt["id"], status="failed", queued=None, note=str(ex)[:200])
+                self.db.update("episodes", nxt["id"], status="failed", queued=None, resume=None, note=str(ex)[:200])
                 bus.publish("episode_status", nxt["id"], status="failed")
 
     def queue_view(self, db=None):
@@ -370,8 +415,11 @@ class Runner:
         # downstream cancelled/failed jobs wait again too
         for d in down:                      # a new attempt: an old waiting loop of that step stops (_stale)
             self._set(d, status="waiting", attempt=(d["attempt"] or 0) + 1, message="")
-        self.db.update("episodes", j["episode_id"], status="processing", updated=now())
-        self.wake.set()
+        if self._room_for(j["episode_id"]):
+            self.db.update("episodes", j["episode_id"], status="processing", queued=None, resume=None, updated=now())
+            self.wake.set()
+        else:
+            self._park(j["episode_id"])
 
     def poke(self):
         self.wake.set()
@@ -533,6 +581,8 @@ class Runner:
     def _tick(self):
         self._maybe_daily_cleanup()
         self._tick_link_imports()
+        self._enforce_cap()
+        queued = {r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='queued'")}
         jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
         self._keep_awake(any(j["status"] == "running" for j in jobs))     # not for steps parked behind the review
         if not jobs:
@@ -574,6 +624,9 @@ class Runner:
                 # The step it was waiting on has finished. Start it; nobody has to press Retry.
                 self._set(j, status="waiting", message="")
             if any(d["status"] not in DONE for d in deps):
+                continue
+            # Queued episodes already have their jobs armed. Starting one here would ignore the cap.
+            if j["episode_id"] in queued:
                 continue
             # Captions only need the source video, so they would start during matching. On the cut visit
             # they ride with the sheet instead, one machine, after the decisions.
@@ -1827,9 +1880,12 @@ class Runner:
         for s in todo:
             j = by[s]; self.cancelled.discard(j["id"])
             self._set(j, status="waiting", attempt=(j["attempt"] or 0) + 1, progress=0, finished=None, message="")
-        self.db.update("episodes", ep_id, status="processing", updated=now())
-        bus.publish("episode_status", ep_id, status="processing")
-        self.wake.set()
+        if self._room_for(ep_id):
+            self.db.update("episodes", ep_id, status="processing", queued=None, resume=None, updated=now())
+            bus.publish("episode_status", ep_id, status="processing")
+            self.wake.set()
+        else:
+            self._park(ep_id)
         return sorted(todo, key=lambda s: by[s]["ord"])
 
     @staticmethod

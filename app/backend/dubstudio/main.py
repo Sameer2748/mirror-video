@@ -857,12 +857,14 @@ def cancel_batch(bid: int):
     b = _batch_full(bid)
     for e in b["episodes"]:
         if e["status"] == "queued":
+            if runner().latest_run(e["id"]):
+                runner().cancel_run(e["id"])
             db().update("episodes", e["id"], status="cancelled" if runner().latest_run(e["id"]) else "new",
-                        queued=None, updated=now())
+                        queued=None, resume=None, updated=now())
             bus.publish("episode_status", e["id"], status="left the queue")
         elif e["status"] == "processing":
             runner().cancel_run(e["id"])
-            db().update("episodes", e["id"], status="cancelled", queued=None, updated=now())
+            db().update("episodes", e["id"], status="cancelled", queued=None, resume=None, updated=now())
             bus.publish("episode_status", e["id"], status="cancelled")
     runner().start_next()
     db().update("batches", bid, status="cancelled", updated=now())
@@ -1320,12 +1322,14 @@ def restore_previous_run(eid: int):
 def cancel_episode(eid: int):
     ep = _get("episodes", eid)
     if ep["status"] == "queued":                              # it had not started: it simply leaves the line
+        if runner().latest_run(eid):
+            runner().cancel_run(eid)                         # a render waiting in the line must not start after this
         db().update("episodes", eid, status="cancelled" if runner().latest_run(eid) else "new", queued=None,
-                    updated=now())
+                    resume=None, updated=now())
         bus.publish("episode_status", eid, status="left the queue")
     else:
         runner().cancel_run(eid)
-        db().update("episodes", eid, status="cancelled", queued=None, updated=now())
+        db().update("episodes", eid, status="cancelled", queued=None, resume=None, updated=now())
         bus.publish("episode_status", eid, status="cancelled")
     runner().start_next()
     return _episode_full(eid)

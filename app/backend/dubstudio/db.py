@@ -100,6 +100,8 @@ ADDED_COLUMNS = (("shows", "owner_id", "INTEGER REFERENCES users(id)"),
                  ("assets", "uploaded", "REAL"),
                  ("shows", "sheet_key", "TEXT"),                    # the localisation sheet in R2
                  ("episodes", "queued", "REAL"),                    # when it went in the line (one episode at a time)
+                 # 1 = this queued episode already has its jobs; a free slot continues that run
+                 ("episodes", "resume", "INTEGER"),
                  ("episodes", "batch_id", "INTEGER REFERENCES batches(id)"))  # set when the episode was made in a bulk run
 
 JSON_COLS = {"profile", "probe", "needs", "params", "data", "body", "cues", "style", "outputs", "check_result", "clip", "frames",
