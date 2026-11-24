@@ -13,6 +13,20 @@ import pytest
 from dubstudio import cloud, scan
 
 
+def cloud_tar(bucket, name, part):
+    """The tar this send wrote, or the path the return tar must be written to.
+
+    Each attempt has its own cloud name, so a test cannot hard-code cloud/<step>_work_out.tar.gz."""
+    folder = bucket / "cloud"
+    folder.mkdir(parents=True, exist_ok=True)
+    hits = sorted(folder.glob(f"{name}_{part}_*.tar.gz"))
+    if hits:
+        return hits[-1]
+    send = cloud._send
+    assert send, f"no send yet for {name}_{part}"
+    return folder / f"{name}_{part}_{send}.tar.gz"
+
+
 def test_picture_duration_uses_the_shorter_video_stream():
     """Container 615 s with pictures stopping at 390 s must not cut 16 empty lip-scan pieces."""
     assert scan.picture_duration({"duration": 615, "video": {"duration": 390}}) == 390
@@ -304,12 +318,12 @@ def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path
 
     def fake_wait(ids, **kw):
         # the "worker": unpack what it was sent, write a result, send back only what changed
-        got = tarfile.open(bucket / "cloud/words_work_in.tar.gz")
+        got = tarfile.open(cloud_tar(bucket, "words", "work_in"))
         names = sorted(got.getnames())
         box = tmp_path / "worker"; box.mkdir(exist_ok=True)
         got.extractall(box); got.close()
         (box / "rows.json").write_text('{"rows": []}')
-        back = bucket / "cloud/words_work_out.tar.gz"
+        back = cloud_tar(bucket, "words", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             t.add(box / "rows.json", arcname="rows.json")
@@ -354,10 +368,10 @@ def test_a_big_file_already_in_the_work_folder_is_sent_on_its_own(tmp_path, monk
         return "job0"
 
     def fake_wait(ids, **kw):
-        got = tarfile.open(bucket / "cloud/sharpness_work_in.tar.gz")
+        got = tarfile.open(cloud_tar(bucket, "sharpness", "work_in"))
         names = sorted(got.getnames())
         got.close()
-        back = bucket / "cloud/sharpness_work_out.tar.gz"
+        back = cloud_tar(bucket, "sharpness", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             pass
@@ -400,7 +414,7 @@ def test_a_script_in_the_input_folder_is_sent_even_though_it_is_small(tmp_path, 
         return "job0"
 
     def fake_wait(ids, **kw):
-        got = tarfile.open(bucket / "cloud/mksrt_dub_work_in.tar.gz")
+        got = tarfile.open(cloud_tar(bucket, "mksrt_dub", "work_in"))
         names = sorted(got.getnames())
         got.close()
         return {"job0": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}, "_tar_names": names}}}, {}
@@ -626,12 +640,12 @@ def test_the_work_folders_config_is_translated_both_ways(tmp_path, monkeypatch):
     seen = {}
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/render_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "render", "work_in")) as t:
             seen["config"] = json.loads(t.extractfile("config.json").read())
         # the worker's render records where it put the video -- in the worker's own layout
         box = tmp_path / "w"; box.mkdir(exist_ok=True)
         (box / "config.json").write_text(json.dumps({**seen["config"], "video_out": "/work/video_groups.mp4"}))
-        back = bucket / "cloud/render_work_out.tar.gz"
+        back = cloud_tar(bucket, "render", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             t.add(box / "config.json", arcname="config.json")
@@ -708,10 +722,10 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
     sent = {}
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/render_tail_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "render_tail", "work_in")) as t:
             sent["driver"] = t.extractfile("_cloud_chain.py").read().decode()
             sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
-        back = bucket / "cloud/render_tail_work_out.tar.gz"
+        back = cloud_tar(bucket, "render_tail", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             pass
@@ -771,9 +785,9 @@ def test_matching_is_one_visit_and_the_face_map_is_not_in_it(tmp_path, monkeypat
     sent = {}
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/match_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "match", "work_in")) as t:
             sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
-        back = bucket / "cloud/match_work_out.tar.gz"
+        back = cloud_tar(bucket, "match", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             pass
@@ -822,10 +836,10 @@ def test_matching_sends_the_dub_audio_that_lives_in_the_input_folder(tmp_path, m
     sent = {}
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/match_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "match", "work_in")) as t:
             sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
             sent["tar"] = t.getnames()
-        back = bucket / "cloud/match_work_out.tar.gz"
+        back = cloud_tar(bucket, "match", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             pass
@@ -1033,14 +1047,14 @@ def test_an_imported_clip_the_editor_used_is_sent_and_placed(tmp_path, monkeypat
         return "j"
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/render_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "render", "work_in")) as t:
             sent["manifest"] = json.loads(t.extractfile("manifest_groups.json").read())
             sent["tar_names"] = t.getnames()
         box = tmp_path / "w"; box.mkdir(exist_ok=True)
         back_m = dict(sent["manifest"])
         back_m["segments"] = [dict(s) for s in back_m["segments"]]
         (box / "manifest_groups.json").write_text(json.dumps(back_m))
-        back = bucket / "cloud/render_work_out.tar.gz"
+        back = cloud_tar(bucket, "render", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             t.add(box / "manifest_groups.json", arcname="manifest_groups.json")
@@ -1092,10 +1106,10 @@ def test_the_video_named_in_config_is_sent_when_it_lives_in_the_input_folder(tmp
     sent = {}
 
     def fake_wait(ids, **kw):
-        with tarfile.open(bucket / "cloud/cut_work_in.tar.gz") as t:
+        with tarfile.open(cloud_tar(bucket, "cut", "work_in")) as t:
             sent["config"] = json.loads(t.extractfile("config.json").read())
             sent["tar"] = t.getnames()
-        back = bucket / "cloud/cut_work_out.tar.gz"
+        back = cloud_tar(bucket, "cut", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             pass
@@ -1264,14 +1278,14 @@ def test_run_command_lands_outputs_before_work_and_skips_segs(tmp_path, monkeypa
         (box / "config.json").write_text(json.dumps({"video_out": "/work/video_groups.mp4"}))
         (box / "segs_groups" / "000.mp4").parent.mkdir(parents=True)
         (box / "segs_groups" / "000.mp4").write_bytes(b"seg" * 100)
-        back = bucket / "cloud/render_work_out.tar.gz"
+        back = cloud_tar(bucket, "render", "work_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         with tarfile.open(back, "w:gz") as t:
             t.add(box / "config.json", arcname="config.json")
             t.add(box / "segs_groups", arcname="segs_groups")
         obox = tmp_path / "oback"; obox.mkdir()
         (obox / "final_clean.mp4").write_bytes(b"final")
-        with tarfile.open(bucket / "cloud/render_out_out.tar.gz", "w:gz") as t:
+        with tarfile.open(cloud_tar(bucket, "render", "out_out"), "w:gz") as t:
             t.add(obox / "final_clean.mp4", arcname="final_clean.mp4")
         return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1,
                                  "sent": {"work": {"files": 2}, "out": {"files": 1}}}}}, {}
@@ -1376,7 +1390,7 @@ def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch)
     bucket = tmp_path / "bucket"
 
     def fake_wait(ids, **kw):
-        back = bucket / "cloud/render_out_out.tar.gz"
+        back = cloud_tar(bucket, "render", "out_out")
         back.parent.mkdir(parents=True, exist_ok=True)
         obox = tmp_path / "oback"; obox.mkdir()
         (obox / "final_clean.mp4").write_bytes(b"final")

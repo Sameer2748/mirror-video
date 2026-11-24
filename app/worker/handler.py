@@ -20,7 +20,7 @@ one JSON sends back one JSON, and a render sends back the video.
 
 No key ever reaches here: every URL is a signed link that expires.
 """
-import http.client, io, json, os, shutil, subprocess, sys, tarfile, time
+import http.client, io, json, os, shutil, signal, subprocess, sys, tarfile, time
 import urllib.error, urllib.parse, urllib.request
 
 import runpod
@@ -105,9 +105,43 @@ def tar_changed(root, before, tar_path, skip_prefixes=()):
 
 
 # ---------------- the jobs ----------------
+def wipe_dirs(dirs):
+    """Clear a job's folders and make them again. The next job on this machine must not see the last one."""
+    for d in dirs:
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d, exist_ok=True)
+
+
+def run_logged(cmd, cwd=None, env=None):
+    """Run a step in its own process group.
+
+    A cancel from the platform sends SIGTERM here. The step and every child it started
+    (ffmpeg, python) are stopped, then the folders are cleared, so a reused machine does
+    not keep the cancelled episode's files or a process that could still upload them.
+    """
+    proc = subprocess.Popen(
+        cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, start_new_session=True)
+
+    def stop(signum, frame):
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except OSError:
+            pass
+        wipe_dirs((WORK, OUT, FILES))
+        raise SystemExit(128 + signum)
+
+    previous = signal.signal(signal.SIGTERM, stop)
+    try:
+        out, err = proc.communicate()
+        return subprocess.CompletedProcess(cmd, proc.returncode, out, err)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
 def lip_scan(job_in):
     """The Step 4B lip scan of one or more pieces. Same script, same weights as the Mac."""
-    os.makedirs(WORK, exist_ok=True)
+    wipe_dirs((WORK, OUT, FILES))
     got = fetch(job_in["inputs"]["video"], f"{WORK}/video.mp4")
     args = job_in.get("args", {})
     rngs = args.get("ranges") or ([args["range"]] if args.get("range") else None)
@@ -119,7 +153,7 @@ def lip_scan(job_in):
             json.dump(rngs, f)
         cmd += ["--ranges", f"{WORK}/ranges.json"]
     t = time.time()
-    p = subprocess.run(cmd, capture_output=True, text=True)
+    p = run_logged(cmd)
     secs = round(time.time() - t, 1)
     if p.returncode != 0:
         return {"ok": False, "step": "lip_scan", "ranges": rngs, "seconds": secs,
@@ -134,9 +168,7 @@ def lip_scan(job_in):
 
 def command(job_in):
     """Any pipeline step: the app's own command line, with this machine's paths filled in."""
-    for d in (WORK, OUT, FILES):
-        shutil.rmtree(d, ignore_errors=True)
-        os.makedirs(d, exist_ok=True)
+    wipe_dirs((WORK, OUT, FILES))
 
     brought = {}
     if job_in.get("work_in"):
@@ -158,7 +190,7 @@ def command(job_in):
     env = dict(os.environ, PYTHONUNBUFFERED="1", HF_HOME="/opt/models", HUGGINGFACE_HUB_CACHE="/opt/models",
                SENTENCE_TRANSFORMERS_HOME="/opt/models", DUBSTUDIO_MODELS="/opt/models",
                **{k: v for k, v in (job_in.get("env") or {}).items()})
-    p = subprocess.run(cmd, cwd=f"{CODE}/scripts", capture_output=True, text=True, env=env)
+    p = run_logged(cmd, cwd=f"{CODE}/scripts", env=env)
     secs = round(time.time() - t, 1)
     log = (p.stdout or "") + (("\n--- stderr ---\n" + p.stderr) if p.stderr else "")
 

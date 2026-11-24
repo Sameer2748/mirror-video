@@ -24,7 +24,7 @@ Settings (app/.env):
                         "match", "cut", "scene" and "tail" are whole visits (one machine each); "all" is every visit
   CLOUD_PIECES          how many pieces a long step is split into (default 8)
 """
-import json, shutil, tarfile, time, urllib.error, urllib.request
+import json, re, shutil, tarfile, time, uuid, urllib.error, urllib.request
 from pathlib import Path
 
 from . import envfile, storage
@@ -188,6 +188,74 @@ def cancel(job_id, kind="cpu"):
     return _call(f"/cancel/{job_id}", body={}, timeout=30, kind=kind)
 
 
+_LOGGED_JOB = re.compile(r"job ([0-9a-f]{8}-[0-9a-f-]{20,})")
+
+
+def release_previous(log_path, kind="cpu", log=None):
+    """Drop machine jobs this step already sent that are still queued or running.
+
+    A restart sends the step again. The new send is the one the site watches. The job that
+    was already on a machine would keep that machine and its result would never be picked up,
+    so that job is cancelled before the new one is sent. A finished job is left alone.
+    """
+    path = Path(log_path) if log_path else None
+    if path is None or not path.is_file():
+        return []
+    ids, seen = [], set()
+    for match in _LOGGED_JOB.finditer(path.read_text(encoding="utf-8", errors="replace")):
+        jid = match.group(1)
+        if jid not in seen:
+            seen.add(jid)
+            ids.append(jid)
+    released = []
+    for jid in ids:
+        try:
+            state = (status(jid, kind=kind) or {}).get("status")
+        except Exception:
+            continue
+        if state not in ("IN_QUEUE", "IN_PROGRESS"):
+            continue
+        try:
+            cancel(jid, kind=kind)
+        except Exception as ex:
+            if log:
+                log(f"could not release the previous machine ({state}): {ex}")
+            continue
+        released.append(jid)
+    if released and log:
+        log(f"released {len(released)} earlier machine job(s) for this step, so only the new one is kept")
+    return released
+
+
+def new_send():
+    """A new attempt of a step. Its cloud files use this id, so a late upload from the
+    attempt we just cancelled cannot land in the file this attempt will read."""
+    global _send
+    _send = uuid.uuid4().hex[:8]
+    return _send
+
+
+_send = ""
+
+
+def step_object(name, part, send=None):
+    """Cloud tar for one attempt: cloud/<step>_<part>_<send>.tar.gz."""
+    token = send or _send or "send"
+    return f"cloud/{name}_{part}_{token}.tar.gz"
+
+
+def step_wait_message(label, info):
+    """What this step is doing. Counts only this step's own jobs, never the whole pool."""
+    info = info or {}
+    on_machine = int(info.get("on_machine") or 0)
+    waiting = int(info.get("waiting") or 0)
+    if on_machine and waiting:
+        return f"{label}: {on_machine} on a machine, {waiting} waiting for a free machine"
+    if on_machine:
+        return f"{label}: on a machine"
+    return f"{label}: waiting for a free machine"
+
+
 def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
     """Wait for every job. -> ({job id: status}, [failed job ids with their reason]).
     A rented machine can be slow or taken away mid-job, so a failure is reported, not raised: the caller decides
@@ -199,23 +267,31 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
                 if jid not in done and jid not in failed:
                     failed[jid] = f"still running after {timeout} s"
             break
+        on_machine = waiting = 0
         for jid in job_ids:
             if jid in done or jid in failed:
                 continue
             try:
                 st = status(jid, kind=kind)
+            except urllib.error.HTTPError as ex:
+                # A missing job will never start. Polling it for two hours looks like "on a machine".
+                if getattr(ex, "code", None) == 404:
+                    failed[jid] = "the machine job is gone"
+                continue
             except (urllib.error.URLError, TimeoutError):
                 continue
-            if st.get("status") == "COMPLETED":
+            state = st.get("status")
+            if state == "COMPLETED":
                 done[jid] = st
-            elif st.get("status") in ("FAILED", "CANCELLED", "TIMED_OUT"):
-                failed[jid] = str(st.get("error") or st.get("output") or st.get("status"))[:300]
+            elif state in ("FAILED", "CANCELLED", "TIMED_OUT"):
+                failed[jid] = str(st.get("error") or st.get("output") or state)[:300]
+            elif state == "IN_PROGRESS":
+                on_machine += 1
+            elif state == "IN_QUEUE":
+                waiting += 1
         if on_progress:
-            try:
-                h = health(kind=kind).get("workers", {})
-            except Exception:
-                h = {}
-            on_progress(len(done), len(job_ids), h)
+            # This step's own jobs. The pool size (how many machines are busy for other episodes) is not this step.
+            on_progress(len(done), len(job_ids), {"on_machine": on_machine, "waiting": waiting})
         if len(done) + len(failed) < len(job_ids):
             time.sleep(poll)
     return done, failed
@@ -325,12 +401,15 @@ def _keep_or_fail_empty_lip_pieces(empty, cuts, nets, duration_s, log):
     return kept
 
 
-def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3):
+def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=None, tries=3, release_log=None):
     """Scan the whole source video on rented machines and write `<work>/lips_nets` exactly as the local step would.
 
     The episode is cut into the pipeline's own pieces and shared between machines. A share that fails (a slow or
     reclaimed worker) is simply sent again -- the shares that finished are kept, so one bad machine costs one
     share, not the episode. -> {pieces, files, seconds, worker_seconds, retries}."""
+    if release_log:
+        release_previous(release_log, kind="cpu", log=log)
+    send = new_send()
     n = n_pieces or pieces()
     key = ensure_input_in_cloud(db, show, ep)
     cuts = make_ranges(duration_s)
@@ -347,10 +426,11 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
         video = storage.presign(key, 10800)                            # fresh links for each attempt
         jobs = {}
         for i, mine in todo:
-            ok = storage.work_key(show, ep, f"lips_cloud/piece_{i:02d}.tar.gz")
+            ok = storage.work_key(show, ep, f"lips_cloud/{send}_piece_{i:02d}.tar.gz")
             jid = submit({"step": "lip_scan", "inputs": {"video": video},
                           "args": {"ranges": mine, "device": "cpu"},
                           "outputs": {"result": storage.presign(ok, 10800, method="PUT")}})
+            log(f"lip piece {i}: sent to a rented cpu machine (job {jid})")
             jobs[jid] = (i, mine, ok)
         done, failed = wait(list(jobs), on_progress=on_progress)
         for jid, st in done.items():
@@ -379,10 +459,11 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
             break
         log(f"{len(empty)} piece(s) came back empty; scanning them again")
         video = storage.presign(key, 10800)
-        ok = storage.work_key(show, ep, f"lips_cloud/piece_{extra_i + extra:02d}.tar.gz")
+        ok = storage.work_key(show, ep, f"lips_cloud/{send}_empty_{extra_i + extra:02d}.tar.gz")
         jid = submit({"step": "lip_scan", "inputs": {"video": video},
                       "args": {"ranges": empty, "device": "cpu"},
                       "outputs": {"result": storage.presign(ok, 10800, method="PUT")}})
+        log(f"lip empty pieces: sent to a rented cpu machine (job {jid})")
         done, failed = wait([jid], on_progress=on_progress)
         if failed:
             retries += 1
@@ -1035,13 +1116,17 @@ def _queue_returned_outputs(db, show, ep, log=print):
     log(f"{len(rows)} output file(s) queued for the cloud (this step, not waiting for publish)")
 
 
-def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu"):
+def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu",
+                release_log=None):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
     The episode's small work files go up as one tar, the big inputs as signed links, and only what the step
     **changed** comes back -- so a step that writes one JSON brings back one JSON, and a render brings back the
     video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one.
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
+    if release_log:
+        release_previous(release_log, kind=kind, log=log)
+    send = new_send()
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     ensure_episode_inputs(db, show, ep, log=log)
@@ -1097,7 +1182,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             tar.unlink(missing_ok=True)
             _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
             n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
-        key = storage.work_key(show, ep, f"cloud/{name}_work_in.tar.gz")
+        key = storage.work_key(show, ep, step_object(name, "work_in", send))
         storage.put_file(tar, key)
         tar.unlink(missing_ok=True)
         job["work_in"] = storage.presign(key, 10800)
@@ -1107,7 +1192,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         if osmall:
             tar = _scratch_tar(W, ep, name, "out_in")
             _tar(osmall, O, tar)
-            key = storage.work_key(show, ep, f"cloud/{name}_out_in.tar.gz")
+            key = storage.work_key(show, ep, step_object(name, "out_in", send))
             storage.put_file(tar, key)
             tar.unlink(missing_ok=True)
             job["out_in"] = storage.presign(key, 10800)
@@ -1121,8 +1206,8 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             job["names"][token] = Path(path).name
         log(f"{len(files)} big input file(s) ready in the cloud")
 
-    back_work = storage.work_key(show, ep, f"cloud/{name}_work_out.tar.gz")
-    back_out = storage.work_key(show, ep, f"cloud/{name}_out_out.tar.gz")
+    back_work = storage.work_key(show, ep, step_object(name, "work_out", send))
+    back_out = storage.work_key(show, ep, step_object(name, "out_out", send))
     job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
                       "out": storage.presign(back_out, 10800, method="PUT")}
 
@@ -1265,7 +1350,7 @@ def _fill_tokens(arg, places):
 
 
 def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeout=7200, kind="cpu",
-              name="render_tail"):
+              name="render_tail", release_log=None):
     """Run several pipeline steps on ONE rented machine, in order. -> the worker's answer.
 
     `named_cmds` is [(name, cmd), ...] with this machine's paths, exactly as the runner would have run them
@@ -1303,7 +1388,8 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     return run_command(db, show, ep, name,
                        [cfg.pipeline_python if hasattr(cfg, "pipeline_python") else "{py}",
                         str(W / "_cloud_chain.py")],
-                       cfg, log=log, on_progress=on_progress, timeout=timeout, preset_files=files, kind=kind)
+                       cfg, log=log, on_progress=on_progress, timeout=timeout, preset_files=files, kind=kind,
+                       release_log=release_log)
 
 
 def _file_in_cloud(db, show, ep, path):

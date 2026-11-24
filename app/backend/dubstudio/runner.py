@@ -932,7 +932,8 @@ class Runner:
                 f.write(str(msg).rstrip() + "\n"); f.flush()
             self._set(j, message="sending the files to a rented machine")
             cloud.run_command(self.db, show, ep, j["step"], cmd, cfg, log=log,
-                              timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]))
+                              timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]),
+                              release_log=j["log_path"])
         return True
 
     def _run_cmd_cloud(self, j, cmd):
@@ -944,14 +945,14 @@ class Runner:
             def log(msg):
                 f.write(str(msg).rstrip() + "\n"); f.flush()
 
-            def prog(done, total, workers):
-                busy = (workers or {}).get("running", 0)
-                self._set(j, message=f"running on a rented machine ({busy} working)")
+            def prog(done, total, info):
+                self._set(j, message=cloud.step_wait_message("this step", info))
 
             self._set(j, message="sending the files to a rented machine")
             res = cloud.run_command(self.db, show, ep, j["step"], self._expand(cmd), cfg,
                                     log=log, on_progress=prog,
-                                    timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]))
+                                    timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]),
+                                    release_log=j["log_path"])
         if res.get("rc") == 3:                             # "not finished -- run again (it resumes)"
             return self._run_cmd_cloud(j, cmd)
         if j["step"] == "groups":
@@ -1041,13 +1042,12 @@ class Runner:
             def log(msg):
                 f.write(str(msg).rstrip() + "\n"); f.flush()
 
-            def prog(done, total, workers):
-                busy = (workers or {}).get("running", 0)
-                self._set(j, message=f"{progress} ({busy} working)")
+            def prog(done, total, info):
+                self._set(j, message=cloud.step_wait_message(progress, info))
 
             self._set(j, message=f"sending {name} to one rented machine")
             res = cloud.run_chain(self.db, show, ep, named, cfg, log=log, on_progress=prog,
-                                  timeout=cfg.step_max_seconds or 7200, name=name)
+                                  timeout=cfg.step_max_seconds or 7200, name=name, release_log=j["log_path"])
         if res.get("rc") == 3:
             if name == "match":
                 return self._run_match(j)
@@ -1273,13 +1273,12 @@ class Runner:
             def log(msg):
                 f.write(str(msg).rstrip() + "\n"); f.flush()
 
-            def prog(done, total, workers):
-                busy = (workers or {}).get("running", 0)
-                self._set(j, message=f"render tail on a rented machine ({busy} working)")
+            def prog(done, total, info):
+                self._set(j, message=cloud.step_wait_message("render tail", info))
 
             self._set(j, message="sending the render tail to one rented machine")
             res = cloud.run_chain(self.db, show, ep, named, cfg, log=log, on_progress=prog,
-                                  timeout=cfg.step_max_seconds or 7200)
+                                  timeout=cfg.step_max_seconds or 7200, release_log=j["log_path"])
         if res.get("rc") == 3:
             return self._run_cloud_tail(j)
         msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
@@ -1431,10 +1430,11 @@ class Runner:
             def log(m):
                 f.write(m + "\n"); f.flush()
 
-            def progress(done, total, workers):
+            def progress(done, total, info):
                 self._set(j, progress=round(done / max(total, 1), 3),
-                          message=f"{done} of {total} pieces; {workers.get('running', 0)} machines working")
-            out = cloud.lip_scan(self.db, show, ep, float(dur), log=log, on_progress=progress)
+                          message=cloud.step_wait_message(f"{done} of {total} pieces", info))
+            out = cloud.lip_scan(self.db, show, ep, float(dur), log=log, on_progress=progress,
+                                 release_log=j["log_path"])
         self._set(j, status="done", progress=1, finished=now(),
                   message=f"{out['files']} pieces scanned on {out['pieces']} machines in {out['seconds']:.0f} s")
 
