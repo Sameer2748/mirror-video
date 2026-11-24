@@ -1,4 +1,7 @@
-"""Export CSV: episode number + final target-language subtitle video link for episodes that are done.
+"""Export CSV: a single run of finished episodes from the start of the show.
+
+The first episode that is not done, or whose subtitle video is not in the cloud, ends the list.
+Later episodes that are already done are not included.
 
 Throwaway SQLite database, R2 faked: no real bucket is touched.
 """
@@ -65,21 +68,21 @@ def main_test():
     assert "expires=604800" in rows[1][1], rows[1]          # the 7-day cap
     print("ok: all done -> CSV with links")
 
-    # 2. one episode still processing -> the finished one is exported, in order
+    # 2. episode 2 still processing, episode 4 already done -> stop at 2, only episode 1
     sid = make_show("NOTDONE", [1, 2, 4], ["done", "processing", "done"], uploads=[1, 2, 4])
     code, body = run(sid)
     assert code == 200, (code, body)
     rows = rows_of(body)
-    assert [r[0] for r in rows[1:]] == ["1", "4"], rows
-    print("ok: unfinished episodes left out")
+    assert [r[0] for r in rows[1:]] == ["1"], rows
+    print("ok: list stops at the first unfinished episode")
 
-    # 3. a done episode with no subtitle video in the cloud is left out; the one that has it is exported
-    sid = make_show("NOUP", [5, 6], ["done", "done"], uploads=[5])
+    # 3. a done episode with no subtitle video ends the list; a later done episode is not included
+    sid = make_show("NOUP", [5, 6, 7], ["done", "done", "done"], uploads=[5, 7])
     code, body = run(sid)
     assert code == 200, (code, body)
     rows = rows_of(body)
     assert [r[0] for r in rows[1:]] == ["5"], rows
-    print("ok: done episode missing its video is left out")
+    print("ok: missing cloud video ends the list")
 
     # 3b. nothing finished -> refused
     sid = make_show("NONE", [8, 9], ["processing", "review"], uploads=[8])

@@ -1053,9 +1053,9 @@ SIGNED_LINK_MAX = 604800          # S3/R2 signed links last at most 7 days
 def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
     """Episode number + the final target-language subtitle video, as a CSV.
 
-    Episodes that are not done, or whose subtitle video is not in the cloud yet, are left out.
-    The rows that are included stay in episode order, so a finished run (for example through 200)
-    can be downloaded and uploaded while later episodes are still rendering."""
+    Rows are a single run from the start of the show. The first episode that is not done,
+    or whose subtitle video is not in the cloud yet, ends the list. Later episodes that
+    are already done are left out, so a sheet never skips a pending episode."""
     show = _get("shows", sid)
     eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     if not eps:
@@ -1065,11 +1065,11 @@ def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
     rows = []
     for e in eps:
         if e["status"] != "done":
-            continue
+            break
         up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
                       "ORDER BY id DESC LIMIT 1", (e["id"],))
         if not up:
-            continue
+            break
         rows.append([e["number"], storage.presign(up["key"], seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
                                                   download_name=up["name"])])
     if not rows:

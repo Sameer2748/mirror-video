@@ -124,7 +124,7 @@ export default function ShowPage() {
             {busy === "sheet" ? "Reading the sheet…" : "Sheet upload"}
           </button>
           <button className="button" disabled={busy === "export"} onClick={exportCsv}
-            title="Download the final subtitle video link for every episode that is already done, in episode order">
+            title="Download subtitle video links from the start of the show, in order, and stop at the first episode that is not finished">
             {busy === "export" ? "Exporting…" : "Export CSV"}
           </button>
           <input ref={sheetRef} type="file" accept=".csv,.xlsx,.xlsm" hidden onChange={async (ev) => {
