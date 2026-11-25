@@ -110,12 +110,16 @@ def test_queue_in_order_process_again_does_not_resume(tmp_path, monkeypatch):
     _job(db, wbt, "fetch", "failed", 1)
     other = _ep(db, sid, tmp_path, 1, "processing")
     _job(db, other, "fetch", "running", 1)
+    kotu = _ep(db, sid, tmp_path, 50, "queued")
+    db.update("episodes", kotu, queued=1.0, resume=None)
     r = Runner(db)
     r._keep_awake = lambda on: None
     r.start_next = lambda: None
     r.queue_in_order([keep, wbt], from_scratch=[wbt])
     assert db.one("SELECT status FROM episodes WHERE id=?", (keep,))["status"] == "processing"
-    row = db.one("SELECT status, resume FROM episodes WHERE id=?", (wbt,))
+    row = db.one("SELECT status, resume, queued FROM episodes WHERE id=?", (wbt,))
     assert row["status"] == "queued" and not row["resume"]
     parked = db.one("SELECT status, resume FROM episodes WHERE id=?", (other,))
     assert parked["status"] == "queued" and parked["resume"] == 1
+    behind = db.one("SELECT queued, resume FROM episodes WHERE id=?", (kotu,))
+    assert behind["queued"] > row["queued"] and not behind["resume"]

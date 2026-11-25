@@ -286,6 +286,11 @@ class Runner:
                 continue
             self._park(row["id"], queued_at=extra)
             extra += 0.01
+        for row in self.db.q("SELECT id, resume FROM episodes WHERE status='queued'"):
+            if row["id"] in lined:
+                continue
+            self.db.update("episodes", row["id"], queued=extra, updated=now())
+            extra += 0.01
         self.start_next()
         return {"lined": len(ids), "from_scratch": len(scratch)}
 
