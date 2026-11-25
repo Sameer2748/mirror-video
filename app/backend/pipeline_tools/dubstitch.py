@@ -1265,6 +1265,26 @@ def measure_source_sub_zoom(video, samples=12):
     }
 
 
+def source_hide_zoom(work, cfg):
+    """The episode's burned-in-caption zoom, or None. Same number render already stored."""
+    try:
+        z = float((cfg or {}).get("source_sub_zoom") or 0)
+    except (TypeError, ValueError):
+        z = 0.0
+    if z > 1.001:
+        return z
+    zpath = os.path.join(work, "source_zoom.json")
+    if os.path.exists(zpath):
+        m = load(work, "source_zoom.json") or {}
+        try:
+            z = float(m.get("zoom") or 0)
+        except (TypeError, ValueError):
+            z = 0.0
+        if m.get("found") and z > 1.001:
+            return z
+    return None
+
+
 def hide_frame(s, hide_z, W, H):
     """Top-anchored zoom for a source segment, or None when this segment stays as it is.
 
@@ -1839,15 +1859,20 @@ def cmd_bookends(a):
     has_a = bool(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", src],
                                 capture_output=True, text=True).stdout.strip())
     d = os.path.join(a.work, "bookends"); os.makedirs(d, exist_ok=True); fd = a.fade
+    hide_z = source_hide_zoom(a.work, cfg)
+    hf = hide_frame({}, hide_z, W, H)
+    if hf:
+        print(f"opening/ending: source subs zoom {hide_z:.3f}x (same as the episode)")
     def cut(f0, nf, path, fade):
         """Cut opening/ending from the source. False if that range is truncated (invalid NAL / partial file)."""
         dur = nf / FPS
         if not video_decodes(src, f0 / FPS):
             return False
         af = (f"afade=t=out:st={max(dur - fd, 0):.3f}:d={fd}" if fade == "out" else f"afade=t=in:st=0:d={fd}")
+        vf = f"{hf},fps={FPS},format=yuv420p" if hf else f"fps={FPS},format=yuv420p"
         cmd = ["ffmpeg", "-y", "-v", "error", "-ss", f"{f0 / FPS:.6f}", "-i", src]
         if not has_a: cmd += ["-f", "lavfi", "-i", f"anullsrc=r={sr}:cl={'mono' if ch == '1' else 'stereo'}"]
-        cmd += ["-map", "0:v:0", "-map", "0:a:0" if has_a else "1:a:0", "-vf", f"fps={FPS},format=yuv420p", "-frames:v", str(nf),
+        cmd += ["-map", "0:v:0", "-map", "0:a:0" if has_a else "1:a:0", "-vf", vf, "-frames:v", str(nf),
                 "-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
                 "-af", f"aresample={sr},{af}", "-ac", ch, "-c:a", "aac", "-b:a", "192k", "-t", f"{dur:.6f}", path]
         r = subprocess.run(cmd, capture_output=True, text=True)

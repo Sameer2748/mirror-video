@@ -104,3 +104,40 @@ def test_render_zooms_the_source_and_leaves_an_imported_clip(tmp_path):
     assert not _bottom_is_caption(src_png)
     imp = np.asarray(Image.open(imp_png).convert("RGB"))
     assert float(imp[:, :, 2].mean()) > float(imp[:, :, 0].mean()) + 20
+
+
+def test_bookends_opening_uses_the_same_zoom_as_the_episode(tmp_path, monkeypatch):
+    """Opening is cut from the source: it must use the episode zoom so burned-in captions leave the frame."""
+    src = tmp_path / "src.mp4"
+    _clip(src, 300, "burned in")
+    dub = tmp_path / "dub.wav"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
+                    str(dub)], check=True)
+    main = tmp_path / "main.mp4"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=green:s=640x360:d=1:r=10",
+                    "-f", "lavfi", "-i", "sine=frequency=440:duration=1", "-pix_fmt", "yuv420p",
+                    "-shortest", str(main)], check=True)
+    work = tmp_path / "W"
+    work.mkdir()
+    srt = work / "src.srt"
+    srt.write_text("1\n00:00:01,000 --> 00:00:01,400\nHi\n", encoding="utf-8")
+    z = subzoom.measure(src)
+    assert z["found"] and z["zoom"] > 1.1
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(src), "dub_audio": str(dub), "src_srt": str(srt),
+        "manifest": "manifest_groups.json", "out_fps": 10, "video_out": str(main),
+        "source_sub_zoom": z["zoom"],
+    }))
+    (work / "manifest_groups.json").write_text(json.dumps({"segments": [
+        {"it_idx": 0, "it_start_ms": 0, "it_end_ms": 400, "us_start_ms": 1000, "us_end_ms": 1400,
+         "stretch_factor": 1, "it_text": "hi"},
+    ]}))
+    monkeypatch.setattr(D, "detect_caption_box", lambda *_a, **_k: None)
+    out = work / "clean_noglow.mp4"
+    D.cmd_bookends(Namespace(work=str(work), out=str(out), input=str(main), min_len=0.5, fade=0.05, no_ending=True))
+    opening = work / "bookends" / "opening.mp4"
+    assert opening.is_file()
+    png = tmp_path / "opening.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(opening), "-frames:v", "1", str(png)], check=True)
+    assert not _bottom_is_caption(png)
+    assert D.source_hide_zoom(str(work), {"source_sub_zoom": z["zoom"]}) == z["zoom"]

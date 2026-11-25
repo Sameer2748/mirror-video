@@ -262,19 +262,16 @@ def key_info():
     """{spend, max_budget}: what the badge and the budget gate read, from whichever provider is in use."""
     if provider() == "openrouter":
         k = (_req(_url("key"), timeout=30) or {}).get("data", {})
-        # two ceilings: the key's own budget (often monthly) and the money on the account. Show whichever runs out
-        # first -- a $500 key on an account with $87 of credits can only spend $87.
-        spend, budget = k.get("usage") or 0, k.get("limit")
-        try:
-            c = (_req(_url("credits"), timeout=30) or {}).get("data", {})
-            if c.get("total_credits"):
-                acc_spend, acc_budget = c.get("total_usage") or 0, c["total_credits"]
-                if budget is None or (acc_budget - acc_spend) < (budget - spend):
-                    spend, budget = acc_spend, acc_budget
-        except Exception:
-            pass
+        # This OPENROUTER_API_KEY only. Do not mix in the account credit pot — that hid the key's own cap.
+        eb = k.get("effective_budget") or {}
+        if eb.get("limit_usd") is not None:
+            spend, budget = eb.get("spend_usd") or 0, eb.get("limit_usd")
+        else:
+            spend, budget = k.get("usage") or 0, k.get("limit")
+            if (k.get("limit_reset") or "").lower() == "daily" and k.get("usage_daily") is not None:
+                spend = k.get("usage_daily")
         return {"spend": spend, "max_budget": budget, "models": None,
-                "resets": (k.get("effective_budget") or {}).get("resets_at") or k.get("limit_reset")}
+                "resets": eb.get("resets_at") or k.get("limit_reset")}
     i = _req(_url("key"), timeout=30); i = i.get("info", i)
     return {"spend": i.get("spend"), "max_budget": i.get("max_budget"), "models": i.get("models")}
 

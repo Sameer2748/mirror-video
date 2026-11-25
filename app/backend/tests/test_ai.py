@@ -138,6 +138,28 @@ def test_openrouter_budget_is_read_from_the_key(monkeypatch, tmp_path):
     assert info["spend"] == 3.5 and info["max_budget"] == 250
 
 
+def test_openrouter_budget_is_the_key_not_the_account(monkeypatch, tmp_path):
+    """The badge follows this API key's cap, not the OpenRouter account credit pot."""
+    import dubstudio.ai as ai
+    monkeypatch.setattr(ai, "ROOT", tmp_path)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test"); monkeypatch.delenv("AI_PROVIDER", raising=False)
+    seen = []
+
+    def fake(url, body=None, timeout=120):
+        seen.append(url)
+        if str(url).endswith("/credits"):
+            return {"data": {"total_usage": 3604.4, "total_credits": 3610}}
+        return {"data": {
+            "usage": 1403.7, "limit": 1500, "usage_daily": 512.7, "limit_reset": "daily",
+            "effective_budget": {"spend_usd": 512.7, "limit_usd": 1500, "resets_at": "2026-11-25T00:00:00.000Z"},
+        }}
+
+    monkeypatch.setattr(ai, "_req", fake)
+    info = ai.key_info()
+    assert info["spend"] == 512.7 and info["max_budget"] == 1500
+    assert not any(str(u).endswith("/credits") for u in seen)
+
+
 def test_the_repeated_part_of_a_prompt_is_marked_for_caching(monkeypatch):
     """The scene edit re-sends the same rules, shot list and ~95 frame strips on every round. Marking the last block
     of that part makes the provider bill it once (a tenth of the price on later calls). The prompt itself must not
