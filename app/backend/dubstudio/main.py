@@ -1302,7 +1302,15 @@ def queue_order(body: dict = Body(...)):
     scratch = [int(x) for x in (body.get("from_scratch") or [])]
     if not ids:
         raise HTTPException(400, "ids is required")
-    return runner().queue_in_order(ids, from_scratch=scratch)
+    # P5: 135-row reorder on this thread 502s the 5s health check. Do the DB work in the background.
+    def _run():
+        try:
+            runner().queue_in_order(ids, from_scratch=scratch)
+        except Exception:
+            import traceback
+            traceback.print_exc()
+    threading.Thread(target=_run, daemon=True, name="queue-order").start()
+    return {"lined": len(ids), "from_scratch": len(scratch), "accepted": True}
 
 
 @app.post("/api/episodes/{eid}/retry-check")

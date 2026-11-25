@@ -26,6 +26,13 @@ def _job(db, eid, step, status, ord_, needs=None):
                      needs=needs or [], resource="cpu")
 
 
+def test_fill_cpus_raises_the_episode_cap_to_cpu_slots(monkeypatch):
+    monkeypatch.setattr("dubstudio.runner.envfile.flag", lambda k, d=False: True if k == "DUBSTUDIO_FILL_CPUS" else d)
+    monkeypatch.setattr("dubstudio.runner.envfile.number", lambda k, d=0: 10 if k == "MAX_ACTIVE_EPISODES" else d)
+    monkeypatch.setattr("dubstudio.runner.cfg", type("C", (), {"cpu_slots": 30})())
+    assert Runner.max_active() == 30
+
+
 def test_overflow_waits_and_a_free_slot_continues_the_same_run(tmp_path, monkeypatch):
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
     db = DB(tmp_path / "t.db")
@@ -210,3 +217,23 @@ def test_queue_in_order_process_again_does_not_resume(tmp_path, monkeypatch):
     assert parked["status"] == "queued" and parked["resume"] == 1
     behind = db.one("SELECT queued, resume FROM episodes WHERE id=?", (kotu,))
     assert behind["queued"] > row["queued"] and not behind["resume"]
+
+
+def test_overflow_parks_in_front_of_the_existing_line(tmp_path, monkeypatch):
+    """P4: parked IMTS used to get queued=now and sit behind WBT."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    wbt = _ep(db, sid, tmp_path, 101, "queued")
+    db.update("episodes", wbt, queued=100.0, resume=1)
+    ids = {}
+    for n in (210, 211, 216):
+        ids[n] = _ep(db, sid, tmp_path, n, "processing")
+        _job(db, ids[n], "render", "waiting", 1)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._enforce_cap()
+    parked = db.one("SELECT status, resume, queued FROM episodes WHERE id=?", (ids[216],))
+    assert parked["status"] == "queued" and parked["resume"] == 1
+    assert parked["queued"] < 100.0
+    assert db.one("SELECT queued FROM episodes WHERE id=?", (wbt,))["queued"] == 100.0

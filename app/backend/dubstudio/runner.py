@@ -300,8 +300,15 @@ class Runner:
     # ---------- the queue: episodes take their turn (docs/09 §4) ----------
     @staticmethod
     def max_active():
-        """How many episodes are worked on at the same time. 1 = one by one (the default)."""
-        return max(1, envfile.number("MAX_ACTIVE_EPISODES", 1))
+        """How many episodes are worked on at the same time. 1 = one by one (the default).
+
+        When DUBSTUDIO_FILL_CPUS is on, the cap is at least cpu_slots so queued episodes
+        start instead of 20 boxes sitting idle (P8). Tests leave the flag off."""
+        n = max(1, envfile.number("MAX_ACTIVE_EPISODES", 1))
+        if not envfile.flag("DUBSTUDIO_FILL_CPUS", False):
+            return n
+        slots = int(getattr(cfg, "cpu_slots", 0) or 0)
+        return max(n, slots) if slots else n
 
     def active_episodes(self):
         """Episodes using the machine now. An episode parked at a gate (Check matching, Ready for review) is not:
@@ -367,9 +374,11 @@ class Runner:
         overflow = rest[room:]
         if not overflow:
             return
-        base = now()
+        # P4: do not park at queued=now (back of WBT/TGS). Sit in front of the existing line.
+        ahead = self.db.one("SELECT MIN(queued) AS q FROM episodes WHERE status='queued' AND queued IS NOT NULL")
+        front = (ahead["q"] - len(overflow) * 0.001) if ahead and ahead.get("q") is not None else now()
         for i, r in enumerate(overflow):
-            self._park(r["id"], queued_at=base + i * 0.001)
+            self._park(r["id"], queued_at=front + i * 0.001)
 
     def _run_still_open(self, ep_id):
         """True when the latest run still has a step to do (waiting / running / needs a person).
@@ -689,14 +698,24 @@ class Runner:
             self._episode_status()
             return
         busy = {"cpu": 0, "gpu": 0}
+        packing = 0
         for j in jobs:
-            if j["status"] == "running":
-                busy[j["resource"]] = busy.get(j["resource"], 0) + 1
+            if j["status"] != "running":
+                continue
+            msg = j.get("message") or ""
+            if (msg == "starting" or "sending the files" in msg) and cloud.holds_cpu_machine(j["step"]):
+                packing += 1
+            # P8: a job already on RunPod must not fill cpu_slots. Those slots are for new sends
+            # when the queue is waiting and boxes are idle.
+            if j["resource"] == "cpu" and cloud.waiting_on_rented_cpu(msg):
+                continue
+            busy[j["resource"]] = busy.get(j["resource"], 0) + 1
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
         chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
         cloud_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and cloud.holds_cpu_machine(o["step"])}
-        lip_eps = sum(1 for o in jobs if o["status"] == "running" and o["step"] == "lip_gpu")
-        lip_budget = cloud.lip_episode_budget(cfg.cpu_slots, cloud.pieces())
+        cloud_load = sum(cloud.cpu_job_weight(o["step"]) for o in jobs
+                         if o["status"] == "running" and cloud.holds_cpu_machine(o["step"]))
+        PACK_AT_ONCE = 4  # tars built on Render; more than this 502s the health check (P5)
         # Face map is per episode: work tar + video + broll_library live under that episode's folder.
         # The GPU worker wipes /work /out /files before each job, so a reused machine cannot see the last ep.
         # gpu_slots (not show) is the cap — several IMTS face maps may run at once.
@@ -735,12 +754,14 @@ class Runner:
                 if j["episode_id"] in chain_busy:
                     continue
                 chain_busy.add(j["episode_id"])
-            # One rented CPU send per episode. 10 eps × (Whisper + proxy + 8 lip pieces + translate)
-            # was 23+ jobs on 8 runners while 14 boxes sat idle.
+            # One rented CPU send per episode. Fill up to cpu_slots of real boxes (lip = 8 each).
             if cloud.holds_cpu_machine(j["step"]):
                 if j["episode_id"] in cloud_busy:
                     continue
-                if j["step"] == "lip_gpu" and lip_eps >= lip_budget:
+                weight = cloud.cpu_job_weight(j["step"])
+                if cloud_load + weight > (slots.get("cpu") or 0):
+                    continue
+                if packing >= PACK_AT_ONCE:
                     continue
             res = j["resource"]
             if res in slots and busy.get(res, 0) >= slots[res]:
@@ -749,8 +770,8 @@ class Runner:
                 busy[res] = busy.get(res, 0) + 1
             if cloud.holds_cpu_machine(j["step"]):
                 cloud_busy.add(j["episode_id"])
-                if j["step"] == "lip_gpu":
-                    lip_eps += 1
+                cloud_load += cloud.cpu_job_weight(j["step"])
+                packing += 1
             self.cancelled.discard(j["id"])
             self._set(j, status="running", started=now(), progress=0, message="starting")
             threading.Thread(target=self._run_job, args=(j["id"],), daemon=True).start()

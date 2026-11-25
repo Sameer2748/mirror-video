@@ -181,6 +181,17 @@ def lip_episode_budget(cpu_slots=None, n_pieces=None):
     return max(1, slots // max(1, n))
 
 
+def cpu_job_weight(step):
+    """How many rented CPUs this website job will occupy. Lip is 8 pieces; everything else is 1 box."""
+    return pieces() if step == "lip_gpu" else 1
+
+
+def waiting_on_rented_cpu(message):
+    """Website 'running' but the box is already RunPod's. Must not consume cpu_slots (P8)."""
+    m = (message or "").lower()
+    return "waiting for a free machine" in m or "on a machine" in m or "on one rented" in m
+
+
 # ---------------- the queue ----------------
 def _call(path, body=None, timeout=60, kind="cpu"):
     key = envfile.get("RUNPOD_API_KEY")

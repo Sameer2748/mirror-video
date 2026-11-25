@@ -68,7 +68,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** Any time more than 15 are `processing` and some have no `running` job (between visits, or Review freed slots and later eps grabbed them).
 
-**Fix.** Park overflow **in front of other shows**, keep original place, or park by **queue order** not “lowest episode number + now().” Do not Process again.
+**Fix (coded).** Overflow parks **in front of** the existing line (`queued` before the current MIN), `resume=1`. Do not Process again.
 
 **Helps.** First show does not wait for WBT/KOTU after a cap blip.
 
@@ -82,7 +82,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** Any long sync API (bulk queue, bulk sheet, packing many tars on the web worker).
 
-**Fix.** Queue order / bulk DB work **off the request thread** (or a second worker). Health must not wait on 135 updates. File-line (P1) stops **disk** 502s, not this one.
+**Fix (coded).** `POST /api/queue/order` returns at once and reorders on a **background thread**. Health is not blocked by 135 updates.
 
 **Helps.** Page dead while someone reorders the line.
 
@@ -178,15 +178,13 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 ### P8 — Settings will not let `cpu_slots` go above 16
 
-**Now.** `MAX_ACTIVE=15`. Settings refuse `cpu_slots` > 16. Website holds a CPU slot while **waiting on RunPod**. Too few slots → extra episodes sit `processing` with jobs that never start.
+**Now.** Settings allow **1–64** (`DUBSTUDIO_CPU_SLOTS=30` live). The remaining bug: a website job **waiting on RunPod** still filled a cpu_slot, and `MAX_ACTIVE=10` left boxes idle while 115–120 sat in line.
 
-**Can.** If we set `MAX_ACTIVE=26` without raising the cap.
+**Fix (coded).** Waiting-on-machine does **not** consume cpu_slots. New sends fill up to **30** rented CPUs (lip scan counts as 8). At most **4 packs** on Render at once (health). `DUBSTUDIO_FILL_CPUS=true` raises the episode cap to `cpu_slots` so queued work starts. Lip stays 8 pieces.
 
-**Fix.** Settings now allow **1–64** CPU slots so we can match the factory worker count. Do not raise live `DUBSTUDIO_CPU_SLOTS` past what RunPod actually runs (throttle is still P3).
+**Helps.** All 30 boxes can run when the line has work.
 
-**Helps.** More than 16 factory waits at once.
-
-**Does not.** Throttle (P3). Disk (P1).
+**Does not.** Throttle / Active workers (owner). Disk (P1).
 
 ---
 
@@ -254,12 +252,12 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 | --- | --- | --- | --- |
 | **Night test first** (`docs/17`) | File line (2–4 copiers), always ingest new sheet, queue = R2 keys, factory R2 only, small JSON for editor, **D / F / G** (no wipe, idle CPUs take tails, dynsrt on worker) | **P1, P2, P11, P13, P14, C2, C3, C4, C5, C6**; disk 502 | P3 throttle, P4 park-at-back, P5 queue-order 502, P7 GPU |
 | **After A–C green** | Make that live | Same | — |
-| **Soon** | Park overflow **without** `queued=now` at the tail; keep show order | **P4** | — |
-| **Soon** | Queue order / bulk **not** on the health thread | **P5** | — |
-| **Owner / RunPod** | Unthrottle so 26 CPU workers **run** | **P3** | Do not raise `MAX_ACTIVE` until then |
+| **Coded** | Park overflow in front of the line | **P4** | — |
+| **Coded** | Queue order off the health thread | **P5** | — |
+| **Coded** | Fill `cpu_slots` (30); waiters do not hold slots | **P8** | — |
+| **Owner / RunPod** | Keep Active workers ~8 while a batch runs; 0 when idle | **P3** | Throttle |
 | **Later** | One CPU visit for Whisper→match (keep lip pieces) | **P9, P3** shape | 3 mega-processes |
-| **Only if asked** | `gpu_slots` / show lock | **P7** | Lip speed |
-| **Only if asked** | `cpu_slots` cap > 16 | **P8** | Useless while throttled |
+| **Ask Sameer** | Raise `gpu_slots` / drop show lock | **P7** | Lip speed |
 | **Already live** | Scene 500 retry once; tail `.part` + English SRT; parked cleanup when disk tight | **P10** partial, **P1** partial | File line still needed |
 
 ---

@@ -244,6 +244,11 @@ def test_one_episode_does_not_hold_many_cpu_boxes_at_once(monkeypatch):
     assert not cloud.holds_cpu_machine("decisions")
     assert cloud.lip_episode_budget(30, 8) == 3
     assert cloud.lip_episode_budget(8, 8) == 1
+    assert cloud.cpu_job_weight("lip_gpu") == 8
+    assert cloud.cpu_job_weight("mksrt_src") == 1
+    assert cloud.waiting_on_rented_cpu("this step: waiting for a free machine")
+    assert cloud.waiting_on_rented_cpu("render tail: on a machine")
+    assert not cloud.waiting_on_rented_cpu("sending the files to a rented machine")
 
 
 # ---------------- any step on a rented machine ----------------
