@@ -305,23 +305,26 @@ def test_library_warnings_are_not_the_last_line():
     assert not NOISE.search("22:58:50 done 45-60 in 23 s")
 
 
-def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch):
-    """Five GPU slots must not start two face maps of the same show. A different show can use another slot."""
+def test_four_gpu_slots_run_same_show_face_maps_without_mixing_jobs(tmp_path, monkeypatch):
+    """Each face map is that episode's own work folder. Four slots start four jobs, including two IMTS."""
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
     from dubstudio.config import cfg
-    monkeypatch.setattr(cfg, "gpu_slots", 5)
+    monkeypatch.setattr(cfg, "gpu_slots", 4)
     db = DB(tmp_path / "t.db")
     imts = db.insert("shows", name="IMTS", code="IMTS", folder=str(tmp_path), profile={})
     tab = db.insert("shows", name="TAB", code="TAB", folder=str(tmp_path), profile={})
 
     def ep(show, number):
         return db.insert("episodes", show_id=show, number=number, status="processing",
-                         work_dir=str(tmp_path), output_dir=str(tmp_path))
+                         work_dir=str(tmp_path / f"w{show}_{number}"),
+                         output_dir=str(tmp_path / f"o{show}_{number}"))
 
     a = ep(imts, 91)
     b = ep(imts, 92)
-    c = ep(tab, 52)
-    for eid, n in ((a, 91), (b, 92), (c, 52)):
+    c = ep(imts, 93)
+    d = ep(tab, 52)
+    extra = ep(imts, 94)
+    for eid in (a, b, c, d, extra):
         db.insert("jobs", episode_id=eid, run=1, step="facemap", ord=1, status="waiting",
                   needs=[], resource="gpu")
     started = []
@@ -337,6 +340,6 @@ def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch
     r._keep_awake = lambda on: None
     r._tick()
     st = {j["episode_id"]: j["status"] for j in db.q("SELECT episode_id, status FROM jobs")}
-    assert st[a] == "running" and st[c] == "running"
-    assert st[b] == "waiting"
-    assert len(started) == 2
+    assert st[a] == st[b] == st[c] == st[d] == "running"
+    assert st[extra] == "waiting"
+    assert len(started) == 4
