@@ -1168,8 +1168,18 @@ def _queue_returned_outputs(db, show, ep, log=print):
     log(f"{len(rows)} output file(s) queued for the cloud (this step, not waiting for publish)")
 
 
+def _transient_cloud_error(msg):
+    """A rented machine died on a 5xx while fetching or putting a signed file. Safe to send the same job once more."""
+    s = str(msg).lower()
+    return any(x in s for x in (
+        "http error 500", "http error 502", "http error 503", "http error 504",
+        "internal server error", "bad gateway", "gateway timeout", "service unavailable",
+        "connection reset", "remote disconnected", "timed out",
+    ))
+
+
 def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu",
-                release_log=None):
+                release_log=None, retry_wait=60):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
     The episode's small work files go up as one tar, the big inputs as signed links, and only what the step
@@ -1223,6 +1233,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     for token, path in files.items():
         there.append((path, f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"))
 
+    work_in_key = out_in_key = None
     # the work folder: the small files only (the big ones are either inputs, sent as links, or outputs we want back)
     small = [p.relative_to(W) for p in W.rglob("*")
              if p.is_file() and p.stat().st_size <= SMALL and not str(p.relative_to(W)).startswith("input/")]
@@ -1237,27 +1248,29 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             tar.unlink(missing_ok=True)
             _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
             n = _tar(small, W, tar, patch=_work_patches(W, there) or None)
-        key = storage.work_key(show, ep, step_object(name, "work_in", send))
-        storage.put_file(tar, key)
+        work_in_key = storage.work_key(show, ep, step_object(name, "work_in", send))
+        storage.put_file(tar, work_in_key)
         tar.unlink(missing_ok=True)
-        job["work_in"] = storage.presign(key, 10800)
+        job["work_in"] = storage.presign(work_in_key, 10800)
         log(f"{n} work files sent up")
     if O.is_dir():
         osmall = [p.relative_to(O) for p in O.rglob("*") if p.is_file() and p.stat().st_size <= SMALL]
         if osmall:
             tar = _scratch_tar(W, ep, name, "out_in")
             _tar(osmall, O, tar)
-            key = storage.work_key(show, ep, step_object(name, "out_in", send))
-            storage.put_file(tar, key)
+            out_in_key = storage.work_key(show, ep, step_object(name, "out_in", send))
+            storage.put_file(tar, out_in_key)
             tar.unlink(missing_ok=True)
-            job["out_in"] = storage.presign(key, 10800)
+            job["out_in"] = storage.presign(out_in_key, 10800)
 
     # the big inputs, each as a signed link (uploaded once; an episode's video is reused by every step)
+    file_keys = {}
     if files:
         job["files"], job["names"] = {}, {}
         for token, path in files.items():
-            key = _file_in_cloud(db, show, ep, Path(path))
-            job["files"][token] = storage.presign(key, 10800)
+            r2k = _file_in_cloud(db, show, ep, Path(path))
+            file_keys[token] = r2k
+            job["files"][token] = storage.presign(r2k, 10800)
             job["names"][token] = Path(path).name
         log(f"{len(files)} big input file(s) ready in the cloud")
 
@@ -1270,9 +1283,27 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         job["env"] = {k: v for k in ("OPENROUTER_API_KEY", "OPENROUTER_CLAUDE_MODEL", "OPENROUTER_FAST_MODEL",
                                      "OPENROUTER_BASE", "AI_PROVIDER", "AI_CACHE")
                       if (v := envfile.get(k))}
+
+    def _resign():
+        if work_in_key:
+            job["work_in"] = storage.presign(work_in_key, 10800)
+        if out_in_key:
+            job["out_in"] = storage.presign(out_in_key, 10800)
+        for token, r2k in file_keys.items():
+            job["files"][token] = storage.presign(r2k, 10800)
+        job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
+                          "out": storage.presign(back_out, 10800, method="PUT")}
+
     jid = submit(job, kind=kind)
     log(f"{name}: sent to a rented {kind} machine (job {jid})")
     done, failed = wait([jid], on_progress=on_progress, timeout=timeout, kind=kind)
+    if failed and _transient_cloud_error(list(failed.values())[0]):
+        log(f"{name}: rented machine hit a temporary error; waiting {retry_wait:.0f} s and sending the same job once more")
+        time.sleep(retry_wait)
+        _resign()
+        jid = submit(job, kind=kind)
+        log(f"{name}: retry sent to a rented {kind} machine (job {jid})")
+        done, failed = wait([jid], on_progress=on_progress, timeout=timeout, kind=kind)
     if failed:
         raise RuntimeError(f"the cloud could not run {name}: {list(failed.values())[0]}")
     res = (list(done.values())[0] or {}).get("output") or {}

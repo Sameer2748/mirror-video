@@ -1449,6 +1449,44 @@ def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch)
     assert (out / "final_clean.mp4").read_bytes() == b"final"
 
 
+def test_run_command_retries_once_after_a_worker_500(tmp_path, monkeypatch):
+    """Scene edit often dies in 1 min on urllib HTTP 500 while the worker GETs the work tar. Lip scan
+    already retries; this visit used to fail the episode immediately."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    (work / "note.txt").write_text("hi")
+    bucket = tmp_path / "bucket"
+    waits = []
+
+    def fake_wait(ids, **kw):
+        waits.append(ids[0])
+        if len(waits) == 1:
+            return {}, {ids[0]: '{"error_type": "<class \'urllib.error.HTTPError\'>", '
+                                 '"error_message": "HTTP Error 500: Internal Server Error"}'}
+        back = cloud_tar(bucket, "scene_edit", "work_out")
+        back.parent.mkdir(parents=True, exist_ok=True)
+        box = tmp_path / "wback"; box.mkdir()
+        (box / "scene.json").write_text("{}")
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "scene.json", arcname="scene.json")
+        return {ids[0]: {"output": {"ok": True, "rc": 0, "seconds": 2,
+                                    "sent": {"work": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: f"j{len(waits)}")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    res = cloud.run_command({}, show, ep, "scene_edit", [cfg.pipeline_python, "slowfix_edit.py"],
+                            cfg, log=lambda m: None, retry_wait=0)
+    assert len(waits) == 2
+    assert res["ok"] and (work / "scene.json").read_text() == "{}"
+
+
 def test_check_finds_the_english_srt_next_to_the_sheet(tmp_path):
     """The pointer can be missing; the file from AI translate is still next to the mapping sheet."""
     import importlib.util

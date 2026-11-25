@@ -39,33 +39,56 @@ PLACES = {"{PY}": PIPE_PY, "{FPY}": FACE_PY, "{TOOLS}": CODE, "{SCRIPTS}": f"{CO
 
 
 # ---------------- moving files ----------------
-def fetch(url, path):
+def fetch(url, path, tries=4):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    last = None
     t = time.time()
-    with urllib.request.urlopen(url, timeout=1800) as r, open(path, "wb") as f:
-        shutil.copyfileobj(r, f, 8 << 20)
-    return {"bytes": os.path.getsize(path), "seconds": round(time.time() - t, 1)}
+    for a in range(tries):
+        try:
+            with urllib.request.urlopen(url, timeout=1800) as r, open(path, "wb") as f:
+                shutil.copyfileobj(r, f, 8 << 20)
+            return {"bytes": os.path.getsize(path), "seconds": round(time.time() - t, 1)}
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code not in (500, 502, 503, 504) or a == tries - 1:
+                raise
+        except (urllib.error.URLError, TimeoutError, http.client.HTTPException) as e:
+            last = e
+            if a == tries - 1:
+                raise
+        time.sleep(2 * 2 ** a)
+    raise last
 
 
-def put(url, path, ctype="application/octet-stream"):
+def put(url, path, ctype="application/octet-stream", tries=4):
     # Stream the open file in chunks. Content-Length is the file size, so a multi-GB render is not loaded into RAM.
     size = os.path.getsize(path)
     u = urllib.parse.urlsplit(url)
     cls = http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection
-    conn = cls(u.hostname, u.port or cls.default_port, timeout=1800)
-    conn.blocksize = 8 << 20          # same chunk size as fetch(); the file itself stays on disk
     target = (u.path or "/") + (("?" + u.query) if u.query else "")
-    try:
-        with open(path, "rb") as f:
-            conn.request("PUT", target, body=f,
-                         headers={"Content-Type": ctype, "Content-Length": str(size)})
-            resp = conn.getresponse()
-            status, body = resp.status, resp.read()
-        if not 200 <= status < 300:   # urlopen raised for these; a rejected PUT must still fail the job
-            raise urllib.error.HTTPError(url, status, resp.reason, resp.headers, io.BytesIO(body))
-        return status
-    finally:
-        conn.close()
+    last = None
+    for a in range(tries):
+        conn = cls(u.hostname, u.port or cls.default_port, timeout=1800)
+        conn.blocksize = 8 << 20          # same chunk size as fetch(); the file itself stays on disk
+        try:
+            with open(path, "rb") as f:
+                conn.request("PUT", target, body=f,
+                             headers={"Content-Type": ctype, "Content-Length": str(size)})
+                resp = conn.getresponse()
+                status, body = resp.status, resp.read()
+            if 200 <= status < 300:
+                return status
+            last = urllib.error.HTTPError(url, status, resp.reason, resp.headers, io.BytesIO(body))
+            if status not in (500, 502, 503, 504) or a == tries - 1:
+                raise last
+        except (urllib.error.URLError, TimeoutError, http.client.HTTPException) as e:
+            last = e
+            if a == tries - 1:
+                raise
+        finally:
+            conn.close()
+        time.sleep(2 * 2 ** a)
+    raise last
 
 
 def untar_from(url, dest):
