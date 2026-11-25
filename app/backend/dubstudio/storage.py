@@ -943,7 +943,10 @@ def free_disk(work, log=print, db=None, keep_episode_id=None):
             # (`_743_render_tail_out_back.tar.gz.part` gone before replace).
             if ".part" in p.name:
                 continue
-            if keep_episode_id is not None and p.name.startswith(f"_{keep_episode_id}_"):
+            # Pack tars live in the shared library/work folder as `_{episode_id}_…tar.gz`.
+            # Deleting a sibling's tar (WBT 105 `_850_proxy_work_in.tar.gz`) while 101 packed is why
+            # 105 died with FileNotFoundError and the CPUs stayed idle.
+            if p.name.startswith("_") and p.name.endswith(".tar.gz"):
                 continue
             drop_file(p)
 

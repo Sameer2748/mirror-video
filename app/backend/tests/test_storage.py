@@ -769,7 +769,7 @@ def test_free_disk_drops_published_videos_when_scratch_is_already_gone(tmp_path,
 
 
 def test_free_disk_does_not_delete_an_in_flight_download(tmp_path, monkeypatch):
-    """EP743's out tar vanished while EP752's visit called free_disk on the shared library/work folder."""
+    """WBT 105: `_850_proxy_work_in.tar.gz` vanished while another episode packed. Keep every episode's pack tar."""
     import shutil
     from dubstudio import storage
     work_root = tmp_path / "library" / "work"
@@ -785,7 +785,18 @@ def test_free_disk_does_not_delete_an_in_flight_download(tmp_path, monkeypatch):
     storage.free_disk(cur, log=lambda m: None, db=None, keep_episode_id=743)
     assert part.exists()
     assert mine.exists()
-    assert not other.exists()
+    assert other.exists()
+
+
+def test_dub_preview_json_does_not_need_the_local_master(tmp_path):
+    from dubstudio import timeline as tlm
+    work = tmp_path / "WBTDEUS_ep101"
+    work.mkdir()
+    gone = work / "input" / "dub_audio" / "ep.mp3"
+    tlm.record_dub_preview(work, str(gone), size=1234, mtime=99)
+    body = json.loads((work / "dub_preview.json").read_text())
+    assert body["src"] == str(gone) and body["size"] == 1234
+    assert not gone.exists()
 
 
 def test_free_parked_media_drops_review_inputs_already_in_r2(tmp_path):

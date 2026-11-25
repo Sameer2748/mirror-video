@@ -827,10 +827,15 @@ def dub_preview(work, audio, log=None):
         if r.returncode:
             tmp.unlink(missing_ok=True)
             raise RuntimeError("dub preview copy failed: " + r.stderr[-300:])
-        tmp.replace(out); key.write_text(json.dumps(want))
+        tmp.replace(out); record_dub_preview(work, str(audio), st.st_size, st.st_mtime)
         if log:
             log(f"dub preview copy: {out.name}")
         return out
+
+
+def record_dub_preview(work, src, size=None, mtime=None):
+    """Remember which audio the preview was made from. Size/mtime may come from R2 when the file is not here."""
+    (Path(work) / "dub_preview.json").write_text(json.dumps({"src": src, "size": size, "mtime": mtime}))
 
 
 def proxy_path(work):

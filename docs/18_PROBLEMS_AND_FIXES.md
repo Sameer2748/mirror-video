@@ -192,7 +192,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 ### P9 — One episode, several Render “running” jobs at once
 
-**Now.** IMTS 153–157 showed **4 running jobs** each during Whisper, all “waiting for a free machine.” Each holds a **cpu_slot**. WBT 101–104 sat at 5/39 for 13+ min with RunPod idle: every send unpacked **every** old work tar looking for `manifest_groups.json` (not needed until render), packed ~86 files on Render, then a restart cancelled the RunPod job (`status` 404).
+**Now.** IMTS 153–157 showed **4 running jobs** each during Whisper, all “waiting for a free machine.” Each holds a **cpu_slot**. WBT 101–104 sat at 5/39 for 13+ min with RunPod idle: every send unpacked **every** old work tar looking for `manifest_groups.json` (not needed until render), packed ~86 files on Render, then a restart cancelled the RunPod job (`status` 404). After that, proxy failed by `stat()` of dub audio on Render (masters stay in R2) and 105’s pack tar was deleted by another episode’s `free_disk`. Live cap was **4**, so 26 of 30 CPUs stayed unused.
 
 **Coded.** Unpack tars only when `config.json` is missing. Do not fetch-from-every-tar on proxy/Whisper/words. Job message updates while waiting on the machine.
 

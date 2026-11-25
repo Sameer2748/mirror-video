@@ -1624,11 +1624,22 @@ class Runner:
             if d and not dub_out.exists():
                 self._worker_cmd(j, ["ffmpeg", "-v", "error", "-y", "-i", d["path"], "-map", "0:a:0", "-c:a", "aac",
                                      "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", str(dub_out)])
-                st = Path(d["path"]).stat()
-                (Path(work) / "dub_preview.json").write_text(json.dumps(
-                    {"src": d["path"], "size": st.st_size, "mtime": st.st_mtime}))
+            if d:
+                # Masters stay in R2. Do not stat the local path — that is what failed WBT 101–104
+                # after ffmpeg already ran on the rented machine.
+                pth = Path(d["path"])
+                if pth.is_file():
+                    st = pth.stat()
+                    timeline.record_dub_preview(work, d["path"], st.st_size, st.st_mtime)
+                else:
+                    row = self.db.one(
+                        "SELECT size, mtime FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'",
+                        (j["episode_id"],)) or {}
+                    timeline.record_dub_preview(work, d["path"], row.get("size"), row.get("mtime"))
             if not out.exists():
                 raise RuntimeError("the preview copy did not come back from the rented machine")
+            if d and not dub_out.exists():
+                raise RuntimeError("the dub preview copy did not come back from the rented machine")
             p = out
         else:
             def prog(x):
