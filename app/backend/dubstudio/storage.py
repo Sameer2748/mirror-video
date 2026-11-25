@@ -676,7 +676,9 @@ def fetch_work_files(show, ep, log=None, force=False):
             got += 1
         except Exception:
             continue
-    if not (W / "config.json").is_file() or not (W / "manifest_groups.json").is_file():
+    # Only unpack tars when config.json is missing. Waiting for manifest_groups.json too made every
+    # early step (proxy, Whisper, words) unpack every previous tar — 13 min, idle CPUs, 5/39 steps.
+    if not (W / "config.json").is_file():
         extra = _fetch_work_from_tars(show, ep, W, objects, prefix, log)
         got += extra
     _work_fetched.add(key)
@@ -739,7 +741,7 @@ def _fetch_work_from_tars(show, ep, W, objects, prefix, log=None):
     tmp = Path(W) / "_unpack_tars"
     try:
         for o in tars:
-            if (Path(W) / "config.json").is_file() and (Path(W) / "manifest_groups.json").is_file():
+            if (Path(W) / "config.json").is_file():
                 break
             tmp.mkdir(parents=True, exist_ok=True)
             tar_path = tmp / Path(o["key"]).name

@@ -686,7 +686,7 @@ def ensure_work_for_cloud(show, ep, name, log=print):
     missing = [n for n in need if not (W / n).is_file()]
     if missing or not (W / CONFIG).is_file():
         try:
-            storage.fetch_work_files(show, ep, log=log, force=True)
+            storage.fetch_work_files(show, ep, log=log, force=bool(missing or not (W / CONFIG).is_file()))
         except Exception as ex:
             log(f"could not fetch work files: {ex}")
     missing = [n for n in need if not (W / n).is_file()]

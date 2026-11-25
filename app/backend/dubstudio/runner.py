@@ -1002,7 +1002,9 @@ class Runner:
             def log(msg):
                 f.write(str(msg).rstrip() + "\n"); f.flush()
             self._set(j, message="sending the files to a rented machine")
-            cloud.run_command(self.db, show, ep, j["step"], cmd, cfg, log=log,
+            def prog(done, total, info):
+                self._set(j, message=cloud.step_wait_message("this step", info))
+            cloud.run_command(self.db, show, ep, j["step"], cmd, cfg, log=log, on_progress=prog,
                               timeout=cfg.step_max_seconds or 7200, kind=cloud.kind_for(j["step"]),
                               release_log=j["log_path"])
         return True

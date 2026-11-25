@@ -506,9 +506,31 @@ def test_work_tar_unpacks_when_loose_config_is_missing(r2):
     assert got >= 2
     assert json.loads((work / "config.json").read_text())["labels"] == "IT,DE"
     assert json.loads((work / "manifest_groups.json").read_text())["segments"] == [1]
-    # promoted to a loose object so the next fetch does not need the tar
     loose = storage.work_key(s, e, "config.json")
     assert storage.get_bytes(loose) == b'{"labels": "IT,DE"}'
+
+
+def test_fetch_does_not_unpack_tars_when_config_is_already_here(r2):
+    """WBT 101-104: every proxy/words send unpacked every old tar looking for a manifest that does not exist yet."""
+    import io, tarfile
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 19}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    work = Path(e["work_dir"])
+    work.mkdir(parents=True, exist_ok=True)
+    (work / "config.json").write_text('{"labels": "DE,US"}')
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        body = b'{"from": "tar"}'
+        info = tarfile.TarInfo("extra.json"); info.size = len(body)
+        tf.addfile(info, io.BytesIO(body))
+    storage.put_bytes(storage.work_key(s, e, "cloud/words_work_in_ffff.tar.gz"), buf.getvalue())
+    storage.fetch_work_files(s, e, force=True)
+    assert not (work / "extra.json").exists()
+    assert (work / "config.json").read_text() == '{"labels": "DE,US"}'
 
 
 def test_empty_work_tar_does_not_invent_config(r2):
