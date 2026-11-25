@@ -10,6 +10,9 @@ from . import cloud, deliver, envfile, scan, storage, timeline
 
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
+# Website-disk misses after R2-only fetch. Retry ourselves — do not ask for Process or a Retry click.
+WORK_RETRY_STEPS = {"translate", "merged", "sharpness"}
+WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -484,6 +487,28 @@ class Runner:
         self.wake.set()
 
     @staticmethod
+    def missing_work_retry(step, message, attempt=0):
+        """True when the step died because config.json / prep.json / an unpack tar was not on this box."""
+        if step not in WORK_RETRY_STEPS or (attempt or 0) >= 2:
+            return False
+        text = str(message or "")
+        return any(m in text for m in WORK_RETRY_MARKERS)
+
+    def _recover_missing_work(self):
+        """Failed translate/merged/sharpness from a missing work file: fetch from R2 and run again."""
+        rows = self.db.q(
+            "SELECT * FROM jobs WHERE status='failed' AND step IN ('translate','merged','sharpness')")
+        for j in rows:
+            if not self.missing_work_retry(j["step"], j.get("message"), j.get("attempt")):
+                continue
+            try:
+                show, ep, _ = self.episode_context(j["episode_id"])
+                storage.fetch_work_files(show, ep, force=True)
+            except Exception:
+                pass
+            self.retry(j["id"])
+
+    @staticmethod
     def _reached_late(jobs):
         """True when a run already got to review/render (the work a from-scratch Process again would throw away)."""
         late = {"review", "render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"}
@@ -655,6 +680,7 @@ class Runner:
     def _tick(self):
         self._maybe_daily_cleanup()
         self._tick_link_imports()
+        self._recover_missing_work()
         self._enforce_cap()
         queued = {r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='queued'")}
         jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
@@ -862,6 +888,16 @@ class Runner:
                     f.write("\n(OpenRouter key limit: trying again once)\n")
                 self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
                           message="OpenRouter key limit; trying again once")
+            elif once and self.missing_work_retry(j["step"], e, cur["attempt"]):
+                try:
+                    show, ep, _ = self.episode_context(j["episode_id"])
+                    storage.fetch_work_files(show, ep, force=True)
+                except Exception:
+                    pass
+                with open(j["log_path"], "a") as f:
+                    f.write("\n(work file missing on this box: fetched from the cloud, trying again once)\n")
+                self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
+                          message="work file missing on this box; fetched, trying again")
             else:
                 self._set(j, status="failed", finished=now(), message=f"{type(e).__name__}: {e}")
         finally:

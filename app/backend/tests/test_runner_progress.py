@@ -343,3 +343,32 @@ def test_four_gpu_slots_run_same_show_face_maps_without_mixing_jobs(tmp_path, mo
     assert st[a] == st[b] == st[c] == st[d] == "running"
     assert st[extra] == "waiting"
     assert len(started) == 4
+
+
+def test_missing_config_or_prep_retries_without_a_click():
+    from dubstudio.runner import Runner
+    msg = 'FileNotFoundError: .../WBTDEUS_ep101/config.json'
+    assert Runner.missing_work_retry("translate", msg, 0)
+    assert Runner.missing_work_retry("merged", "prep.json is not on this box", 1)
+    assert not Runner.missing_work_retry("translate", msg, 2)
+    assert not Runner.missing_work_retry("lip_merge", msg, 0)
+    assert not Runner.missing_work_retry("translate", "Google quota", 0)
+
+
+def test_tick_requeues_failed_translate_when_config_was_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="WBT", code="WBTDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=101, status="failed",
+                    work_dir=str(tmp_path / "w"), output_dir=str(tmp_path / "o"))
+    jid = db.insert("jobs", episode_id=eid, run=1, step="translate", ord=1, status="failed",
+                    needs=[], resource="cpu", attempt=0,
+                    message="FileNotFoundError: config.json", params={"fn": "translate", "ctx": {}})
+    monkeypatch.setattr("dubstudio.runner.storage.fetch_work_files", lambda *a, **k: 0)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._recover_missing_work()
+    j = db.one("SELECT status, attempt FROM jobs WHERE id=?", (jid,))
+    assert j["status"] == "waiting" and j["attempt"] == 1
+    ep = db.one("SELECT status FROM episodes WHERE id=?", (eid,))
+    assert ep["status"] == "processing"
