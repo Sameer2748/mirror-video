@@ -680,6 +680,27 @@ def test_free_disk_does_not_delete_an_in_flight_download(tmp_path, monkeypatch):
     assert not other.exists()
 
 
+def test_free_parked_media_drops_review_inputs_already_in_r2(tmp_path):
+    from dubstudio import storage
+    from dubstudio.db import DB
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="TGS", code="TGSITUS", folder=str(tmp_path), profile={})
+    work = tmp_path / "TGSITUS_ep6"
+    work.mkdir()
+    vid = work / "input.mp4"
+    vid.write_bytes(b"V" * 200)
+    (work / "segs" / "000.mp4").parent.mkdir()
+    (work / "segs" / "000.mp4").write_bytes(b"S" * 80)
+    eid = db.insert("episodes", show_id=sid, number=6, status="review",
+                    work_dir=str(work), output_dir=str(tmp_path / "out"))
+    db.insert("assets", episode_id=eid, kind="src_video", path=str(vid), role="input",
+              r2_key="shows/TGS/ep6/in.mp4", size=200)
+    out = storage.free_parked_media(db, log=lambda m: None)
+    assert out["episodes"] == 1
+    assert not vid.exists()
+    assert not (work / "segs").exists()
+
+
 def test_daily_cleanup_drops_done_episode_leftovers_and_keeps_active(tmp_path, monkeypatch):
     """Finished TAB episodes leave source video, published masters, segs, and pack tars on the 200 GB
     disk. A once-a-day pass removes those (they are already in R2) and leaves a processing episode alone."""

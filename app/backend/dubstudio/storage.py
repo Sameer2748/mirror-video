@@ -1065,6 +1065,34 @@ def daily_cleanup(db, library, now_ts=None, min_age=DONE_AGE, keep_episode_ids=N
     return {"freed": freed, "removed": gone, "episodes": len(targets)}
 
 
+TIGHT_FREE = 20 * 10**9  # an episode needs ~10 GB; under this, drop parked local media now
+
+
+def free_parked_media(db, keep_episode_ids=None, log=print):
+    """Drop local inputs/segs of episodes that are not processing: they are already in R2.
+
+    Review never ran publish/cleanup, so 50 TGS sitting there filled the 200 GB disk."""
+    keep = set(keep_episode_ids or ())
+    freed, n = 0, 0
+    try:
+        rows = db.q("SELECT * FROM episodes WHERE status IN ('done','review','cancelled','failed','needs_input')")
+    except Exception:
+        return {"freed": 0, "episodes": 0}
+    for e in rows:
+        if e.get("id") in keep:
+            continue
+        try:
+            out = clean_scratch(db, e, keep_work=True, log=lambda m: None)
+        except Exception:
+            continue
+        if out.get("freed"):
+            freed += out["freed"]
+            n += 1
+    if log:
+        log(f"parked-media cleanup: {freed / 1e9:.2f} GB from {n} episodes")
+    return {"freed": freed, "episodes": n}
+
+
 def maybe_daily_cleanup(db, library, now_ts=None, interval=CLEANUP_INTERVAL, min_age=DONE_AGE,
                         keep_episode_ids=None, force=False, log=print):
     """Run `daily_cleanup` at most once per day (or now if `force`)."""

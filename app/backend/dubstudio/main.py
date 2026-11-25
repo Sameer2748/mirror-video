@@ -1295,6 +1295,16 @@ def queue():
     return runner().queue_view(db())
 
 
+@app.post("/api/queue/order")
+def queue_order(body: dict = Body(...)):
+    """ids: episode ids in line order. from_scratch: Process again when the slot opens (no resume)."""
+    ids = [int(x) for x in (body.get("ids") or [])]
+    scratch = [int(x) for x in (body.get("from_scratch") or [])]
+    if not ids:
+        raise HTTPException(400, "ids is required")
+    return runner().queue_in_order(ids, from_scratch=scratch)
+
+
 @app.post("/api/episodes/{eid}/retry-check")
 def retry_check(eid: int):
     """Run final check again after translate, without sending the render tail. Videos already on disk stay."""

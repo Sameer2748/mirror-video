@@ -256,6 +256,39 @@ class Runner:
         self.wake.set()
         return run
 
+    def queue_in_order(self, ids, from_scratch=()):
+        """Put these episodes in the line in this order. `from_scratch` drops the old run and starts
+        Process again when the slot opens (WBT 101-200 failed/processing/cancelled)."""
+        scratch = set(from_scratch or ())
+        base = now()
+        lined = set()
+        for i, eid in enumerate(ids):
+            ep = self.db.one("SELECT * FROM episodes WHERE id=?", (eid,))
+            if not ep:
+                continue
+            lined.add(eid)
+            if eid in scratch:
+                if ep["status"] == "processing":
+                    self.cancel_run(eid)
+                self.db.update("episodes", eid, status="queued", queued=base + i * 0.01,
+                               resume=None, updated=now())
+                bus.publish("episode_status", eid, status="queued")
+                continue
+            if ep["status"] == "processing":
+                continue
+            resume = 1 if self.latest_run(eid) else None
+            self.db.update("episodes", eid, status="queued", queued=base + i * 0.01,
+                           resume=resume, updated=now())
+            bus.publish("episode_status", eid, status="queued")
+        extra = base + len(ids) + 1
+        for row in self.db.q("SELECT id FROM episodes WHERE status='processing'"):
+            if row["id"] in lined:
+                continue
+            self._park(row["id"], queued_at=extra)
+            extra += 0.01
+        self.start_next()
+        return {"lined": len(ids), "from_scratch": len(scratch)}
+
     # ---------- the queue: episodes take their turn (docs/09 §4) ----------
     @staticmethod
     def max_active():
@@ -341,6 +374,11 @@ class Runner:
                 self.wake.set()
                 continue
             try:
+                try:
+                    storage.free_disk(Path(nxt["work_dir"]), log=lambda m: None, db=self.db,
+                                      keep_episode_id=nxt["id"])
+                except Exception:
+                    pass
                 self.create_run(nxt["id"])
                 self.db.update("episodes", nxt["id"], queued=None, resume=None)
             except Exception as ex:
@@ -555,10 +593,16 @@ class Runner:
 
     def _maybe_daily_cleanup(self):
         """Once a day, in a side thread so packing a job is not blocked: leftover tars, segs, and
-        local copies of finished episodes that are already in R2."""
+        local copies of finished episodes that are already in R2. If the disk is already tight,
+        do it now so the next queued episode can fetch."""
         if self._cleanup_busy:
             return
-        if not storage.cleanup_due(cfg.library):
+        tight = False
+        try:
+            tight = shutil.disk_usage(cfg.library).free < storage.TIGHT_FREE
+        except OSError:
+            pass
+        if not tight and not storage.cleanup_due(cfg.library):
             return
         self._cleanup_busy = True
 
@@ -566,10 +610,16 @@ class Runner:
             try:
                 busy = [r["episode_id"] for r in self.db.q(
                     "SELECT DISTINCT episode_id FROM jobs WHERE status='running'")]
-                out = storage.maybe_daily_cleanup(self.db, cfg.library, keep_episode_ids=busy)
-                if out and (out.get("freed") or out.get("episodes")):
-                    print(f"daily disk cleanup: {out['freed'] / 1e9:.2f} GB, "
-                          f"{out.get('episodes', 0)} finished episodes")
+                busy += [r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='processing'")]
+                out = storage.maybe_daily_cleanup(self.db, cfg.library, keep_episode_ids=busy, force=tight)
+                parked = storage.free_parked_media(self.db, keep_episode_ids=busy)
+                freed = (out or {}).get("freed") or 0
+                n = (out or {}).get("episodes") or 0
+                if parked:
+                    freed += parked.get("freed") or 0
+                    n += parked.get("episodes") or 0
+                if freed or n:
+                    print(f"disk cleanup: {freed / 1e9:.2f} GB, {n} parked episodes")
             except Exception:
                 traceback.print_exc()
             finally:
@@ -659,6 +709,8 @@ class Runner:
             run = self.latest_run(e["id"])
             js = self.db.q("SELECT step, status FROM jobs WHERE episode_id=? AND run=?", (e["id"], run))
             st = [x["status"] for x in js]
+            if not st:
+                continue
             if st and all(s in DONE for s in st):
                 new = "done"
             elif "running" in st:
@@ -680,6 +732,12 @@ class Runner:
                 bus.publish("episode_status", e["id"], status=new)
                 if new == "done":
                     self._cloud_upload(e["id"])
+                if new in ("done", "review", "needs_input"):
+                    try:
+                        ep = self.db.one("SELECT * FROM episodes WHERE id=?", (e["id"],))
+                        storage.clean_scratch(self.db, ep, keep_work=True, log=lambda m: None)
+                    except Exception:
+                        pass
                 if new in ("done", "failed", "cancelled", "review", "needs_input"):
                     self.start_next()          # this episode has let the machine go: the next in the line starts
 

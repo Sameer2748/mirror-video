@@ -97,3 +97,25 @@ def test_a_queued_episode_is_not_started(tmp_path, monkeypatch):
     r._tick()
     assert started == [keep_job]
     assert db.one("SELECT status FROM jobs WHERE id=?", (parked_job,))["status"] == "waiting"
+
+
+def test_queue_in_order_process_again_does_not_resume(tmp_path, monkeypatch):
+    """WBT 101-200 failed/processing/cancelled start a new run when the slot opens."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    keep = _ep(db, sid, tmp_path, 153, "processing")
+    _job(db, keep, "fetch", "running", 1)
+    wbt = _ep(db, sid, tmp_path, 101, "failed")
+    _job(db, wbt, "fetch", "failed", 1)
+    other = _ep(db, sid, tmp_path, 1, "processing")
+    _job(db, other, "fetch", "running", 1)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r.start_next = lambda: None
+    r.queue_in_order([keep, wbt], from_scratch=[wbt])
+    assert db.one("SELECT status FROM episodes WHERE id=?", (keep,))["status"] == "processing"
+    row = db.one("SELECT status, resume FROM episodes WHERE id=?", (wbt,))
+    assert row["status"] == "queued" and not row["resume"]
+    parked = db.one("SELECT status, resume FROM episodes WHERE id=?", (other,))
+    assert parked["status"] == "queued" and parked["resume"] == 1
