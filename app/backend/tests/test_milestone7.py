@@ -43,9 +43,10 @@ def test_settings_never_return_the_key(env, tmp_path, monkeypatch):
     assert any(n.startswith("Claude (") for n in names)        # which provider is in use is on the page
     # app settings: checked, saved in config.json
     assert c.put("/api/settings/app", json={"cpu_slots": 3}).json()["saved"]["cpu_slots"] == 3
-    assert c.put("/api/settings/app", json={"cpu_slots": 30}).status_code == 400
+    assert c.put("/api/settings/app", json={"cpu_slots": 30}).json()["saved"]["cpu_slots"] == 30
+    assert c.put("/api/settings/app", json={"cpu_slots": 99}).status_code == 400
     assert c.put("/api/settings/app", json={"tools_dir": "/no/such/folder"}).status_code == 400
-    assert json.loads((tmp_path / "config.json").read_text()) == {"cpu_slots": 3}
+    assert json.loads((tmp_path / "config.json").read_text()) == {"cpu_slots": 30}
     assert c.post("/api/restart").status_code == 409                                  # not under the launcher
 
 

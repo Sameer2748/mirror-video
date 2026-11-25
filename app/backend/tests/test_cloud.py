@@ -265,6 +265,19 @@ def test_a_command_is_rewritten_with_placeholders(tmp_path):
     assert cloud.tokenise(["{py}", "{fpy}"], work, out, cfg)[0] == ["{PY}", "{FPY}"]
 
 
+def test_a_missing_input_file_still_becomes_a_signed_link(tmp_path):
+    """After fetch skips the master, `{WORK}/input/…` is not on this box. It must still be {F0} so the worker GET."""
+    cfg = FakeCfg(tmp_path)
+    work, out = tmp_path / "library/work/WBT_ep101", tmp_path / "out/ep101"
+    work.mkdir(parents=True); out.mkdir(parents=True)
+    gone = work / "input" / "src_video" / "ep101.mp4"
+    cmd = ["ffmpeg", "-i", "{WORK}/input/src_video/ep101.mp4", str(work / "proxy_540.mp4")]
+    got, files = cloud._send_large_work_files(cmd, work, {})
+    assert got[2] == "{F0}"
+    assert files["{F0}"] == str(gone)
+    assert not gone.exists()
+
+
 def _episode(tmp_path):
     work = tmp_path / "work/TGS_ep34"; out = tmp_path / "out/ep34"
     work.mkdir(parents=True); out.mkdir(parents=True)
@@ -290,6 +303,7 @@ def test_two_episodes_do_not_share_a_scratch_tar(tmp_path, monkeypatch):
     for n, eid in ((16, 20), (17, 21)):
         work = tmp_path / f"work/TAB_ep{n}"; out = tmp_path / f"out/ep{n}"
         work.mkdir(parents=True); out.mkdir(parents=True)
+        (work / "config.json").write_text("{}")
         (work / "manifest_groups.json").write_text("{}")
         ep = {"id": eid, "number": n, "work_dir": str(work), "output_dir": str(out)}
         cloud.run_command({}, show, ep, "render_tail", [cfg.pipeline_python, "x"], cfg, log=lambda m: None)
@@ -636,6 +650,7 @@ def test_the_work_folders_config_is_translated_both_ways(tmp_path, monkeypatch):
     (work / "config.json").write_text(json.dumps({
         "src_video": str(video), "models": str(cfg.models_dir),
         "dub_srt": f"{work}/TGS_EP34_DE.srt", "clean_final": f"{out}/final.mp4"}))
+    (work / "manifest_groups.json").write_text('{"segments": []}')
     bucket = tmp_path / "bucket"
     seen = {}
 
@@ -721,6 +736,7 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
     font = tmp_path / "Poppins-Bold.ttf"; font.write_bytes(b"f" * 16)
     cfg = FakeCfg(tmp_path)
     (work / "config.json").write_text(json.dumps({"src_video": str(video), "dub_srt": f"{work}/x.srt"}))
+    (work / "manifest_groups.json").write_text('{"segments": []}')
     bucket = tmp_path / "bucket"
     sent = {}
 
@@ -1067,6 +1083,7 @@ def test_an_imported_clip_the_editor_used_is_sent_and_placed(tmp_path, monkeypat
     used.write_bytes(b"u" * (cloud.SMALL + 8))
     small.write_bytes(b"s" * 40)
     unused.write_bytes(b"n" * (cloud.SMALL + 8))
+    (work / "config.json").write_text("{}")
     manifest = {
         "total_ms": 5000,
         "segments": [
@@ -1308,6 +1325,7 @@ def test_run_command_lands_outputs_before_work_and_skips_segs(tmp_path, monkeypa
     cfg = FakeCfg(tmp_path)
     (work / "config.json").write_text(json.dumps({
         "src_video": str(video), "dub_srt": f"{work}/x.srt", "clean_final": f"{out}/final.mp4"}))
+    (work / "manifest_groups.json").write_text('{"segments": []}')
     bucket = tmp_path / "bucket"
 
     def fake_wait(ids, **kw):
@@ -1400,6 +1418,19 @@ def test_a_second_render_finds_the_source_video_when_config_still_names_work_inp
     assert "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4" in dests
 
 
+def test_ensure_work_refuses_to_send_without_config(tmp_path, monkeypatch):
+    """Wrong data: empty work dir and no R2 files. Fail this step; do not pack a tar and do not Process again."""
+    show, ep = _episode(tmp_path)
+    monkeypatch.setattr(cloud.storage, "configured", lambda: False)
+    with pytest.raises(RuntimeError, match="cannot send render_tail"):
+        cloud.ensure_work_for_cloud(show, ep, "render_tail", log=lambda m: None)
+    (Path(ep["work_dir"]) / "config.json").write_text("{}")
+    with pytest.raises(RuntimeError, match="manifest_groups"):
+        cloud.ensure_work_for_cloud(show, ep, "render", log=lambda m: None)
+    (Path(ep["work_dir"]) / "manifest_groups.json").write_text("{}")
+    cloud.ensure_work_for_cloud(show, ep, "render", log=lambda m: None)
+
+
 def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path):
     """IMTS IT-DE 23/35: dynsrt on Render ffprobed a missing master. Cloud jobs send the R2 object."""
     show, ep = _episode(tmp_path)
@@ -1437,6 +1468,7 @@ def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch)
     cfg = FakeCfg(tmp_path)
     (work / "config.json").write_text(json.dumps({
         "src_video": str(video), "translation": {"out": f"{out}/en.srt"}}))
+    (work / "manifest_groups.json").write_text('{"segments": []}')
     bucket = tmp_path / "bucket"
 
     def fake_wait(ids, **kw):

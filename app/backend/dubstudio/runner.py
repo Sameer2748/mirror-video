@@ -596,6 +596,9 @@ class Runner:
                                size=path.stat().st_size, r2_key=key, origin="r2" if key else "local",
                                uploaded=now(), fingerprint=(info or {}).get("fingerprint"),
                                mtime=(info or {}).get("mtime"), probe=(info or {}).get("probe"), created=now())
+                # Copier done: video/audio live in R2. Drop the local master so the website disk stays empty.
+                if key and kind in storage.MEDIA_KINDS:
+                    path.unlink(missing_ok=True)
             self.submit(ep["id"])
             self.db.update("link_imports", iid, status="done", finished=now(),
                            message="files are in; the episode joined the processing line")
@@ -1464,12 +1467,30 @@ class Runner:
     # ---------- internal steps ----------
     # ---------- the three storage steps (docs/09 §3): get the files, put the results back, clean up ----------
     def _fn_fetch_inputs(self, j):
-        """Uploaded episodes keep their files in R2: bring them down to the work folder before anything runs.
-        A show whose files are on this Mac has nothing to fetch."""
+        """Small inputs can land here. Masters stay in R2 when a CPU factory is on (workers GET them).
+
+        The website used to download every episode's video before lip/Whisper — that filled the disk."""
         show, ep, _ = self.episode_context(j["episode_id"])
         todo = storage.inputs_to_fetch(self.db, ep) if storage.configured() else []
+        factory = cloud.available("cpu")
+        skipped = []
+        if factory:
+            keep, skipped = [], []
+            for a in todo:
+                if a.get("kind") in storage.MEDIA_KINDS and a.get("r2_key"):
+                    skipped.append(a)
+                else:
+                    keep.append(a)
+            todo = keep
+            missing = []
+            for a in skipped:
+                if not storage.head(a["r2_key"]):
+                    missing.append(a.get("name") or Path(a.get("path") or "?").name)
+            if missing:
+                raise RuntimeError("not in the cloud: " + ", ".join(missing) + " — Retry this step, not Process again")
         if not todo:
-            self._set(j, status="done", progress=1, finished=now(), message="the files are here already")
+            msg = "masters stay in R2; workers will get them" if skipped else "the files are here already"
+            self._set(j, status="done", progress=1, finished=now(), message=msg)
             return
         total = sum(a["size"] or 0 for a in todo) or 1
         done_bytes = [0]; last = [0.0]
@@ -1485,8 +1506,9 @@ class Runner:
             for a in todo:
                 storage.fetch_inputs(self.db, show, ep, kinds=[a["kind"]], log=log, on_progress=prog)
                 done_bytes[0] += a["size"] or 0
+        extra = f"; {len(skipped)} master(s) left in R2" if skipped else ""
         self._set(j, status="done", progress=1, finished=now(),
-                  message=f"{len(todo)} file(s) brought down ({total / 1e6:.0f} MB)")
+                  message=f"{len(todo)} file(s) brought down ({total / 1e6:.0f} MB){extra}")
 
     def _fn_publish(self, j):
         """The delivered files (and the small work files) go up to R2."""
@@ -1506,6 +1528,12 @@ class Runner:
         if not storage.configured():
             self._set(j, status="skipped", progress=1, finished=now(), message="cloud storage is off")
             return
+        blocked = storage.blocking_failed_uploads(self.db, ep["id"])
+        if blocked:
+            for row in blocked:
+                storage.retry_upload(self.db, row["id"])
+            storage.start_worker(self.db)
+            self._set(j, message=f"retrying {len(blocked)} latest failed upload(s) once")
         waiting = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status IN ('waiting','sending')",
                               (ep["id"],))
         for _ in range(600):                      # the files must be up there before the local ones go
@@ -1515,9 +1543,12 @@ class Runner:
             waiting = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status IN ('waiting','sending')",
                                   (ep["id"],))
             self._set(j, message=f"waiting for {waiting['n']} file(s) to finish going up")
-        failed = self.db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status='failed'", (ep["id"],))
-        if (failed or {}).get("n"):
-            raise RuntimeError(f"{failed['n']} file(s) could not be sent to the cloud: nothing was deleted")
+        blocked = storage.blocking_failed_uploads(self.db, ep["id"])
+        if blocked:
+            names = ", ".join(sorted({(r.get("kind") or r.get("name") or "?") for r in blocked}))
+            raise RuntimeError(
+                f"{len(blocked)} latest upload(s) still failed ({names}): nothing was deleted. "
+                "Retry those uploads, then Retry cleanup — do not Process again")
         with open(j["log_path"], "a") as f:
             out = storage.clean_scratch(self.db, ep, keep_work=not envfile.flag("CLEAN_WORK", False),
                                         log=lambda m: f.write(m + "\n"))
@@ -1549,10 +1580,24 @@ class Runner:
         for k, a in enumerate(rows):
             self._set(j, progress=k / max(len(rows), 1), message=f"checking {Path(a['path']).name}")
             info, probs = scan.check_asset(a["kind"], a["path"])
+            if probs and a.get("r2_key") and storage.configured():
+                head = storage.head(a["r2_key"])
+                old = a.get("probe") if isinstance(a.get("probe"), dict) else {}
+                if head and old.get("duration"):
+                    info, probs = {"size": head.get("size") or a.get("size"), "probe": old,
+                                   "fingerprint": a.get("fingerprint"), "mtime": a.get("mtime")}, []
+                elif head:
+                    url = storage.presign(a["r2_key"], 600)
+                    info, probs = scan.check_asset(a["kind"], a["path"], url=url)
+                    if info and not info.get("size"):
+                        info["size"] = head.get("size")
+                else:
+                    probs = [f"{a['kind']}: not on this box and not in the cloud"]
             problems += probs
             if info:
-                self.db.update("assets", a["id"], size=info.get("size"), fingerprint=info.get("fingerprint"),
-                               mtime=info.get("mtime"), probe=info.get("probe"))
+                self.db.update("assets", a["id"], size=info.get("size") or a.get("size"),
+                               fingerprint=info.get("fingerprint") or a.get("fingerprint"),
+                               mtime=info.get("mtime") or a.get("mtime"), probe=info.get("probe") or a.get("probe"))
         with open(j["log_path"], "a") as f:
             f.write("\n".join(problems or ["all input files readable"]) + "\n")
         if problems:

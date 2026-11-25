@@ -151,6 +151,25 @@ def test_fetch_brings_a_deleted_file_back_from_r2(r2):
     assert "brought down" in next(j for j in c.get(f"/api/episodes/{ep['id']}").json()["jobs"] if j["step"] == "fetch")["message"]
 
 
+def test_fetch_leaves_masters_in_r2_when_the_factory_is_on(r2, monkeypatch):
+    """Night flow: the website does not download the episode video. Workers GET the signed R2 object."""
+    monkeypatch.setattr("dubstudio.runner.cloud.available", lambda kind="cpu": True)
+    c = r2["client"]
+    s = cloud_show(c)
+    ep = episode_with_files(c, s, env=r2)
+    video = [a for a in ep["assets"] if a["kind"] == "src_video"][0]
+    Path(video["path"]).unlink()
+    c.post(f"/api/episodes/{ep['id']}/process")
+    fetch = wait_for(lambda: next((j for j in c.get(f"/api/episodes/{ep['id']}").json()["jobs"]
+                                   if j["step"] == "fetch" and j["status"] == "done"), None), 30)
+    assert not Path(video["path"]).exists()
+    assert "R2" in (fetch["message"] or "") or "workers" in (fetch["message"] or "")
+    ingest = wait_for(lambda: next((j for j in c.get(f"/api/episodes/{ep['id']}").json()["jobs"]
+                                    if j["step"] == "ingest" and j["status"] in ("done", "failed")), None), 30)
+    assert ingest["status"] == "done", ingest.get("message")
+    assert not Path(video["path"]).exists()
+
+
 def test_publish_and_cleanup_at_the_end_of_a_run(r2):
     from conftest import press_render
     c = r2["client"]

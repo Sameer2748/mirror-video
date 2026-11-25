@@ -16,7 +16,7 @@ What goes up:
 R2 is **object storage, not a database**: SQLite stays the live database on the Mac (it needs local file locking)
 and the file is mirrored to R2, so the data also lives off the machine. See docs/08_ACCOUNTS_AND_STORAGE.md.
 """
-import hashlib, hmac, mimetypes, re, shutil, sqlite3, threading, time
+import hashlib, hmac, mimetypes, re, shutil, sqlite3, tarfile, threading, time
 from fnmatch import fnmatch
 from datetime import datetime, timezone
 from pathlib import Path
@@ -518,6 +518,12 @@ def latest_uploads(rows):
     return out
 
 
+def blocking_failed_uploads(db, episode_id):
+    """Latest upload per kind that is still failed. An older failed try of a file that later went up
+    must not block cleanup (IMTS IT-DE EP7: 3 leftover failed rows, 12 current files done)."""
+    return [r for r in uploads_of(db, episode_id) if (r or {}).get("status") == "failed"]
+
+
 def uploads_of(db, eid, limit=100):
     rows = db.q("SELECT * FROM uploads WHERE episode_id=? ORDER BY id DESC LIMIT ?", (eid, max(limit, 200)))
     return latest_uploads(rows)
@@ -670,9 +676,92 @@ def fetch_work_files(show, ep, log=None, force=False):
             got += 1
         except Exception:
             continue
+    if not (W / "config.json").is_file() or not (W / "manifest_groups.json").is_file():
+        extra = _fetch_work_from_tars(show, ep, W, objects, prefix, log)
+        got += extra
     _work_fetched.add(key)
     if got and log:
         log(f"{got} work files came down from the cloud")
+    return got
+
+
+TAR_UNPACK_MAX = 8 << 20  # 8 MB: work JSON tars, not proxy videos
+
+
+def _tar_looks_like_work(rel):
+    """A previous visit's work tar. Skip proxy videos and the tiny /out-in packs."""
+    name = Path(rel or "").name
+    if not name.endswith(".tar.gz"):
+        return False
+    if "proxy_" in name or "_out_in_" in name:
+        return False
+    return "_work_in_" in name or "_work_out_" in name
+
+
+def unpack_work_tar_members(tar_path, dest_dir):
+    """Pull the same small files `publish_outputs` keeps out of a work tar. -> [(rel, bytes)]."""
+    wrote = []
+    dest_dir = Path(dest_dir)
+    with tarfile.open(tar_path, "r:gz") as tf:
+        for m in tf.getmembers():
+            if not m.isfile():
+                continue
+            rel = (m.name or "").replace("\\", "/").lstrip("./")
+            if not rel or rel.startswith("cloud/") or rel.endswith(".tar.gz"):
+                continue
+            if not _work_wanted(rel) and Path(rel).name not in ("config.json", "manifest_groups.json"):
+                continue
+            src = tf.extractfile(m)
+            if src is None:
+                continue
+            dest = dest_dir / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            data = src.read()
+            dest.write_bytes(data)
+            wrote.append(rel)
+    return wrote
+
+
+def _fetch_work_from_tars(show, ep, W, objects, prefix, log=None):
+    """When loose `config.json` / edit list were never published, unpack them from the newest work tar.
+
+    Render cleanup drops the local copies. A later send then packed an empty-of-config tar (IMTS IT-DE 17)."""
+    tars = []
+    for o in objects or []:
+        rel = o["key"].split(prefix, 1)[-1] if prefix in (o.get("key") or "") else ""
+        if not _tar_looks_like_work(rel):
+            continue
+        if (o.get("size") or 0) >= TAR_UNPACK_MAX:
+            continue
+        tars.append(o)
+    tars.sort(key=lambda o: o.get("modified") or "", reverse=True)
+    got = 0
+    tmp = Path(W) / "_unpack_tars"
+    try:
+        for o in tars:
+            if (Path(W) / "config.json").is_file() and (Path(W) / "manifest_groups.json").is_file():
+                break
+            tmp.mkdir(parents=True, exist_ok=True)
+            tar_path = tmp / Path(o["key"]).name
+            try:
+                download(o["key"], tar_path)
+                rels = unpack_work_tar_members(tar_path, W)
+            except Exception as ex:
+                if log:
+                    log(f"could not unpack {Path(o['key']).name}: {ex}")
+                continue
+            finally:
+                tar_path.unlink(missing_ok=True)
+            for rel in rels:
+                got += 1
+                try:
+                    put_file(Path(W) / rel, work_key(show, ep, rel))
+                except Exception:
+                    pass
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    if got and log:
+        log(f"unpacked {got} work files from a previous cloud tar")
     return got
 
 

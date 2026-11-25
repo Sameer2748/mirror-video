@@ -3,7 +3,7 @@
 No real bucket is touched: a small S3-shaped HTTP server runs on localhost and keeps the objects in memory.
 The live round trip against the owner's real bucket is `test_live_r2` (only with DUBSTUDIO_LIVE_R2=1).
 """
-import os, threading, time
+import json, os, threading, time
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
@@ -444,6 +444,92 @@ def test_the_small_work_files_come_down_so_the_editor_can_open(r2):
     assert not (work / "clean_noglow.mp4").exists()
     assert not (work / "thumbs" / "00001000_120.jpg").exists()
     assert storage.fetch_work_files(s, e) == 0                 # once per episode, not on every request
+
+
+def test_stale_failed_uploads_do_not_block_cleanup(r2):
+    """EP7: older failed rows of the same kind must not stop disk cleanup after a later send succeeded."""
+    from dubstudio import storage
+    import dubstudio.main as main
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 7}).json()
+    db = main.db()
+    eid = ep["id"]
+    db.insert("uploads", episode_id=eid, kind="en_srt", name="old.srt", path="/x",
+              key="shows/SHOW/ep7/out/old.srt", status="failed", created=1, size=1)
+    db.insert("uploads", episode_id=eid, kind="en_srt", name="new.srt", path="/y",
+              key="shows/SHOW/ep7/out/new.srt", status="done", created=2, size=2)
+    db.insert("uploads", episode_id=eid, kind="final", name="v.mp4", path="/z",
+              key="shows/SHOW/ep7/out/v.mp4", status="done", created=3, size=3)
+    assert storage.blocking_failed_uploads(db, eid) == []
+    all_failed = db.one("SELECT COUNT(*) AS n FROM uploads WHERE episode_id=? AND status='failed'", (eid,))
+    assert all_failed["n"] == 1
+
+
+def test_latest_failed_upload_does_block_cleanup(r2):
+    """Wrong data: the current send of a kind failed. Cleanup must name that kind, not Process again."""
+    from dubstudio import storage
+    import dubstudio.main as main
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 8}).json()
+    db = main.db()
+    eid = ep["id"]
+    db.insert("uploads", episode_id=eid, kind="en_srt", name="a.srt", path="/x",
+              key="shows/SHOW/ep8/out/a.srt", status="done", created=1, size=1)
+    db.insert("uploads", episode_id=eid, kind="en_srt", name="b.srt", path="/y",
+              key="shows/SHOW/ep8/out/b.srt", status="failed", created=2, size=2)
+    blocked = storage.blocking_failed_uploads(db, eid)
+    assert len(blocked) == 1 and blocked[0]["kind"] == "en_srt" and blocked[0]["status"] == "failed"
+
+
+def test_work_tar_unpacks_when_loose_config_is_missing(r2):
+    """IT-DE 17: work tar on R2, no loose config.json. Fetch must unpack it so a retry can send."""
+    import io, tarfile
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 17}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        for name, body in (("config.json", b'{"labels": "IT,DE"}'),
+                           ("manifest_groups.json", b'{"segments": [1]}'),
+                           ("_cloud_chain.json", b'{"steps": []}')):
+            info = tarfile.TarInfo(name); info.size = len(body)
+            tf.addfile(info, io.BytesIO(body))
+    storage.put_bytes(storage.work_key(s, e, "cloud/render_tail_work_in_abcd1234.tar.gz"), buf.getvalue())
+    work = Path(e["work_dir"])
+    assert not (work / "config.json").exists()
+    got = storage.fetch_work_files(s, e, force=True)
+    assert got >= 2
+    assert json.loads((work / "config.json").read_text())["labels"] == "IT,DE"
+    assert json.loads((work / "manifest_groups.json").read_text())["segments"] == [1]
+    # promoted to a loose object so the next fetch does not need the tar
+    loose = storage.work_key(s, e, "config.json")
+    assert storage.get_bytes(loose) == b'{"labels": "IT,DE"}'
+
+
+def test_empty_work_tar_does_not_invent_config(r2):
+    """Wrong data: a tar with only _cloud_chain.json is not a config. Sending must still fail."""
+    import io, tarfile
+    from dubstudio import storage, cloud
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 18}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        body = b'{"steps": [], "place": {}}'
+        info = tarfile.TarInfo("_cloud_chain.json"); info.size = len(body)
+        tf.addfile(info, io.BytesIO(body))
+    storage.put_bytes(storage.work_key(s, e, "cloud/render_tail_work_in_deadbeef.tar.gz"), buf.getvalue())
+    logs = []
+    with pytest.raises(RuntimeError, match="cannot send render"):
+        cloud.ensure_work_for_cloud(s, e, "render", log=logs.append)
+    assert not (Path(e["work_dir"]) / "config.json").exists()
 
 
 def test_english_srt_comes_from_r2_out_when_the_box_is_empty(r2):

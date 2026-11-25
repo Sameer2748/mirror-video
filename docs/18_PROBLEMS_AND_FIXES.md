@@ -124,7 +124,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** Any episode that retried an upload, then succeeded: leftover failed rows block cleanup. Disk is not freed. Same pattern for other steps that treat “an R2 put failed once” as episode death.
 
-**Fix (later, not now).** (1) Gate on **latest upload per kind**, not all historical failed rows. (2) Retry those latest failures once, then fail with kind names. (3) Retry **that step only**. Night check **E** in `docs/17`. Do not Process again.
+**Fix (coded).** Cleanup uses **latest upload per kind** (`blocking_failed_uploads`). It retries those latest failures **once**, waits for the queue, then fails with the **kind names**. Older failed rows of a kind that later went `done` do not block. Retry **cleanup** (or the upload), not Process again. Night check **E**.
 
 **Helps.** Machine disk frees; no second lip/GPU bill.
 
@@ -152,7 +152,9 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Wrong fix.** Fetch the master back to Render, then retry dynsrt here.
 
-**Right fix.** Worker already GET/PUTs R2. `dynsrt` is **its own CPU job** when the render tail is on: signed URL for src_video (even if this box has no file), captions JSON in the work tar, plan + SRT come back. Translate stays here. Tail then burns. Do **not** `fetch_inputs` on Render for a cloud send. Night: docs/17 **C6** + **G**.
+**Right fix.** Worker already GET/PUTs R2. `dynsrt` is **its own CPU job** when the render tail is on: signed URL for src_video (even if this box has no file), captions JSON in the work tar, plan + SRT come back. Translate stays here. Tail then burns. Do **not** `fetch_inputs` on Render for a cloud send.
+
+**17-class (coded).** `fetch_work_files` unpacks `config.json` / `manifest_groups.json` from the newest work tar when loose objects are missing, and copies them to loose R2 keys. Render/dynsrt **refuses to send** if those files are still missing — Retry that step, not Process again. Night: docs/17 **C6** + **G**.
 
 **Helps.** 23/35 subtitle burn without filling Render. 17-class pack after cleanup.
 
@@ -180,7 +182,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** If we set `MAX_ACTIVE=26` without raising the cap.
 
-**Fix.** Raise the cap in Settings **only** after 26 CPUs are **unthrottled** and P1 is in. Until then **do not** set 26 active.
+**Fix.** Settings now allow **1–64** CPU slots so we can match the factory worker count. Do not raise live `DUBSTUDIO_CPU_SLOTS` past what RunPod actually runs (throttle is still P3).
 
 **Helps.** More than 16 factory waits at once.
 

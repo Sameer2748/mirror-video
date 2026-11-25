@@ -665,6 +665,37 @@ def heal_config_inputs(db, ep, W):
         conf.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def required_work_files(name):
+    """Small files this visit cannot run without. Early steps (lip, words) may still start with no config.
+
+    Render/dynsrt packed without config.json on IT-DE 17 after cleanup. That send must fail here, not on the worker."""
+    if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt"):
+        need = [CONFIG]
+        if name in CHAIN or name in CHAIN_NAMES or name == "check":
+            need.append("manifest_groups.json")
+        return need
+    return []
+
+
+def ensure_work_for_cloud(show, ep, name, log=print):
+    """Fetch small work from R2 (loose files, then a previous tar). Refuse to send if still missing.
+
+    Do not fetch masters onto this box. Do not Process again — Retry this step after the files exist."""
+    W = Path(ep["work_dir"])
+    need = required_work_files(name)
+    missing = [n for n in need if not (W / n).is_file()]
+    if missing or not (W / CONFIG).is_file():
+        try:
+            storage.fetch_work_files(show, ep, log=log, force=True)
+        except Exception as ex:
+            log(f"could not fetch work files: {ex}")
+    missing = [n for n in need if not (W / n).is_file()]
+    if missing:
+        raise RuntimeError(
+            f"cannot send {name}: missing {', '.join(missing)} (not on this box and not in the cloud work files). "
+            "Retry this step after those files are in R2 — do not Process again")
+
+
 def tokenise(cmd, work_dir, out_dir, cfg, files=None):
     """One command line as the worker should see it. -> (cmd, {token: local path of a big file})
 
@@ -710,7 +741,8 @@ def _send_large_work_files(cmd, work_dir, files):
             rel = arg[len("{WORK}/"):]
             local = Path(work_dir) / rel
             left_out = rel == "input" or rel.startswith("input/")
-            if local.is_file() and (local.stat().st_size > SMALL or left_out):
+            # input/ is never in the work tar. Tokenise it even when this box already deleted the master.
+            if left_out or (local.is_file() and local.stat().st_size > SMALL):
                 token = next((t for t, p in files.items() if p == str(local)), None)
                 if token is None:
                     token = f"{{F{len(files)}}}"
@@ -1198,11 +1230,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     # Small JSON only. Do not fetch src/audio onto Render (IMTS IT-DE 23/35 dynsrt, docs/17 C6).
-    if not (W / CONFIG).is_file():
-        try:
-            storage.fetch_work_files(show, ep, log=log, force=True)
-        except Exception as ex:
-            log(f"could not fetch work files: {ex}")
+    ensure_work_for_cloud(show, ep, name, log=log)
     heal_config_inputs(db, ep, W)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
@@ -1462,11 +1490,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
-    if not (W / CONFIG).is_file():
-        try:
-            storage.fetch_work_files(show, ep, log=log, force=True)
-        except Exception as ex:
-            log(f"could not fetch work files: {ex}")
+    ensure_work_for_cloud(show, ep, name, log=log)
     heal_config_inputs(db, ep, W)
     files, packed = {}, []
     staged = False

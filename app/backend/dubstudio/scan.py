@@ -150,16 +150,19 @@ def srt_stats(path):
             "language": guess_lang_text(txt)}
 
 
-def check_asset(kind, path):
-    """Probe one input; returns (info, problems)."""
+def check_asset(kind, path, url=None):
+    """Probe one input; returns (info, problems).
+
+    `url` is a short-lived signed link: ingest can ffprobe R2 without downloading the master onto this box."""
     p = Path(path)
-    if not p.exists():
+    if not p.exists() and not url:
         return {}, [f"{kind}: file not found: {path}"]
-    fp, size, mtime = fingerprint(p)
-    info = {"fingerprint": fp, "size": size, "mtime": mtime}
-    probs = []
+    info, probs = {}, []
+    if p.exists():
+        fp, size, mtime = fingerprint(p)
+        info = {"fingerprint": fp, "size": size, "mtime": mtime}
     if kind in ("src_video", "dub_audio"):
-        pr = probe(p); info["probe"] = pr
+        pr = probe(p if p.exists() else url); info["probe"] = pr
         if pr.get("error") or not pr.get("duration"):
             probs.append(f"{kind}: ffprobe could not read it")
         if kind == "src_video" and not pr.get("video"):

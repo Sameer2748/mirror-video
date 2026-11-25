@@ -1,6 +1,6 @@
 # 17 — How files should move (night test)
 
-Sameer: at night, say which checks below to run (A / B / C, or a named row). This doc is the plan. **Not live until those checks pass.**
+Sameer: at night, say which checks below to run (A / B / C, or a named row). This doc is the plan. **Coded (25 Nov night):** factory on → `fetch` does **not** download src/audio onto Render; ingest uses stored probe or ffprobe of a signed URL; sheet ingest uploads then deletes the local master; work tars unpack `config.json`; cleanup ignores stale failed uploads. **Still a plan:** 2–4 dedicated copier machines (sheet Drive still runs on the website thread, one row at a time).
 
 Locked stitch logic does **not** change: matching, groups, how a lip group is played, unused-edge fill, scene-edit scope, 0.8–1.25× stretch, step order. Canonical: `docs/15_QC_LOCKED_FLOW.md`.
 
@@ -134,7 +134,7 @@ Bulk Process while 15 are already working used to queue with **no resume**. The 
 
 Same class as: cleanup blocked by stale failed uploads; cloud step 500; signed URL expired; worker disk wipe then next job.
 
-**Not coded yet.** Night: if this happens, retry the upload then retry the step; record it. Fix in a later pass: cleanup (and similar gates) should use **latest upload per kind**, retry failed latest once, then fail with the kind names.
+**Coded.** Cleanup uses latest upload per kind, retries those failures once, then fails with kind names. Tests: stale failed + later `done` does not block; latest failed does block. A work tar with only `_cloud_chain.json` does **not** invent `config.json`; the send fails on this box.
 
 ### F — RunPod idle workers must take our queued tails
 
@@ -193,7 +193,7 @@ Same class as: cleanup blocked by stale failed uploads; cloud step 500; signed U
 - Three mega-processes (all-before-face-map as one job).
 - `MAX_ACTIVE=26`.
 - Factory CPUs used as copiers.
-- Deploy to live until A–D pass.
+- Deploy to live until Sameer asks (A–C copier line is still a plan; D/E/G helpers are in code).
 - Changing matching / groups / scene-edit rules.
 
 ---
