@@ -11,8 +11,8 @@ from . import cloud, deliver, envfile, scan, storage, timeline
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
 # Website-disk misses after R2-only fetch. Retry ourselves — do not ask for Process or a Retry click.
-WORK_RETRY_STEPS = {"translate", "merged", "sharpness"}
-WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/")
+WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions"}
+WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -498,7 +498,10 @@ class Runner:
     @staticmethod
     def missing_work_retry(step, message, attempt=0):
         """True when the step died because config.json / prep.json / an unpack tar was not on this box."""
-        if step not in WORK_RETRY_STEPS or (attempt or 0) >= 2:
+        if step not in WORK_RETRY_STEPS:
+            return False
+        cap = 5 if step == "decisions" else 2
+        if (attempt or 0) >= cap:
             return False
         text = str(message or "")
         return any(m in text for m in WORK_RETRY_MARKERS)
@@ -506,7 +509,8 @@ class Runner:
     def _recover_missing_work(self):
         """Failed translate/merged/sharpness from a missing work file: fetch from R2 and run again."""
         rows = self.db.q(
-            "SELECT * FROM jobs WHERE status='failed' AND step IN ('translate','merged','sharpness')")
+            "SELECT * FROM jobs WHERE (status='failed' AND step IN ('translate','merged','sharpness')) "
+            "OR (status='needs_input' AND step='decisions')")
         for j in rows:
             if not self.missing_work_retry(j["step"], j.get("message"), j.get("attempt")):
                 continue
@@ -1865,13 +1869,31 @@ class Runner:
 
     def _fn_decisions_gate(self, j):
         work = j["params"]["ctx"]["W"]
-        self._auto_ai(j, work)
+        show, ep, _ = self.episode_context(j["episode_id"])
         while not self.stop.is_set():
             if j["id"] in self.cancelled:
                 self._set(j, status="cancelled", finished=now(), message="cancelled"); return
             if self._stale(j):
                 return
             miss = dec.missing(work)
+            if miss is None:
+                # Not a person. prep.json / decisions.json are not on this box (R2-only factory).
+                self._set(j, status="running",
+                          message="fetching matching files from the cloud (not waiting for a person)")
+                try:
+                    storage.fetch_work_files(show, ep, force=True)
+                except Exception:
+                    pass
+                time.sleep(1.0)
+                continue
+            if envfile.flag("DUBSTUDIO_AUTO_GATES", False):
+                self._auto_ai(j, work)
+                if miss:
+                    try:
+                        dec.accept_auto(work)
+                    except Exception:
+                        pass
+                    miss = dec.missing(work)
             if miss == []:
                 self._write_spec(work)
                 if cloud.stretch("cut"):
@@ -1884,8 +1906,7 @@ class Runner:
                 self._set(j, status="done", progress=1, finished=now(),
                           message=f"every flagged row has a decision (mkdec.py: {n})")
                 return
-            msg = (f"{len(miss)} rows need a decision: import decisions or accept the automatic matches"
-                   if miss else "waiting for the matching files")
+            msg = f"{len(miss)} rows need a decision: import decisions or accept the automatic matches"
             cur = self.db.one("SELECT status, message FROM jobs WHERE id=?", (j["id"],))
             if cur["status"] != "needs_input" or cur["message"] != msg:
                 self._set(j, status="needs_input", message=msg, item=str(len(miss or [])))
@@ -2112,9 +2133,10 @@ class Runner:
         json.dump(c, open(cp, "w"), indent=1)
 
     def _fn_review_gate(self, j):
-        """Waits until the editor presses Render (timeline.request_render); the editor wrote manifest_groups.json."""
+        """Waits until Render is pressed, or auto-renders a first draft when there is no black gap."""
         work = j["params"]["ctx"]["W"]
         msg = "ready for review: open the editor, check the clips, then press Render"
+        auto_tried = False
         while not self.stop.is_set():
             if j["id"] in self.cancelled:
                 self._set(j, status="cancelled", finished=now(), message="cancelled"); return
@@ -2123,7 +2145,28 @@ class Runner:
             if timeline.take_render_request(work):
                 self._set(j, status="done", progress=1, finished=now(), message="the editor pressed Render")
                 return
+            if not auto_tried:
+                auto_tried = True
+                if envfile.flag("DUBSTUDIO_AUTO_GATES", False):
+                    try:
+                        show, ep, _ = self.episode_context(j["episode_id"])
+                        if not (Path(work) / "manifest_groups.json").is_file():
+                            storage.fetch_work_files(show, ep, force=True)
+                        v1 = timeline.build_v1(work)
+                        black = (timeline.gaps(v1) if v1 else None) or (v1 or {}).get("holes") or []
+                        if v1 and not black:
+                            timeline.request_render(work, v1.get("version") or 1)
+                            self._set(j, message="no black gap: first draft render started")
+                            continue
+                        if black:
+                            self._set(j, status="needs_input",
+                                      message="black gap in the cut: fill it in the editor, then press Render")
+                    except Exception:
+                        pass
             cur = self.db.one("SELECT status, message FROM jobs WHERE id=?", (j["id"],))
+            if (cur.get("message") or "").startswith("black gap"):
+                time.sleep(1.0)
+                continue
             if cur["status"] != "needs_input" or cur["message"] != msg:
                 self._set(j, status="needs_input", message=msg)
             time.sleep(1.0)

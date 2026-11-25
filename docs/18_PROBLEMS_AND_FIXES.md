@@ -224,7 +224,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** 50+ Review eps holding leftover files until P1 cleanup.
 
-**Fix.** P1 cleanup of parked/review **inputs already in R2** (started live). Do not auto-Render unless Sameer says.
+**Fix.** P1 cleanup of parked/review **inputs already in R2** (started live). Review auto-renders a first draft only when there is **no black gap**; a gap still waits for the editor.
 
 **Helps.** Disk. Not “auto first draft.”
 
@@ -265,7 +265,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 ## 4. What we will **not** call a “tool problem”
 
 - Locked matching / groups / scene-edit looking “wrong” on QC — that is stitch rules (`docs/15`), not scale.
-- Check matching and Review waiting for a person — by design.
+- Check matching “waiting for the matching files” is **not** a person. Fetch `prep.json` from R2 and auto-accept leftover rows. Review waits for a person only when there is a **black gap**.
 - IMTS 69/70, leftover 197–258, IMTSITDE — do not Process unless Sameer asks.
 - yg5s old host — **suspended**; do not send people there.
 

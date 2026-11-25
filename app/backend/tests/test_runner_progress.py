@@ -353,6 +353,9 @@ def test_missing_config_or_prep_retries_without_a_click():
     assert not Runner.missing_work_retry("translate", msg, 2)
     assert not Runner.missing_work_retry("lip_merge", msg, 0)
     assert not Runner.missing_work_retry("translate", "Google quota", 0)
+    assert Runner.missing_work_retry("decisions", "waiting for the matching files", 0)
+    assert Runner.missing_work_retry("decisions", "waiting for the matching files", 2)
+    assert not Runner.missing_work_retry("decisions", "waiting for the matching files", 5)
 
 
 def test_tick_requeues_failed_translate_when_config_was_missing(tmp_path, monkeypatch):
@@ -372,3 +375,20 @@ def test_tick_requeues_failed_translate_when_config_was_missing(tmp_path, monkey
     assert j["status"] == "waiting" and j["attempt"] == 1
     ep = db.one("SELECT status FROM episodes WHERE id=?", (eid,))
     assert ep["status"] == "processing"
+
+
+def test_tick_requeues_matching_wait_that_is_not_a_person(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="WBT", code="WBTDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=101, status="needs_input",
+                    work_dir=str(tmp_path / "w"), output_dir=str(tmp_path / "o"))
+    jid = db.insert("jobs", episode_id=eid, run=1, step="decisions", ord=1, status="needs_input",
+                    needs=[], resource="none", attempt=0,
+                    message="waiting for the matching files", params={"fn": "decisions_gate", "ctx": {}})
+    monkeypatch.setattr("dubstudio.runner.storage.fetch_work_files", lambda *a, **k: 0)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._recover_missing_work()
+    j = db.one("SELECT status, attempt FROM jobs WHERE id=?", (jid,))
+    assert j["status"] == "waiting" and j["attempt"] == 1

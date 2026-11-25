@@ -59,6 +59,7 @@ SETTINGS = {
     # more than one, they need REDIS_URL for shared events and a Redis-claimed queue (docs/09 §4).
     "WEB_CONCURRENCY": "1",
     "DUBSTUDIO_LIBRARY": LIBRARY,
+    "DUBSTUDIO_AUTO_GATES": "true",  # matching files ≠ person; first-draft render if no black gap
 }
 # copied from app/.env as they are; never printed
 SECRETS = ["OPENROUTER_API_KEY", "R2_ACCOUNT_ID", "R2_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY",
