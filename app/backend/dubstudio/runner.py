@@ -312,8 +312,12 @@ class Runner:
         if missing:
             raise ValueError(f"missing input files: {', '.join(missing)}")
         if not self._room_for(ep_id):
-            # Process starts a new run when a slot opens. A render waiting in the line keeps resume=1 instead.
-            self.db.update("episodes", ep_id, status="queued", queued=now(), resume=None, updated=now())
+            # Cap full: if this episode already has a run in flight, wait and continue it.
+            # resume=None here used to mean "Process again when a slot opens" and wiped
+            # verify/render work (IMTS IT-DE 23/35). First Process (no open run) still
+            # starts a new run when the slot opens.
+            resume = 1 if self._run_still_open(ep_id) else None
+            self.db.update("episodes", ep_id, status="queued", queued=now(), resume=resume, updated=now())
             bus.publish("episode_status", ep_id, status="queued")
             pos = self.queue_position(ep_id)
             return {"queued": True, "position": pos, "message": f"in the line: {pos} ahead of this one"
@@ -364,16 +368,28 @@ class Runner:
         for i, r in enumerate(overflow):
             self._park(r["id"], queued_at=base + i * 0.001)
 
+    def _run_still_open(self, ep_id):
+        """True when the latest run still has a step to do (waiting / running / needs a person).
+
+        Those jobs must not be wiped by create_run just because the episode sat in the line."""
+        run = self.latest_run(ep_id)
+        if not run:
+            return False
+        return bool(self.db.one(
+            "SELECT id FROM jobs WHERE episode_id=? AND run=? AND status IN ('waiting','running','needs_input')",
+            (ep_id, run)))
+
     def start_next(self):
         """A slot came free: take the oldest episode out of the line (never more than max_active at once).
 
         An episode queued from Render or Retry already has its jobs (resume=1): set it to processing.
-        An episode queued from Process has no run yet: start one. That path is the one that wipes."""
+        Same if Process hit a full cap while that run was still open: continue, do not wipe.
+        An episode with no open run (first Process, or from_scratch after cancel) starts a new run."""
         while len(self.active_episodes()) < self.max_active():
             nxt = self.db.one("SELECT * FROM episodes WHERE status='queued' ORDER BY queued, id LIMIT 1")
             if not nxt:
                 return
-            if nxt.get("resume"):
+            if nxt.get("resume") or self._run_still_open(nxt["id"]):
                 self.db.update("episodes", nxt["id"], status="processing", queued=None, resume=None, updated=now())
                 bus.publish("episode_status", nxt["id"], status="processing")
                 self.wake.set()

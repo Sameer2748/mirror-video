@@ -99,6 +99,93 @@ def test_a_queued_episode_is_not_started(tmp_path, monkeypatch):
     assert db.one("SELECT status FROM jobs WHERE id=?", (parked_job,))["status"] == "waiting"
 
 
+def _assets(r, db):
+    r.episode_context = lambda eid: (
+        db.one("SELECT * FROM shows WHERE id=?", (db.one("SELECT show_id FROM episodes WHERE id=?", (eid,))["show_id"],)),
+        db.one("SELECT * FROM episodes WHERE id=?", (eid,)),
+        {"src_video": "v.mp4", "dub_audio": "a.wav"},
+    )
+
+
+def test_process_while_cap_full_does_not_wipe_an_open_run(tmp_path, monkeypatch):
+    """Cap full + Process must wait and keep the same run. A bulk line must not re-pay lip/verify."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    for n in (1, 2):
+        eid = _ep(db, sid, tmp_path, n, "processing")
+        _job(db, eid, "render", "running", 1)
+    third = _ep(db, sid, tmp_path, 23, "failed")
+    _job(db, third, "review", "done", 1)
+    _job(db, third, "verify", "waiting", 2, ["review"])
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    _assets(r, db)
+    wiped = []
+    monkeypatch.setattr(r, "create_run", lambda eid: wiped.append(eid) or 2)
+    out = r.submit(third)
+    assert out["queued"] is True
+    row = db.one("SELECT status, resume FROM episodes WHERE id=?", (third,))
+    assert row["status"] == "queued" and row["resume"] == 1
+    assert wiped == []
+    db.update("episodes", db.one("SELECT id FROM episodes WHERE number=1")["id"], status="done")
+    r.start_next()
+    assert wiped == []
+    assert db.one("SELECT status FROM episodes WHERE id=?", (third,))["status"] == "processing"
+    assert db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (third,))["r"] == 1
+    assert db.one("SELECT status FROM jobs WHERE episode_id=? AND step='verify'", (third,))["status"] == "waiting"
+
+
+def test_start_next_does_not_wipe_a_queued_open_run_without_resume(tmp_path, monkeypatch):
+    """Old Process-while-full rows used resume=None. A free slot must not create_run over waiting jobs."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    keep = _ep(db, sid, tmp_path, 1, "processing")
+    _job(db, keep, "render", "running", 1)
+    parked = _ep(db, sid, tmp_path, 35, "queued")
+    db.update("episodes", parked, queued=1, resume=None)
+    _job(db, parked, "verify", "waiting", 1)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    wiped = []
+    monkeypatch.setattr(r, "create_run", lambda eid: wiped.append(eid) or 2)
+    db.update("episodes", keep, status="done")
+    r.start_next()
+    assert wiped == []
+    assert db.one("SELECT status FROM episodes WHERE id=?", (parked,))["status"] == "processing"
+    assert db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (parked,))["r"] == 1
+
+
+def test_first_process_while_cap_full_starts_a_run_when_a_slot_opens(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    keep = _ep(db, sid, tmp_path, 1, "processing")
+    _job(db, keep, "render", "running", 1)
+    keep2 = _ep(db, sid, tmp_path, 2, "processing")
+    _job(db, keep2, "render", "running", 1)
+    fresh = _ep(db, sid, tmp_path, 3, "new")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    _assets(r, db)
+    started = []
+
+    def fake_create(eid):
+        started.append(eid)
+        db.update("episodes", eid, status="processing", queued=None, resume=None)
+        return 1
+
+    monkeypatch.setattr(r, "create_run", fake_create)
+    out = r.submit(fresh)
+    assert out["queued"] is True
+    assert not db.one("SELECT resume FROM episodes WHERE id=?", (fresh,))["resume"]
+    assert started == []
+    db.update("episodes", keep, status="done")
+    r.start_next()
+    assert started == [fresh]
+
+
 def test_queue_in_order_process_again_does_not_resume(tmp_path, monkeypatch):
     """WBT 101-200 failed/processing/cancelled start a new run when the slot opens."""
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)

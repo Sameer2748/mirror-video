@@ -688,7 +688,7 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check",
                  "analyze", "merged", "sheet", "manifest", "lipsync", "groups", "library", "qc"):
         assert not cloud.enabled_for(step), step
-    for step in ("mksrt_dub", "words_src", "lip_mesh", "lip_merge", "translate", "scene_edit"):
+    for step in ("mksrt_dub", "words_src", "lip_mesh", "lip_merge", "translate", "scene_edit", "dynsrt"):
         assert cloud.enabled_for(step), step
     assert cloud.stretch("match") and cloud.stretch("cut") and cloud.stretch("tail")
     assert "facemap" not in cloud.MATCH_CHAIN and "facemap" not in cloud.CUT_CHAIN
@@ -706,6 +706,9 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     assert cloud.chain_wanted()
     settings["CLOUD_STEPS"] = "tail"
     assert cloud.chain_wanted()
+    assert cloud.enabled_for("dynsrt")
+    settings["CLOUD_STEPS"] = "lip_gpu"
+    assert not cloud.enabled_for("dynsrt")
 
 
 def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
@@ -1395,6 +1398,19 @@ def test_a_second_render_finds_the_source_video_when_config_still_names_work_inp
     dests = place[0]["dests"]
     assert "/files/F0/NO_SUB_TAB_FR_EP_21.mp4" in dests
     assert "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4" in dests
+
+
+def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path):
+    """IMTS IT-DE 23/35: dynsrt on Render ffprobed a missing master. Cloud jobs send the R2 object."""
+    show, ep = _episode(tmp_path)
+    gone = Path(ep["work_dir"]) / "input" / "src_video" / "NO SUB IMTS PGC DE EP 23 R1.mp4"
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": str(gone), "r2_key": "shows/IMTSITDE/ep23/input/src_video.mp4"}]
+
+    extra = cloud._input_asset_files(DB(), ep, {})
+    assert str(gone) in extra.values()
 
 
 def test_heal_config_inputs_rewrites_a_worker_source_path(tmp_path):

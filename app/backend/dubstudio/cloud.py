@@ -67,7 +67,12 @@ NEEDS_AI_KEY = {"facemap", "qc", "library", "scene_edit"}
 # asks for them (`CLOUD_STEPS` includes `all`, `tail`, `render` or `render_tail`). `trans_plan` is JSON only and
 # stays here, so the editor's picks are applied before the videos are cut. The final check is added to that
 # same visit by the runner, after the scene-edit sheet, and only when CLOUD_AI is on (`qc` asks Claude).
-ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "dynsrt", "check"}
+#
+# `dynsrt` is not in this chain. It only needs the source video (for size) plus captions JSON — not the
+# rendered master. It used to sit in ONE_MACHINE, so it ran on Render and ffprobed a master that cleanup
+# had already dropped (IMTS IT-DE 23/35). It is its own CPU job: worker GET of the R2 source, then
+# translate still runs here, then the tail burns subs.
+ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"}
 CHAIN = ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en")
 CHAIN_NAMES = {"all", "tail", "render", "render_tail"}
 # Two CPU visits before the face map, split only by the decision pause (that pause stays on the website).
@@ -142,7 +147,8 @@ def enabled_for(step, kind=None):
     if claimed_by_stretch(step):
         return False
     want = steps()
-    named = "all" in want or step in want or (step == "scene_edit" and "scene" in want)
+    named = ("all" in want or step in want or (step == "scene_edit" and "scene" in want)
+             or (step == "dynsrt" and chain_wanted()))
     if not named or not capable(step):
         return False
     return available(kind or kind_for(step))
@@ -620,11 +626,8 @@ def _keep_local_config_keys(previous, incoming_text):
 
 
 def ensure_episode_inputs(db, show, ep, log=print):
-    """Bring src_video / dub_audio down from R2 when this box no longer has them.
-
-    A second render after Review used to pack config.json pointing at `/work/input/…` while the tar
-    skips `input/` and the local copy may already have been cleaned. The rented machine then ffprobed
-    an empty path (TAB EP21 / EP23)."""
+    """Website-only: the 540px proxy still needs the source on this box. Cloud jobs must not call this
+    (masters stay in R2; the worker GETs a signed link)."""
     if db is None or not isinstance(ep, dict) or ep.get("id") is None:
         return
     try:
@@ -781,24 +784,27 @@ def _files_named_in_config(W, O, already):
 
 
 def _input_asset_files(db, ep, already):
-    """Always send the uploaded source video and dub audio, even if config.json still names a worker path."""
+    """Point the job at src_video / dub_audio. Local file if this box still has it; otherwise the
+    asset path is enough for `_file_in_cloud` to presign the R2 object (worker pulls; Render does not)."""
     out, seen = {}, set(already.values())
     q = getattr(db, "q", None) if db is not None else None
     if not callable(q) or not isinstance(ep, dict) or ep.get("id") is None:
         return out
     try:
-        rows = q("SELECT path FROM assets WHERE episode_id=? AND kind IN ('src_video','dub_audio') AND role='input'",
+        rows = q("SELECT path, r2_key FROM assets WHERE episode_id=? AND kind IN ('src_video','dub_audio') AND role='input'",
                  (ep["id"],))
     except Exception:
         return out
     for a in rows or []:
         p = Path(a.get("path") or "")
-        if not p.is_file() or str(p) in seen:
+        key = str(p) if str(p) not in ("", ".") else (a.get("r2_key") or "")
+        if not key or key in seen:
             continue
-        if p.stat().st_size <= SMALL:
+        if p.is_file() and p.stat().st_size <= SMALL:
             continue
-        out[f"{{F{len(already) + len(out)}}}"] = str(p)
-        seen.add(str(p))
+        if p.is_file() or a.get("r2_key"):
+            out[f"{{F{len(already) + len(out)}}}"] = key
+            seen.add(key)
     return out
 
 
@@ -1191,7 +1197,12 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     send = new_send()
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
-    ensure_episode_inputs(db, show, ep, log=log)
+    # Small JSON only. Do not fetch src/audio onto Render (IMTS IT-DE 23/35 dynsrt, docs/17 C6).
+    if not (W / CONFIG).is_file():
+        try:
+            storage.fetch_work_files(show, ep, log=log, force=True)
+        except Exception as ex:
+            log(f"could not fetch work files: {ex}")
     heal_config_inputs(db, ep, W)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
@@ -1451,7 +1462,11 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     `render_tail`), so two visits do not share one upload."""
     W, O = Path(ep["work_dir"]), Path(ep["output_dir"])
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
-    ensure_episode_inputs(db, show, ep, log=log)
+    if not (W / CONFIG).is_file():
+        try:
+            storage.fetch_work_files(show, ep, log=log, force=True)
+        except Exception as ex:
+            log(f"could not fetch work files: {ex}")
     heal_config_inputs(db, ep, W)
     files, packed = {}, []
     staged = False
