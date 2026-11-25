@@ -228,15 +228,11 @@ def _fill(arg, places):
 def run(job):
     job_in = job["input"]
     step = job_in.get("step")
-    try:
-        if step == "lip_scan":
-            return lip_scan(job_in)
-        if step == "command":
-            return command(job_in)
-        return {"ok": False, "error": f"unknown step {step!r}"}
-    finally:
-        # Next job on this machine must not see this episode (any show can reuse the GPU).
-        wipe_dirs((WORK, OUT, FILES))
+    if step == "lip_scan":
+        return lip_scan(job_in)
+    if step == "command":
+        return command(job_in)
+    return {"ok": False, "error": f"unknown step {step!r}"}
 
 
 runpod.serverless.start({"handler": run})
