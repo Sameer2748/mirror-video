@@ -668,6 +668,9 @@ class Runner:
                 busy[j["resource"]] = busy.get(j["resource"], 0) + 1
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
         chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
+        cloud_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and cloud.holds_cpu_machine(o["step"])}
+        lip_eps = sum(1 for o in jobs if o["status"] == "running" and o["step"] == "lip_gpu")
+        lip_budget = cloud.lip_episode_budget(cfg.cpu_slots, cloud.pieces())
         # Face map is per episode: work tar + video + broll_library live under that episode's folder.
         # The GPU worker wipes /work /out /files before each job, so a reused machine cannot see the last ep.
         # gpu_slots (not show) is the cap — several IMTS face maps may run at once.
@@ -706,11 +709,22 @@ class Runner:
                 if j["episode_id"] in chain_busy:
                     continue
                 chain_busy.add(j["episode_id"])
+            # One rented CPU send per episode. 10 eps × (Whisper + proxy + 8 lip pieces + translate)
+            # was 23+ jobs on 8 runners while 14 boxes sat idle.
+            if cloud.holds_cpu_machine(j["step"]):
+                if j["episode_id"] in cloud_busy:
+                    continue
+                if j["step"] == "lip_gpu" and lip_eps >= lip_budget:
+                    continue
             res = j["resource"]
             if res in slots and busy.get(res, 0) >= slots[res]:
                 continue
             if res in slots:
                 busy[res] = busy.get(res, 0) + 1
+            if cloud.holds_cpu_machine(j["step"]):
+                cloud_busy.add(j["episode_id"])
+                if j["step"] == "lip_gpu":
+                    lip_eps += 1
             self.cancelled.discard(j["id"])
             self._set(j, status="running", started=now(), progress=0, message="starting")
             threading.Thread(target=self._run_job, args=(j["id"],), daemon=True).start()
@@ -1709,6 +1723,12 @@ class Runner:
     def _fn_translate(self, j):
         """The pipeline's translate (Google). If it fails and the AI gateway is set up, Claude translates the
         sentences Google left (translate --export-todo -> translate_ai -> translate --engine file --import)."""
+        show, ep, _ = self.episode_context(j["episode_id"])
+        W = Path((j.get("params") or {}).get("ctx", {}).get("W") or ep["work_dir"])
+        if not (W / "config.json").is_file():
+            with open(j["log_path"], "a", encoding="utf-8") as log:
+                storage.fetch_work_files(show, ep, log=lambda m: (log.write(str(m).rstrip() + "\n"), log.flush()),
+                                         force=True)
         try:
             self._run_cmd(j); return
         except RuntimeError as ex:
@@ -1729,9 +1749,13 @@ class Runner:
             def run(extra):
                 full = cmd + extra
                 log.write("\n$ " + " ".join(full) + "\n"); log.flush()
-                if not (cfg.scripts / "dubstitch.py").is_file():
+                if not (W / "config.json").is_file():
+                    storage.fetch_work_files(show, ep, log=say, force=True)
+                # This image has dubstitch.py, so the old path ran Google's fallback on Render without
+                # config.json (WBT 101–109). Keep the fallback on a rented machine when the file is gone.
+                if (not (W / "config.json").is_file()) or not (cfg.scripts / "dubstitch.py").is_file():
                     if not self._worker_cmd(j, full):
-                        raise RuntimeError("translate needs the pipeline scripts, and they are not on this machine")
+                        raise RuntimeError("translate needs config.json and the pipeline scripts; Retry after they are in R2")
                     return
                 p = subprocess.run(full, cwd=self._local_cwd(), capture_output=True, text=True)
                 log.write(p.stdout + p.stderr); log.flush()
@@ -1840,6 +1864,14 @@ class Runner:
         prep.json. It only rides to the cloud as part of the match visit (`_run_match`). Sending it alone
         used to hang (TGS ep31: status stayed 'starting' while the work folder was packed for a rented machine)."""
         w = Path(j["params"]["ctx"]["W"])
+        if not (w / "prep.json").is_file():
+            show, ep, _ = self.episode_context(j["episode_id"])
+            with open(j["log_path"], "a", encoding="utf-8") as log:
+                storage.fetch_work_files(show, ep, log=lambda m: (log.write(str(m).rstrip() + "\n"), log.flush()),
+                                         force=True)
+        if not (w / "prep.json").is_file():
+            raise RuntimeError("cannot build the reading view: prep.json is not on this box or in the cloud. "
+                               "Retry matching after that file is in R2 — do not Process again")
         merged = self._app_pipeline_script("merged.py")
         if not merged:
             raise RuntimeError("merged.py is not on this machine")

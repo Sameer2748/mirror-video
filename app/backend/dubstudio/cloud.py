@@ -164,6 +164,23 @@ def pieces():
     return max(1, envfile.number("CLOUD_PIECES", 8))
 
 
+def holds_cpu_machine(step):
+    """True when this website job is (or will be) a rented CPU box, including lip pieces.
+
+    Lip is planned as resource `none` so it does not eat cpu_slots, but it still occupies RunPod.
+    One episode must not also send Whisper/proxy/translate while that is happening."""
+    if step in ("lip_gpu", "lip_mesh", "lip_merge"):
+        return True
+    return bool(enabled_for(step) and kind_for(step) == "cpu")
+
+
+def lip_episode_budget(cpu_slots=None, n_pieces=None):
+    """How many episodes may run the 8-piece lip scan at once. 30 CPUs / 8 pieces = 3, not 10."""
+    slots = int(cpu_slots if cpu_slots is not None else envfile.number("DUBSTUDIO_CPU_SLOTS", 8))
+    n = int(n_pieces if n_pieces is not None else pieces())
+    return max(1, slots // max(1, n))
+
+
 # ---------------- the queue ----------------
 def _call(path, body=None, timeout=60, kind="cpu"):
     key = envfile.get("RUNPOD_API_KEY")
@@ -669,7 +686,7 @@ def required_work_files(name):
     """Small files this visit cannot run without. Early steps (lip, words) may still start with no config.
 
     Render/dynsrt packed without config.json on IT-DE 17 after cleanup. That send must fail here, not on the worker."""
-    if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt"):
+    if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt", "translate"):
         need = [CONFIG]
         if name in CHAIN or name in CHAIN_NAMES or name == "check":
             need.append("manifest_groups.json")

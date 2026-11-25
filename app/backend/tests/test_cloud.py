@@ -231,6 +231,21 @@ def test_which_steps_go_to_the_cloud(monkeypatch):
     assert not cloud.enabled_for("lip_gpu")                   # no key, no cloud
 
 
+def test_one_episode_does_not_hold_many_cpu_boxes_at_once(monkeypatch):
+    """WBT 101-110: Whisper + proxy + 8 lip pieces + translate all ran as website 'running' jobs."""
+    settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e",
+                "CLOUD_STEPS": "lip_gpu,mksrt_src,proxy,sharpness,words_src,translate"}
+    monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
+    monkeypatch.setattr(cloud.envfile, "number", lambda k, d=0: {"CLOUD_PIECES": 8, "DUBSTUDIO_CPU_SLOTS": 30}.get(k, d))
+    assert cloud.holds_cpu_machine("lip_gpu")
+    assert cloud.holds_cpu_machine("mksrt_src")
+    assert cloud.holds_cpu_machine("proxy")
+    assert not cloud.holds_cpu_machine("merged")
+    assert not cloud.holds_cpu_machine("decisions")
+    assert cloud.lip_episode_budget(30, 8) == 3
+    assert cloud.lip_episode_budget(8, 8) == 1
+
+
 # ---------------- any step on a rented machine ----------------
 class FakeCfg:
     """The paths of a Mac, so tokenise has something real to swap out."""

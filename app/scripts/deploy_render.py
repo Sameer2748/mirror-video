@@ -48,7 +48,7 @@ SETTINGS = {
     # against the Mac's 105. A fresh scene edit is a different cut (46% of the time the same picture).
     # Render tail, same edit list: 105/105 frames on their own footage, 664.560 s, 53 transitions
     # (15 zoom blur, 20 blur dissolve, 18 light leak), both subtitle videos the same length.
-    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,translate,match,cut,scene,tail",
+    "CLOUD_STEPS": "lip_gpu,mksrt_src,mksrt_dub,facemap,proxy,sharpness,words_src,words_dub,lip_mesh,lip_merge,match,cut,scene,tail",
     "CLOUD_AI": "true",                       # face map asks Claude to name unclear faces; without this it stays on the API box
     "CLOUD_PIECES": "8",
     "UPLOAD_MODE": "direct",                      # the browser PUTs straight to R2

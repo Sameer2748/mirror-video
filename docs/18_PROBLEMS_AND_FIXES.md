@@ -54,7 +54,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** Every time `MAX_ACTIVE` is high and everyone is on lip/Whisper at once.
 
-**Fix.** (a) RunPod **unthrottle** so 26 actually run. (b) Do not start 15 lips at once (`MAX_ACTIVE` ~8–12 while on lip, or pieces × in-flight ≈ workers). (c) Later: pack Whisper/words/match into **one CPU visit** (not 3 mega-steps).
+**Fix.** (a) RunPod **unthrottle** so 26 actually run — **owner**. (b) Coded: one rented CPU send per episode; at most `cpu_slots / 8` episodes in lip at once (30/8 = 3). Translate stays on the website (needs `config.json` from R2), not a factory box. (c) Later: pack Whisper/words/sharpness into **one CPU visit**.
 
 **Helps.** Wall clock per episode, idle “waiting for a machine.”
 
