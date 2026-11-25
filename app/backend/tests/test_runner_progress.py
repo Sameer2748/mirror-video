@@ -304,8 +304,8 @@ def test_library_warnings_are_not_the_last_line():
     assert not NOISE.search("22:58:50 done 45-60 in 23 s")
 
 
-def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch):
-    """Five GPU slots must not start two face maps of the same show. A different show can use another slot."""
+def test_gpu_slots_can_run_several_face_maps_of_the_same_show(tmp_path, monkeypatch):
+    """Each face map is that episode's own library. After the worker wipes /work, six GPUs can run six TGS maps."""
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
     from dubstudio.config import cfg
     monkeypatch.setattr(cfg, "gpu_slots", 5)
@@ -320,7 +320,8 @@ def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch
     a = ep(imts, 91)
     b = ep(imts, 92)
     c = ep(tab, 52)
-    for eid, n in ((a, 91), (b, 92), (c, 52)):
+    extra = ep(imts, 93)
+    for eid in (a, b, c, extra):
         db.insert("jobs", episode_id=eid, run=1, step="facemap", ord=1, status="waiting",
                   needs=[], resource="gpu")
     started = []
@@ -336,6 +337,5 @@ def test_one_gpu_step_per_show_leaves_the_other_slots_free(tmp_path, monkeypatch
     r._keep_awake = lambda on: None
     r._tick()
     st = {j["episode_id"]: j["status"] for j in db.q("SELECT episode_id, status FROM jobs")}
-    assert st[a] == "running" and st[c] == "running"
-    assert st[b] == "waiting"
-    assert len(started) == 2
+    assert st[a] == st[b] == st[c] == st[extra] == "running"
+    assert len(started) == 4
