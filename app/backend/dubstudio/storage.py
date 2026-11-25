@@ -1062,21 +1062,29 @@ def daily_cleanup(db, library, now_ts=None, min_age=DONE_AGE, keep_episode_ids=N
     keep_dirs = set()
     done_eps = []
     try:
+        free = shutil.disk_usage(lib if lib.exists() else Path.cwd()).free
+    except OSError:
+        free = 0
+    crush = free < 5 * 10**9
+    try:
         rows = db.q("SELECT id, status, work_dir, output_dir, updated FROM episodes") if db is not None else []
     except Exception:
         rows = []
     for e in rows:
-        active = e["id"] in keep_ids or (e.get("status") or "") in KEEP_EPISODE_STATUSES
+        # Under 5 GB keep only folders we were told are running. Processing/queued/new
+        # copies on this box are how Render hit 0 GB and later steps lost prep.json.
+        active = e["id"] in keep_ids or (
+            not crush and (e.get("status") or "") in KEEP_EPISODE_STATUSES)
         for d in (e.get("work_dir"), e.get("output_dir")):
             if d and active:
                 keep_dirs.add(_resolved(d))
         if (e.get("status") or "") == "done" and e["id"] not in keep_ids:
             done_eps.append(e)
-
-    try:
-        free = shutil.disk_usage(lib if lib.exists() else Path.cwd()).free
-    except OSError:
-        free = 0
+    if crush:
+        have = {e["id"] for e in done_eps}
+        for e in rows:
+            if e["id"] not in keep_ids and e["id"] not in have:
+                done_eps.append(e)
     age_cut = now_ts if free < TIGHT_DISK else (now_ts - min_age)
     targets = [e for e in done_eps if (e.get("updated") or 0) <= age_cut]
     keep_work = free >= LOW_WORK_DISK

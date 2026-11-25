@@ -11,9 +11,10 @@ from . import cloud, deliver, envfile, scan, storage, timeline
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
 # Website-disk misses after R2-only fetch. Retry ourselves — do not ask for Process or a Retry click.
-WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions", "facemap", "analyze", "lip_mesh"}
+WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions", "facemap", "analyze", "lip_mesh",
+                    "mksrt_src", "mksrt_dub", "proxy", "lip_gpu", "words_src", "words_dub"}
 WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files", "lips_nets",
-                      "ranges.json", "previous step")
+                      "ranges.json", "previous step", "No space left")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -675,7 +676,14 @@ class Runner:
             try:
                 busy = [r["episode_id"] for r in self.db.q(
                     "SELECT DISTINCT episode_id FROM jobs WHERE status='running'")]
-                busy += [r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='processing'")]
+                # Under 5 GB, only folders of jobs that are actually running. Keeping every
+                # processing/queued folder is how Render hit ENOSPC and the next steps lost their files.
+                try:
+                    room = shutil.disk_usage(cfg.library).free
+                except OSError:
+                    room = 0
+                if room >= 5 * 10**9:
+                    busy += [r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='processing'")]
                 out = storage.maybe_daily_cleanup(self.db, cfg.library, keep_episode_ids=busy, force=tight)
                 parked = storage.free_parked_media(self.db, keep_episode_ids=busy)
                 freed = (out or {}).get("freed") or 0
@@ -913,6 +921,16 @@ class Runner:
                     f.write(f"\n(stopped by signal, exit {rc}: trying again once)\n")
                 self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
                           message=f"stopped unexpectedly (exit {rc}); trying again")
+            elif once and (getattr(e, "errno", None) == 28 or "No space left" in str(e)):
+                try:
+                    show, ep, _ = self.episode_context(j["episode_id"])
+                    storage.free_disk(ep["work_dir"], db=self.db, keep_episode_id=j["episode_id"])
+                except Exception:
+                    pass
+                with open(j["log_path"], "a") as f:
+                    f.write("\n(disk full: made room, trying again once)\n")
+                self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
+                          message="disk full; made room, trying again")
             elif once and is_key_limit_error(e):
                 # OpenRouter 403 spend cap — not a Claude empty-reply. One job retry, one call, after the cap can move.
                 with open(j["log_path"], "a") as f:

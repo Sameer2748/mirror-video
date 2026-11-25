@@ -355,6 +355,7 @@ def test_missing_config_or_prep_retries_without_a_click():
     assert not Runner.missing_work_retry("lip_merge", msg, 0)
     assert not Runner.missing_work_retry("translate", "Google quota", 0)
     assert Runner.missing_work_retry("decisions", "waiting for the matching files", 0)
+    assert Runner.missing_work_retry("proxy", "OSError: [Errno 28] No space left on device", 0)
     assert Runner.missing_work_retry("decisions", "waiting for the matching files", 2)
     assert not Runner.missing_work_retry("decisions", "waiting for the matching files", 5)
 
