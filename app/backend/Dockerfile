@@ -25,7 +25,7 @@ RUN mkdir -p /usr/share/fonts/truetype/poppins /app/assets/fonts
 COPY frontend_dist/fonts/Poppins-Bold.ttf /usr/share/fonts/truetype/poppins/Poppins-Bold.ttf
 COPY frontend_dist/fonts/Poppins-Bold.ttf /app/assets/fonts/Poppins-Bold.ttf
 
-ENV PYTHONUNBUFFERED=1 DUBSTUDIO_LIBRARY=/data/library
+ENV PYTHONUNBUFFERED=1 DUBSTUDIO_LIBRARY=/data/library DUBSTUDIO_AUTO_GATES=true
 EXPOSE 8765
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -fsS http://127.0.0.1:${PORT:-8765}/api/info || exit 1
 CMD ["sh", "-c", "python -m uvicorn dubstudio.main:app --host 0.0.0.0 --port ${PORT:-8765}"]

@@ -1471,6 +1471,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
                     if listed == CONFIG and prev_cfg:
                         swapped = _keep_local_config_keys(prev_cfg, swapped)
                     back.write_text(swapped, encoding="utf-8")
+            try:
+                storage.publish_outputs(db, show, ep, [], work_dir=str(root), log=log)
+            except Exception as e:
+                log(f"work files not copied to the cloud yet: {e}")
     if not res.get("ok"):
         raise RuntimeError(f"{name} failed on the rented machine (exit {res.get('rc')}): "
                            f"{(res.get('log') or res.get('error') or '')[-300:]}")

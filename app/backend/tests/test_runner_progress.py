@@ -417,6 +417,27 @@ def test_tick_does_not_start_facemap_until_lip_scan_files_exist(tmp_path, monkey
     assert j["status"] == "running" and started
 
 
+def test_tick_reruns_analyze_when_prep_never_landed(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    monkeypatch.setattr("dubstudio.runner.storage.fetch_work_files", lambda *a, **k: 0)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="WBT", code="WBTDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=102, status="processing",
+                    work_dir=str(tmp_path / "w"), output_dir=str(tmp_path / "o"))
+    aid = db.insert("jobs", episode_id=eid, run=1, step="analyze", ord=1, status="done",
+                    needs=[], resource="cpu", attempt=0)
+    db.insert("jobs", episode_id=eid, run=1, step="merged", ord=2, status="waiting",
+              needs=["analyze"], resource="none")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._tick()
+    mid = db.one("SELECT id FROM jobs WHERE step='merged'")["id"]
+    r._file_wait_at[mid] = 0
+    r._tick()
+    a = db.one("SELECT status, attempt FROM jobs WHERE id=?", (aid,))
+    assert a["status"] == "waiting" and a["attempt"] == 1
+
+
 def test_tick_requeues_matching_wait_that_is_not_a_person(tmp_path, monkeypatch):
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
     db = DB(tmp_path / "t.db")

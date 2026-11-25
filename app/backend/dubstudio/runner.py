@@ -160,6 +160,7 @@ class Runner:
         self._cleanup_busy = False
         self._cleanup_thread = None
         self._file_wait_at = {}
+        self._retried_producer = set()
 
     # ---------- lifecycle ----------
     def start(self):
@@ -1161,6 +1162,7 @@ class Runner:
         if not missing:
             return True
         now_ts = time.time()
+        first = j["id"] not in self._file_wait_at
         if now_ts - self._file_wait_at.get(j["id"], 0) >= 5:
             self._file_wait_at[j["id"]] = now_ts
             try:
@@ -1171,8 +1173,28 @@ class Runner:
             missing = self._missing_work(work, need)
             if not missing:
                 return True
+            if not first:
+                self._retry_missing_producers(j, missing, by)
         self._set(j, message="waiting for " + ", ".join(missing) + " from the previous step")
         return False
+
+    def _retry_missing_producers(self, j, missing, by):
+        """Previous step said done but its file is gone: run that step again. Do not start the later step empty."""
+        for rel in missing:
+            prod = cloud.FILE_PRODUCER.get(rel)
+            if not prod or by.get(prod) not in DONE:
+                continue
+            row = self.db.one(
+                "SELECT id, attempt FROM jobs WHERE episode_id=? AND run=? AND step=?",
+                (j["episode_id"], j["run"], prod))
+            if not row or (row.get("attempt") or 0) >= 3:
+                continue
+            stamp = (row["id"], row.get("attempt") or 0)
+            if stamp in self._retried_producer:
+                continue
+            self._retried_producer.add(stamp)
+            self.retry(row["id"])
+            self._set(j, message=f"waiting for {rel}: running {prod} again")
 
     def _wait_for_work_files(self, j, rels, timeout=1800):
         """Hold this running job until these work files exist. -> False if cancelled."""
