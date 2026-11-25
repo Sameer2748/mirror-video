@@ -693,16 +693,60 @@ def heal_config_inputs(db, ep, W):
         conf.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+# Which earlier step writes each small file (used so tests with a half graph still start).
+FILE_PRODUCER = {
+    "sentences_src.json": "sentences_src",
+    "prep.json": "analyze",
+    "config.json": "analyze",
+    "lips_nets/ranges.json": "lip_gpu",
+    "broll_library/broll_library.json": "library",
+    "decisions.json": "decisions",
+}
+
+# Files a later step reads. Do not send / start that step until these exist (on this box or in R2).
+STEP_INPUT_FILES = {
+    "match": ("sentences_src.json",),
+    "analyze": ("sentences_src.json",),
+    "merged": ("prep.json",),
+    "decisions": ("prep.json",),
+    "translate": (CONFIG,),
+    "lips": ("lips_nets/ranges.json",),
+    "lip_mesh": ("lips_nets/ranges.json",),
+    "lip_merge": ("lips_nets/ranges.json",),
+    "facemap": ("lips_nets/ranges.json", "broll_library/broll_library.json"),
+    "cut": ("prep.json", "decisions.json"),
+    "sheet": ("prep.json", "decisions.json"),
+}
+# Files the visit must bring back before we mark it done (so dependents do not start empty).
+STEP_OUTPUT_FILES = {
+    "match": ("prep.json",),
+    "analyze": ("prep.json",),
+    "merged": ("merged.txt",),
+    "lip_gpu": ("lips_nets/ranges.json",),
+    "lips": ("lips_range",),
+    "library": ("broll_library/broll_library.json",),
+}
+
+
 def required_work_files(name):
     """Small files this visit cannot run without. Early steps (lip, words) may still start with no config.
 
     Render/dynsrt packed without config.json on IT-DE 17 after cleanup. That send must fail here, not on the worker."""
+    extra = list(STEP_INPUT_FILES.get(name) or ())
     if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt", "translate"):
         need = [CONFIG]
         if name in CHAIN or name in CHAIN_NAMES or name == "check":
             need.append("manifest_groups.json")
+        for n in extra:
+            if n not in need:
+                need.append(n)
         return need
-    return []
+    return extra
+
+
+def produced_work_files(name):
+    """Small files this visit must leave in the work folder before dependents may start."""
+    return list(STEP_OUTPUT_FILES.get(name) or ())
 
 
 def ensure_work_for_cloud(show, ep, name, log=print):

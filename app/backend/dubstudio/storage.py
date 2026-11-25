@@ -592,7 +592,7 @@ def send_one(db, row):
 # ---------------- what a worker does with storage (docs/09 §3) ----------------
 MEDIA_KINDS = ("src_video", "dub_audio")                 # the big ones: fetched by the `fetch` step
 WORK_KEEP = ("*.json", "*.tsv", "*.txt", "*.srt", "*.py", "*.jpg", "scene/*.json", "broll_library/*.json",
-             "broll_library/*.xlsx", "scene_slowfix/*")  # small work files worth keeping (a rerun then costs $0)
+             "broll_library/*.xlsx", "scene_slowfix/*", "lips_nets/*.json", "lips_mesh/*.json")
 # `*.jpg` is the top level only (the QC sheet and the final-check frame), not the thousands of thumbs/*.jpg.
 
 _work_fetched = set()

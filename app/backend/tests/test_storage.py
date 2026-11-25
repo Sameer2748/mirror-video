@@ -982,3 +982,10 @@ def test_two_processes_can_start_against_the_same_postgres_at_once(monkeypatch):
     assert dbs[0].one("SELECT COUNT(*) AS n FROM users")["n"] == 0
     for d in dbs:
         d.close()
+
+
+def test_lips_nets_json_is_fetched_as_a_work_file():
+    from dubstudio.storage import _work_wanted
+    assert _work_wanted("lips_nets/ranges.json")
+    assert _work_wanted("prep.json")
+    assert not _work_wanted("lips_nets/thumbs/x.jpg")

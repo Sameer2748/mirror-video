@@ -308,6 +308,7 @@ def test_library_warnings_are_not_the_last_line():
 def test_four_gpu_slots_run_same_show_face_maps_without_mixing_jobs(tmp_path, monkeypatch):
     """Each face map is that episode's own work folder. Four slots start four jobs, including two IMTS."""
     monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    monkeypatch.setenv("MAX_ACTIVE_EPISODES", "10")
     from dubstudio.config import cfg
     monkeypatch.setattr(cfg, "gpu_slots", 4)
     db = DB(tmp_path / "t.db")
@@ -375,6 +376,45 @@ def test_tick_requeues_failed_translate_when_config_was_missing(tmp_path, monkey
     assert j["status"] == "waiting" and j["attempt"] == 1
     ep = db.one("SELECT status FROM episodes WHERE id=?", (eid,))
     assert ep["status"] == "processing"
+
+
+def test_tick_does_not_start_facemap_until_lip_scan_files_exist(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    monkeypatch.setattr("dubstudio.runner.storage.fetch_work_files", lambda *a, **k: 0)
+    from dubstudio.config import cfg
+    monkeypatch.setattr(cfg, "gpu_slots", 4)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="WBT", code="WBTDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=112, status="processing",
+                    work_dir=str(tmp_path / "w"), output_dir=str(tmp_path / "o"))
+    db.insert("jobs", episode_id=eid, run=1, step="lip_gpu", ord=1, status="done", needs=[], resource="gpu")
+    db.insert("jobs", episode_id=eid, run=1, step="library", ord=2, status="done", needs=[], resource="cpu")
+    db.insert("jobs", episode_id=eid, run=1, step="facemap", ord=3, status="waiting",
+              needs=["library", "lip_gpu"], resource="gpu")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._tick()
+    j = db.one("SELECT status, message FROM jobs WHERE step='facemap'")
+    assert j["status"] == "waiting"
+    assert "lips_nets" in (j.get("message") or "")
+
+    (tmp_path / "w" / "lips_nets").mkdir(parents=True)
+    (tmp_path / "w" / "lips_nets" / "ranges.json").write_text("[]")
+    (tmp_path / "w" / "broll_library").mkdir(parents=True)
+    (tmp_path / "w" / "broll_library" / "broll_library.json").write_text("{}")
+    started = []
+
+    class T:
+        def __init__(self, target, args, daemon):
+            pass
+        def start(self):
+            started.append(True)
+
+    monkeypatch.setattr("dubstudio.runner.threading.Thread", T)
+    r._file_wait_at.clear()
+    r._tick()
+    j = db.one("SELECT status FROM jobs WHERE step='facemap'")
+    assert j["status"] == "running" and started
 
 
 def test_tick_requeues_matching_wait_that_is_not_a_person(tmp_path, monkeypatch):

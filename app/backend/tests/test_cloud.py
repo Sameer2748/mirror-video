@@ -1438,6 +1438,15 @@ def test_a_second_render_finds_the_source_video_when_config_still_names_work_inp
     assert "/work/input/src_video/NO_SUB_TAB_FR_EP_21.mp4" in dests
 
 
+def test_later_steps_require_previous_step_files():
+    assert "prep.json" in cloud.required_work_files("merged")
+    assert "sentences_src.json" in cloud.required_work_files("match")
+    assert "lips_nets/ranges.json" in cloud.required_work_files("facemap")
+    assert "lips_nets/ranges.json" in cloud.required_work_files("lip_mesh")
+    assert "prep.json" in cloud.produced_work_files("match")
+    assert "lips_nets/ranges.json" in cloud.produced_work_files("lip_gpu")
+
+
 def test_ensure_work_refuses_to_send_without_config(tmp_path, monkeypatch):
     """Wrong data: empty work dir and no R2 files. Fail this step; do not pack a tar and do not Process again."""
     show, ep = _episode(tmp_path)

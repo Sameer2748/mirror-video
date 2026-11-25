@@ -11,8 +11,9 @@ from . import cloud, deliver, envfile, scan, storage, timeline
 DONE = {"done", "skipped"}
 ACTIVE = {"running"}
 # Website-disk misses after R2-only fetch. Retry ourselves — do not ask for Process or a Retry click.
-WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions"}
-WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files")
+WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions", "facemap", "analyze", "lip_mesh"}
+WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files", "lips_nets",
+                      "ranges.json", "previous step")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -158,6 +159,7 @@ class Runner:
         self.awake = None           # caffeinate while steps run (the Mac must not sleep mid-render)
         self._cleanup_busy = False
         self._cleanup_thread = None
+        self._file_wait_at = {}
 
     # ---------- lifecycle ----------
     def start(self):
@@ -745,6 +747,9 @@ class Runner:
                 self._set(j, status="waiting", message="")
             if any(d["status"] not in DONE for d in deps):
                 continue
+            # Previous job "done" is not enough: the files it wrote must be on this box (or in R2).
+            if not self._work_ready_to_start(j):
+                continue
             # Queued episodes already have their jobs armed. Starting one here would ignore the cap.
             if j["episode_id"] in queued:
                 continue
@@ -1089,6 +1094,9 @@ class Runner:
         run; only the paths differ. Its log is written to the job's log file, so the screens look the same."""
         t0 = time.time()
         show, ep, _ = self.episode_context(j["episode_id"])
+        need = cloud.required_work_files(j["step"])
+        if need and not self._wait_for_work_files(j, need):
+            return
         with open(j["log_path"], "a", encoding="utf-8") as f:
             def log(msg):
                 f.write(str(msg).rstrip() + "\n"); f.flush()
@@ -1113,6 +1121,85 @@ class Runner:
                          (j["episode_id"], j["run"]))
         return {x["step"]: x for x in rows}
 
+    @staticmethod
+    def _work_has(work, rel):
+        p = Path(work) / rel
+        if p.is_file():
+            return True
+        if p.is_dir():
+            try:
+                next(p.iterdir())
+                return True
+            except StopIteration:
+                return False
+        return False
+
+    def _missing_work(self, work, rels):
+        return [n for n in (rels or []) if not self._work_has(work, n)]
+
+    def _work_dir_for(self, j):
+        w = (j.get("params") or {}).get("ctx", {}).get("W")
+        if w:
+            return Path(w)
+        ep = self.db.one("SELECT work_dir FROM episodes WHERE id=?", (j["episode_id"],))
+        return Path((ep or {}).get("work_dir") or "")
+
+    def _work_ready_to_start(self, j):
+        """True when this step may start. If a previous step in this run is supposed to have written
+        files we need, wait until those files are here (fetch from R2) instead of failing on the worker."""
+        need = list(cloud.required_work_files(j["step"]))
+        if j["step"] == "analyze":
+            need = list(dict.fromkeys([*need, *cloud.required_work_files("match")]))
+        by = {row["step"]: row["status"] for row in self.db.q(
+            "SELECT step, status FROM jobs WHERE episode_id=? AND run=?", (j["episode_id"], j["run"]))}
+        # Only wait for a file when the step that writes it exists in this run and is already done.
+        need = [n for n in need if cloud.FILE_PRODUCER.get(n) in by and by[cloud.FILE_PRODUCER[n]] in DONE]
+        if not need:
+            return True
+        work = self._work_dir_for(j)
+        missing = self._missing_work(work, need)
+        if not missing:
+            return True
+        now_ts = time.time()
+        if now_ts - self._file_wait_at.get(j["id"], 0) >= 5:
+            self._file_wait_at[j["id"]] = now_ts
+            try:
+                show, ep, _ = self.episode_context(j["episode_id"])
+                storage.fetch_work_files(show, ep, force=True)
+            except Exception:
+                pass
+            missing = self._missing_work(work, need)
+            if not missing:
+                return True
+        self._set(j, message="waiting for " + ", ".join(missing) + " from the previous step")
+        return False
+
+    def _wait_for_work_files(self, j, rels, timeout=1800):
+        """Hold this running job until these work files exist. -> False if cancelled."""
+        work = self._work_dir_for(j)
+        show, ep, _ = self.episode_context(j["episode_id"])
+        t0 = time.time()
+        while not self.stop.is_set():
+            if j["id"] in self.cancelled:
+                self._set(j, status="cancelled", finished=now(), message="cancelled")
+                return False
+            missing = self._missing_work(work, rels)
+            if not missing:
+                return True
+            try:
+                storage.fetch_work_files(show, ep, force=True)
+            except Exception:
+                pass
+            missing = self._missing_work(work, rels)
+            if not missing:
+                return True
+            if time.time() - t0 > timeout:
+                raise RuntimeError("waiting for " + ", ".join(missing)
+                                   + " from the previous step (not on this box or in R2 yet)")
+            self._set(j, message="waiting for " + ", ".join(missing) + " from the previous step")
+            time.sleep(2.0)
+        return False
+
     def _wait_for_step(self, j, step):
         """Hold this job (no machine rented yet) until `step` has finished. -> False if this job was cancelled."""
         while not self.stop.is_set():
@@ -1136,6 +1223,8 @@ class Runner:
 
     def _run_lips(self, j):
         """Lip opening and the merge, on the one CPU that already has the scan. The merge is a JSON join."""
+        if not self._wait_for_work_files(j, cloud.required_work_files("lips")):
+            return
         t0 = time.time()
         by = self._jobs_by_step(j)
         named = [("lip_mesh", self._expand((j["params"] or {})["cmd"]))]
@@ -1150,6 +1239,8 @@ class Runner:
 
     def _run_match(self, j):
         """Automatic matching and the reading view, on one CPU. The decision pause stays here."""
+        if not self._wait_for_work_files(j, cloud.required_work_files("match")):
+            return
         t0 = time.time()
         by = self._jobs_by_step(j)
         named, to_mark = [], []
@@ -1170,6 +1261,8 @@ class Runner:
         mkdec is first: it checks the decisions and does not need a video. Captions, when this episode has
         them, ride along because they only read the source video. The face map is not here."""
         if not self._wait_for_step(j, "lip_merge"):
+            return
+        if not self._wait_for_work_files(j, cloud.required_work_files("cut")):
             return
         t0 = time.time()
         by = self._jobs_by_step(j)
@@ -1214,6 +1307,16 @@ class Runner:
             if name == "lips":
                 return self._run_lips(j)
             return self._run_cut(j)
+        missing = self._missing_work(ep["work_dir"], cloud.produced_work_files(name))
+        if missing:
+            try:
+                storage.fetch_work_files(show, ep, force=True)
+            except Exception:
+                pass
+            missing = self._missing_work(ep["work_dir"], cloud.produced_work_files(name))
+        if missing:
+            raise RuntimeError(f"{name} finished without " + ", ".join(missing)
+                               + " — not marking later steps done")
         msg = f"done on one rented machine in {time.time() - t0:.0f} s ({', '.join(n for n, _ in named)})"
         self._mark_visit(to_mark, msg)
 
@@ -1648,6 +1751,13 @@ class Runner:
                           message=cloud.step_wait_message(f"{done} of {total} pieces", info))
             out = cloud.lip_scan(self.db, show, ep, float(dur), log=log, on_progress=progress,
                                  release_log=j["log_path"])
+        if not self._work_has(ep["work_dir"], "lips_nets/ranges.json"):
+            try:
+                storage.fetch_work_files(show, ep, force=True)
+            except Exception:
+                pass
+        if not self._work_has(ep["work_dir"], "lips_nets/ranges.json"):
+            raise RuntimeError("lip scan finished without lips_nets/ranges.json; not starting lip mesh or face map")
         self._set(j, status="done", progress=1, finished=now(),
                   message=f"{out['files']} pieces scanned on {out['pieces']} machines in {out['seconds']:.0f} s")
 
@@ -1786,6 +1896,8 @@ class Runner:
         sentences Google left (translate --export-todo -> translate_ai -> translate --engine file --import)."""
         show, ep, _ = self.episode_context(j["episode_id"])
         W = Path((j.get("params") or {}).get("ctx", {}).get("W") or ep["work_dir"])
+        if not self._wait_for_work_files(j, ["config.json"]):
+            return
         if not (W / "config.json").is_file():
             with open(j["log_path"], "a", encoding="utf-8") as log:
                 storage.fetch_work_files(show, ep, log=lambda m: (log.write(str(m).rstrip() + "\n"), log.flush()),
@@ -1942,11 +2054,8 @@ class Runner:
         prep.json. It only rides to the cloud as part of the match visit (`_run_match`). Sending it alone
         used to hang (TGS ep31: status stayed 'starting' while the work folder was packed for a rented machine)."""
         w = Path(j["params"]["ctx"]["W"])
-        if not (w / "prep.json").is_file():
-            show, ep, _ = self.episode_context(j["episode_id"])
-            with open(j["log_path"], "a", encoding="utf-8") as log:
-                storage.fetch_work_files(show, ep, log=lambda m: (log.write(str(m).rstrip() + "\n"), log.flush()),
-                                         force=True)
+        if not self._wait_for_work_files(j, ["prep.json"]):
+            return
         if not (w / "prep.json").is_file():
             raise RuntimeError("cannot build the reading view: prep.json is not on this box or in the cloud. "
                                "Retry matching after that file is in R2 — do not Process again")
