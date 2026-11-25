@@ -1133,7 +1133,7 @@ class Runner:
     def _point_translation_cmd():
         """Put `translation.out` back on config.json if a later unpack wiped it (TAB EP31)."""
         return ["{py}", "-c",
-                "import glob, json, os\n"
+                "import glob, json, os, shutil\n"
                 "p = '/work/config.json'\n"
                 "c = json.load(open(p, encoding='utf-8'))\n"
                 "cands = []\n"
@@ -1147,7 +1147,12 @@ class Runner:
                 "    if q: cands += glob.glob(os.path.join(os.path.dirname(q), '*english*.srt'))\n"
                 "src = next((x for x in cands if x and os.path.isfile(x)), '')\n"
                 "if src:\n"
-                "    c.setdefault('translation', {})['out'] = os.path.abspath(src)\n"
+                "    want = (c.get('translation') or {}).get('out') or src\n"
+                "    dest = os.path.abspath(want)\n"
+                "    if os.path.abspath(src) != dest:\n"
+                "        os.makedirs(os.path.dirname(dest) or '.', exist_ok=True)\n"
+                "        shutil.copy(src, dest)\n"
+                "    c.setdefault('translation', {})['out'] = dest\n"
                 "    json.dump(c, open(p, 'w'), indent=1)\n"
                 "    print('translated SRT', c['translation']['out'])\n"
                 "else:\n"
@@ -1207,6 +1212,10 @@ class Runner:
                 continue
             if step == "transitions":
                 named.append(("clean_master", self._clean_master_cmd()))
+            # English burn needs the Google SRT on /out. Translate often wrote it; a retry after a
+            # failed unpack does not, so find and copy it before subs_en opens the path.
+            if step == "subs_en":
+                named.append(("point_translation", self._expand(self._point_translation_cmd())))
             named.append((step, self._expand(cmd)))
             to_mark.append(sj)
         # The automatic cut (no B-roll, fast lines still fast) is rendered first, then the scene edit
@@ -1276,6 +1285,20 @@ class Runner:
                 with open(j["log_path"], "a", encoding="utf-8") as f:
                     f.write(f"the editor's own transitions on {n} cuts kept on top of the plan\n")
 
+        ctx = (j["params"] or {}).get("ctx") or {}
+        for key in ("en_srt_burn", "name_en_srt"):
+            path = ctx.get(key)
+            if not path:
+                continue
+            got = storage.ensure_out_local(show, ep, Path(path).name, dest=path) if storage.configured() else None
+            if got and Path(got).is_file():
+                break
+            if Path(path).is_file():
+                break
+            for cand in Path(work).glob("*english*.srt"):
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(cand, path)
+                break
         named, to_mark = self._tail_commands(j, by, work)
         if any(n == "subs_en" for n, _ in named):
             extra, extra_jobs = self._tail_closing(show, ep, by)

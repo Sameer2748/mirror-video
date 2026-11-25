@@ -287,7 +287,8 @@ def download(key, path, timeout=3600.0, on_progress=None):
     s = settings()
     p = Path(path); p.parent.mkdir(parents=True, exist_ok=True)
     head = _auth_headers("GET", key, None, None, EMPTY_SHA)
-    tmp = p.with_name(p.name + ".part")
+    # Unique suffix: disk cleanup used to glob `_*.tar.gz.part` and delete another episode's download.
+    tmp = p.with_name(p.name + f".{time.time_ns()}.part")
     got = 0
     with httpx.Client(timeout=timeout) as client:
         with client.stream("GET", f"{s['endpoint']}{_url_path(key)}", headers=head) as r:
@@ -303,6 +304,8 @@ def download(key, path, timeout=3600.0, on_progress=None):
             except Exception:
                 tmp.unlink(missing_ok=True)
                 raise
+    if not tmp.is_file():
+        raise FileNotFoundError(tmp)
     tmp.replace(p)
     return {"path": str(p), "size": p.stat().st_size}
 
@@ -843,7 +846,14 @@ def free_disk(work, log=print, db=None, keep_episode_id=None):
     for folder in (work_root, W, Path("/tmp")):
         if not folder.is_dir():
             continue
-        for p in [*folder.glob("_*.tar.gz"), *folder.glob("_*.tar.gz.part"), *folder.glob("*.tar.gz.part")]:
+        for p in [*folder.glob("_*.tar.gz"), *folder.glob("_*.tar.gz.part"), *folder.glob("*.tar.gz.part"),
+                  *folder.glob("_*.tar.gz.*.part")]:
+            # A .part is an in-flight download. Another episode's unpack used to vanish here
+            # (`_743_render_tail_out_back.tar.gz.part` gone before replace).
+            if ".part" in p.name:
+                continue
+            if keep_episode_id is not None and p.name.startswith(f"_{keep_episode_id}_"):
+                continue
             drop_file(p)
 
     kids = [work_root]

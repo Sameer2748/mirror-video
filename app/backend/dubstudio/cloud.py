@@ -1320,23 +1320,29 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         if not sent.get(which):
             continue
         tar = _scratch_tar(W, ep, name, f"{which}_back")
-        part = tar.with_name(tar.name + ".part")
+        def _drop_scratch():
+            tar.unlink(missing_ok=True)
+            for leftover in tar.parent.glob(tar.name + "*.part"):
+                leftover.unlink(missing_ok=True)
         try:
             try:
+                storage.download(key, tar)
+                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
+            except FileNotFoundError:
+                log("the download file vanished; fetching the results again")
+                _drop_scratch()
                 storage.download(key, tar)
                 wrote, skipped = unpack_returned_tar(tar, root, kind=which)
             except OSError as e:
                 if e.errno != 28:
                     raise
                 log("disk full while unpacking; making room and retrying")
-                tar.unlink(missing_ok=True)
-                part.unlink(missing_ok=True)
+                _drop_scratch()
                 _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
                 storage.download(key, tar)
                 wrote, skipped = unpack_returned_tar(tar, root, kind=which)
         finally:
-            tar.unlink(missing_ok=True)
-            part.unlink(missing_ok=True)
+            _drop_scratch()
         if skipped:
             log(f"{which}: kept {wrote} files, left {skipped} scratch files on the rented machine")
         if which == "out":

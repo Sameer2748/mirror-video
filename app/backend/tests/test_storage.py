@@ -660,6 +660,26 @@ def test_free_disk_drops_published_videos_when_scratch_is_already_gone(tmp_path,
     assert (cur / "proxy_540.mp4").exists()
 
 
+def test_free_disk_does_not_delete_an_in_flight_download(tmp_path, monkeypatch):
+    """EP743's out tar vanished while EP752's visit called free_disk on the shared library/work folder."""
+    import shutil
+    from dubstudio import storage
+    work_root = tmp_path / "library" / "work"
+    cur = work_root / "IMTSITDE_ep15"
+    cur.mkdir(parents=True)
+    part = work_root / "_743_render_tail_out_back.tar.gz.part"
+    mine = work_root / "_743_render_tail_work_in.tar.gz"
+    other = work_root / "_752_render_tail_work_in.tar.gz"
+    part.write_bytes(b"P" * 100)
+    mine.write_bytes(b"M" * 50)
+    other.write_bytes(b"O" * 80)
+    monkeypatch.setattr(shutil, "disk_usage", lambda p: type("U", (), {"free": 0, "used": 50e9, "total": 50e9})())
+    storage.free_disk(cur, log=lambda m: None, db=None, keep_episode_id=743)
+    assert part.exists()
+    assert mine.exists()
+    assert not other.exists()
+
+
 def test_daily_cleanup_drops_done_episode_leftovers_and_keeps_active(tmp_path, monkeypatch):
     """Finished TAB episodes leave source video, published masters, segs, and pack tars on the 200 GB
     disk. A once-a-day pass removes those (they are already in R2) and leaves a processing episode alone."""
