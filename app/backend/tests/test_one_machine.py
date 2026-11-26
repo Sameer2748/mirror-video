@@ -73,10 +73,11 @@ def test_the_status_line_counts_this_step_not_the_pool(monkeypatch):
         return {"status": "COMPLETED", "output": {}}
 
     def health(kind="cpu"):
-        raise AssertionError("the pool size must not be read for this step's line")
+        return {"workers": {"idle": 0}, "jobs": {"inQueue": 0}}
 
     monkeypatch.setattr(cloud, "status", status)
     monkeypatch.setattr(cloud, "health", health)
+    cloud._health_memo.clear()
     seen = []
     done, failed = cloud.wait(["piece-a", "piece-b"], on_progress=lambda d, t, info: seen.append(dict(info)), poll=0, timeout=5)
     assert not failed and set(done) == {"piece-a", "piece-b"}
@@ -103,9 +104,41 @@ def test_a_missing_machine_job_fails_instead_of_waiting(monkeypatch):
         raise urllib.error.HTTPError("https://x", 404, "missing", {}, None)
 
     monkeypatch.setattr(cloud, "status", status)
+    monkeypatch.setattr(cloud, "health", lambda kind="cpu": {"workers": {"idle": 0}, "jobs": {"inQueue": 0}})
+    cloud._health_memo.clear()
     done, failed = cloud.wait(["gone"], poll=0, timeout=5)
     assert done == {}
     assert failed == {"gone": "the machine job is gone"}
+
+
+def test_stuck_queue_is_cancelled_when_workers_are_idle(monkeypatch):
+    cancelled = []
+    monkeypatch.setattr(cloud, "status", lambda jid, kind="cpu": {"status": "IN_QUEUE"})
+    monkeypatch.setattr(cloud, "cancel", lambda jid, kind="cpu": cancelled.append(jid))
+    monkeypatch.setattr(cloud, "health", lambda kind="cpu": {
+        "workers": {"idle": 18, "running": 8}, "jobs": {"inQueue": 181, "inProgress": 8}})
+    cloud._health_memo.clear()
+    done, failed = cloud.wait(["stuck-job"], poll=0, timeout=5, stuck_s=0)
+    assert done == {}
+    assert failed == {"stuck-job": "idle workers ignored the queue"}
+    assert cancelled == ["stuck-job"]
+
+
+def test_idle_ignoring_queue_needs_idle_and_backlog():
+    assert cloud.idle_ignoring_queue(snap={"workers": {"idle": 18}, "jobs": {"inQueue": 181}})
+    assert not cloud.idle_ignoring_queue(snap={"workers": {"idle": 0}, "jobs": {"inQueue": 181}})
+    assert not cloud.idle_ignoring_queue(snap={"workers": {"idle": 18}, "jobs": {"inQueue": 0}})
+
+
+def test_factory_queue_full_when_backlog_beats_idle(monkeypatch):
+    monkeypatch.setattr(cloud, "health", lambda kind="cpu": {
+        "workers": {"idle": 18}, "jobs": {"inQueue": 181}})
+    cloud._health_memo.clear()
+    assert cloud.factory_queue_full()
+    monkeypatch.setattr(cloud, "health", lambda kind="cpu": {
+        "workers": {"idle": 10}, "jobs": {"inQueue": 4}})
+    cloud._health_memo.clear()
+    assert not cloud.factory_queue_full()
 
 
 def test_a_cancel_stops_the_step_and_clears_its_folders(tmp_path):

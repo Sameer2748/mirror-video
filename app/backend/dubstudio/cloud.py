@@ -232,6 +232,43 @@ def health(kind="cpu"):
     return _call("/health", timeout=30, kind=kind)
 
 
+_health_memo = {}
+
+
+def health_cached(kind="cpu", ttl=5):
+    """RunPod /health, reused for a few seconds so a tick does not hammer the API."""
+    now_t = time.time()
+    hit = _health_memo.get(kind)
+    if hit and now_t - hit[0] < ttl:
+        return hit[1]
+    try:
+        h = health(kind)
+    except Exception:
+        h = None
+    _health_memo[kind] = (now_t, h)
+    return h
+
+
+def idle_ignoring_queue(kind="cpu", snap=None):
+    """True when boxes sit idle while jobs sit IN_QUEUE (RunPod not assigning)."""
+    h = snap if snap is not None else health_cached(kind)
+    if not h:
+        return False
+    w, j = h.get("workers") or {}, h.get("jobs") or {}
+    return int(w.get("idle") or 0) > 0 and int(j.get("inQueue") or 0) > 0
+
+
+def factory_queue_full(kind="cpu"):
+    """True when more sends will only grow IN_QUEUE. Idle workers must take the backlog first."""
+    h = health_cached(kind)
+    if not h:
+        return False
+    w, j = h.get("workers") or {}, h.get("jobs") or {}
+    idle = int(w.get("idle") or 0)
+    queued = int(j.get("inQueue") or 0)
+    return queued > idle + max(pieces(), 8)
+
+
 def cancel(job_id, kind="cpu"):
     """Ask RunPod to stop a job. Used when a try is abandoned so we stop paying for it."""
     return _call(f"/cancel/{job_id}", body={}, timeout=30, kind=kind)
@@ -305,11 +342,17 @@ def step_wait_message(label, info):
     return f"{label}: waiting for a free machine"
 
 
-def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
+def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu", stuck_s=None):
     """Wait for every job. -> ({job id: status}, [failed job ids with their reason]).
     A rented machine can be slow or taken away mid-job, so a failure is reported, not raised: the caller decides
-    what to send again. The pieces that finished are kept."""
+    what to send again. The pieces that finished are kept.
+
+    If RunPod leaves jobs IN_QUEUE while workers are idle, cancel those jobs so the caller
+    sends a new id (idle boxes often pick a fresh /run, not the stuck ticket)."""
     done, failed, start = {}, {}, time.time()
+    queued_since = {}
+    if stuck_s is None:
+        stuck_s = max(0, envfile.number("DUBSTUDIO_QUEUE_STUCK_SECONDS", 45))
     while len(done) + len(failed) < len(job_ids):
         if time.time() - start > timeout:
             for jid in job_ids:
@@ -317,6 +360,9 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
                     failed[jid] = f"still running after {timeout} s"
             break
         on_machine = waiting = 0
+        snap = health_cached(kind)
+        ignore = idle_ignoring_queue(kind, snap=snap)
+        now_t = time.time()
         for jid in job_ids:
             if jid in done or jid in failed:
                 continue
@@ -331,12 +377,24 @@ def wait(job_ids, on_progress=None, timeout=7200, poll=10, kind="cpu"):
                 continue
             state = st.get("status")
             if state == "COMPLETED":
+                queued_since.pop(jid, None)
                 done[jid] = st
             elif state in ("FAILED", "CANCELLED", "TIMED_OUT"):
+                queued_since.pop(jid, None)
                 failed[jid] = str(st.get("error") or st.get("output") or state)[:300]
             elif state == "IN_PROGRESS":
+                queued_since.pop(jid, None)
                 on_machine += 1
             elif state == "IN_QUEUE":
+                queued_since.setdefault(jid, now_t)
+                if ignore and now_t - queued_since[jid] >= stuck_s:
+                    try:
+                        cancel(jid, kind=kind)
+                    except Exception:
+                        pass
+                    failed[jid] = "idle workers ignored the queue"
+                    queued_since.pop(jid, None)
+                    continue
                 waiting += 1
         if on_progress:
             # This step's own jobs. The pool size (how many machines are busy for other episodes) is not this step.
@@ -1665,6 +1723,7 @@ def _transient_cloud_error(msg):
         "http error 500", "http error 502", "http error 503", "http error 504",
         "internal server error", "bad gateway", "gateway timeout", "service unavailable",
         "connection reset", "remote disconnected", "timed out",
+        "idle workers ignored the queue",
     ))
 
 

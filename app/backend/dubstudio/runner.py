@@ -810,6 +810,9 @@ class Runner:
                     continue
                 if packing >= PACK_AT_ONCE:
                     continue
+                # 181 IN_QUEUE + idle boxes: more sends will not get a worker. wait() resubmits stuck tickets.
+                if cloud.factory_queue_full():
+                    continue
             res = j["resource"]
             if res in slots and busy.get(res, 0) >= slots[res]:
                 continue
