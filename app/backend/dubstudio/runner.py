@@ -432,10 +432,11 @@ class Runner:
             run = self.latest_run(r["id"])
             jobs = d.q("SELECT step, status, progress, params FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
                        (r["id"], run)) if run else []
-            cur = next((j for j in jobs if j["status"] == "running"), None)
+            from .visits import live_for_jobs
+            live = live_for_jobs(jobs)
             done = sum(1 for j in jobs if j["status"] in ("done", "skipped"))
-            out.append({**r, "working": r["id"] in active, "step": (cur or {}).get("step"),
-                        "step_label": ((cur or {}).get("params") or {}).get("label"),
+            out.append({**r, "working": r["id"] in active, "step": live["step"],
+                        "step_label": live["label"], "step_message": live["message"],
                         "steps_done": done, "steps": len(jobs),
                         "progress": round(done / len(jobs), 3) if jobs else 0})
         for i, e in enumerate([x for x in out if x["status"] == "queued"], start=1):

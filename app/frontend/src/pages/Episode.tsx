@@ -4,6 +4,7 @@ import { api, Episode, Upload, useLive } from "../api";
 import { base, Chip, ErrorBox, fmtDur, fmtSize, Picker, uploadEpisodeFile } from "../ui";
 import { acceptOf, isKindFile, KIND_EXTS } from "./bulkFiles";
 import Processing from "./Processing";
+import { liveLabel } from "../visits";
 import Matching from "./Matching";
 import { RenderRow } from "./Renders";
 
@@ -51,6 +52,9 @@ export default function EpisodePage() {
         {" / "}EP {ep.number}</div>
       <div className="page-head">
         <h1>{ep.show.name} <span className="muted" style={{ fontWeight: 500 }}>Episode {ep.number}</span> <Chip status={ep.status} extra={ep.status === "processing" ? `${Math.round(prog * 100)}%` : undefined} /></h1>
+        {ep.status === "processing" && liveLabel(ep.jobs) && (
+          <div className="muted small-text" style={{ marginTop: 6 }}>{liveLabel(ep.jobs)}</div>
+        )}
       </div>
       {ep.status === "queued" && (
         <div className="callout">

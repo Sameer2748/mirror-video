@@ -172,7 +172,7 @@ export default function ShowPage() {
       )}
       {eps && !!eps.length && (
         <table className="table">
-          <thead><tr><th>Episode</th><th>Status</th><th>Progress</th><th>Last change</th><th>Output folder</th><th></th></tr></thead>
+          <thead><tr><th>Episode</th><th>Status</th><th>Now</th><th>Progress</th><th>Last change</th><th></th></tr></thead>
           <tbody>
             {eps.map((e) => {
               const imp = imports[e.number];
@@ -183,11 +183,14 @@ export default function ShowPage() {
                 <td>{downloading
                   ? <Chip status={imp.status} map={DOWNLOAD_STATUS} />
                   : <Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} />}</td>
-                <td style={{ width: 220 }}>{downloading
-                  ? <span className="muted small-text">{imp.message}</span>
+                <td className="muted small-text" style={{ maxWidth: 340 }}>
+                  {downloading ? (imp.message || "downloading")
+                    : (e.step_label || "") + (e.step_message ? ` — ${e.step_message}` : "")}
+                </td>
+                <td style={{ width: 160 }}>{downloading
+                  ? null
                   : e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
                 <td className="muted">{fmtWhen(e.updated)}</td>
-                <td className="muted small-text">{(e.output_dir || "").replace((show.folder || "") + "/", "")}</td>
                 <td className="right" onClick={(ev) => ev.stopPropagation()}>
                   {e.status === "review" && (
                     <button className="small primary" disabled={!!busy}

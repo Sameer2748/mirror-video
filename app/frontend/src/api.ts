@@ -20,12 +20,13 @@ export type Episode = {
   updated?: number; progress?: number; assets: Asset[]; jobs: Job[]; run?: number; show: Show;
   output_existing: string[]; candidates?: Record<string, string[]>; queue_position?: number;
   batch_id?: number | null; have?: string[]; ready?: boolean;
-  step?: string | null; step_label?: string | null; steps_done?: number; steps?: number;
+  step?: string | null; step_label?: string | null; step_message?: string | null;
+  steps_done?: number; steps?: number;
 };
 export type BatchEpisode = {
   id: number; show_id: number; number: number; status: string; progress?: number | null;
   queue_position?: number; have?: string[]; ready?: boolean; step?: string | null; step_label?: string | null;
-  steps_done?: number; steps?: number; run?: number | null; batch_id?: number | null; updated?: number;
+  step_message?: string | null; steps_done?: number; steps?: number; run?: number | null; batch_id?: number | null; updated?: number;
 };
 export type Batch = {
   id: number; show_id: number; start_num: number; end_num: number; status: string;
@@ -35,7 +36,8 @@ export type Batch = {
 };
 export type QueueItem = {
   id: number; number: number; status: string; code: string; name: string; working: boolean;
-  step?: string | null; step_label?: string | null; steps_done: number; steps: number; progress: number; position?: number;
+  step?: string | null; step_label?: string | null; step_message?: string | null;
+  steps_done: number; steps: number; progress: number; position?: number;
 };
 export type QueueView = { max_active: number; working: QueueItem[]; waiting: QueueItem[] };
 export type FlaggedRow = {

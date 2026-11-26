@@ -182,7 +182,7 @@ function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, onDe
     : "waiting for files";
   const step = uploading ? "uploading…" : e.status === "queued"
     ? `in the queue${e.queue_position && e.queue_position > 1 ? ` · ${e.queue_position - 1} ahead` : ""}`
-    : (e.step_label || e.step || (e.ready ? "" : "needs files"));
+    : (e.step_label || e.step || (e.ready ? "" : "needs files")) + (e.step_message ? ` — ${e.step_message}` : "");
   return (
     <>
       <tr className="clickable" onClick={onToggle}>

@@ -699,12 +699,11 @@ def _decorate_episodes(eps):
             e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)
                                   / max(len(js), 1), 3)
             e["steps_done"] = sum(1 for j in js if j["status"] in ("done", "skipped"))
-            cur = next((j for j in js if j["status"] == "running"), None) \
-                or next((j for j in js if j["status"] == "needs_input"), None) \
-                or next((j for j in js if j["status"] == "failed"), None)
-            if cur:
-                e["step"] = cur["step"]
-                e["step_label"] = (cur.get("params") or {}).get("label", cur["step"])
+            from .visits import live_for_jobs
+            live = live_for_jobs(js)
+            e["step"] = live["step"]
+            e["step_label"] = live["label"]
+            e["step_message"] = live["message"]
         have = have_by_ep.get(e["id"]) or set()
         e["have"] = sorted(have)
         e["ready"] = "src_video" in have and "dub_audio" in have

@@ -36,7 +36,7 @@ function Queue() {
       <td style={{ width: 300 }}>
         {e.working ? <>
           <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>
-          <div className="muted small-text">{e.step_label || e.step || "starting"} · step {e.steps_done + 1} of {e.steps}</div>
+          <div className="muted small-text">{e.step_label || e.step || "starting"}{e.step_message ? ` — ${e.step_message}` : ""} · {e.steps_done}/{e.steps}</div>
         </> : <span className="muted small-text">waiting for the machine</span>}
       </td>
       <td className="right"><Link className="button small ghost" to={`/episodes/${e.id}`}>Open</Link></td>
