@@ -172,6 +172,18 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Does not.** An episode already **on a machine** under the old pack (e.g. 42) — wait until it fails, then Retry match.
 
+---
+
+### P16 — Lip scan / render GET the Word script
+
+**Now.** The `.docx` is only `mksrt --script` (Whisper SRT cleaned against the script). Every cloud visit still attached `dub_script` / `src_script` as a signed GET, and leftover `/files/F1/….docx` was rewritten onto **any** command. Lip opening and render then died on a missing package they never open.
+
+**Wrong fix.** Fetch the script onto those machines so python-docx can open it.
+
+**Right fix (coded).** Send the script only when the visit’s command has `--script`. Lip, render, captions, dynsrt keep video/audio only.
+
+**Helps.** Lip / render no longer fail because a script GET 404s.
+
 **Does not.** Locked stitch. Process again.
 
 ---

@@ -572,10 +572,54 @@ def test_leftover_files_f1_script_matches_when_umlaut_was_stripped(tmp_path):
 def test_small_docx_asset_is_sent_as_its_own_get():
     class DB:
         def q(self, sql, args=()):
-            return [{"path": "/work/input/dub_script/ep.docx", "r2_key": "shows/WBT/ep101/input/ep.docx"}]
+            return [{"path": "/work/input/dub_script/ep.docx", "r2_key": "shows/WBT/ep101/input/ep.docx",
+                     "kind": "dub_script"}]
 
-    extra = cloud._input_asset_files(DB(), {"id": 1}, {})
+    extra = cloud._input_asset_files(DB(), {"id": 1}, {}, want_script=True)
     assert "/work/input/dub_script/ep.docx" in extra.values()
+    lips = cloud._input_asset_files(DB(), {"id": 1}, {}, want_script=False)
+    assert "/work/input/dub_script/ep.docx" not in lips.values()
+
+
+def test_lip_and_render_do_not_fetch_or_bind_the_script(tmp_path):
+    """The .docx is only for mksrt --script (Whisper vs script). Lip scan / render used to GET it
+    anyway; a missing leftover /files/F1/…docx then failed the visit."""
+    script = str(tmp_path / "input" / "dub_script" / "Episode.docx")
+    video = str(tmp_path / "input" / "src_video" / "ep.mp4")
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": script, "kind": "dub_script"}, {"path": video, "kind": "src_video"}]
+
+    leftover = ["python", "lipmesh.py", "--video", "/files/F0/ep.mp4",
+                "--out-dir", "/work/lips_mesh", "/files/F1/Episode.docx"]
+    out = cloud._localise_cmd_inputs(leftover, DB(), {"id": 1})
+    assert out[-1] == "/files/F1/Episode.docx"
+    extra = cloud._input_asset_files(DB(), {"id": 1}, {})
+    assert script not in extra.values()
+    assert video in extra.values()
+
+    mksrt = ["python", "mksrt.py", "--script", "/files/F1/Episode.docx"]
+    out = cloud._localise_cmd_inputs(mksrt, DB(), {"id": 1})
+    assert out[-1] == script
+
+
+def test_config_script_path_is_not_sent_on_render(tmp_path):
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    script = work / "input" / "dub_script" / "ep.docx"
+    video = work / "input" / "src_video" / "ep.mp4"
+    script.parent.mkdir(parents=True)
+    video.parent.mkdir(parents=True)
+    script.write_bytes(b"PK")
+    video.write_bytes(b"v" * (cloud.SMALL + 8))
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(video), "dub_script": str(script)}))
+    got = cloud._files_named_in_config(work, Path(ep["output_dir"]), {})
+    assert str(video) in got.values()
+    assert str(script) not in got.values()
+    got2 = cloud._files_named_in_config(work, Path(ep["output_dir"]), {}, want_script=True)
+    assert str(script) in got2.values()
 
 
 def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):

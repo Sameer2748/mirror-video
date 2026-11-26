@@ -638,7 +638,9 @@ def _swap(text, pairs):
 
 
 KEEP_CONFIG_KEYS = ("translation",)
-INPUT_CONFIG_KEYS = ("src_video", "dub_audio", "dub_script", "src_script")
+MEDIA_INPUT_KINDS = ("src_video", "dub_audio")
+SCRIPT_INPUT_KINDS = ("dub_script", "src_script")
+INPUT_CONFIG_KEYS = MEDIA_INPUT_KINDS + SCRIPT_INPUT_KINDS
 
 
 def _keep_local_config_keys(previous, incoming_text):
@@ -675,7 +677,7 @@ def ensure_episode_inputs(db, show, ep, log=print):
     if db is None or not isinstance(ep, dict) or ep.get("id") is None:
         return
     try:
-        storage.fetch_inputs(db, show or {}, ep, kinds=list(INPUT_CONFIG_KEYS), log=log)
+        storage.fetch_inputs(db, show or {}, ep, kinds=list(MEDIA_INPUT_KINDS), log=log)
     except Exception as ex:
         log(f"could not fetch the source video/audio: {ex}")
 
@@ -882,7 +884,12 @@ def _walk_strings(obj):
             yield from _walk_strings(v)
 
 
-def _files_named_in_config(W, O, already):
+def _cmd_wants_script(cmd):
+    """mksrt --script is the only pipeline flag that opens the .docx/.txt script."""
+    return any(str(c) == "--script" for c in (cmd or []))
+
+
+def _files_named_in_config(W, O, already, want_script=False):
     """The big files a step needs may be named **only inside config.json**, never on the command line.
     `dubstitch.py manifest --work W` is the whole command, and `cmd_manifest` then does
     `probe_duration_ms(cfg["src_video"])`. Found the hard way: the first real cloud `manifest` died on
@@ -913,6 +920,8 @@ def _files_named_in_config(W, O, already):
                 p = Path(value)
         value = str(p)
         if value in seen:
+            continue
+        if Path(value).suffix.lower() in SCRIPT_EXT and not want_script:
             continue
         try:
             size = p.stat().st_size if p.is_file() else SMALL + 1
@@ -961,6 +970,7 @@ def _localise_cmd_inputs(cmd, db, ep):
     src_name = _fold_name(Path(by_kind.get("src_video") or "").name)
     dub_name = _fold_name(Path(by_kind.get("dub_audio") or "").name)
     argv0 = Path(str((cmd or [""])[0])).name.lower()
+    wants_script = _cmd_wants_script(cmd)
     input_prev = ("--script", "--media", "--video", "--input", "-i")
     output_prev = ("--out", "-o", "--out-dir", "--out-json")
     output_names = {n.lower() for n in LOOSE_WORK_FILES}
@@ -987,14 +997,18 @@ def _localise_cmd_inputs(cmd, db, ep):
                 prev = c if isinstance(c, str) else ""
                 continue
             hit = by_fold.get(_fold_name(name))
+            if hit and suf in SCRIPT_EXT and not wants_script:
+                hit = None
             if not hit and prev in input_prev:
-                if suf in SCRIPT_EXT:
+                if suf in SCRIPT_EXT and wants_script:
                     hit = by_kind.get("dub_script") or by_kind.get("src_script")
                 elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
                     hit = by_kind.get("dub_audio")
                 elif suf in {".mp4", ".mov", ".mkv", ".webm"}:
                     hit = by_kind.get("src_video")
-            elif not hit and suf in SCRIPT_EXT:
+            elif not hit and suf in SCRIPT_EXT and wants_script:
+                # Only mksrt --script opens the Word file. Binding a leftover
+                # .docx onto lip scan / render made those visits GET it and die.
                 hit = by_kind.get("dub_script") or by_kind.get("src_script")
             out.append(hit or c)
         else:
@@ -1003,17 +1017,20 @@ def _localise_cmd_inputs(cmd, db, ep):
     return out
 
 
-def _input_asset_files(db, ep, already):
-    """Point the job at src_video / dub_audio. Local file if this box still has it; otherwise the
-    asset path is enough for `_file_in_cloud` to presign the R2 object (worker pulls; Render does not)."""
+def _input_asset_files(db, ep, already, want_script=False):
+    """Point the job at src_video / dub_audio. The .docx script rides only when this visit
+    has mksrt --script. Local file if this box still has it; otherwise the asset path is
+    enough for `_file_in_cloud` to presign the R2 object (worker pulls; Render does not)."""
     out, seen = {}, set(already.values())
     q = getattr(db, "q", None) if db is not None else None
     if not callable(q) or not isinstance(ep, dict) or ep.get("id") is None:
         return out
+    kinds = MEDIA_INPUT_KINDS + (SCRIPT_INPUT_KINDS if want_script else ())
+    placeholders = ",".join("?" * len(kinds))
     try:
-        rows = q("SELECT path, r2_key FROM assets WHERE episode_id=? AND kind IN "
-                 "('src_video','dub_audio','dub_script','src_script') AND role='input'",
-                 (ep["id"],))
+        rows = q(f"SELECT path, r2_key, kind FROM assets WHERE episode_id=? AND kind IN "
+                 f"({placeholders}) AND role='input'",
+                 (ep["id"],) + kinds)
     except Exception:
         return out
     for a in rows or []:
@@ -1021,9 +1038,12 @@ def _input_asset_files(db, ep, already):
         key = str(p) if str(p) not in ("", ".") else (a.get("r2_key") or "")
         if not key or key in seen:
             continue
+        is_script = (a.get("kind") in SCRIPT_INPUT_KINDS) or Path(key).suffix.lower() in SCRIPT_EXT
+        if is_script and not want_script:
+            continue
         # input/ is never in the work tar. A 40 KB .docx used to be skipped as "small" and the worker
-        # opened /files/F1/….docx with nothing there (WBT lip opening / matching).
-        in_input = "input" in p.parts or Path(key).suffix.lower() in SCRIPT_EXT
+        # opened /files/F1/….docx with nothing there (WBT matching / mksrt).
+        in_input = "input" in p.parts or is_script
         if p.is_file() and p.stat().st_size <= SMALL and not in_input:
             continue
         out[f"{{F{len(already) + len(out)}}}"] = key
@@ -1709,8 +1729,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
-    files.update(_files_named_in_config(W, O, files))
-    files.update(_input_asset_files(db, ep, files))
+    want_script = _cmd_wants_script(cmd) or any(
+        Path(p).suffix.lower() in SCRIPT_EXT for p in files.values())
+    files.update(_files_named_in_config(W, O, files, want_script=want_script))
+    files.update(_input_asset_files(db, ep, files, want_script=want_script))
     # A later step can need a big file an earlier step wrote into the work folder (the 540 px preview).
     # The work tar only carries files of 1 MB or under, so that file goes as its own link, like the source video.
     cmd_t, files = _send_large_work_files(cmd_t, W, files)
@@ -2033,8 +2055,10 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     heal_config_inputs(db, ep, W)
     files, packed = {}, []
     staged = False
+    want_script = False
     for step_name, cmd in named_cmds:
         cmd = _localise_cmd_inputs(cmd, db, ep)
+        want_script = want_script or _cmd_wants_script(cmd)
         if any(str(c).endswith("library.py") for c in (cmd or [])):
             cmd = point_library_at_staged_app(cmd, W)
             log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
@@ -2067,8 +2091,8 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         cmd_t, files = _send_large_work_files(cmd_t, W, files)
         packed.append({"name": step_name, "cmd": cmd_t})
     assert_chain_python_is_packed(packed, W)
-    files.update(_files_named_in_config(W, O, files))
-    files.update(_input_asset_files(db, ep, files))
+    files.update(_files_named_in_config(W, O, files, want_script=want_script))
+    files.update(_input_asset_files(db, ep, files, want_script=want_script))
     place = _media_place_list(files, W)
     for item, path in zip(place, files.values()):
         try:
