@@ -1082,7 +1082,7 @@ def stage_current_app(work):
     if dest.exists():
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
-    for name in ("__init__.py", "ai.py", "presets.py"):
+    for name in ("__init__.py", "ai.py", "presets.py", "sharpness_tool.py"):
         src = pkg / name
         if src.is_file():
             shutil.copy2(src, dest / name)
@@ -1100,6 +1100,45 @@ def stage_translate_fallback(work):
     """Claude fallback for Google 429: translate_ai.py + wrapper travel with the matching visit."""
     stage_current_app(work)
     return Path(work) / "_app" / "dubstudio" / "pipeline" / "translate_visit.py"
+
+
+def stage_sharpness_tool(work):
+    """Preview sharpness rides the matching CPU. It must survive stage_current_app's rmtree."""
+    stage_current_app(work)
+    return Path(work) / "_app" / "dubstudio" / "sharpness_tool.py"
+
+
+def missing_work_python(cmd, work):
+    """`.py` paths under the work folder that the rented machine would be told to open, but this box does not have.
+
+    WBT 101: sharpness pointed at `/work/_app/dubstudio/sharpness_tool.py` after translate staging deleted it."""
+    miss, W = [], Path(work)
+    root = W.resolve()
+    for arg in cmd or []:
+        if not isinstance(arg, str) or not arg.lower().endswith(".py"):
+            continue
+        if arg.startswith("{WORK}/"):
+            p = W / arg[len("{WORK}/"):]
+        elif arg.startswith("/work/"):
+            p = W / arg[len("/work/"):]
+        else:
+            p = Path(arg)
+            try:
+                p.resolve().relative_to(root)
+            except ValueError:
+                continue
+        if not p.is_file():
+            miss.append(arg[len("{WORK}/"):] if arg.startswith("{WORK}/") else p.name)
+    return miss
+
+
+def assert_chain_python_is_packed(packed, work):
+    """Fail on this box before the visit, not with exit 2 on a rented CPU."""
+    missing = []
+    for item in packed or []:
+        missing.extend(missing_work_python(item.get("cmd") or [], work))
+    if missing:
+        raise RuntimeError("not packed for the rented machine: " + ", ".join(dict.fromkeys(missing)))
 
 
 def stage_lipmesh(work):
@@ -1840,6 +1879,7 @@ def prefer_staged(cmd):
         "claude_sentences.py": "/work/_app/dubstudio/pipeline/claude_sentences.py",
         "lipmesh.py": "/work/_pipe/lipmesh.py",
         "translate_visit.py": "/work/_app/dubstudio/pipeline/translate_visit.py",
+        "sharpness_tool.py": "/work/_app/dubstudio/sharpness_tool.py",
     }
     out = []
     for a in cmd or []:
@@ -1930,6 +1970,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).
         cmd_t, files = _send_large_work_files(cmd_t, W, files)
         packed.append({"name": step_name, "cmd": cmd_t})
+    assert_chain_python_is_packed(packed, W)
     files.update(_files_named_in_config(W, O, files))
     files.update(_input_asset_files(db, ep, files))
     place = _media_place_list(files, W)

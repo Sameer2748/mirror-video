@@ -1783,3 +1783,59 @@ def test_a_work_video_in_r2_is_used_when_this_box_has_no_copy(tmp_path, monkeypa
     monkeypatch.setattr(cloud.storage, "head",
                         lambda k: {"size": 9} if str(k).endswith("video_groups.mp4") else None)
     assert cloud._file_in_cloud(None, show, ep, gone).endswith("video_groups.mp4")
+
+
+def test_a_missing_python_file_fails_before_the_rented_machine(tmp_path, monkeypatch):
+    """Do not send a visit whose command names a .py that is not in the work tar (WBT 101 sharpness)."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    (work / "note.txt").write_text("x")
+    cfg = FakeCfg(tmp_path)
+    monkeypatch.setattr(cloud, "submit", lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not send")))
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: None)
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    with pytest.raises(RuntimeError, match="not packed"):
+        cloud.run_chain({}, show, ep, [
+            ("sharpness", [cfg.pipeline_python, str(work / "_app" / "dubstudio" / "sharpness_tool.py"),
+                           "--out", str(work / "sharpness.json")]),
+        ], cfg, log=lambda m: None, name="match")
+
+
+def test_matching_chain_packs_sharpness_tool(tmp_path, monkeypatch):
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    cloud.stage_sharpness_tool(work)
+    cloud.stage_translate_fallback(work)
+    cfg = FakeCfg(tmp_path)
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(cloud_tar(bucket, "match", "work_in")) as t:
+            sent["names"] = t.getnames()
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+        back = cloud_tar(bucket, "match", "work_out")
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda *a, **k: "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    tool = work / "_app" / "dubstudio" / "sharpness_tool.py"
+    cloud.run_chain({}, show, ep, [
+        ("sharpness", [cfg.pipeline_python, str(tool), "--out", str(work / "sharpness.json")]),
+        ("translate", [cfg.pipeline_python, str(work / "_app" / "dubstudio" / "pipeline" / "translate_visit.py")]),
+    ], cfg, log=lambda m: None, name="match")
+    assert any(n.endswith("sharpness_tool.py") for n in sent["names"])
+    sharp_cmd = " ".join(sent["jobs"]["steps"][0]["cmd"])
+    assert "/work/_app/dubstudio/sharpness_tool.py" in sharp_cmd
+    assert str(tmp_path) not in sharp_cmd
+    assert "sharpness_tool.py" in sent["jobs"]["steps"][0]["cmd"][1] or "/work/_app" in sharp_cmd

@@ -1323,13 +1323,9 @@ class Runner:
 
     def _sharpness_visit_cmd(self, j):
         work = Path(((j.get("params") or {}).get("ctx") or {}).get("W") or "")
-        tool = Path(__file__).resolve().parent / "sharpness_tool.py"
-        dest = work / "_app" / "dubstudio" / "sharpness_tool.py"
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        if tool.is_file():
-            shutil.copy2(tool, dest)
+        tool = cloud.stage_sharpness_tool(work)
         py = getattr(cfg, "pipeline_python", None) or "{py}"
-        return ("sharpness", [py, str(dest), "--video", str(work / timeline.PROXY),
+        return ("sharpness", [py, str(tool), "--video", str(work / timeline.PROXY),
                               "--out", str(work / timeline.SHARPNESS)])
 
     def _translate_visit_cmd(self, j, cmd):
