@@ -30,7 +30,8 @@ RUN curl -fsSL -o /tmp/ff.tar.xz \
 # to be necessary: the RunPod SDK pulls opentelemetry, which needs protobuf >= 5, while mediapipe 0.10.14 pins
 # protobuf < 5. One environment cannot hold both -- `pip` says ResolutionImpossible. So the handler runs on the
 # system python with the SDK, and the pipeline runs as a subprocess in /opt/pipeline_env, which is what {PY} means.
-RUN pip install --no-cache-dir runpod
+# 1.7.11–1.10.0 can stop idle workers pulling jobs (RunPod: per-worker tracking). Keep >=1.10.1.
+RUN pip install --no-cache-dir "runpod>=1.10.1"
 
 RUN python -m venv /opt/pipeline_env \
     && /opt/pipeline_env/bin/pip install --no-cache-dir --upgrade pip \
