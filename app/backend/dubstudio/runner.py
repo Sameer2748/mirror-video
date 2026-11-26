@@ -766,6 +766,17 @@ class Runner:
             # they ride with the sheet instead, one machine, after the decisions.
             if j["step"] == "captions" and cloud.stretch("cut"):
                 continue
+            if cloud.stretch("match") and j["step"] in cloud.SCRIPT_CHAIN:
+                rows = {r["step"]: r["status"] for r in self.db.q(
+                    "SELECT step, status FROM jobs WHERE episode_id=? AND run=?",
+                    (j["episode_id"], j["run"]))}
+                first = next((s for s in cloud.SCRIPT_CHAIN if rows.get(s) not in DONE | {None}), None)
+                if first and j["step"] != first:
+                    continue
+            if cloud.stretch("scene") and j["step"] in cloud.SCENE_CHAIN and j["step"] != "scene_edit":
+                continue
+            if cloud.chain_wanted() and j["step"] in ("dynsrt", "scene_sheet", "qc", "check"):
+                continue
             # The render, the transitions and the subtitle burns are one visit. Starting a second
             # one while the first is still packing its files deletes the upload out from under it.
             if cloud.chain_wanted() and j["step"] in cloud.CHAIN:
@@ -1030,7 +1041,7 @@ class Runner:
         if not force_local and j["step"] == "lip_mesh" and cloud.enabled_for("lip_mesh"):
             return self._run_lips(j)
         # library is not force_local: W/_app carries this box's ai.py (truncated-JSON closer) with the cloud job.
-        if not force_local and j["step"] == "analyze" and cloud.stretch("match"):
+        if not force_local and j["step"] in cloud.SCRIPT_CHAIN and cloud.stretch("match"):
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
             return self._run_cut(j)
@@ -1278,22 +1289,30 @@ class Runner:
         self._send_visit(j, "lips", named, to_mark, t0, "lip mesh on one rented machine")
 
     def _run_match(self, j):
-        """Automatic matching and the reading view, on one CPU. The decision pause stays here."""
-        if not self._wait_for_work_files(j, cloud.required_work_files("match")):
-            return
+        """Whisper through matching on one CPU. The decision pause stays on the website."""
         t0 = time.time()
         by = self._jobs_by_step(j)
         named, to_mark = [], []
-        cmd = (j["params"] or {}).get("cmd")
-        if not cmd:
-            raise RuntimeError("matching has no command to send")
-        named.append(("analyze", self._expand(cmd)))
-        to_mark.append(j)
-        merged = by.get("merged")
-        if merged and merged["status"] not in DONE:
-            named.append(("merged", list(cloud.MERGED_CMD)))
-            to_mark.append(merged)
-        self._send_visit(j, "match", named, to_mark, t0, "matching on one rented machine")
+        for step in cloud.SCRIPT_CHAIN:
+            sj = by.get(step)
+            if not sj or sj["status"] in DONE:
+                continue
+            if step == "merged":
+                named.append(("merged", list(cloud.MERGED_CMD)))
+                to_mark.append(sj)
+                continue
+            cmd = (sj["params"] or {}).get("cmd")
+            if not cmd:
+                continue
+            named.append((step, self._expand(cmd)))
+            to_mark.append(sj)
+        if not named:
+            raise RuntimeError("the matching visit has no commands to send")
+        first = named[0][0]
+        need = [] if first in ("mksrt_dub", "mksrt_src") else cloud.required_work_files(first)
+        if need and not self._wait_for_work_files(j, need):
+            return
+        self._send_visit(j, "match", named, to_mark, t0, "script through matching on one rented machine")
 
     def _run_cut(self, j):
         """The mapping sheet through the shot library, on one CPU, after the decisions and the lip scan.
@@ -1346,6 +1365,11 @@ class Runner:
                 return self._run_match(j)
             if name == "lips":
                 return self._run_lips(j)
+            if name == "scene":
+                ctx = (j["params"] or {}).get("ctx") or {}
+                return self._run_scene_visit(j, Path(ctx["W"]), ctx["library_dir"])
+            if name in ("tail", "render_tail"):
+                return self._run_cloud_tail(j)
             return self._run_cut(j)
         missing = self._missing_work(ep["work_dir"], cloud.produced_work_files(name))
         if missing:
@@ -1405,15 +1429,13 @@ class Runner:
             named.append(("scene_sheet", self._expand(cmd)))
             named.append(("groups_review", self._expand(self._groups_review_argv(out))))
             mark.append(sj)
-        if not cloud.ai_key_allowed():
-            return named, mark
         qj = by.get("qc")
-        if qj and qj["status"] not in DONE and (qj["params"] or {}).get("cmd"):
+        if cloud.ai_key_allowed() and qj and qj["status"] not in DONE and (qj["params"] or {}).get("cmd"):
             named.append(("qc", self._expand(qj["params"]["cmd"])))
             mark.append(qj)
         cj = by.get("check")
         if cj and cj["status"] not in DONE and (cj["params"] or {}).get("cmd"):
-            if not qj or qj["status"] in DONE or qj in mark:
+            if not cloud.ai_key_allowed() or not qj or qj["status"] in DONE or qj in mark:
                 named.append(("point_translation", self._expand(self._point_translation_cmd())))
                 named.append(("check", self._expand(cj["params"]["cmd"])))
                 mark.append(cj)
@@ -1479,9 +1501,11 @@ class Runner:
         machine and bookends has not run there. Rebuild from the render, or from bookends if the render
         is already on disk."""
         work = Path(work)
-        if step in ("bookends", "transitions", "subs_dub", "subs_en") and not (work / "video_groups_nosubs.mp4").is_file():
+        if step in ("check", "qc", "scene_sheet", "dynsrt"):
             return "render"
-        if step in ("transitions", "subs_dub", "subs_en") and not (work / "clean_noglow.mp4").is_file():
+        if step in ("bookends", "trans_plan", "transitions", "subs_dub", "subs_en") and not (work / "video_groups_nosubs.mp4").is_file():
+            return "render"
+        if step in ("trans_plan", "transitions", "subs_dub", "subs_en") and not (work / "clean_noglow.mp4").is_file():
             return "bookends"
         return step
 
@@ -1552,9 +1576,8 @@ class Runner:
         """render → verify → bookends → transitions → both subtitle burns, on ONE rented machine.
 
         Each of those reads the previous step's multi-GB video, so one step per machine cannot work
-        (docs/09 §8). `trans_plan` is JSON only and stays here so the editor's picks are applied before
-        the videos are cut. When this visit burns the subtitles, the scene-edit sheet and the final
-        check stay on that machine too: they read the videos. The pipeline scripts are unchanged."""
+        (docs/09 §8). Dynamic cards, the transition plan, the scene-edit sheet, QC and the final check
+        stay on that machine too so Render never looks for the three videos on its own disk."""
         t0 = time.time()
         show, ep, _ = self.episode_context(j["episode_id"])
         jobs = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
@@ -1567,14 +1590,6 @@ class Runner:
             with open(j["log_path"], "a", encoding="utf-8") as f:
                 storage.fetch_work_files(show, ep, log=lambda m: (f.write(str(m).rstrip() + "\n"), f.flush()),
                                          force=True)
-        tp = by.get("trans_plan")
-        if tp and tp["status"] not in DONE:
-            self._run_cmd(tp, force_local=True)
-            n = timeline.apply_editor_transitions(work)
-            if n:
-                with open(j["log_path"], "a", encoding="utf-8") as f:
-                    f.write(f"the editor's own transitions on {n} cuts kept on top of the plan\n")
-
         ctx = (j["params"] or {}).get("ctx") or {}
         for key in ("en_srt_burn", "name_en_srt"):
             path = ctx.get(key)
@@ -1590,7 +1605,11 @@ class Runner:
                 shutil.copy(cand, path)
                 break
         named, to_mark = self._tail_commands(j, by, work)
-        if any(n == "subs_en" for n, _ in named):
+        dyn = by.get("dynsrt")
+        if dyn and dyn["status"] not in DONE and (dyn["params"] or {}).get("cmd"):
+            named.insert(0, ("dynsrt", self._expand(dyn["params"]["cmd"])))
+            to_mark.insert(0, dyn)
+        if any(n in ("subs_en", "render", "dynsrt") for n, _ in named):
             extra, extra_jobs = self._tail_closing(show, ep, by)
             named.extend(extra)
             to_mark.extend(extra_jobs)
@@ -1861,11 +1880,17 @@ class Runner:
                         "SELECT size, mtime FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'",
                         (j["episode_id"],)) or {}
                     timeline.record_dub_preview(work, d["path"], row.get("size"), row.get("mtime"))
-            if not out.exists():
+            show, ep, _ = self.episode_context(j["episode_id"])
+            def _in_cloud(rel):
+                try:
+                    return bool(storage.head(storage.work_key(show, ep, rel)))
+                except Exception:
+                    return False
+            if not out.exists() and not _in_cloud(timeline.PROXY):
                 raise RuntimeError("the preview copy did not come back from the rented machine")
-            if d and not dub_out.exists():
+            if d and not dub_out.exists() and not _in_cloud(timeline.DUB_PREVIEW):
                 raise RuntimeError("the dub preview copy did not come back from the rented machine")
-            p = out
+            p = out if out.exists() else Path(work) / timeline.PROXY
         else:
             def prog(x):
                 if time.time() - last[0] > 0.5:
@@ -2182,7 +2207,7 @@ class Runner:
             env_extra["SLOWFIX_UNTIL"] = str(until)
         from . import cloud
         if not until and cloud.stretch("scene") and cloud.ai_key_allowed():
-            return self._run_scene_cloud(j, W, LIB)
+            return self._run_scene_visit(j, W, LIB)
         if env_extra:
             old = os.environ.get("SLOWFIX_UNTIL")
             os.environ["SLOWFIX_UNTIL"] = env_extra["SLOWFIX_UNTIL"]
@@ -2196,21 +2221,33 @@ class Runner:
         else:
             self._run_cmd(j, cmd, force_local=True)
 
-    def _run_scene_cloud(self, j, work, library):
-        """The slow-clip scene edit on one CPU. This box's script travels with the job."""
+    def _run_scene_visit(self, j, work, library):
+        """Scene edit, apply the cut, fast trim — one CPU after the face map. Scripts travel with the job."""
         from . import cloud
-        show, ep, _ = self.episode_context(j["episode_id"])
-        script = cloud.stage_scene(work)
-        cmd = [str(cfg.pipeline_python), str(script), str(work), str(library)]
+        if not self._wait_for_work_files(j, cloud.required_work_files("facemap")):
+            return
         t0 = time.time()
-        with open(j["log_path"], "a", encoding="utf-8") as f:
-            def log(msg):
-                f.write(str(msg).rstrip() + "\n"); f.flush()
-            self._set(j, message="sending the scene edit to one rented machine")
-            cloud.run_command(self.db, show, ep, "scene_edit", cmd, cfg, log=log,
-                              timeout=cfg.step_max_seconds or 7200, release_log=j["log_path"])
-        self._set(j, status="done", progress=1, finished=now(),
-                  message=f"scene edit on one rented machine in {time.time() - t0:.0f} s")
+        by = self._jobs_by_step(j)
+        script = cloud.stage_scene(work)
+        named, to_mark = [], []
+        named.append(("scene_edit", [str(cfg.pipeline_python), str(script), str(work), str(library)]))
+        to_mark.append(j)
+        use = by.get("use_scene")
+        if use and use["status"] not in DONE:
+            app_root = Path(work) / "_app"
+            named.append(("use_scene", [
+                str(cfg.pipeline_python), "-c",
+                "import sys; sys.path.insert(0, sys.argv[1]); "
+                "from dubstudio.pipeline.apply_scene import apply; "
+                "n = apply(sys.argv[2]); "
+                "print(f'the scene edit is the edit list: {n} pieces')",
+                str(app_root), str(work)]))
+            to_mark.append(use)
+        ft = by.get("fast_trim")
+        if ft and ft["status"] not in DONE and (ft["params"] or {}).get("cmd"):
+            named.append(("fast_trim", self._expand(ft["params"]["cmd"])))
+            to_mark.append(ft)
+        self._send_visit(j, "scene", named, to_mark, t0, "scene edit through fast trim on one rented machine")
 
     @staticmethod
     def use_scene(W):

@@ -750,7 +750,7 @@ def test_free_disk_drops_published_videos_when_scratch_is_already_gone(tmp_path,
     published = tmp_path / "out" / "TABPGCIT_EP52_IT_final_clean.mp4"
     published.parent.mkdir()
     published.write_bytes(b"M" * 800)
-    leftover = work_root / "_57_mksrt_dub_work_back.tar.gz"
+    leftover = other / "silent_old.mp4"
     leftover.write_bytes(b"T" * 300)
 
     class DB:

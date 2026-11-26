@@ -64,21 +64,19 @@ NEEDS_AI_KEY = {"facemap", "qc", "library", "scene_edit"}
 # scan's 42 range files, the meshes, the manifests) is a few kB and travels fine.
 #
 # Individual tail steps stay refused (`enabled_for` is False). They go together via `run_chain` when the owner
-# asks for them (`CLOUD_STEPS` includes `all`, `tail`, `render` or `render_tail`). `trans_plan` is JSON only and
-# stays here, so the editor's picks are applied before the videos are cut. The final check is added to that
-# same visit by the runner, after the scene-edit sheet, and only when CLOUD_AI is on (`qc` asks Claude).
-#
-# `dynsrt` is not in this chain. It only needs the source video (for size) plus captions JSON — not the
-# rendered master. It used to sit in ONE_MACHINE, so it ran on Render and ffprobed a master that cleanup
-# had already dropped (IMTS IT-DE 23/35). It is its own CPU job: worker GET of the R2 source, then
-# translate still runs here, then the tail burns subs.
-ONE_MACHINE = {"render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check"}
-CHAIN = ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en")
+# asks for them (`CLOUD_STEPS` includes `all`, `tail`, `render` or `render_tail`). `trans_plan`, dynamic cards
+# and the final check ride on that same CPU so Render never ffprobes masters. `qc` still needs CLOUD_AI.
+ONE_MACHINE = {"render", "verify", "bookends", "trans_plan", "transitions", "subs_dub", "subs_en",
+               "check", "dynsrt", "scene_sheet", "qc"}
+CHAIN = ("render", "verify", "bookends", "trans_plan", "transitions", "subs_dub", "subs_en")
 CHAIN_NAMES = {"all", "tail", "render", "render_tail"}
-# Two CPU visits before the face map, split only by the decision pause (that pause stays on the website).
-# The face map is not in either list: it stays on the GPU. The scene edit is its own visit after the face map.
-MATCH_CHAIN = ("analyze", "merged")
+# Visit A: Whisper → matching. Decision pause stays on the website. Lip scan stays parallel from ingest.
+# Visit B: sheet → library (face map is GPU, parallel after library). Then scene → fast trim on one CPU.
+# Visit C: render → check on one CPU (videos never hop back to Render).
+SCRIPT_CHAIN = ("mksrt_dub", "mksrt_src", "words_dub", "words_src", "sentences_src", "analyze", "merged")
+MATCH_CHAIN = SCRIPT_CHAIN
 CUT_CHAIN = ("sheet", "manifest", "lipsync", "groups", "library")
+SCENE_CHAIN = ("scene_edit", "use_scene", "fast_trim")
 # `sh`, not `/bin/sh`: an absolute path that exists on this machine is uploaded as a file, and the worker
 # then tries to execute that file.
 MERGED_CMD = ["sh", "-c", "{PY} {SCRIPTS}/merged.py {WORK} 95 > {WORK}/merged.txt"]
@@ -108,11 +106,11 @@ def stretch(name):
     """One named visit is on: match, cut, scene, or the render tail. "all" means every visit."""
     if name == "tail":
         return chain_wanted()
-    if name == "scene":
-        return enabled_for("scene_edit")
     if not available("cpu"):
         return False
     want = steps()
+    if name == "scene":
+        return "scene" in want or "scene_edit" in want or "all" in want
     return name in want or "all" in want
 
 
@@ -126,7 +124,9 @@ def claimed_by_stretch(step):
         return True
     if step == "captions" and _visit_on("cut"):
         return True
-    if step == "qc" and chain_wanted():
+    if step in SCENE_CHAIN and stretch("scene") and ai_key_allowed():
+        return True
+    if step in ("dynsrt", "qc", "scene_sheet", "check") and chain_wanted():
         return True
     if step in CHAIN and chain_wanted():
         return True
@@ -170,6 +170,8 @@ def holds_cpu_machine(step):
     Lip is planned as resource `none` so it does not eat cpu_slots, but it still occupies RunPod.
     One episode must not also send Whisper/proxy/translate while that is happening."""
     if step in ("lip_gpu", "lip_mesh", "lip_merge"):
+        return True
+    if claimed_by_stretch(step) and kind_for(step) == "cpu":
         return True
     return bool(enabled_for(step) and kind_for(step) == "cpu")
 
@@ -544,6 +546,13 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
 #   {WORK}       the episode's work folder      {OUT}     the show's output folder
 #   {F0} {F1} …  one big input file each (the source video, the dub audio, the font): a signed link
 SMALL = 1 << 20                  # a file this size or under travels in the work tar, not on its own
+KEEP_LOCAL_MAX = 8 << 20         # JSON/xlsx may land here; videos never do
+STREAM_TAR_MIN = 8 << 20         # bigger return tars are unpacked from the HTTP stream, not saved
+WEBSITE_SKIP_EXT = {".mp4", ".mov", ".mkv", ".webm", ".m4a", ".wav", ".aac", ".mp3"}
+LOOSE_WORK_FILES = (
+    "proxy_540.mp4", "proxy.mp4", "dub_preview.m4a",
+    "clean_noglow.mp4", "video_groups.mp4", "video_groups.auto.mp4",
+)
 # Segment caches the render visit writes under /work. Rebuildable, multi-GB, and the reason TAB EP53
 # died with ENOSPC on this box after CHAIN OK: extractall unpacked segs_groups onto the 50 GB disk.
 WORK_BACK_SKIP = ("segs/", "segs_groups/", "segs_groups.auto/", "bookends/", "pieces/", "thumbs/")
@@ -705,7 +714,7 @@ FILE_PRODUCER = {
 
 # Files a later step reads. Do not send / start that step until these exist (on this box or in R2).
 STEP_INPUT_FILES = {
-    "match": ("sentences_src.json",),
+    "match": (),
     "analyze": ("sentences_src.json",),
     "merged": ("prep.json",),
     "decisions": ("prep.json",),
@@ -725,6 +734,7 @@ STEP_OUTPUT_FILES = {
     "lip_gpu": ("lips_nets/ranges.json",),
     "lips": ("lips_range",),
     "library": ("broll_library/broll_library.json",),
+    "scene": ("manifest_groups.json",),
 }
 
 
@@ -1068,8 +1078,13 @@ def stage_scene(work):
     pinit = pkg / "pipeline" / "__init__.py"
     if pinit.is_file():
         shutil.copy2(pinit, pipe / "__init__.py")
-    for name in ("slowfix_edit.py", "keep_grouping.py"):
-        shutil.copy2(pkg / "pipeline" / name, pipe / name)
+    for name in ("slowfix_edit.py", "keep_grouping.py", "apply_scene.py"):
+        src = pkg / "pipeline" / name
+        if src.is_file():
+            shutil.copy2(src, pipe / name)
+    timeline = pkg / "timeline.py"
+    if timeline.is_file():
+        shutil.copy2(timeline, dest / "timeline.py")
     stage_dubstitch(work)
     tools = app / "pipeline_tools"
     tools.mkdir(parents=True, exist_ok=True)
@@ -1219,36 +1234,144 @@ def skip_work_back(name):
     return any(name == p.rstrip("/") or name.startswith(p) for p in WORK_BACK_SKIP)
 
 
-def unpack_returned_tar(tar_path, root, kind="work"):
-    """Write the rented machine's changed files onto this box. -> (wrote, skipped).
+def keep_returned_on_website(name, size=0, kind="work"):
+    """Small JSON/SRT/xlsx stay on this box. Videos stay in R2 (worker PUT / stream)."""
+    name = (name or "").replace("\\", "/").lstrip("./")
+    if kind == "work" and skip_work_back(name):
+        return False
+    if Path(name).suffix.lower() in WEBSITE_SKIP_EXT:
+        return False
+    if size and size > KEEP_LOCAL_MAX:
+        return False
+    return True
 
-    /out is the deliverables and is never skipped. Work segment caches stay off this disk so a finished
-    visit cannot fill Render (TAB EP53: extractall of segs_groups after CHAIN OK)."""
+
+def _put_returned_large(show, ep, kind, name, src, size):
+    """Park a video the worker produced in R2 without writing it under library/."""
+    if not show or not ep or not src:
+        _discard(src)
+        return None
+    name = (name or "").replace("\\", "/").lstrip("./")
+    if kind == "out":
+        key = storage.out_key(show, ep, Path(name).name)
+    else:
+        key = storage.work_key(show, ep, name)
+    try:
+        if size and size <= KEEP_LOCAL_MAX:
+            data = src.read()
+            tmp_parent = Path(ep.get("work_dir") or ".")
+            tmp = tmp_parent.parent / f"_{ep.get('id')}_loose_{Path(name).name}"
+            tmp.write_bytes(data)
+            try:
+                storage.put_file(tmp, key)
+            finally:
+                tmp.unlink(missing_ok=True)
+        else:
+            storage.put_stream(key, src, int(size or 0), ctype="application/octet-stream")
+        return key
+    except Exception:
+        _discard(src)
+        raise
+
+
+def _discard(src):
+    if src is None:
+        return
+    try:
+        while src.read(8 << 20):
+            pass
+    except Exception:
+        pass
+
+
+def unpack_returned_tar(tar_path, root, kind="work", show=None, ep=None, stream=None):
+    """Write the rented machine's small files onto this box. -> (wrote, skipped).
+
+    Videos are not written here: they are PUT to R2 (by the worker, or streamed from this tar).
+    Work segment caches stay off this disk (TAB EP53: extractall of segs_groups after CHAIN OK)."""
     wrote = skipped = 0
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True)
     base = root.resolve()
+
+    def _one(m, src):
+        nonlocal wrote, skipped
+        name = (m.name or "").replace("\\", "/").lstrip("./")
+        if not name or name.endswith("/") or not getattr(m, "isreg", lambda: False)():
+            return
+        size = int(getattr(m, "size", 0) or 0)
+        if kind == "work" and skip_work_back(name):
+            skipped += 1
+            _discard(src)
+            return
+        if not keep_returned_on_website(name, size, kind=kind):
+            skipped += 1
+            if Path(name).suffix.lower() in WEBSITE_SKIP_EXT or (size and size > KEEP_LOCAL_MAX):
+                try:
+                    _put_returned_large(show, ep, kind, name, src, size)
+                except Exception:
+                    _discard(src)
+            else:
+                _discard(src)
+            return
+        dest = (root / name).resolve()
+        try:
+            dest.relative_to(base)
+        except ValueError:
+            _discard(src)
+            return
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if src is None:
+            return
+        with open(dest, "wb") as f:
+            shutil.copyfileobj(src, f)
+        wrote += 1
+
+    if stream is not None:
+        with tarfile.open(fileobj=stream, mode="r|gz") as t:
+            for m in t:
+                if not m.isreg():
+                    continue
+                src = t.extractfile(m)
+                _one(m, src)
+        return wrote, skipped
     with tarfile.open(tar_path) as t:
         for m in t.getmembers():
-            name = (m.name or "").replace("\\", "/").lstrip("./")
-            if not name or name.endswith("/") or not m.isreg():
+            if not m.isreg():
                 continue
-            if kind == "work" and skip_work_back(name):
-                skipped += 1
-                continue
-            dest = (root / name).resolve()
-            try:
-                dest.relative_to(base)
-            except ValueError:
-                continue
-            dest.parent.mkdir(parents=True, exist_ok=True)
             src = t.extractfile(m)
             if src is None:
                 continue
-            with src, open(dest, "wb") as f:
-                shutil.copyfileobj(src, f)
-            wrote += 1
+            with src:
+                _one(m, src)
     return wrote, skipped
+
+
+def ingest_returned_tar(key, tar_path, root, kind, show=None, ep=None, log=print, size_hint=0):
+    """Bring a worker return tar onto this box: stream when it is large so Render never stores the videos.
+
+    Size comes from the worker's `sent.bytes`. Do not HEAD R2 here — a missing key waits 30s and
+    hangs tests / the tick when the env has real credentials."""
+    size = int(size_hint or 0)
+    if size >= STREAM_TAR_MIN:
+        client = ctx = resp = None
+        try:
+            client, ctx, resp = storage.object_stream(key)
+            wrote, skipped = unpack_returned_tar(
+                None, root, kind=kind, show=show, ep=ep, stream=storage._HttpFile(resp))
+        finally:
+            if ctx is not None:
+                ctx.__exit__(None, None, None)
+            if client is not None:
+                client.close()
+        return wrote, skipped
+    storage.download(key, tar_path)
+    try:
+        return unpack_returned_tar(tar_path, root, kind=kind, show=show, ep=ep)
+    finally:
+        Path(tar_path).unlink(missing_ok=True)
+        for leftover in Path(tar_path).parent.glob(Path(tar_path).name + "*.part"):
+            leftover.unlink(missing_ok=True)
 
 
 def _maybe_free_disk(work, log=print, db=None, keep_episode_id=None):
@@ -1288,13 +1411,33 @@ def _transient_cloud_error(msg):
     ))
 
 
+def _loose_output_puts(show, ep):
+    """Signed PUTs so the worker uploads videos itself. Unknown names still ride in the tar."""
+    work, out = {}, {}
+    if not show or not ep:
+        return work, out
+    for rel in LOOSE_WORK_FILES:
+        work[rel] = storage.presign(storage.work_key(show, ep, rel), 10800, method="PUT")
+    try:
+        from . import presets
+        prof = (show or {}).get("profile") or {}
+        if prof.get("file_prefix") and prof.get("labels"):
+            for name in presets.names(show["code"], ep["number"], prof).values():
+                if name:
+                    out[Path(name).name] = storage.presign(
+                        storage.out_key(show, ep, Path(name).name), 10800, method="PUT")
+    except Exception:
+        pass
+    return work, out
+
+
 def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeout=7200, preset_files=None, kind="cpu",
                 release_log=None, retry_wait=60):
     """Run one pipeline step on a rented machine. -> the worker's answer.
 
-    The episode's small work files go up as one tar, the big inputs as signed links, and only what the step
-    **changed** comes back -- so a step that writes one JSON brings back one JSON, and a render brings back the
-    video. Raises RuntimeError with the step's own log when it fails, so a failure reads like a local one.
+    The episode's small work files go up as one tar, the big inputs as signed GET links. The worker GETs
+    those and PUTs videos to signed keys; this box only unpacks JSON/SRT. Raises RuntimeError with the
+    step's own log when it fails, so a failure reads like a local one.
     `preset_files` keeps `{F0}` etc. assigned by a caller that already tokenised several commands (the render tail)."""
     if release_log:
         release_previous(release_log, kind=kind, log=log)
@@ -1387,8 +1530,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
 
     back_work = storage.work_key(show, ep, step_object(name, "work_out", send))
     back_out = storage.work_key(show, ep, step_object(name, "out_out", send))
+    loose_work, loose_out = _loose_output_puts(show, ep)
     job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
-                      "out": storage.presign(back_out, 10800, method="PUT")}
+                      "out": storage.presign(back_out, 10800, method="PUT"),
+                      "loose": {"work": loose_work, "out": loose_out}}
 
     if ai_key_allowed():
         job["env"] = {k: v for k in ("OPENROUTER_API_KEY", "OPENROUTER_CLAUDE_MODEL", "OPENROUTER_FAST_MODEL",
@@ -1402,8 +1547,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             job["out_in"] = storage.presign(out_in_key, 10800)
         for token, r2k in file_keys.items():
             job["files"][token] = storage.presign(r2k, 10800)
+        loose_work, loose_out = _loose_output_puts(show, ep)
         job["outputs"] = {"work": storage.presign(back_work, 10800, method="PUT"),
-                          "out": storage.presign(back_out, 10800, method="PUT")}
+                          "out": storage.presign(back_out, 10800, method="PUT"),
+                          "loose": {"work": loose_work, "out": loose_out}}
 
     jid = submit(job, kind=kind)
     log(f"{name}: sent to a rented {kind} machine (job {jid})")
@@ -1424,38 +1571,32 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     sent = res.get("sent") or {}
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     prev_cfg = (W / CONFIG).read_text(encoding="utf-8") if (W / CONFIG).is_file() else None
-    # /out first: the deliverables. Work caches used to unpack first and fill the disk (TAB EP53).
-    # Unpack even when the visit failed: TAB EP31 check died on a missing SRT pointer after the
-    # three videos were already in /out; raising first threw those files away.
+    # /out first. Do not download videos onto this box (P1). Small JSON/SRT only.
+    # Still ingest when the visit failed: TAB EP31 check died after /out was already PUT.
+    loose = sent.get("loose") or {}
+    if isinstance(loose, dict) and (loose.get("out") or loose.get("work")):
+        log("worker uploaded output videos to the cloud (not downloaded here)")
     for which, key, root in (("out", back_out, O), ("work", back_work, W)):
         if not sent.get(which):
             continue
         tar = _scratch_tar(W, ep, name, f"{which}_back")
-        def _drop_scratch():
-            tar.unlink(missing_ok=True)
-            for leftover in tar.parent.glob(tar.name + "*.part"):
-                leftover.unlink(missing_ok=True)
+        hint = (sent.get(which) or {}).get("bytes") if isinstance(sent.get(which), dict) else 0
         try:
-            try:
-                storage.download(key, tar)
-                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
-            except FileNotFoundError:
-                log("the download file vanished; fetching the results again")
-                _drop_scratch()
-                storage.download(key, tar)
-                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
-            except OSError as e:
-                if e.errno != 28:
-                    raise
-                log("disk full while unpacking; making room and retrying")
-                _drop_scratch()
-                _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
-                storage.download(key, tar)
-                wrote, skipped = unpack_returned_tar(tar, root, kind=which)
-        finally:
-            _drop_scratch()
+            wrote, skipped = ingest_returned_tar(
+                key, tar, root, which, show=show, ep=ep, log=log, size_hint=hint)
+        except FileNotFoundError:
+            log("the download file vanished; fetching the results again")
+            wrote, skipped = ingest_returned_tar(
+                key, tar, root, which, show=show, ep=ep, log=log, size_hint=hint)
+        except OSError as e:
+            if e.errno != 28:
+                raise
+            log("disk full while unpacking; making room and retrying")
+            _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
+            wrote, skipped = ingest_returned_tar(
+                key, tar, root, which, show=show, ep=ep, log=log, size_hint=hint)
         if skipped:
-            log(f"{which}: kept {wrote} files, left {skipped} scratch files on the rented machine")
+            log(f"{which}: kept {wrote} small files, left {skipped} videos/caches in the cloud")
         if which == "out":
             try:
                 _queue_returned_outputs(db, show, ep, log)
@@ -1619,6 +1760,26 @@ def _file_in_cloud(db, show, ep, path):
                     (ep["id"], "%" + path.name))
     if a and a.get("r2_key") and storage.head(a["r2_key"]):
         return a["r2_key"]
+    # Worker already PUT work/out videos. Do not fetch them onto Render to re-upload.
+    for folder, key_fn in (
+        (ep.get("work_dir"), lambda rel: storage.work_key(show, ep, rel)),
+        (ep.get("output_dir"), lambda rel: storage.out_key(show, ep, Path(rel).name)),
+    ):
+        if not folder:
+            continue
+        try:
+            rel = path.resolve().relative_to(Path(folder).resolve()).as_posix()
+        except (ValueError, OSError):
+            if path.name and folder:
+                rel = path.name
+            else:
+                continue
+        try:
+            k = key_fn(rel)
+            if storage.head(k):
+                return k
+        except Exception:
+            continue
     kind = (a or {}).get("kind") or "file"
     key = storage.input_key(show, ep, kind, path.name)
     if storage.head(key):

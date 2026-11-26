@@ -281,6 +281,51 @@ def get_bytes(key):
     return _call("GET", key).content
 
 
+def object_stream(key, timeout=3600.0):
+    """A readable GET of an object. Caller must close the returned client+response pair.
+
+    Used so a multi-GB work_out tar can be unpacked on the fly and never sit on Render's disk."""
+    _require()
+    s = settings()
+    head = _auth_headers("GET", key, None, None, EMPTY_SHA)
+    client = httpx.Client(timeout=timeout)
+    r = client.stream("GET", f"{s['endpoint']}{_url_path(key)}", headers=head)
+    resp = r.__enter__()
+    if resp.status_code >= 400:
+        body = resp.read().decode(errors="replace")
+        r.__exit__(None, None, None)
+        client.close()
+        raise RuntimeError(f"R2 GET {key}: HTTP {resp.status_code} {_error_text(body)}")
+    return client, r, resp
+
+
+class _HttpFile:
+    """File-like wrapper so tarfile can read an httpx stream."""
+
+    def __init__(self, resp):
+        self._it = resp.iter_bytes(PART)
+        self._buf = bytearray()
+
+    def read(self, n=-1):
+        if n is None or n < 0:
+            chunks = [bytes(self._buf)]
+            self._buf.clear()
+            chunks.extend(self._it)
+            return b"".join(chunks)
+        while len(self._buf) < n:
+            try:
+                self._buf.extend(next(self._it))
+            except StopIteration:
+                break
+        out = bytes(self._buf[:n])
+        del self._buf[:n]
+        return out
+
+    def close(self):
+        self._it = iter(())
+        self._buf.clear()
+
+
 def download(key, path, timeout=3600.0, on_progress=None):
     """Bring an object down to a file, a megabyte at a time (a source video is hundreds of MB)."""
     _require()
@@ -489,6 +534,8 @@ def queue_uploads(db, show, ep, files, user_id=None):
     """Put the files of one episode in the upload queue (newest first in the UI). `files`: deliver.deliverables()."""
     rows = []
     for f in files:
+        if f.get("in_cloud"):
+            continue
         if not f.get("exists"):
             continue
         key = out_key(show, ep, Path(f["path"]).name)

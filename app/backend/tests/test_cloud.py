@@ -221,7 +221,7 @@ def test_which_steps_go_to_the_cloud(monkeypatch):
     assert cloud.enabled_for("lip_gpu") and cloud.enabled_for("groups")
 
     settings["CLOUD_STEPS"] = "all"
-    assert cloud.enabled_for("words_src")                 # a step that still goes on its own
+    assert not cloud.enabled_for("words_src")             # Whisper rides in the matching visit
     assert not cloud.enabled_for("groups")                # groups rides in the cut visit
 
     settings["CLOUD_STEPS"] = ""                              # nothing set = everything runs here, as before
@@ -384,6 +384,7 @@ def test_only_the_small_work_files_go_up_and_only_the_changes_come_back(tmp_path
     assert not any(n.startswith("input/") for n in names)               # inputs travel as links, not in the tar
     assert (work / "rows.json").read_text() == '{"rows": []}'           # what the step wrote is back here
     assert sent_job["cmd"][0] == "{PY}" and sent_job["name"] == "words"
+    assert "loose" in sent_job["outputs"] and "proxy_540.mp4" in sent_job["outputs"]["loose"]["work"]
 
 
 def test_a_big_file_already_in_the_work_folder_is_sent_on_its_own(tmp_path, monkeypatch):
@@ -651,7 +652,7 @@ def test_the_two_steps_that_need_an_ai_key_stay_here_unless_the_owner_says_so(mo
     settings["CLOUD_AI"] = "true"
     # qc and the shot library ride in a visit. They are not sent alone, and not at all without the key above.
     assert not cloud.enabled_for("qc") and not cloud.enabled_for("library")
-    assert cloud.enabled_for("scene_edit") and cloud.stretch("scene")
+    assert not cloud.enabled_for("scene_edit") and cloud.stretch("scene")
     # the face map needs the CUDA image: no GPU endpoint, no cloud face map
     assert not cloud.enabled_for("facemap")
     settings["RUNPOD_GPU_ENDPOINT"] = "g"
@@ -720,13 +721,15 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     settings = {"RUNPOD_API_KEY": "k", "RUNPOD_CPU_ENDPOINT": "e", "CLOUD_STEPS": "all", "CLOUD_AI": "true"}
     monkeypatch.setattr(cloud.envfile, "get", lambda k, d=None: settings.get(k, d))
     monkeypatch.setattr(cloud.envfile, "flag", lambda k, d=False: str(settings.get(k, d)).lower() == "true")
-    for step in ("render", "verify", "bookends", "transitions", "subs_dub", "subs_en", "check",
-                 "analyze", "merged", "sheet", "manifest", "lipsync", "groups", "library", "qc"):
+    for step in ("render", "verify", "bookends", "trans_plan", "transitions", "subs_dub", "subs_en", "check",
+                 "analyze", "merged", "sheet", "manifest", "lipsync", "groups", "library", "qc",
+                 "mksrt_dub", "words_src", "sentences_src", "scene_edit", "use_scene", "fast_trim", "dynsrt"):
         assert not cloud.enabled_for(step), step
-    for step in ("mksrt_dub", "words_src", "lip_mesh", "lip_merge", "translate", "scene_edit", "dynsrt"):
+    for step in ("lip_mesh", "lip_merge", "translate", "proxy"):
         assert cloud.enabled_for(step), step
     assert cloud.stretch("match") and cloud.stretch("cut") and cloud.stretch("tail")
     assert "facemap" not in cloud.MATCH_CHAIN and "facemap" not in cloud.CUT_CHAIN
+    assert "mksrt_dub" in cloud.SCRIPT_CHAIN and "scene_edit" in cloud.SCENE_CHAIN
     # naming one visit does not turn the others on, and does not send its steps one by one
     settings["CLOUD_STEPS"] = "match"
     assert cloud.stretch("match") and not cloud.stretch("cut") and not cloud.chain_wanted()
@@ -741,7 +744,7 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
     assert cloud.chain_wanted()
     settings["CLOUD_STEPS"] = "tail"
     assert cloud.chain_wanted()
-    assert cloud.enabled_for("dynsrt")
+    assert not cloud.enabled_for("dynsrt")
     settings["CLOUD_STEPS"] = "lip_gpu"
     assert not cloud.enabled_for("dynsrt")
 
@@ -820,6 +823,7 @@ def test_matching_is_one_visit_and_the_face_map_is_not_in_it(tmp_path, monkeypat
     work = Path(ep["work_dir"])
     cfg = FakeCfg(tmp_path)
     (work / "config.json").write_text("{}")
+    (work / "sentences_src.json").write_text("[]")
     bucket = tmp_path / "bucket"
     sent = {}
 
@@ -870,6 +874,8 @@ def test_matching_sends_the_dub_audio_that_lives_in_the_input_folder(tmp_path, m
     audio = work / "input" / "dub_audio" / "Episode_34_Ehekrach.mp3"
     audio.parent.mkdir(parents=True)
     audio.write_bytes(b"a" * (cloud.SMALL + 8))
+    (work / "config.json").write_text("{}")
+    (work / "sentences_src.json").write_text("[]")
     cfg = FakeCfg(tmp_path)
     bucket = tmp_path / "bucket"
     sent = {}
@@ -930,6 +936,9 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     work = tmp_path / "work"
     work.mkdir()
     (work / "spec.py").write_text("# spec\n")
+    (work / "prep.json").write_text("{}")
+    (work / "decisions.json").write_text("{}")
+    (work / "sentences_src.json").write_text("[]")
     log = tmp_path / "job.log"
     ctx = {"W": str(work), "scene_dir": str(work / "scene"), "library_dir": str(work / "lib"),
            "name_scene_sheet": str(tmp_path / "scene.xlsx"), "name_en_srt": str(tmp_path / "en.srt"),
@@ -997,8 +1006,8 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
         {"scene_sheet": job("scene_sheet", 9, None),
          "qc": job("qc", 10, ["{py}", "qc"]),
          "check": job("check", 11, ["{py}", "check"])})
-    assert [n for n, _ in closing] == ["scene_sheet", "groups_review"]
-    assert [j["step"] for j in jobs] == ["scene_sheet"]
+    assert [n for n, _ in closing] == ["scene_sheet", "groups_review", "point_translation", "check"]
+    assert [j["step"] for j in jobs] == ["scene_sheet", "check"]
 
 
 def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch):
@@ -1006,9 +1015,12 @@ def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch)
     from dubstudio.runner import Runner
     work = tmp_path / "work"
     work.mkdir()
+    (work / "lips_nets").mkdir()
+    (work / "lips_nets" / "ranges.json").write_text("[]")
     log = tmp_path / "job.log"
     mesh = {"id": 1, "episode_id": 1, "run": 1, "step": "lip_mesh", "status": "waiting",
-            "log_path": str(log), "params": {"cmd": ["{py}", "{scripts}/lipmesh.py", "--out-dir", str(work)]}}
+            "log_path": str(log), "params": {"cmd": ["{py}", "{scripts}/lipmesh.py", "--out-dir", str(work)],
+                                            "ctx": {"W": str(work)}}}
     merge = {"id": 2, "episode_id": 1, "run": 1, "step": "lip_merge", "status": "waiting",
              "log_path": str(log), "params": {"cmd": ["{py}", "{scripts}/lipmerge.py", "--out", str(work)]}}
     sent = {}
@@ -1017,6 +1029,7 @@ def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch)
         sent["name"] = kw.get("name")
         sent["steps"] = [n for n, _ in named]
         sent["cmds"] = [c for _, c in named]
+        (work / "lips_range").write_text("{}")
         return {"ok": True, "rc": 0}
 
     monkeypatch.setattr(cloud, "run_chain", fake_chain)
@@ -1175,6 +1188,8 @@ def test_the_video_named_in_config_is_sent_when_it_lives_in_the_input_folder(tmp
     video.write_bytes(b"v" * 64)
     audio.write_bytes(b"a" * (cloud.SMALL + 8))
     (work / "config.json").write_text(json.dumps({"src_video": str(video), "dub_audio": str(audio), "labels": "DE,US"}))
+    (work / "prep.json").write_text("{}")
+    (work / "decisions.json").write_text("{}")
     (work / "note.txt").write_text("stays")
     bucket = tmp_path / "bucket"
     sent = {}
@@ -1285,8 +1300,15 @@ def test_skip_work_back_is_only_the_throwaway_caches():
     assert not cloud.skip_work_back("manifest_groups.json")
 
 
+def test_videos_do_not_stay_on_the_website(tmp_path):
+    assert not cloud.keep_returned_on_website("video_groups.mp4", 8, kind="work")
+    assert not cloud.keep_returned_on_website("final_clean.mp4", 8, kind="out")
+    assert cloud.keep_returned_on_website("config.json", 20, kind="work")
+    assert cloud.keep_returned_on_website("rows.json", 100, kind="work")
+
+
 def test_unpack_skips_segment_caches_and_keeps_config(tmp_path):
-    """TAB EP53: extractall of segs_groups after CHAIN OK filled Render. Config and work videos still land."""
+    """TAB EP53: extractall of segs_groups after CHAIN OK filled Render. Videos stay off this disk."""
     src = tmp_path / "src"
     (src / "segs_groups" / "000.mp4").parent.mkdir(parents=True)
     (src / "segs_groups" / "000.mp4").write_bytes(b"seg")
@@ -1300,12 +1322,12 @@ def test_unpack_skips_segment_caches_and_keeps_config(tmp_path):
     dest = tmp_path / "work"
     wrote, skipped = cloud.unpack_returned_tar(tar, dest, kind="work")
     assert (dest / "config.json").read_text() == "{}"
-    assert (dest / "video_groups.mp4").read_bytes() == b"vid"
+    assert not (dest / "video_groups.mp4").exists()
     assert not (dest / "segs_groups").exists()
-    assert skipped >= 1 and wrote == 2
+    assert skipped >= 2 and wrote == 1
 
 
-def test_unpack_out_keeps_the_finals(tmp_path):
+def test_unpack_out_does_not_land_videos(tmp_path):
     src = tmp_path / "src"
     src.mkdir()
     (src / "final_clean.mp4").write_bytes(b"final")
@@ -1314,8 +1336,8 @@ def test_unpack_out_keeps_the_finals(tmp_path):
         t.add(src / "final_clean.mp4", arcname="final_clean.mp4")
     dest = tmp_path / "out"
     wrote, skipped = cloud.unpack_returned_tar(tar, dest, kind="out")
-    assert skipped == 0 and wrote == 1
-    assert (dest / "final_clean.mp4").read_bytes() == b"final"
+    assert wrote == 0 and skipped == 1
+    assert not (dest / "final_clean.mp4").exists()
 
 
 def test_the_chain_driver_drops_segment_caches_after_ok(tmp_path):
@@ -1378,7 +1400,7 @@ def test_run_command_lands_outputs_before_work_and_skips_segs(tmp_path, monkeypa
                       [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render", "--work", str(work)],
                       cfg, log=lambda m: None)
 
-    assert (out / "final_clean.mp4").read_bytes() == b"final"
+    assert not (out / "final_clean.mp4").exists()
     assert not (work / "segs_groups").exists()
     now = json.loads((work / "config.json").read_text())
     assert now["video_out"] == f"{work}/video_groups.mp4"
@@ -1440,7 +1462,8 @@ def test_a_second_render_finds_the_source_video_when_config_still_names_work_inp
 
 def test_later_steps_require_previous_step_files():
     assert "prep.json" in cloud.required_work_files("merged")
-    assert "sentences_src.json" in cloud.required_work_files("match")
+    assert "sentences_src.json" not in cloud.required_work_files("match")
+    assert "sentences_src.json" in cloud.required_work_files("analyze")
     assert "lips_nets/ranges.json" in cloud.required_work_files("facemap")
     assert "lips_nets/ranges.json" in cloud.required_work_files("lip_mesh")
     assert "prep.json" in cloud.produced_work_files("match")
@@ -1523,7 +1546,7 @@ def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch)
         cloud.run_command({}, show, ep, "render",
                           [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "render", "--work", str(work)],
                           cfg, log=lambda m: None)
-    assert (out / "final_clean.mp4").read_bytes() == b"final"
+    assert not (out / "final_clean.mp4").exists()
 
 
 def test_run_command_retries_once_after_a_worker_500(tmp_path, monkeypatch):

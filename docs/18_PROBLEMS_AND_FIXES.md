@@ -28,7 +28,7 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Can.** Any 10–15 episodes in flight + Review leftovers fill 200 GB again.
 
-**Fix.** File line + queue = **locations only** (`docs/17`). Copiers put new sheet files in R2. Factory GET/PUT R2. Website never stores masters. Small JSON only when Check matching / Review opens.
+**Fix (coded).** Fetch already skips masters when a CPU factory is on. The worker GETs those signed links and **PUTs videos** to `outputs.loose` (proxy, dub preview, deliverables). Render only unpacks JSON/SRT; a leftover giant tar from an old worker image is streamed and the mp4s are parked in R2, never written under `library/`. Small JSON only when Check matching / Review opens. Worker image rebuild still needed for the direct PUT path; website is safe either way.
 
 **Helps.** 0 GB, `Errno 28`, slow fetch, copy-twice per episode.
 
@@ -192,11 +192,11 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Now.** IMTS 153–157 showed **4 running jobs** each during Whisper, all “waiting for a free machine.” Each holds a **cpu_slot**. WBT 101–104 sat at 5/39 for 13+ min with RunPod idle: every send unpacked **every** old work tar looking for `manifest_groups.json` (not needed until render), packed ~86 files on Render, then a restart cancelled the RunPod job (`status` 404). After that, proxy failed by `stat()` of dub audio on Render (masters stay in R2) and 105’s pack tar was deleted by another episode’s `free_disk`. Live cap was **4**, so 26 of 30 CPUs stayed unused.
 
-**Coded.** Unpack tars only when `config.json` is missing. Do not fetch-from-every-tar on proxy/Whisper/words. Job message updates while waiting on the machine.
+**Coded.** Unpack tars only when `config.json` is missing. Do not fetch-from-every-tar on proxy/Whisper/words. Job message updates while waiting on the machine. Visit packing (stitch order unchanged): Whisper→matching one CPU; sheet→library one CPU; scene→fast trim one CPU after the face map; render→check (including dynsrt, trans_plan, sheet, qc) one CPU. Videos stay on the worker/R2.
 
-**Can.** Slot starvation: 15 episodes × 2–4 waits = slots gone, factory still idle.
+**Can.** Slot starvation if an old deploy still sends Whisper/words/match as separate jobs.
 
-**Fix.** Visit packing: Whisper + words + match = **one** CPU job (after lip pieces). Same step **order**, fewer round-trips.
+**Fix.** Live this packing. Lip scan stays 8 pieces, parallel from ingest.
 
 **Helps.** Slot waste, R2 pack/unpack count, P3 queue shape.
 

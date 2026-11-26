@@ -19,11 +19,17 @@ It answers with the log and the exit code, and PUTs back **only the files that c
 one JSON sends back one JSON, and a render sends back the video.
 
 No key ever reaches here: every URL is a signed link that expires.
+
+Large videos are PUT to `outputs.loose` (per-file signed URLs). The work/out tars stay small
+JSON/SRT so the website never downloads a master onto Render.
 """
 import http.client, io, json, os, shutil, signal, subprocess, sys, tarfile, time
 import urllib.error, urllib.parse, urllib.request
 
-import runpod
+try:
+    import runpod
+except ImportError:  # tests import this file without the RunPod SDK
+    runpod = None
 
 WORK = "/work"                    # the episode's work folder, as {WORK}
 OUT = "/out"                      # the show's output folder, as {OUT}
@@ -36,6 +42,10 @@ FACE_PY = "/opt/venv_face/bin/python" if os.path.isfile("/opt/venv_face/bin/pyth
 PLACES = {"{PY}": PIPE_PY, "{FPY}": FACE_PY, "{TOOLS}": CODE, "{SCRIPTS}": f"{CODE}/scripts",
           "{SCENE}": "/opt/scene/pipeline", "{MODELS}": "/opt/models", "{WORK}": WORK, "{OUT}": OUT,
           "{APP}": "/opt/app"}
+SMALL = 1 << 20                 # same cut as the website work tar
+VIDEO_EXT = {".mp4", ".mov", ".mkv", ".webm", ".m4a", ".wav", ".aac", ".mp3"}
+WORK_SKIP = ("input/", "lips_nets.tar.gz", "segs/", "segs_groups/", "segs_groups.auto/",
+             "bookends/", "pieces/", "thumbs/")
 
 
 # ---------------- moving files ----------------
@@ -114,17 +124,73 @@ def snapshot(root):
     return seen
 
 
+def _posix(rel):
+    return (rel or "").replace("\\", "/").lstrip("./")
+
+
+def is_large_output(rel, path):
+    """Videos (any size) and anything over 1 MB stay out of the return tar. JSON/SRT go in the tar."""
+    rel = _posix(rel)
+    suf = os.path.splitext(rel)[1].lower()
+    if suf in VIDEO_EXT:
+        return True
+    try:
+        return os.path.getsize(path) > SMALL
+    except OSError:
+        return False
+
+
+def split_changed(root, before, skip_prefixes=()):
+    """What the step wrote, split into small-tar members vs large files the worker PUTs itself."""
+    after = snapshot(root)
+    small, large = [], []
+    for rel, v in after.items():
+        rel_p = _posix(rel)
+        if any(rel_p == p.rstrip("/") or rel_p.startswith(p) for p in skip_prefixes):
+            continue
+        if before.get(rel) == v:
+            continue
+        path = os.path.join(root, rel)
+        if is_large_output(rel_p, path):
+            large.append(rel_p)
+        else:
+            small.append(rel_p)
+    return small, large
+
+
 def tar_changed(root, before, tar_path, skip_prefixes=()):
     """Tar only what the step wrote or changed. -> [relative paths]"""
-    after = snapshot(root)
-    changed = [rel for rel, v in after.items()
-               if before.get(rel) != v and not any(rel.startswith(p) for p in skip_prefixes)]
+    small, large = split_changed(root, before, skip_prefixes=skip_prefixes)
+    # Old website still downloads this tar. Keep large files in it only when there is no loose PUT URL.
+    changed = small + large
     if not changed:
         return []
     with tarfile.open(tar_path, "w:gz") as t:
         for rel in changed:
             t.add(os.path.join(root, rel), arcname=rel)
     return changed
+
+
+def tar_small(root, names, tar_path):
+    if not names:
+        return []
+    with tarfile.open(tar_path, "w:gz") as t:
+        for rel in names:
+            t.add(os.path.join(root, rel), arcname=rel)
+    return names
+
+
+def loose_url(loose, side, rel):
+    """outputs.loose is {work: {rel: url}, out: {rel: url}} or a flat {rel: url}."""
+    if not loose:
+        return None
+    rel = _posix(rel)
+    side_map = loose.get(side) if isinstance(loose.get(side), dict) else None
+    if side_map and side_map.get(rel):
+        return side_map[rel]
+    if isinstance(loose.get(rel), str):
+        return loose[rel]
+    return None
 
 
 # ---------------- the jobs ----------------
@@ -220,23 +286,39 @@ def command(job_in):
     # rc 3 means "not finished, run me again (it resumes)" -- the app decides, so it is reported, not hidden
     res = {"ok": p.returncode == 0, "step": job_in.get("name") or "command", "rc": p.returncode,
            "seconds": secs, "cmd": cmd, "fetched": brought, "log": log[-12000:]}
-    sent = {}
-    skip = ("input/", "lips_nets.tar.gz", "segs/", "segs_groups/", "segs_groups.auto/",
-            "bookends/", "pieces/", "thumbs/")
+    sent = {"loose": {"work": [], "out": []}}
+    skip = WORK_SKIP
     # /out always: a failed final check used to skip the PUT, so TAB EP31's three videos died
     # on the rented machine. Work files only come back on success (or a resume, rc 3).
     send = [("out", OUT, before_out, ())]
     if p.returncode in (0, 3):
         send.append(("work", WORK, before_work, skip))
+    loose = (job_in.get("outputs") or {}).get("loose") or {}
     for key, root, before, skip_prefixes in send:
         url = (job_in.get("outputs") or {}).get(key)
-        if not url:
-            continue
-        tar = f"/tmp/{key}_out.tar.gz"
-        changed = tar_changed(root, before, tar, skip_prefixes=skip_prefixes)
-        if changed:
+        small, large = split_changed(root, before, skip_prefixes=skip_prefixes)
+        leftover = []
+        for rel in large:
+            dest = os.path.join(root, rel)
+            u = loose_url(loose, key, rel)
+            if not u:
+                leftover.append(rel)
+                continue
+            put(u, dest)
+            sent["loose"][key].append({"name": rel, "bytes": os.path.getsize(dest)})
+        tar_names = small + leftover
+        if url and tar_names:
+            tar = f"/tmp/{key}_out.tar.gz"
+            tar_small(root, tar_names, tar)
             put(url, tar, "application/gzip")
-            sent[key] = {"files": len(changed), "bytes": os.path.getsize(tar), "names": sorted(changed)[:40]}
+            sent[key] = {"files": len(tar_names), "bytes": os.path.getsize(tar),
+                         "names": sorted(tar_names)[:40]}
+            try:
+                os.remove(tar)
+            except OSError:
+                pass
+        elif url and not tar_names and not sent["loose"][key]:
+            pass
     res["sent"] = sent
     return res
 
@@ -258,4 +340,5 @@ def run(job):
     return {"ok": False, "error": f"unknown step {step!r}"}
 
 
-runpod.serverless.start({"handler": run})
+if __name__ == "__main__" and runpod is not None:
+    runpod.serverless.start({"handler": run})
