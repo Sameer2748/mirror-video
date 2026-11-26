@@ -356,11 +356,14 @@ def ensure_input_in_cloud(db, show, ep, kind="src_video"):
     a = db.one("SELECT * FROM assets WHERE episode_id=? AND kind=? AND role='input'", (ep["id"], kind))
     if not a:
         raise RuntimeError(f"the episode has no {kind}")
-    if a.get("r2_key") and storage.head(a["r2_key"]):
+    if a.get("r2_key"):
         return a["r2_key"]
     key = storage.input_key(show, ep, kind, Path(a["path"]).name)
-    storage.put_big_file(Path(a["path"]), key)
-    db.update("assets", a["id"], r2_key=key)
+    src = Path(a["path"])
+    if src.is_file():
+        storage.put_big_file(src, key)
+        db.update("assets", a["id"], r2_key=key)
+        return key
     return key
 
 
@@ -691,10 +694,12 @@ def heal_config_inputs(db, ep, W):
     for kind in INPUT_CONFIG_KEYS:
         a = one("SELECT path FROM assets WHERE episode_id=? AND kind=? AND role='input'", (ep["id"], kind))
         local = (a or {}).get("path")
-        if not local or not Path(local).is_file():
+        if not local:
             continue
         cur = data.get(kind)
         workerish = isinstance(cur, str) and cur.startswith(("/work/", "/files/", "/out/"))
+        # Masters are not on Render. Still point config at the asset path so the worker GET
+        # uses the same name as the R2 object (EP103 mksrt looked at a leftover /files/F1/…).
         if workerish or not (isinstance(cur, str) and Path(cur).is_file()):
             data[kind] = local
             changed = True
@@ -916,9 +921,8 @@ def _input_asset_files(db, ep, already):
             continue
         if p.is_file() and p.stat().st_size <= SMALL:
             continue
-        if p.is_file() or a.get("r2_key"):
-            out[f"{{F{len(already) + len(out)}}}"] = key
-            seen.add(key)
+        out[f"{{F{len(already) + len(out)}}}"] = key
+        seen.add(key)
     return out
 
 
@@ -1526,6 +1530,9 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             file_keys[token] = r2k
             job["files"][token] = storage.presign(r2k, 10800)
             job["names"][token] = Path(path).name
+        job["place"] = _media_place_list(files, W)
+        for item, token in zip(job["place"], files):
+            item["url"] = job["files"][token]
         log(f"{len(files)} big input file(s) ready in the cloud")
 
     back_work = storage.work_key(show, ep, step_object(name, "work_out", send))
@@ -1730,12 +1737,18 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         packed.append({"name": step_name, "cmd": cmd_t})
     files.update(_files_named_in_config(W, O, files))
     files.update(_input_asset_files(db, ep, files))
+    place = _media_place_list(files, W)
+    for item, path in zip(place, files.values()):
+        try:
+            item["url"] = storage.presign(_file_in_cloud(db, show, ep, Path(path)), 10800)
+        except Exception:
+            pass
     places = dict(WORKER_PLACES)
     for token, path in files.items():
         places[token] = f"{WORKER['{FILES}']}/{token.strip('{}')}/{Path(path).name}"
     for item in packed:
         item["cmd"] = [_fill_tokens(a, places) for a in item["cmd"]]
-    (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed, "place": _media_place_list(files, W)},
+    (W / "_cloud_chain.json").write_text(json.dumps({"steps": packed, "place": place},
                                                     ensure_ascii=False), encoding="utf-8")
     (W / "_cloud_chain.py").write_text(CHAIN_DRIVER, encoding="utf-8")
     if staged:
@@ -1758,7 +1771,7 @@ def _file_in_cloud(db, show, ep, path):
         if not a:
             a = one("SELECT * FROM assets WHERE episode_id=? AND role='input' AND path LIKE ?",
                     (ep["id"], "%" + path.name))
-    if a and a.get("r2_key") and storage.head(a["r2_key"]):
+    if a and a.get("r2_key"):
         return a["r2_key"]
     # Worker already PUT work/out videos. Do not fetch them onto Render to re-upload.
     for folder, key_fn in (
@@ -1781,12 +1794,18 @@ def _file_in_cloud(db, show, ep, path):
         except Exception:
             continue
     kind = (a or {}).get("kind") or "file"
-    key = storage.input_key(show, ep, kind, path.name)
+    fname = Path(a["path"]).name if a and a.get("path") else path.name
+    key = storage.input_key(show, ep, kind, fname)
+    if path.is_file():
+        storage.put_big_file(path, key)
+        if a and a.get("id") and callable(getattr(db, "update", None)):
+            try:
+                db.update("assets", a["id"], r2_key=key)
+            except Exception:
+                pass
+        return key
+    if a or kind in ("src_video", "dub_audio"):
+        return key
     if storage.head(key):
         return key
-    if not path.is_file():
-        raise FileNotFoundError(f"the file is gone: {path}")
-    storage.put_big_file(path, key)
-    if a:
-        db.update("assets", a["id"], r2_key=key)
-    return key
+    raise FileNotFoundError(f"the file is gone: {path}")

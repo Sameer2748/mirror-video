@@ -1495,6 +1495,13 @@ def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path)
     extra = cloud._input_asset_files(DB(), ep, {})
     assert str(gone) in extra.values()
 
+    class DB2:
+        def q(self, sql, args=()):
+            return [{"path": str(gone), "r2_key": None}]
+
+    extra2 = cloud._input_asset_files(DB2(), ep, {})
+    assert str(gone) in extra2.values()
+
 
 def test_heal_config_inputs_rewrites_a_worker_source_path(tmp_path):
     src = tmp_path / "input.mp4"
@@ -1509,6 +1516,25 @@ def test_heal_config_inputs_rewrites_a_worker_source_path(tmp_path):
 
     cloud.heal_config_inputs(DB(), {"id": 19}, work)
     assert json.loads((work / "config.json").read_text())["src_video"] == str(src)
+
+
+def test_heal_config_points_at_the_asset_even_when_the_master_is_not_on_this_box(tmp_path):
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "config.json").write_text(json.dumps({"src_video": "/files/F0/15.mp4",
+                                                  "dub_audio": "/files/F1/gone.mp3"}))
+    gone = tmp_path / "shows" / "Episode 103 - Die Hoellenscene.mp3"
+
+    class DB:
+        def one(self, sql, args=()):
+            if args[1] == "src_video":
+                return {"path": str(tmp_path / "missing.mp4")}
+            return {"path": str(gone)}
+
+    cloud.heal_config_inputs(DB(), {"id": 103}, work)
+    now = json.loads((work / "config.json").read_text())
+    assert now["src_video"].endswith("missing.mp4")
+    assert now["dub_audio"] == str(gone)
 
 
 def test_run_command_lands_outputs_even_when_check_failed(tmp_path, monkeypatch):

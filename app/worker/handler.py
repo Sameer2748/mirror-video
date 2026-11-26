@@ -271,6 +271,27 @@ def command(job_in):
         path = os.path.join(FILES, token.strip("{}"), name)      # its own folder: two files may share a name
         brought[name] = fetch(url, path)
         places[token] = path
+    for item in job_in.get("place") or []:
+        name = item.get("name") or ""
+        url = item.get("url")
+        src = next((os.path.join(FILES, token.strip("{}"), names.get(token) or token.strip("{}"))
+                    for token in (job_in.get("files") or {})
+                    if (names.get(token) or token.strip("{}")) == name), None)
+        if src and not os.path.isfile(src):
+            src = None
+        for dest in item.get("dests") or []:
+            if os.path.isfile(dest) and os.path.getsize(dest) > 64:
+                continue
+            os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+            if src and os.path.isfile(src):
+                if not os.path.exists(dest):
+                    try:
+                        os.symlink(src, dest)
+                    except OSError:
+                        shutil.copy2(src, dest)
+            elif url:
+                brought[name] = fetch(url, dest)
+                src = dest
 
     cmd = [_fill(c, places) for c in job_in["cmd"]]
     before_work, before_out = snapshot(WORK), snapshot(OUT)
