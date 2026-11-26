@@ -46,6 +46,35 @@ def label_for_step(step, inner_label=None):
     return visit_label
 
 
+def job_on_cpu(job):
+    """True when this job is actually using a rented box (not queued behind RunPod)."""
+    if (job or {}).get("status") != "running":
+        return False
+    m = ((job.get("message") or "") + " " + (job.get("params") or {}).get("message", "")).lower()
+    if "waiting for a free machine" in m:
+        return False
+    return True
+
+
+def display_status(ep_status, jobs):
+    """Outer list chip: Processing only on a CPU; Waiting if queued for a box; Failed if a visit died."""
+    jobs = list(jobs or [])
+    if any(job_on_cpu(j) for j in jobs):
+        return "processing"
+    if any(j.get("status") == "running" for j in jobs):
+        return "waiting"
+    if ep_status == "queued":
+        return "queued"
+    if any(j.get("status") == "failed" for j in jobs):
+        return "failed"
+    if any(j.get("status") == "needs_input" for j in jobs):
+        waiting = [j["step"] for j in jobs if j.get("status") == "needs_input"]
+        return "review" if waiting == ["review"] else "needs_input"
+    if ep_status == "processing" and any(j.get("status") == "waiting" for j in jobs):
+        return "waiting"
+    return ep_status
+
+
 def live_for_jobs(jobs):
     """Current visit + inner step for a run. jobs: rows with step, status, optional params/label/message."""
     if not jobs:

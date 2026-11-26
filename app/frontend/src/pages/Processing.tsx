@@ -83,6 +83,15 @@ export default function Processing({ ep, reload, goMatching }: { ep: Episode; re
   );
 }
 
+function visitRetryId(g: VisitGroup) {
+  const prefer = g.def.id === "tail" ? "render" : g.def.steps[0];
+  const hit = g.jobs.find((j) => j.step === prefer)
+    || g.jobs.find((j) => j.status === "failed")
+    || g.live
+    || g.jobs[0];
+  return hit.id;
+}
+
 function VisitRow({ g, now, open, openJob, toggle, toggleJob, cancel, retry }: {
   g: VisitGroup; now: number; open: boolean; openJob: number | null;
   toggle: () => void; toggleJob: (id: number) => void;
@@ -108,7 +117,7 @@ function VisitRow({ g, now, open, openJob, toggle, toggleJob, cancel, retry }: {
         <Chip status={g.status} map={JOB_STATUS} />
         <span className="step-btns" onClick={(e) => e.stopPropagation()}>
           {g.status === "running" && live && <button className="small ghost" onClick={() => cancel(live.id)}>Cancel</button>}
-          {g.status === "failed" && live && <button className="small" onClick={() => retry(live.id)}>Retry</button>}
+          {g.status === "failed" && live && <button className="small" onClick={() => retry(visitRetryId(g))}>Retry visit</button>}
         </span>
       </div>
       {msg && <div className={`step-msg ${g.status === "failed" ? "bad" : "muted"}`}>{msg}</div>}
@@ -116,7 +125,7 @@ function VisitRow({ g, now, open, openJob, toggle, toggleJob, cancel, retry }: {
         <div className="visit-inner">
           {g.jobs.map((j) => (
             <StepRow key={j.id} j={j} now={now} open={openJob === j.id} toggle={() => toggleJob(j.id)}
-              cancel={() => cancel(j.id)} retry={() => retry(j.id)} nested />
+              cancel={() => cancel(j.id)} retry={() => retry(visitRetryId(g))} nested hideRetry={j.id !== visitRetryId(g)} />
           ))}
         </div>
       )}
@@ -124,8 +133,8 @@ function VisitRow({ g, now, open, openJob, toggle, toggleJob, cancel, retry }: {
   );
 }
 
-function StepRow({ j, now, open, toggle, cancel, retry, nested }: {
-  j: Job; now: number; open: boolean; toggle: () => void; cancel: () => void; retry: () => void; nested?: boolean;
+function StepRow({ j, now, open, toggle, cancel, retry, nested, hideRetry }: {
+  j: Job; now: number; open: boolean; toggle: () => void; cancel: () => void; retry: () => void; nested?: boolean; hideRetry?: boolean;
 }) {
   const took = j.started ? (j.finished || now) - j.started : null;
   const color = j.status === "failed" ? "red" : j.status === "done" ? "green" : j.status === "needs_input" ? "yellow" : "";
@@ -141,7 +150,7 @@ function StepRow({ j, now, open, toggle, cancel, retry, nested }: {
         <Chip status={j.status} map={JOB_STATUS} />
         <span className="step-btns" onClick={(e) => e.stopPropagation()}>
           {["running", "waiting", "needs_input"].includes(j.status) && <button className="small ghost" onClick={cancel}>Cancel</button>}
-          {["failed", "cancelled", "blocked"].includes(j.status) && <button className="small" onClick={retry}>Retry</button>}
+          {["failed", "cancelled", "blocked"].includes(j.status) && !hideRetry && <button className="small" onClick={retry}>Retry</button>}
         </span>
       </div>
       {j.message && <div className={`step-msg ${j.status === "failed" ? "bad" : "muted"}`}>{j.message}</div>}

@@ -51,7 +51,7 @@ export default function EpisodePage() {
         {ep.batch_id ? <> / <Link to={`/shows/${ep.show_id}/bulk/${ep.batch_id}`}>Bulk run</Link></> : null}
         {" / "}EP {ep.number}</div>
       <div className="page-head">
-        <h1>{ep.show.name} <span className="muted" style={{ fontWeight: 500 }}>Episode {ep.number}</span> <Chip status={ep.status} extra={ep.status === "processing" ? `${Math.round(prog * 100)}%` : undefined} /></h1>
+        <h1>{ep.show.name} <span className="muted" style={{ fontWeight: 500 }}>Episode {ep.number}</span> <Chip status={ep.display_status || ep.status} extra={(ep.display_status || ep.status) === "processing" ? `${Math.round(prog * 100)}%` : undefined} /></h1>
         {ep.status === "processing" && liveLabel(ep.jobs) && (
           <div className="muted small-text" style={{ marginTop: 6 }}>{liveLabel(ep.jobs)}</div>
         )}

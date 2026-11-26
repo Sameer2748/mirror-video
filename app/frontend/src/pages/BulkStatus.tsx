@@ -187,7 +187,7 @@ function EpisodeBlock({ e, expanded, uploading, onToggle, onOpen, onRender, onDe
     <>
       <tr className="clickable" onClick={onToggle}>
         <td><b>EP {e.number}</b></td>
-        <td><Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} /></td>
+        <td><Chip status={e.display_status || e.status} extra={(e.display_status || e.status) === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} /></td>
         <td className="muted small-text">{step}{e.steps ? ` · ${e.steps_done || 0}/${e.steps}` : ""}</td>
         <td style={{ width: 160 }}>{e.progress != null && <div className="bar"><div className="bar-fill" style={{ width: `${Math.round(e.progress * 100)}%` }} /></div>}</td>
         <td className="muted small-text">{e.ready ? <span className="good">{files}</span> : files}</td>

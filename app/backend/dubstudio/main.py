@@ -463,6 +463,8 @@ def _episode_full(eid):
     e["run"] = run
     e["jobs"] = db().q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord", (eid, run)) if run else []
     e["status"] = _status_if_in_flight(e["status"], e["jobs"])
+    from .visits import display_status
+    e["display_status"] = display_status(e["status"], e["jobs"])
     for j in e["jobs"]:
         j["label"] = (j.get("params") or {}).get("label", j["step"]); j.pop("params", None)
         if j["step"] == "check" and j["status"] in ("done", "failed"):
@@ -647,12 +649,14 @@ def _set_input(eid, kind, path):
 
 
 def _status_if_in_flight(status, jobs):
-    """The table must not stay on Failed while a retried step is running or queued.
+    """Keep Failed when a visit died and later steps are only waiting on it.
 
-    Retrying render leaves the old transitions row failed; that is not the episode's current state."""
+    A job that is actually running (including a retry) is Processing."""
     st = {j["status"] for j in jobs or []}
-    if "running" in st or (status == "failed" and "waiting" in st):
+    if "running" in st:
         return "processing"
+    if "failed" in st:
+        return "failed"
     return status
 
 
@@ -670,7 +674,7 @@ def _decorate_episodes(eps):
     jobs_by_ep = {}
     if runs:
         for j in db().q(
-                f"SELECT episode_id, run, step, status, progress, params FROM jobs "
+                f"SELECT episode_id, run, step, status, progress, params, message FROM jobs "
                 f"WHERE episode_id IN ({ph}) ORDER BY episode_id, ord", ids):
             if j["run"] != runs.get(j["episode_id"]):
                 continue
@@ -694,6 +698,8 @@ def _decorate_episodes(eps):
         e["steps"] = 0
         js = jobs_by_ep.get(e["id"]) or []
         e["status"] = _status_if_in_flight(e["status"], js)
+        from .visits import display_status
+        e["display_status"] = display_status(e["status"], js)
         if run:
             e["steps"] = len(js)
             e["progress"] = round(sum(1 if j["status"] in ("done", "skipped") else (j["progress"] or 0) for j in js)

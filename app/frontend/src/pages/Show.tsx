@@ -182,7 +182,7 @@ export default function ShowPage() {
                 <td><b>EP {e.number}</b></td>
                 <td>{downloading
                   ? <Chip status={imp.status} map={DOWNLOAD_STATUS} />
-                  : <Chip status={e.status} extra={e.status === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} />}</td>
+                  : <Chip status={e.display_status || e.status} extra={(e.display_status || e.status) === "processing" && e.progress != null ? `${Math.round(e.progress * 100)}%` : undefined} />}</td>
                 <td className="muted small-text" style={{ maxWidth: 340 }}>
                   {downloading ? (imp.message || "downloading")
                     : (e.step_label || "") + (e.step_message ? ` — ${e.step_message}` : "")}

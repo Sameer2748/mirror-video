@@ -5,6 +5,7 @@ import { api } from "./api";
 export const EP_STATUS: Record<string, [string, string]> = {
   new: ["Files", "grey"],
   queued: ["Queued", "blue"],
+  waiting: ["Waiting", "grey"],
   processing: ["Processing", "blue"],
   needs_input: ["Check matching", "yellow"],
   review: ["Ready for review", "violet"],

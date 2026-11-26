@@ -31,7 +31,7 @@ function Queue() {
   if (!q || (!q.working.length && !q.waiting.length)) return null;
   const row = (e: QueueItem, place: string) => (
     <tr key={e.id}>
-      <td style={{ width: 90 }}><span className={`chip ${e.working ? "chip-blue" : "chip-grey"}`}>{place}</span></td>
+      <td style={{ width: 90 }}><span className={`chip ${(e.display_status || (e.working ? "processing" : "queued")) === "processing" ? "chip-blue" : (e.display_status === "failed" ? "chip-red" : "chip-grey")}`}>{e.display_status === "failed" ? "failed" : e.display_status === "waiting" ? "waiting" : place}</span></td>
       <td><b>{e.code} · EP {e.number}</b></td>
       <td style={{ width: 300 }}>
         {e.working ? <>

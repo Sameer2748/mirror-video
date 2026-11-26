@@ -430,13 +430,15 @@ class Runner:
         out = []
         for r in rows:
             run = self.latest_run(r["id"])
-            jobs = d.q("SELECT step, status, progress, params FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
+            jobs = d.q("SELECT step, status, progress, params, message FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
                        (r["id"], run)) if run else []
             from .visits import live_for_jobs
             live = live_for_jobs(jobs)
+            from .visits import display_status
             done = sum(1 for j in jobs if j["status"] in ("done", "skipped"))
             out.append({**r, "working": r["id"] in active, "step": live["step"],
                         "step_label": live["label"], "step_message": live["message"],
+                        "display_status": display_status(r["status"], jobs),
                         "steps_done": done, "steps": len(jobs),
                         "progress": round(done / len(jobs), 3) if jobs else 0})
         for i, e in enumerate([x for x in out if x["status"] == "queued"], start=1):
@@ -825,10 +827,10 @@ class Runner:
             elif "needs_input" in st:
                 waiting = [x["step"] for x in js if x["status"] == "needs_input"]
                 new = "review" if waiting == ["review"] else "needs_input"
-            elif "waiting" in st:
-                new = "processing"
             elif "failed" in st:
                 new = "failed"
+            elif "waiting" in st:
+                new = "processing"
             elif all(s in DONE | {"cancelled", "blocked"} for s in st):
                 new = "cancelled"
             else:

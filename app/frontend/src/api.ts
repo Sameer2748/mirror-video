@@ -17,14 +17,15 @@ export type Job = {
 };
 export type Episode = {
   id: number; show_id: number; number: number; status: string; work_dir: string; output_dir: string;
-  updated?: number; progress?: number; assets: Asset[]; jobs: Job[]; run?: number; show: Show;
+  updated?: number; progress?: number; display_status?: string | null;
+  assets: Asset[]; jobs: Job[]; run?: number; show: Show;
   output_existing: string[]; candidates?: Record<string, string[]>; queue_position?: number;
   batch_id?: number | null; have?: string[]; ready?: boolean;
   step?: string | null; step_label?: string | null; step_message?: string | null;
   steps_done?: number; steps?: number;
 };
 export type BatchEpisode = {
-  id: number; show_id: number; number: number; status: string; progress?: number | null;
+  id: number; show_id: number; number: number; status: string; display_status?: string | null; progress?: number | null;
   queue_position?: number; have?: string[]; ready?: boolean; step?: string | null; step_label?: string | null;
   step_message?: string | null; steps_done?: number; steps?: number; run?: number | null; batch_id?: number | null; updated?: number;
 };
@@ -35,7 +36,7 @@ export type Batch = {
   results?: { id: number; number: number; ok: boolean; error?: string; skipped?: string; version?: number }[];
 };
 export type QueueItem = {
-  id: number; number: number; status: string; code: string; name: string; working: boolean;
+  id: number; number: number; status: string; display_status?: string | null; code: string; name: string; working: boolean;
   step?: string | null; step_label?: string | null; step_message?: string | null;
   steps_done: number; steps: number; progress: number; position?: number;
 };
