@@ -1082,18 +1082,24 @@ def stage_current_app(work):
     if dest.exists():
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
-    for name in ("__init__.py", "ai.py"):
+    for name in ("__init__.py", "ai.py", "presets.py"):
         src = pkg / name
         if src.is_file():
             shutil.copy2(src, dest / name)
     pipe = dest / "pipeline"
     pipe.mkdir()
     src_pipe = pkg / "pipeline"
-    for name in ("__init__.py", "library.py"):
+    for name in ("__init__.py", "library.py", "translate_ai.py", "translate_visit.py"):
         src = src_pipe / name
         if src.is_file():
             shutil.copy2(src, pipe / name)
     return pipe / "library.py"
+
+
+def stage_translate_fallback(work):
+    """Claude fallback for Google 429: translate_ai.py + wrapper travel with the matching visit."""
+    stage_current_app(work)
+    return Path(work) / "_app" / "dubstudio" / "pipeline" / "translate_visit.py"
 
 
 def stage_lipmesh(work):
@@ -1833,6 +1839,7 @@ def prefer_staged(cmd):
     staged = {
         "claude_sentences.py": "/work/_app/dubstudio/pipeline/claude_sentences.py",
         "lipmesh.py": "/work/_pipe/lipmesh.py",
+        "translate_visit.py": "/work/_app/dubstudio/pipeline/translate_visit.py",
     }
     out = []
     for a in cmd or []:

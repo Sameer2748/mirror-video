@@ -1332,6 +1332,13 @@ class Runner:
         return ("sharpness", [py, str(dest), "--video", str(work / timeline.PROXY),
                               "--out", str(work / timeline.SHARPNESS)])
 
+    def _translate_visit_cmd(self, j, cmd):
+        """Google first, Claude for leftover sentences. 429 must not fail the matching visit."""
+        work = Path(((j.get("params") or {}).get("ctx") or {}).get("W") or "")
+        wrapper = cloud.stage_translate_fallback(work)
+        py = getattr(cfg, "pipeline_python", None) or "{py}"
+        return ("translate", [py, str(wrapper)] + list(cmd))
+
     def _run_match(self, j):
         """Whisper through matching, then preview, sharpness, translation, on one CPU.
         The decision pause stays on the website."""
@@ -1358,7 +1365,11 @@ class Runner:
             cmd = (sj["params"] or {}).get("cmd")
             if not cmd:
                 continue
-            named.append((step, self._expand(cmd)))
+            expanded = self._expand(cmd)
+            if step == "translate":
+                named.append(self._translate_visit_cmd(sj, expanded))
+            else:
+                named.append((step, expanded))
             to_mark.append(sj)
         if not named:
             raise RuntimeError("the matching visit has no commands to send")
