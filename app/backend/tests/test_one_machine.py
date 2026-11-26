@@ -116,7 +116,7 @@ def test_stuck_queue_is_cancelled_when_workers_are_idle(monkeypatch):
     monkeypatch.setattr(cloud, "status", lambda jid, kind="cpu": {"status": "IN_QUEUE"})
     monkeypatch.setattr(cloud, "cancel", lambda jid, kind="cpu": cancelled.append(jid))
     monkeypatch.setattr(cloud, "health", lambda kind="cpu": {
-        "workers": {"idle": 18, "running": 8}, "jobs": {"inQueue": 181, "inProgress": 8}})
+        "workers": {"idle": 18, "running": 0}, "jobs": {"inQueue": 181, "inProgress": 0}})
     cloud._health_memo.clear()
     done, failed = cloud.wait(["stuck-job"], poll=0, timeout=5, stuck_s=0)
     assert done == {}
@@ -124,8 +124,22 @@ def test_stuck_queue_is_cancelled_when_workers_are_idle(monkeypatch):
     assert cancelled == ["stuck-job"]
 
 
+def test_queued_lip_tickets_are_not_cancelled_while_cpus_are_working(monkeypatch):
+    cancelled = []
+    monkeypatch.setattr(cloud, "status", lambda jid, kind="cpu": {"status": "IN_QUEUE"})
+    monkeypatch.setattr(cloud, "cancel", lambda jid, kind="cpu": cancelled.append(jid))
+    monkeypatch.setattr(cloud, "health", lambda kind="cpu": {
+        "workers": {"idle": 17, "running": 7}, "jobs": {"inQueue": 38, "inProgress": 7}})
+    cloud._health_memo.clear()
+    done, failed = cloud.wait(["lip-piece"], poll=0, timeout=1, stuck_s=0)
+    assert cancelled == []
+    assert failed.get("lip-piece", "").startswith("still running after")
+    assert done == {}
+
+
 def test_idle_ignoring_queue_needs_idle_and_backlog():
-    assert cloud.idle_ignoring_queue(snap={"workers": {"idle": 18}, "jobs": {"inQueue": 181}})
+    assert cloud.idle_ignoring_queue(snap={"workers": {"idle": 18, "running": 0}, "jobs": {"inQueue": 181}})
+    assert not cloud.idle_ignoring_queue(snap={"workers": {"idle": 18, "running": 8}, "jobs": {"inQueue": 75}})
     assert not cloud.idle_ignoring_queue(snap={"workers": {"idle": 0}, "jobs": {"inQueue": 181}})
     assert not cloud.idle_ignoring_queue(snap={"workers": {"idle": 18}, "jobs": {"inQueue": 0}})
 

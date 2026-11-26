@@ -250,11 +250,17 @@ def health_cached(kind="cpu", ttl=5):
 
 
 def idle_ignoring_queue(kind="cpu", snap=None):
-    """True when boxes sit idle while jobs sit IN_QUEUE (RunPod not assigning)."""
+    """True when the farm is idle and still not taking IN_QUEUE tickets.
+
+    Idle + a backlog is not enough: lip scan sends 8 tickets while other episodes already
+    occupy boxes. Those tickets wait in the RunPod line. Cancelling them at 45s is what
+    printed '8 share(s) still failing after 3 tries' while GPUs sat unused (lip is CPU)."""
     h = snap if snap is not None else health_cached(kind)
     if not h:
         return False
     w, j = h.get("workers") or {}, h.get("jobs") or {}
+    if int(w.get("running") or 0) > 0:
+        return False
     return int(w.get("idle") or 0) > 0 and int(j.get("inQueue") or 0) > 0
 
 
@@ -541,7 +547,9 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
                           "outputs": {"result": storage.presign(ok, 10800, method="PUT")}})
             log(f"lip piece {i}: sent to a rented cpu machine (job {jid})")
             jobs[jid] = (i, mine, ok)
-        done, failed = wait(list(jobs), on_progress=on_progress)
+        # Lip pieces often sit IN_QUEUE longer than 45s while other CPU jobs run. Do not
+        # cancel them as 'idle ignore' mid-scan — that is what failed KOTU 44–50.
+        done, failed = wait(list(jobs), on_progress=on_progress, stuck_s=600)
         for jid, st in done.items():
             i, mine, ok = jobs[jid]
             worker_s += st.get("executionTime", 0) / 1000
