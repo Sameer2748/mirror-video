@@ -2755,6 +2755,8 @@ def storage_status():
 def list_uploads(eid: int):
     """What of this episode is in the cloud, and what is on its way up."""
     ep = _get("episodes", eid); show = _get("shows", ep["show_id"])
+    if storage.configured():
+        storage.record_existing_cloud_files(db(), show, ep, deliver.deliverables(show, ep, None))
     return {"configured": storage.configured(), "auto": storage.settings()["auto_upload"],
             "prefix": storage.episode_prefix(show, ep) if storage.configured() else None,
             "uploads": storage.uploads_of(db(), eid)}

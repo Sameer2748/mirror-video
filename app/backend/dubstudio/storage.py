@@ -530,9 +530,40 @@ def upload_mode():
     return mode if mode in ("proxy", "direct") else "proxy"
 
 
+def record_existing_cloud_files(db, show, ep, files, user_id=None):
+    """Worker already PUT these to R2. Write done upload rows so Deliverables lists the videos.
+
+    Render never downloads those mp4s, so queue_uploads used to skip them (IMTS IT-DE EP17)."""
+    rows = []
+    if not configured() or not db or not show or not ep:
+        return rows
+    now = time.time()
+    for f in files or []:
+        if not f.get("in_cloud"):
+            continue
+        name = Path(f.get("name") or f.get("path") or "").name
+        if not name:
+            continue
+        key = out_key(show, ep, name)
+        old = db.one("SELECT * FROM uploads WHERE episode_id=? AND key=? ORDER BY id DESC LIMIT 1",
+                     (ep["id"], key))
+        if old and old["status"] == "done":
+            rows.append(old)
+            continue
+        uid = db.insert("uploads", episode_id=ep["id"], kind=f.get("kind"), name=name,
+                        path=f.get("path"), bucket=settings()["bucket"], key=key,
+                        size=f.get("size") or 0, sent=f.get("size") or 0, status="done",
+                        user_id=user_id, created=now, finished=now)
+        row = db.one("SELECT * FROM uploads WHERE id=?", (uid,))
+        rows.append(row)
+        bus.publish("upload", ep["id"], store=False, file_kind=f.get("kind"), status="done", name=name)
+    return rows
+
+
 def queue_uploads(db, show, ep, files, user_id=None):
     """Put the files of one episode in the upload queue (newest first in the UI). `files`: deliver.deliverables()."""
     rows = []
+    rows.extend(record_existing_cloud_files(db, show, ep, files, user_id=user_id))
     for f in files:
         if f.get("in_cloud"):
             continue

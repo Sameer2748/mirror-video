@@ -25,3 +25,23 @@ def test_videos_in_r2_count_as_existing(tmp_path, monkeypatch):
     assert files["clean"]["exists"] and files["clean"]["in_cloud"]
     assert files["dub_subs"]["exists"] and files["dub_subs"]["size"] == 214
     assert files["en_subs"]["exists"]
+
+
+def test_record_existing_cloud_files_lists_worker_puts(tmp_path, monkeypatch):
+    from dubstudio.db import DB
+    from dubstudio import storage
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="IMTS", code="IMTSITDE", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=17, status="done",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    monkeypatch.setattr(storage, "configured", lambda: True)
+    monkeypatch.setattr(storage, "settings", lambda: {"bucket": "dubstudioprod"})
+    monkeypatch.setattr(storage, "out_key", lambda s, e, n: f"shows/{s['code']}/ep{e['number']}/out/{n}")
+    show = {"code": "IMTSITDE"}
+    ep = {"id": eid, "number": 17}
+    files = [{"kind": "clean", "name": "IMTSITDE_EP17_IT_final_clean.mp4", "path": "/missing/clean.mp4",
+              "exists": True, "in_cloud": True, "size": 277}]
+    rows = storage.record_existing_cloud_files(db, show, ep, files)
+    assert len(rows) == 1 and rows[0]["status"] == "done" and rows[0]["size"] == 277
+    again = storage.record_existing_cloud_files(db, show, ep, files)
+    assert again[0]["id"] == rows[0]["id"]
