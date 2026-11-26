@@ -76,6 +76,7 @@ def save_template(tpl, image):
         isServerless: true
         dockerArgs: %s
         startSsh: %s
+        env: []
       }) { id imageName }
     }
     """ % (
