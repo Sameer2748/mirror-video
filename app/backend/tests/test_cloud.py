@@ -1483,6 +1483,17 @@ def test_ensure_work_refuses_to_send_without_config(tmp_path, monkeypatch):
     cloud.ensure_work_for_cloud(show, ep, "render", log=lambda m: None)
 
 
+def test_config_video_is_sent_even_when_it_is_only_in_r2(tmp_path):
+    """Render reads src_video from config. If fetch skipped the master, still attach a GET for the worker."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    gone = work / "input" / "src_video" / "ep34.mp4"
+    (work / "config.json").write_text(json.dumps({"src_video": str(gone), "dub_audio": str(work / "input" / "dub_audio" / "ep.mp3")}))
+    extra = cloud._files_named_in_config(work, Path(ep["output_dir"]), {})
+    assert str(gone) in extra.values()
+    assert any(str(p).endswith(".mp3") for p in extra.values())
+
+
 def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path):
     """IMTS IT-DE 23/35: dynsrt on Render ffprobed a missing master. Cloud jobs send the R2 object."""
     show, ep = _episode(tmp_path)

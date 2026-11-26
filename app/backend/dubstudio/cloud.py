@@ -804,7 +804,8 @@ def tokenise(cmd, work_dir, out_dir, cfg, files=None):
             if real and arg.startswith(real):
                 arg = token + arg[len(real):]
                 break
-        if arg.startswith("/") and Path(arg).is_file():          # a file somewhere else on this Mac
+        if arg.startswith("/") and (Path(arg).is_file() or Path(arg).suffix.lower() in WEBSITE_SKIP_EXT):
+            # Missing locally: previous visit PUT it to R2. Tokenise so the worker GETs it.
             token = next((t for t, p in files.items() if p == arg), None)
             if token is None:
                 token = f"{{F{len(files)}}}"
@@ -828,8 +829,9 @@ def _send_large_work_files(cmd, work_dir, files):
             rel = arg[len("{WORK}/"):]
             local = Path(work_dir) / rel
             left_out = rel == "input" or rel.startswith("input/")
-            # input/ is never in the work tar. Tokenise it even when this box already deleted the master.
-            if left_out or (local.is_file() and local.stat().st_size > SMALL):
+            media = Path(rel).suffix.lower() in WEBSITE_SKIP_EXT
+            # input/ and previous-visit videos are not in the work tar. Tokenise even when this box has no copy.
+            if left_out or media or (local.is_file() and local.stat().st_size > SMALL):
                 token = next((t for t, p in files.items() if p == str(local)), None)
                 if token is None:
                     token = f"{{F{len(files)}}}"
@@ -865,11 +867,24 @@ def _resolve_media_path(W, O, value):
     return None
 
 
+def _walk_strings(obj):
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _walk_strings(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _walk_strings(v)
+
+
 def _files_named_in_config(W, O, already):
     """The big files a step needs may be named **only inside config.json**, never on the command line.
     `dubstitch.py manifest --work W` is the whole command, and `cmd_manifest` then does
     `probe_duration_ms(cfg["src_video"])`. Found the hard way: the first real cloud `manifest` died on
-    `could not convert string to float: ''` -- ffprobe of a file that was never sent. -> {token: path}"""
+    `could not convert string to float: ''` -- ffprobe of a file that was never sent. -> {token: path}
+
+    A path that is not on this box still goes as a token: the worker GETs it from R2 (previous visit)."""
     conf = W / CONFIG
     if not conf.exists():
         return {}
@@ -879,25 +894,36 @@ def _files_named_in_config(W, O, already):
         return {}
     out, seen = {}, set(already.values())
     root_w, root_o = str(W), str(O)
-    for value in data.values():
+    for value in _walk_strings(data):
         if not isinstance(value, str) or not value.startswith("/") or value in seen:
             continue
         p = _resolve_media_path(W, O, value)
         if p is None:
-            continue
+            if Path(value).suffix.lower() not in WEBSITE_SKIP_EXT:
+                continue
+            if value.startswith("/work/"):
+                p = Path(W) / value[len("/work/"):]
+            elif value.startswith("/out/"):
+                p = Path(O) / value[len("/out/"):]
+            else:
+                p = Path(value)
         value = str(p)
         if value in seen:
             continue
-        # A small file in the work folder rides in the tar, and the path is rewritten to /work.
-        # The uploaded video and audio live in input/, which the tar skips, and anything over 1 MB is
-        # skipped too. Leaving those as /work/… makes ffprobe read an empty file (the edit list, 2 Nov 2026).
+        try:
+            size = p.stat().st_size if p.is_file() else SMALL + 1
+        except OSError:
+            size = SMALL + 1
         rel = value[len(root_w) + 1:] if value.startswith(root_w + "/") else None
-        in_out = value.startswith(root_o + "/")
-        if rel is not None and not (rel == "input" or rel.startswith("input/") or p.stat().st_size > SMALL):
+        in_out = value.startswith(root_o + "/") or value.startswith("/out/")
+        if in_out:
+            if not p.is_file() or size <= SMALL:
+                continue
+        elif rel is not None and not (rel == "input" or rel.startswith("input/") or size > SMALL):
             continue
-        if in_out and p.stat().st_size <= SMALL:
+        elif not p.is_file() and Path(value).suffix.lower() not in WEBSITE_SKIP_EXT:
             continue
-        out[f"{{F{len(already) + len(out)}}}"] = str(p)
+        out[f"{{F{len(already) + len(out)}}}"] = value
         seen.add(value)
     return out
 
@@ -1640,34 +1666,73 @@ import json, os, shutil, subprocess, sys, urllib.request
 here = os.path.dirname(os.path.abspath(__file__))
 jobs = json.loads(open(os.path.join(here, "_cloud_chain.json"), encoding="utf-8").read())
 by_name = {}
-if os.path.isdir("/files"):
-    for root, _, names in os.walk("/files"):
-        for n in names:
-            by_name[n] = os.path.join(root, n)
-for item in jobs.get("place") or []:
-    name = item.get("name")
-    src = by_name.get(name)
-    url = item.get("url")
-    for dest in item.get("dests") or []:
-        if os.path.isfile(dest) and os.path.getsize(dest) > 64:
+
+def remember_files():
+    if os.path.isdir("/files"):
+        for root, _, names in os.walk("/files"):
+            for n in names:
+                by_name[n] = os.path.join(root, n)
+    if os.path.isdir("/work"):
+        for root, _, names in os.walk("/work"):
+            for n in names:
+                by_name.setdefault(n, os.path.join(root, n))
+
+def geturl(url, dest):
+    os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+    print("media: downloading %s -> %s" % (os.path.basename(dest), dest), flush=True)
+    with urllib.request.urlopen(url, timeout=1800) as r, open(dest, "wb") as f:
+        shutil.copyfileobj(r, f, 8 << 20)
+    by_name[os.path.basename(dest)] = dest
+    return dest
+
+def pull_place():
+    remember_files()
+    for item in jobs.get("place") or []:
+        name = item.get("name")
+        src = by_name.get(name)
+        url = item.get("url")
+        for dest in item.get("dests") or []:
+            if os.path.isfile(dest) and os.path.getsize(dest) > 64:
+                by_name[name] = dest
+                continue
+            os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+            if src and os.path.isfile(src):
+                if not os.path.exists(dest):
+                    try:
+                        os.symlink(src, dest)
+                    except OSError:
+                        shutil.copy2(src, dest)
+                print("media: %s -> %s" % (name, dest), flush=True)
+            elif url:
+                src = geturl(url, dest)
+
+def pull_missing(cmd):
+    """Any previous-step file this command names: GET from R2 if it is not already on disk."""
+    pull_place()
+    for a in cmd or []:
+        if not isinstance(a, str) or not a.startswith("/") or os.path.isfile(a):
             continue
-        os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+        name = os.path.basename(a)
+        item = next((x for x in (jobs.get("place") or [])
+                     if x.get("name") == name or a in (x.get("dests") or [])), None)
+        src = by_name.get(name)
         if src and os.path.isfile(src):
-            if not os.path.exists(dest):
+            os.makedirs(os.path.dirname(a) or ".", exist_ok=True)
+            if not os.path.exists(a):
                 try:
-                    os.symlink(src, dest)
+                    os.symlink(src, a)
                 except OSError:
-                    shutil.copy2(src, dest)
-            print("media: %s -> %s" % (name, dest), flush=True)
-        elif url:
-            print("media: downloading %s" % name, flush=True)
-            with urllib.request.urlopen(url, timeout=1800) as r, open(dest, "wb") as f:
-                shutil.copyfileobj(r, f, 8 << 20)
-            by_name[name] = dest
-            src = dest
+                    shutil.copy2(src, a)
+            print("needed: %s -> %s" % (name, a), flush=True)
+        elif item and item.get("url"):
+            geturl(item["url"], a)
+
+remember_files()
+pull_place()
 for item in jobs["steps"]:
     name, cmd = item["name"], item["cmd"]
     print(f"=== {name} ===", flush=True)
+    pull_missing(cmd)
     while True:
         p = subprocess.run(cmd)
         if p.returncode == 3:
@@ -1789,6 +1854,8 @@ def _file_in_cloud(db, show, ep, path):
                 continue
         try:
             k = key_fn(rel)
+            if path.suffix.lower() in WEBSITE_SKIP_EXT and not path.is_file():
+                return k
             if storage.head(k):
                 return k
         except Exception:

@@ -294,6 +294,19 @@ def command(job_in):
                 src = dest
 
     cmd = [_fill(c, places) for c in job_in["cmd"]]
+    place = job_in.get("place") or []
+    for a in cmd:
+        if not isinstance(a, str) or not a.startswith("/") or os.path.isfile(a):
+            continue
+        name = os.path.basename(a)
+        item = next((x for x in place if x.get("name") == name or a in (x.get("dests") or [])), None)
+        token = next((t for t, n in names.items() if n == name), None)
+        url = (item or {}).get("url") or ((job_in.get("files") or {}).get(token) if token else None)
+        if not url:
+            continue
+        os.makedirs(os.path.dirname(a) or ".", exist_ok=True)
+        brought[name] = fetch(url, a)
+        print("needed:", name, "->", a, flush=True)
     before_work, before_out = snapshot(WORK), snapshot(OUT)
 
     t = time.time()
