@@ -651,6 +651,11 @@ def _work_wanted(rel):
     `Path.glob("*.jpg")` is the top level only, but `PurePosixPath("thumbs/x.jpg").match("*.jpg")` is True -- so
     matching with `match` would pull down every one of an episode's thousands of thumbnails. A pattern without a
     slash must match a name without a slash."""
+    name = Path(rel or "").name
+    # Matching's chain json is *.json; lip opening then fetched it over the lips driver and ran mksrt
+    # (WBT EP101: Package not found at /files/F1/….docx on a lips visit).
+    if name.startswith("_cloud_chain"):
+        return False
     for pat in WORK_KEEP:
         if "/" in pat:
             if fnmatch(rel, pat):

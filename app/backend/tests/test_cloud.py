@@ -473,6 +473,29 @@ def test_a_script_in_the_input_folder_is_sent_even_though_it_is_small(tmp_path, 
     assert not any(n.startswith("input/") for n in res["_tar_names"])
 
 
+def test_a_leftover_files_f1_script_is_fetched_from_the_asset(tmp_path):
+    """WBT EP101 lip opening: cmd still said /files/F1/Episode_  101 - ….docx and python-docx found nothing."""
+    ep = {"id": 846}
+    local = str(tmp_path / "input" / "dub_script" / "Episode_ 101 - Wahre Verschmelzung.docx")
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": local}]
+
+    cmd = ["python", "mksrt.py", "--script", "/files/F1/Episode_  101 - Wahre Verschmelzung.docx"]
+    out = cloud._localise_cmd_inputs(cmd, DB(), ep)
+    assert out[-1] == local
+
+
+def test_small_docx_asset_is_sent_as_its_own_get():
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": "/work/input/dub_script/ep.docx", "r2_key": "shows/WBT/ep101/input/ep.docx"}]
+
+    extra = cloud._input_asset_files(DB(), {"id": 1}, {})
+    assert "/work/input/dub_script/ep.docx" in extra.values()
+
+
 def test_a_step_that_fails_in_the_cloud_reads_like_a_local_failure(tmp_path, monkeypatch):
     show, ep = _episode(tmp_path)
     monkeypatch.setattr(cloud, "submit", lambda job, **kw: "j")

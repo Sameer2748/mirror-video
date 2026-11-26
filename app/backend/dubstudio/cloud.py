@@ -552,6 +552,8 @@ SMALL = 1 << 20                  # a file this size or under travels in the work
 KEEP_LOCAL_MAX = 8 << 20         # JSON/xlsx may land here; videos never do
 STREAM_TAR_MIN = 8 << 20         # bigger return tars are unpacked from the HTTP stream, not saved
 WEBSITE_SKIP_EXT = {".mp4", ".mov", ".mkv", ".webm", ".m4a", ".wav", ".aac", ".mp3"}
+SCRIPT_EXT = {".docx", ".doc", ".txt"}
+GET_EXT = WEBSITE_SKIP_EXT | SCRIPT_EXT
 LOOSE_WORK_FILES = (
     "proxy_540.mp4", "proxy.mp4", "dub_preview.m4a",
     "clean_noglow.mp4", "video_groups.mp4", "video_groups.auto.mp4",
@@ -634,7 +636,7 @@ def _swap(text, pairs):
 
 
 KEEP_CONFIG_KEYS = ("translation",)
-INPUT_CONFIG_KEYS = ("src_video", "dub_audio")
+INPUT_CONFIG_KEYS = ("src_video", "dub_audio", "dub_script", "src_script")
 
 
 def _keep_local_config_keys(previous, incoming_text):
@@ -804,7 +806,7 @@ def tokenise(cmd, work_dir, out_dir, cfg, files=None):
             if real and arg.startswith(real):
                 arg = token + arg[len(real):]
                 break
-        if arg.startswith("/") and (Path(arg).is_file() or Path(arg).suffix.lower() in WEBSITE_SKIP_EXT):
+        if arg.startswith("/") and (Path(arg).is_file() or Path(arg).suffix.lower() in GET_EXT):
             # Missing locally: previous visit PUT it to R2. Tokenise so the worker GETs it.
             token = next((t for t, p in files.items() if p == arg), None)
             if token is None:
@@ -829,7 +831,7 @@ def _send_large_work_files(cmd, work_dir, files):
             rel = arg[len("{WORK}/"):]
             local = Path(work_dir) / rel
             left_out = rel == "input" or rel.startswith("input/")
-            media = Path(rel).suffix.lower() in WEBSITE_SKIP_EXT
+            media = Path(rel).suffix.lower() in GET_EXT
             # input/ and previous-visit videos are not in the work tar. Tokenise even when this box has no copy.
             if left_out or media or (local.is_file() and local.stat().st_size > SMALL):
                 token = next((t for t, p in files.items() if p == str(local)), None)
@@ -899,7 +901,7 @@ def _files_named_in_config(W, O, already):
             continue
         p = _resolve_media_path(W, O, value)
         if p is None:
-            if Path(value).suffix.lower() not in WEBSITE_SKIP_EXT:
+            if Path(value).suffix.lower() not in GET_EXT:
                 continue
             if value.startswith("/work/"):
                 p = Path(W) / value[len("/work/"):]
@@ -921,10 +923,40 @@ def _files_named_in_config(W, O, already):
                 continue
         elif rel is not None and not (rel == "input" or rel.startswith("input/") or size > SMALL):
             continue
-        elif not p.is_file() and Path(value).suffix.lower() not in WEBSITE_SKIP_EXT:
+        elif not p.is_file() and Path(value).suffix.lower() not in GET_EXT:
             continue
         out[f"{{F{len(already) + len(out)}}}"] = value
         seen.add(value)
+    return out
+
+
+def _fold_name(name):
+    return re.sub(r"\s+", " ", str(name or "")).strip().lower()
+
+
+def _localise_cmd_inputs(cmd, db, ep):
+    """A leftover `/files/F1/….docx` from a previous send becomes this episode's script/video path.
+
+    Matching and lip opening both died on python-docx opening that worker path with no GET (WBT EP101)."""
+    one_q = getattr(db, "q", None) if db is not None else None
+    if not callable(one_q) or not isinstance(ep, dict) or ep.get("id") is None:
+        return list(cmd or [])
+    try:
+        rows = one_q("SELECT path FROM assets WHERE episode_id=? AND role='input'", (ep["id"],))
+    except Exception:
+        return list(cmd or [])
+    by_fold = {}
+    for a in rows or []:
+        p = a.get("path") or ""
+        if p:
+            by_fold[_fold_name(Path(p).name)] = p
+    out = []
+    for c in cmd or []:
+        if isinstance(c, str) and c.startswith("/files/") and Path(c).suffix.lower() in GET_EXT:
+            hit = by_fold.get(_fold_name(Path(c).name))
+            out.append(hit or c)
+        else:
+            out.append(c)
     return out
 
 
@@ -946,7 +978,10 @@ def _input_asset_files(db, ep, already):
         key = str(p) if str(p) not in ("", ".") else (a.get("r2_key") or "")
         if not key or key in seen:
             continue
-        if p.is_file() and p.stat().st_size <= SMALL:
+        # input/ is never in the work tar. A 40 KB .docx used to be skipped as "small" and the worker
+        # opened /files/F1/….docx with nothing there (WBT lip opening / matching).
+        in_input = "input" in p.parts or Path(key).suffix.lower() in SCRIPT_EXT
+        if p.is_file() and p.stat().st_size <= SMALL and not in_input:
             continue
         out[f"{{F{len(already) + len(out)}}}"] = key
         seen.add(key)
@@ -1514,6 +1549,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     # Small JSON only. Do not fetch src/audio onto Render (IMTS IT-DE 23/35 dynsrt, docs/17 C6).
     ensure_work_for_cloud(show, ep, name, log=log)
     heal_config_inputs(db, ep, W)
+    cmd = _localise_cmd_inputs(cmd, db, ep)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
         log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
@@ -1825,6 +1861,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     files, packed = {}, []
     staged = False
     for step_name, cmd in named_cmds:
+        cmd = _localise_cmd_inputs(cmd, db, ep)
         if any(str(c).endswith("library.py") for c in (cmd or [])):
             cmd = point_library_at_staged_app(cmd, W)
             log("library: this box's ai.py/library.py travel with the job (the rented image is older)")
@@ -1901,7 +1938,7 @@ def _file_in_cloud(db, show, ep, path):
                 continue
         try:
             k = key_fn(rel)
-            if path.suffix.lower() in WEBSITE_SKIP_EXT and not path.is_file():
+            if path.suffix.lower() in GET_EXT and not path.is_file():
                 return k
             if storage.head(k):
                 return k
@@ -1918,7 +1955,7 @@ def _file_in_cloud(db, show, ep, path):
             except Exception:
                 pass
         return key
-    if a or kind in ("src_video", "dub_audio"):
+    if a or kind in ("src_video", "dub_audio", "dub_script", "src_script"):
         return key
     if storage.head(key):
         return key

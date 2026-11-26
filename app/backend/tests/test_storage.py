@@ -989,3 +989,5 @@ def test_lips_nets_json_is_fetched_as_a_work_file():
     assert _work_wanted("lips_nets/ranges.json")
     assert _work_wanted("prep.json")
     assert not _work_wanted("lips_nets/thumbs/x.jpg")
+    assert not _work_wanted("_cloud_chain.json")
+    assert not _work_wanted("_cloud_chain.py")
