@@ -991,3 +991,38 @@ def test_lips_nets_json_is_fetched_as_a_work_file():
     assert not _work_wanted("lips_nets/thumbs/x.jpg")
     assert not _work_wanted("_cloud_chain.json")
     assert not _work_wanted("_cloud_chain.py")
+    assert not _work_wanted("lips_nets/range_105_120.json")
+    assert not _work_wanted("lips_mesh/range_285_300.json")
+    assert _work_wanted("source_fade.json")
+
+
+def test_publish_does_not_put_lip_piece_json_or_fail_the_episode(tmp_path, monkeypatch):
+    """WBT 117 / TGS 16 / IMTSITDE 43: publish PUT every lips_nets/range_*.json, R2 500, episode Failed."""
+    from dubstudio import storage
+    work = tmp_path / "W"
+    (work / "lips_nets").mkdir(parents=True)
+    (work / "lips_nets" / "ranges.json").write_text("[]")
+    (work / "lips_nets" / "range_105_120.json").write_text("{}")
+    (work / "source_fade.json").write_text("{}")
+    show = {"code": "WBTDEUS", "id": 1}
+    ep = {"id": 1, "number": 117, "work_dir": str(work)}
+    put = []
+
+    def fake_put(path, key, **kw):
+        name = Path(path).name
+        put.append(name)
+        if name == "source_fade.json":
+            raise RuntimeError("R2 PUT x: HTTP 500 We encountered an internal error. Please try again.")
+        return {"key": key, "size": 1}
+
+    monkeypatch.setattr(storage, "configured", lambda: True)
+    monkeypatch.setattr(storage, "queue_uploads", lambda *a, **k: [])
+    monkeypatch.setattr(storage, "put_file", fake_put)
+    monkeypatch.setattr(storage, "work_key", lambda s, e, rel: str(rel))
+    logs = []
+    out = storage.publish_outputs(None, show, ep, [], work_dir=str(work), log=logs.append)
+    assert "ranges.json" in put
+    assert "range_105_120.json" not in put
+    assert out["work_files"] >= 1
+    assert out["work_skipped"] >= 1
+    assert any("source_fade.json" in m for m in logs)

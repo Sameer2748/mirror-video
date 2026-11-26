@@ -188,6 +188,18 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 ---
 
+### P17 — Publish dies on R2 500 for lip piece JSON
+
+**Now.** WBT **117**, TGS **16**, IMTSITDE **43–45**: episode finished, then **Publish** PUT every `lips_nets/range_*.json` (and `source_fade.json`). Cloudflare `HTTP 500 We encountered an internal error`. Episode shows Failed; the videos are already there.
+
+**Wrong fix.** Process again. Fetch those piece files onto Render.
+
+**Right fix (coded).** Publish `lips_nets/ranges.json` only, not the 40–80 piece files. Retry a 500/429 PUT. A leftover work PUT that still fails is skipped — deliverables still queue. Retry **publish**, not Process.
+
+**KOTU 34 (same night).** Render tail opened `scene_manifest.edl.json` (old sheet). Slowfix never writes it. Skip that command when there is no slowfix xlsx and no EDL. Retry **render**, not Process.
+
+---
+
 ### P7 — Face map: one GPU slot, one show at a time
 
 **Now.** `gpu_slots` default **1**. Software lock: two face maps of the **same show** must not run together. **6** GPU workers often **idle** while CPU is slammed.

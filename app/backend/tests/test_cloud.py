@@ -1278,6 +1278,22 @@ def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch)
     assert (app / "pipeline_tools" / "dubstitch.py").is_file()
 
 
+def test_scene_sheet_is_a_noop_when_there_is_no_edl(tmp_path):
+    """KOTU 34: render tail opened scene_manifest.edl.json after slowfix never wrote it."""
+    from dubstudio.runner import Runner
+    work = tmp_path / "work"
+    (work / "scene").mkdir(parents=True)
+    (work / "lib").mkdir()
+    ctx = {"W": str(work), "scene_dir": str(work / "scene"), "library_dir": str(work / "lib"),
+           "name_scene_sheet": str(tmp_path / "out.xlsx"), "name_en_srt": str(tmp_path / "en.srt")}
+    cmd, dest = Runner(None)._scene_sheet_argv(
+        {"params": {"ctx": ctx}}, {"code": "KOTU"}, {"number": 34, "work_dir": str(work)})
+    assert dest.endswith("out.xlsx")
+    assert "sceneedit_sheet.py" not in " ".join(cmd)
+    assert "scene_manifest.edl.json" not in " ".join(cmd)
+    assert "skipped" in " ".join(cmd)
+
+
 def test_render_tail_copies_the_slowfix_sheet_instead_of_the_old_edl(tmp_path):
     """New flow never writes scene_manifest.edl.json. The rented tail used to open that path and fail
     the whole visit after the videos were already cut."""

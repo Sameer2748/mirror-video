@@ -161,22 +161,32 @@ def put_file(path, key, on_progress=None, timeout=3600.0):
     """Send one file up, reading it 1 MiB at a time (`on_progress(bytes_sent)` as it goes)."""
     p = Path(path)
     size = p.stat().st_size
+    last = None
+    for attempt in range(4):
+        def body():
+            sent = 0
+            with p.open("rb") as f:
+                while True:
+                    chunk = f.read(PART)
+                    if not chunk:
+                        break
+                    sent += len(chunk)
+                    if on_progress:
+                        on_progress(sent)
+                    yield chunk
 
-    def body():
-        sent = 0
-        with p.open("rb") as f:
-            while True:
-                chunk = f.read(PART)
-                if not chunk:
-                    break
-                sent += len(chunk)
-                if on_progress:
-                    on_progress(sent)
-                yield chunk
-
-    _call("PUT", key, headers={"content-type": content_type(p), "content-length": str(size)}, content=body(),
-          payload_hash=UNSIGNED, timeout=timeout)
-    return {"key": key, "size": size}
+        try:
+            _call("PUT", key, headers={"content-type": content_type(p), "content-length": str(size)}, content=body(),
+                  payload_hash=UNSIGNED, timeout=timeout)
+            return {"key": key, "size": size}
+        except RuntimeError as ex:
+            last = ex
+            text = str(ex)
+            if attempt < 3 and any(m in text for m in ("HTTP 500", "HTTP 503", "HTTP 429", "internal error")):
+                time.sleep(0.4 * (2 ** attempt))
+                continue
+            raise
+    raise last
 
 
 # ---------------- big files: multipart upload (S3 API) ----------------
@@ -727,10 +737,16 @@ def _work_wanted(rel):
     `Path.glob("*.jpg")` is the top level only, but `PurePosixPath("thumbs/x.jpg").match("*.jpg")` is True -- so
     matching with `match` would pull down every one of an episode's thousands of thumbnails. A pattern without a
     slash must match a name without a slash."""
-    name = Path(rel or "").name
+    rel = str(rel or "").replace("\\", "/")
+    name = Path(rel).name
     # Matching's chain json is *.json; lip opening then fetched it over the lips driver and ran mksrt
     # (WBT EP101: Package not found at /files/F1/….docx on a lips visit).
     if name.startswith("_cloud_chain"):
+        return False
+    # Per-piece lip JSON: 40–80 PUTs per episode. Cloudflare then 500s publish
+    # (WBT 117, TGS 16, IMTSITDE 43–45). After merge only ranges.json is needed.
+    folder = str(Path(rel).parent).replace("\\", "/")
+    if folder in ("lips_nets", "lips_mesh") and name.startswith("range_"):
         return False
     for pat in WORK_KEEP:
         if "/" in pat:
@@ -938,16 +954,25 @@ def publish_outputs(db, show, ep, files, user_id=None, work_dir=None, log=print)
     """Everything the episode delivers goes up to `…/ep<N>/out/`, and the small work files to `…/ep<N>/work/`
     (Claude's caches and the edit lists, so a rerun anywhere costs nothing)."""
     sent = queue_uploads(db, show, ep, files, user_id=user_id)
-    kept = 0
+    kept, skipped = 0, 0
     W = Path(work_dir or ep["work_dir"])
     if W.is_dir():
         for pat in WORK_KEEP:
             for p in sorted(W.glob(pat)):
-                if p.is_file() and p.stat().st_size < 64 << 20:
-                    put_file(p, work_key(show, ep, p.relative_to(W)))
+                if not p.is_file() or p.stat().st_size >= 64 << 20:
+                    continue
+                rel = str(p.relative_to(W))
+                if not _work_wanted(rel):
+                    continue
+                try:
+                    put_file(p, work_key(show, ep, rel))
                     kept += 1
-    log(f"{len(sent)} files queued for the cloud, {kept} work files kept")
-    return {"uploads": len(sent), "work_files": kept}
+                except Exception as ex:
+                    skipped += 1
+                    log(f"work file skipped ({rel}): {ex}")
+    extra = f", {skipped} leftover work PUTs skipped" if skipped else ""
+    log(f"{len(sent)} files queued for the cloud, {kept} work files kept{extra}")
+    return {"uploads": len(sent), "work_files": kept, "work_skipped": skipped}
 
 
 # Segment caches only. `thumbs/` is the editor's clip previews — drop those and the timeline goes blank until

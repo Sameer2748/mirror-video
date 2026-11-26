@@ -1496,11 +1496,17 @@ class Runner:
                    "print('scene-edit sheet', dest)\n",
                    str(slow_xlsx), out]
             return cmd, out
-        en = ctx.get("en_srt_burn") or ctx["name_en_srt"]
-        cmd = ["{py}", str(cfg.scene_dir / "sceneedit_sheet.py"),
-               str(Path(ctx["scene_dir"]) / "scene_manifest.edl.json"),
-               str(Path(ctx["library_dir"]) / "broll_library.json"),
-               en, out, f"{show['code'].upper()} ep{ep['number']}: scene edit"]
+        edl = Path(ctx.get("scene_dir") or (W / "scene")) / "scene_manifest.edl.json"
+        if edl.is_file():
+            en = ctx.get("en_srt_burn") or ctx["name_en_srt"]
+            cmd = ["{py}", str(cfg.scene_dir / "sceneedit_sheet.py"),
+                   str(edl),
+                   str(Path(ctx["library_dir"]) / "broll_library.json"),
+                   en, out, f"{show['code'].upper()} ep{ep['number']}: scene edit"]
+            return cmd, out
+        # New flow never writes the EDL. Packing sceneedit_sheet.py FileNotFound the
+        # whole render tail (KOTU 34) after the videos were already cut.
+        cmd = ["{py}", "-c", "print('scene-edit sheet skipped: no slowfix xlsx and no EDL')\n"]
         return cmd, out
 
     @staticmethod
