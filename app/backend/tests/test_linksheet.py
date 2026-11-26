@@ -145,6 +145,12 @@ def test_sheets_google_url_wrapper_is_unwrapped(tmp_path):
     assert rows[0]["video"] == real
 
 
+def test_drive_download_urls_include_both_hosts():
+    urls = linksheet.download_urls("https://drive.google.com/open?id=abc123xyz")
+    assert "usercontent.google.com/download" in urls[0]
+    assert "drive.google.com/uc?export=download" in urls[1]
+
+
 def test_csv_filename_without_a_url_is_still_refused(tmp_path):
     p = tmp_path / "names_only.csv"
     p.write_text("Episode,Source video,Audio,Script\n5,TGS EPISODE 05.mp4,https://x.y/a.mp3,https://x.y/s.docx\n",
@@ -201,6 +207,17 @@ def main():
     assert "export=download" in linksheet.direct_url("https://drive.google.com/file/d/abc123/view")
     assert linksheet.direct_url("https://docs.google.com/document/d/DOCID/edit").endswith("/export?format=docx")
     assert linksheet.direct_url("https://www.dropbox.com/s/xyz/ep.mp4?dl=0").endswith("dl=1")
+    drive_urls = linksheet.download_urls("https://drive.google.com/open?id=abc123xyz")
+    assert "usercontent.google.com/download" in drive_urls[0]
+    assert "drive.google.com/uc?export=download" in drive_urls[1]
+    old_urls, old_sleep = linksheet.download_urls, linksheet.time.sleep
+    linksheet.download_urls = lambda url: [f"{base}/missing.mp4", f"{base}/ep.mp4"]
+    linksheet.time.sleep = lambda s: None
+    try:
+        p = linksheet.fetch("https://drive.google.com/open?id=x", ROOT / "retry404", "src_video")
+        assert p.is_file() and p.stat().st_size > 100
+    finally:
+        linksheet.download_urls, linksheet.time.sleep = old_urls, old_sleep
 
     try:
         linksheet.fetch(f"{base}/page.html", ROOT / "bad", "src_video")

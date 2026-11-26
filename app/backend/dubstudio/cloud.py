@@ -530,9 +530,8 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
     nets = Path(ep["work_dir"]) / "lips_nets"
     nets.mkdir(parents=True, exist_ok=True)
     todo = list(enumerate(shares))
-    for attempt in range(tries):
-        if not todo:
-            break
+    hard_tries = 0
+    while todo and hard_tries < tries and time.time() - t0 < 7200:
         video = storage.presign(key, 10800)                            # fresh links for each attempt
         jobs = {}
         for i, mine in todo:
@@ -553,10 +552,19 @@ def lip_scan(db, show, ep, duration_s, n_pieces=None, log=print, on_progress=Non
             for f in (nets.parent / "_piece" / "lips_nets").glob("range_*.json"):
                 f.replace(nets / f.name)
             tar.unlink(missing_ok=True)
-        todo = [jobs[jid][:2] for jid in failed]
+        idle, hard = [], []
+        for jid, reason in failed.items():
+            row = jobs[jid][:2]
+            if _transient_cloud_error(reason):
+                idle.append(row)
+            else:
+                hard.append(row)
+        todo = idle + hard
         if todo:
             retries += len(todo)
-            log(f"attempt {attempt + 1}: {len(failed)} share(s) failed ({list(failed.values())[0][:80]}); sending them again")
+            log(f"lip: {len(failed)} share(s) failed ({list(failed.values())[0][:80]}); sending them again")
+        if hard:
+            hard_tries += 1
     if todo:
         raise RuntimeError(f"{len(todo)} share(s) still failing after {tries} tries: pieces "
                            f"{[c for _, mine in todo for c in mine][:6]}…")
@@ -1899,16 +1907,25 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
                           "out": storage.presign(back_out, 10800, method="PUT"),
                           "loose": {"work": loose_work, "out": loose_out}}
 
-    jid = submit(job, kind=kind)
-    log(f"{name}: sent to a rented {kind} machine (job {jid})")
-    done, failed = wait([jid], on_progress=on_progress, timeout=timeout, kind=kind)
-    if failed and _transient_cloud_error(list(failed.values())[0]):
-        log(f"{name}: rented machine hit a temporary error; waiting {retry_wait:.0f} s and sending the same job once more")
-        time.sleep(retry_wait)
-        _resign()
+    deadline = time.time() + timeout
+    n, done, failed = 0, {}, {}
+    while True:
+        left = deadline - time.time()
+        if left < 20:
+            break
         jid = submit(job, kind=kind)
-        log(f"{name}: retry sent to a rented {kind} machine (job {jid})")
-        done, failed = wait([jid], on_progress=on_progress, timeout=timeout, kind=kind)
+        log(f"{name}: sent to a rented {kind} machine (job {jid})" + (f" (ticket {n + 1})" if n else ""))
+        done, failed = wait([jid], on_progress=on_progress, timeout=left, kind=kind)
+        if not failed:
+            break
+        reason = list(failed.values())[0]
+        if not _transient_cloud_error(reason):
+            break
+        n += 1
+        pause = 15 if "idle workers ignored" in str(reason).lower() else retry_wait
+        log(f"{name}: {reason}; episode stays running — new ticket in {pause:.0f} s (try {n})")
+        time.sleep(min(pause, max(0, deadline - time.time() - 15)))
+        _resign()
     if failed:
         raise RuntimeError(f"the cloud could not run {name}: {list(failed.values())[0]}")
     res = (list(done.values())[0] or {}).get("output") or {}

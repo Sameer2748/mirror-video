@@ -1892,6 +1892,43 @@ def test_run_command_retries_once_after_a_worker_500(tmp_path, monkeypatch):
     assert res["ok"] and (work / "scene.json").read_text() == "{}"
 
 
+def test_run_command_keeps_sending_when_idle_workers_ignore_the_queue(tmp_path, monkeypatch):
+    """RunPod can ignore IN_QUEUE while boxes sit idle. Cancelling that ticket is fine; failing the
+    episode after one retry is not — keep sending until a worker takes it."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    (work / "note.txt").write_text("hi")
+    bucket = tmp_path / "bucket"
+    waits = []
+
+    def fake_wait(ids, **kw):
+        waits.append(ids[0])
+        if len(waits) < 3:
+            return {}, {ids[0]: "idle workers ignored the queue"}
+        back = cloud_tar(bucket, "match", "work_out")
+        back.parent.mkdir(parents=True, exist_ok=True)
+        box = tmp_path / "wback"; box.mkdir()
+        (box / "prep.json").write_text("{}")
+        with tarfile.open(back, "w:gz") as t:
+            t.add(box / "prep.json", arcname="prep.json")
+        return {ids[0]: {"output": {"ok": True, "rc": 0, "seconds": 2,
+                                    "sent": {"work": {"files": 1}}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: f"j{len(waits)}")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path))
+
+    cfg = FakeCfg(tmp_path)
+    res = cloud.run_command({}, show, ep, "match", [cfg.pipeline_python, "mksrt.py"],
+                            cfg, log=lambda m: None, retry_wait=0)
+    assert len(waits) == 3
+    assert res["ok"] and (work / "prep.json").read_text() == "{}"
+
+
 def test_check_finds_the_english_srt_next_to_the_sheet(tmp_path):
     """The pointer can be missing; the file from AI translate is still next to the mapping sheet."""
     import importlib.util

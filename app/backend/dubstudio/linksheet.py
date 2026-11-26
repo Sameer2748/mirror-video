@@ -3,10 +3,15 @@
 The sheet is the extra way in. The folder scan and the browser upload stay as they are. One download
 runs at a time, on its own slot, so it never takes a pipeline CPU.
 """
-import csv, re
+import csv, re, time
+from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urlparse
+from urllib.error import HTTPError
+from urllib.parse import parse_qs, unquote, urlencode, urlparse
 from urllib.request import Request, urlopen
+
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
 EXTS = {
     "src_video": (".mp4", ".mov", ".mkv", ".m4v", ".webm", ".avi", ".mxf"),
@@ -186,20 +191,70 @@ def parse_sheet(path):
     return out
 
 
+def _drive_id(url):
+    m = re.search(r"docs\.google\.com/document/d/([^/?]+)", url)
+    if m:
+        return None
+    m = re.search(r"drive\.google\.com/file/d/([^/?]+)", url)
+    if not m and "drive.google.com" in url:
+        m = re.search(r"[?&]id=([^&]+)", url)
+    return m.group(1) if m else None
+
+
 def direct_url(url):
     """A share page is not the file. Turn the common Drive, Docs and Dropbox links into a download."""
     doc = re.search(r"docs\.google\.com/document/d/([^/?]+)", url)
     if doc:
         return f"https://docs.google.com/document/d/{doc.group(1)}/export?format=docx"
-    m = re.search(r"drive\.google\.com/file/d/([^/?]+)", url)
-    if not m and "drive.google.com" in url:
-        m = re.search(r"[?&]id=([^&]+)", url)
-    if m:
+    fid = _drive_id(url)
+    if fid:
         return ("https://drive.usercontent.google.com/download?id="
-                + m.group(1) + "&export=download&confirm=t")
+                + fid + "&export=download&confirm=t")
     if "dropbox.com" in url and "dl=1" not in url:
         return url + ("&" if "?" in url else "?") + "dl=1"
     return url
+
+
+def download_urls(url):
+    """Drive often 404s one host after a burst of videos; try the other download URL too."""
+    out, fid = [], _drive_id(url)
+    if fid:
+        out.append("https://drive.usercontent.google.com/download?id=" + fid + "&export=download&confirm=t")
+        out.append("https://drive.google.com/uc?export=download&id=" + fid + "&confirm=t")
+    d = direct_url(url)
+    if d not in out:
+        out.append(d)
+    if url not in out:
+        out.append(url)
+    return out
+
+
+class _DriveForm(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.action = None
+        self.fields = {}
+        self._in = False
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "form" and a.get("id") == "download-form":
+            self._in = True
+            self.action = a.get("action")
+        if self._in and tag == "input" and a.get("name"):
+            self.fields[a["name"]] = a.get("value") or ""
+
+    def handle_endtag(self, tag):
+        if tag == "form":
+            self._in = False
+
+
+def _virus_scan_url(html):
+    p = _DriveForm()
+    p.feed(html)
+    if not p.action or not p.fields.get("id"):
+        return None
+    return p.action + ("&" if "?" in p.action else "?") + urlencode(p.fields)
 
 
 def _filename(url, headers, kind):
@@ -220,22 +275,58 @@ def _filename(url, headers, kind):
     return name
 
 
+def _save_response(r, dest_dir, kind):
+    head = r.read(64)
+    html = head.lstrip()[:1] == b"<" or head.lower().startswith(b"<!doctype") or b"<html" in head.lower()
+    if html:
+        rest = head + r.read()
+        nxt = _virus_scan_url(rest.decode("utf-8", "replace"))
+        if nxt:
+            raise _VirusScan(nxt)
+        raise ValueError(f"the {kind.replace('_', ' ')} link opened a web page, not the file")
+    name = _filename(r.geturl(), r.headers, kind)
+    dest = dest_dir / name
+    with dest.open("wb") as f:
+        f.write(head)
+        while True:
+            chunk = r.read(1 << 20)
+            if not chunk:
+                break
+            f.write(chunk)
+    return dest
+
+
+class _VirusScan(Exception):
+    def __init__(self, url):
+        super().__init__("virus scan")
+        self.url = url
+
+
 def fetch(url, dest_dir, kind):
-    """Download one link into dest_dir. Returns the file path. A web page is refused."""
+    """Download one link into dest_dir. Returns the file path. A web page is refused.
+
+    Drive often answers 404 after a burst of videos (quota). Try the other download host and
+    wait, instead of failing the episode on the first 404."""
     dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
-    req = Request(direct_url(url), headers={"User-Agent": "dubstudio/1.0"})
-    with urlopen(req, timeout=600) as r:
-        name = _filename(r.geturl(), r.headers, kind)
-        dest = dest_dir / name
-        head = r.read(64)
-        if head.lstrip()[:1] == b"<" or head.lower().startswith(b"<!doctype") or b"<html" in head.lower():
-            raise ValueError(f"the {kind.replace('_', ' ')} link opened a web page, not the file")
-        with dest.open("wb") as f:
-            f.write(head)
-            while True:
-                chunk = r.read(1 << 20)
-                if not chunk:
-                    break
-                f.write(chunk)
-    return dest
+    last = None
+    urls = download_urls(url)
+    for attempt in range(5):
+        for cand in list(urls):
+            try:
+                req = Request(cand, headers={"User-Agent": UA})
+                with urlopen(req, timeout=600) as r:
+                    return _save_response(r, dest_dir, kind)
+            except _VirusScan as ex:
+                urls = [ex.url] + [u for u in urls if u != ex.url]
+                last = ex
+            except HTTPError as ex:
+                last = ex
+                if ex.code not in (403, 404, 429, 500, 502, 503):
+                    raise
+            except ValueError:
+                raise
+        time.sleep(min(20, 2 ** attempt))
+    if last:
+        raise last
+    raise ValueError(f"the {kind.replace('_', ' ')} link could not be downloaded")

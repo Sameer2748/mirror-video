@@ -632,6 +632,7 @@ class Runner:
                               ("dub_script", row["script_url"])):
                 self.db.update("link_imports", iid, message=f"downloading the {kind.replace('_', ' ')}")
                 path = linksheet.fetch(url, Path(ep["work_dir"]) / "input" / kind, kind)
+                time.sleep(1.5)
                 info, problems = scan.check_asset(kind, str(path))
                 if problems:
                     raise RuntimeError("; ".join(problems))
@@ -969,6 +970,11 @@ class Runner:
                     f.write("\n(OpenRouter key limit: trying again once)\n")
                 self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
                           message="OpenRouter key limit; trying again once")
+            elif "idle workers ignored the queue" in str(e).lower() and (cur["attempt"] or 0) < 12:
+                with open(j["log_path"], "a") as f:
+                    f.write("\n(idle workers ignored the queue: sending a new machine ticket, not failing the episode)\n")
+                self._set(j, status="waiting", attempt=(cur["attempt"] or 0) + 1, progress=0,
+                          message="idle workers ignored the queue; sending a new ticket")
             elif once and self.missing_work_retry(j["step"], e, cur["attempt"]):
                 try:
                     show, ep, _ = self.episode_context(j["episode_id"])
