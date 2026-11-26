@@ -98,12 +98,13 @@ def deliverables(show, ep, ctx):
         size = p.stat().st_size if exists else None
         mtime = p.stat().st_mtime if exists else None
         in_cloud = False
-        # Worker PUTs masters to R2; this box never keeps them (P1). Only SRT used to
-        # look in the cloud, so EP17 looked empty in Deliverables while the mp4s were there.
-        if not exists and storage.configured():
+        # Always HEAD: a local leftover made EP162 look "here" while R2 had no DE-subs video.
+        if storage.configured():
             info = storage.head(storage.out_key(show, ep, name))
             if info:
-                exists, size, in_cloud = True, int(info.get("size") or 0), True
+                in_cloud = True
+                size = size or int(info.get("size") or 0)
+                exists = True
         files.append(dict(kind=kind, label=label, name=name, path=str(p), exists=exists,
                           size=size, mtime=mtime, in_cloud=in_cloud))
     for kind, label, pat in (("qc", "Final QC sheet (PASS / WARN / FAIL per check)", "*_qc.xlsx"),

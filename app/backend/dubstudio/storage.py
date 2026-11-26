@@ -547,12 +547,17 @@ def record_existing_cloud_files(db, show, ep, files, user_id=None):
         key = out_key(show, ep, name)
         old = db.one("SELECT * FROM uploads WHERE episode_id=? AND key=? ORDER BY id DESC LIMIT 1",
                      (ep["id"], key))
-        if old and old["status"] == "done":
+        size = f.get("size") or 0
+        if old:
+            if old["status"] != "done":
+                db.update("uploads", old["id"], status="done", sent=size or old.get("sent") or 0,
+                          size=size or old.get("size") or 0, error=None, finished=now)
+                old = db.one("SELECT * FROM uploads WHERE id=?", (old["id"],))
             rows.append(old)
             continue
         uid = db.insert("uploads", episode_id=ep["id"], kind=f.get("kind"), name=name,
                         path=f.get("path"), bucket=settings()["bucket"], key=key,
-                        size=f.get("size") or 0, sent=f.get("size") or 0, status="done",
+                        size=size, sent=size, status="done",
                         user_id=user_id, created=now, finished=now)
         row = db.one("SELECT * FROM uploads WHERE id=?", (uid,))
         rows.append(row)
@@ -596,6 +601,22 @@ def latest_uploads(rows):
     return out
 
 
+MASTER_KINDS = ("clean", "dub_subs", "en_subs")
+
+
+def masters_missing_from_cloud(show, ep, files=None):
+    """Names of the three final videos that are not in R2 yet. Local leftovers do not count."""
+    from . import deliver
+    missing = []
+    for f in files or deliver.deliverables(show, ep, None):
+        if f.get("kind") not in MASTER_KINDS:
+            continue
+        if f.get("in_cloud"):
+            continue
+        missing.append(f.get("name") or f.get("kind"))
+    return missing
+
+
 def blocking_failed_uploads(db, episode_id):
     """Latest upload per kind that is still failed. An older failed try of a file that later went up
     must not block cleanup (IMTS IT-DE EP7: 3 leftover failed rows, 12 current files done)."""
@@ -612,9 +633,33 @@ def retry_upload(db, uid):
 
 
 # ---------------- the uploader (one file at a time, in the background) ----------------
+def recover_stuck_uploads(db):
+    """A deploy used to leave status=sending forever (IMTS DE 162: 0 KB of 232 MB).
+
+    If R2 already has the object, mark done. Otherwise put it back in the queue."""
+    if not db:
+        return 0
+    n = 0
+    for row in db.q("SELECT * FROM uploads WHERE status='sending'") or []:
+        info = None
+        try:
+            info = head(row["key"]) if configured() else None
+        except Exception:
+            info = None
+        if info:
+            sz = int(info.get("size") or row.get("size") or 0)
+            db.update("uploads", row["id"], status="done", sent=sz, size=sz or row.get("size"),
+                      error=None, finished=time.time())
+        else:
+            db.update("uploads", row["id"], status="waiting", sent=0, started=None, error=None)
+        n += 1
+    return n
+
+
 def start_worker(db):
     if not configured():
         return False
+    recover_stuck_uploads(db)
     t = _worker["thread"]
     if t and t.is_alive():
         return True

@@ -26,6 +26,10 @@ def test_videos_in_r2_count_as_existing(tmp_path, monkeypatch):
     assert files["dub_subs"]["exists"] and files["dub_subs"]["size"] == 214
     assert files["en_subs"]["exists"]
 
+    (tmp_path / "out" / "IMTSITDE_EP17_IT_final_it_subs.mp4").write_bytes(b"local")
+    files = {f["kind"]: f for f in deliver.deliverables(show, ep, None)}
+    assert files["dub_subs"]["in_cloud"] is True
+
 
 def test_record_existing_cloud_files_lists_worker_puts(tmp_path, monkeypatch):
     from dubstudio.db import DB
@@ -45,3 +49,27 @@ def test_record_existing_cloud_files_lists_worker_puts(tmp_path, monkeypatch):
     assert len(rows) == 1 and rows[0]["status"] == "done" and rows[0]["size"] == 277
     again = storage.record_existing_cloud_files(db, show, ep, files)
     assert again[0]["id"] == rows[0]["id"]
+
+
+def test_a_stuck_sending_row_is_marked_done_when_r2_already_has_the_file(tmp_path, monkeypatch):
+    """IMTS DE 162: deploy left DE-subs at sending 0 KB while the object could still be PUT later."""
+    from dubstudio.db import DB
+    from dubstudio import storage
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="IMTS", code="IMTSDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=162, status="done",
+                    work_dir=str(tmp_path), output_dir=str(tmp_path))
+    key = "shows/IMTSDEUS/ep162/out/IMTSDEUS_EP162_IT_final_de_subs.mp4"
+    uid = db.insert("uploads", episode_id=eid, kind="dub_subs", name="IMTSDEUS_EP162_IT_final_de_subs.mp4",
+                    path=str(tmp_path / "de.mp4"), bucket="b", key=key, size=232, sent=0, status="sending")
+    monkeypatch.setattr(storage, "configured", lambda: True)
+    monkeypatch.setattr(storage, "head", lambda k: {"size": 232} if k == key else None)
+    n = storage.recover_stuck_uploads(db)
+    row = db.one("SELECT * FROM uploads WHERE id=?", (uid,))
+    assert n == 1 and row["status"] == "done" and row["sent"] == 232
+
+    db.update("uploads", uid, status="sending", sent=0)
+    monkeypatch.setattr(storage, "head", lambda k: None)
+    storage.recover_stuck_uploads(db)
+    row = db.one("SELECT * FROM uploads WHERE id=?", (uid,))
+    assert row["status"] == "waiting"

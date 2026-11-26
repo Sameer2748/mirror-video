@@ -1866,6 +1866,13 @@ class Runner:
             raise RuntimeError(
                 f"{len(blocked)} latest upload(s) still failed ({names}): nothing was deleted. "
                 "Retry those uploads, then Retry cleanup — do not Process again")
+        missing = storage.masters_missing_from_cloud(show, ep)
+        if missing:
+            storage.queue_uploads(self.db, show, ep, deliver.deliverables(show, ep, None),
+                                  user_id=show.get("owner_id"))
+            raise RuntimeError(
+                f"{len(missing)} master video(s) not in the cloud yet ({', '.join(missing)}): "
+                "nothing was deleted. The upload is queued — Retry cleanup when it finishes")
         with open(j["log_path"], "a") as f:
             out = storage.clean_scratch(self.db, ep, keep_work=not envfile.flag("CLEAN_WORK", False),
                                         log=lambda m: f.write(m + "\n"))

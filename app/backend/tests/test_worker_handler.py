@@ -78,6 +78,13 @@ def test_command_puts_videos_to_loose_urls(tmp_path, monkeypatch):
     assert "proxy_540.mp4" not in (work_tar.get("names") or [])
 
 
+def test_loose_url_matches_the_basename_when_the_rel_path_is_nested():
+    h = load_handler()
+    loose = {"out": {"final_de_subs.mp4": "https://r2/put-de"}}
+    assert h.loose_url(loose, "out", "final_de_subs.mp4") == "https://r2/put-de"
+    assert h.loose_url(loose, "out", "extra/final_de_subs.mp4") == "https://r2/put-de"
+
+
 def test_command_gets_a_missing_input_named_in_the_command(tmp_path, monkeypatch):
     """Nov 9 CPU image never GETs a previous-step file. This handler must, or matching/render 404."""
     h = load_handler()

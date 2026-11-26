@@ -1524,6 +1524,25 @@ def test_unpack_out_does_not_land_videos(tmp_path):
     assert not (dest / "final_clean.mp4").exists()
 
 
+def test_unpack_keeps_the_video_when_the_r2_put_fails(tmp_path, monkeypatch):
+    """IMTS DE 162: a failed park-to-R2 used to discard the only copy."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "final_de_subs.mp4").write_bytes(b"de-subs")
+    tar = tmp_path / "out.tar.gz"
+    with tarfile.open(tar, "w:gz") as t:
+        t.add(src / "final_de_subs.mp4", arcname="final_de_subs.mp4")
+    dest = tmp_path / "out"
+    show = {"code": "IMTSDEUS"}
+    ep = {"id": 945, "number": 162, "output_dir": str(dest), "work_dir": str(tmp_path / "work")}
+    (tmp_path / "work").mkdir()
+    monkeypatch.setattr(cloud.storage, "out_key", lambda s, e, n: f"out/{n}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("r2 down")))
+    wrote, skipped = cloud.unpack_returned_tar(tar, dest, kind="out", show=show, ep=ep)
+    assert skipped == 1
+    assert (dest / "final_de_subs.mp4").read_bytes() == b"de-subs"
+
+
 def test_the_chain_driver_drops_segment_caches_after_ok(tmp_path):
     """The driver travels with the job, so this runs on the rented machine without an image rebuild."""
     import subprocess, sys

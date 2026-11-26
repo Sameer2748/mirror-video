@@ -188,8 +188,13 @@ def loose_url(loose, side, rel):
     side_map = loose.get(side) if isinstance(loose.get(side), dict) else None
     if side_map and side_map.get(rel):
         return side_map[rel]
+    base = os.path.basename(rel)
+    if side_map and base != rel and side_map.get(base):
+        return side_map[base]
     if isinstance(loose.get(rel), str):
         return loose[rel]
+    if isinstance(loose.get(base), str):
+        return loose[base]
     return None
 
 

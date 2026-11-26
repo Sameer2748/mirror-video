@@ -1469,31 +1469,34 @@ def keep_returned_on_website(name, size=0, kind="work"):
     return True
 
 
-def _put_returned_large(show, ep, kind, name, src, size):
-    """Park a video the worker produced in R2 without writing it under library/."""
+def _put_returned_large(show, ep, kind, name, src, size, keep_dir=None):
+    """Park a worker video in R2. If the PUT fails, keep the file here so it is not discarded
+    (IMTS DE 162: DE-subs never reached R2 and a deploy then stuck the upload at 0 KB)."""
     if not show or not ep or not src:
         _discard(src)
         return None
     name = (name or "").replace("\\", "/").lstrip("./")
     if kind == "out":
         key = storage.out_key(show, ep, Path(name).name)
+        dest_dir = Path(keep_dir or ep.get("output_dir") or ".")
+        dest = dest_dir / Path(name).name
     else:
         key = storage.work_key(show, ep, name)
+        dest_dir = Path(keep_dir or ep.get("work_dir") or ".")
+        dest = dest_dir / name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_name(dest.name + ".part")
+    with open(tmp, "wb") as f:
+        shutil.copyfileobj(src, f)
     try:
-        if size and size <= KEEP_LOCAL_MAX:
-            data = src.read()
-            tmp_parent = Path(ep.get("work_dir") or ".")
-            tmp = tmp_parent.parent / f"_{ep.get('id')}_loose_{Path(name).name}"
-            tmp.write_bytes(data)
-            try:
-                storage.put_file(tmp, key)
-            finally:
-                tmp.unlink(missing_ok=True)
-        else:
-            storage.put_stream(key, src, int(size or 0), ctype="application/octet-stream")
+        storage.put_file(tmp, key)
+        tmp.unlink(missing_ok=True)
         return key
     except Exception:
-        _discard(src)
+        try:
+            tmp.replace(dest)
+        except Exception:
+            tmp.unlink(missing_ok=True)
         raise
 
 
@@ -1531,9 +1534,9 @@ def unpack_returned_tar(tar_path, root, kind="work", show=None, ep=None, stream=
             skipped += 1
             if Path(name).suffix.lower() in WEBSITE_SKIP_EXT or (size and size > KEEP_LOCAL_MAX):
                 try:
-                    _put_returned_large(show, ep, kind, name, src, size)
+                    _put_returned_large(show, ep, kind, name, src, size, keep_dir=root)
                 except Exception:
-                    _discard(src)
+                    pass
             else:
                 _discard(src)
             return
