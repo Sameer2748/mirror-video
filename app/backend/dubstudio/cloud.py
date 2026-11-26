@@ -936,7 +936,8 @@ def _input_asset_files(db, ep, already):
     if not callable(q) or not isinstance(ep, dict) or ep.get("id") is None:
         return out
     try:
-        rows = q("SELECT path, r2_key FROM assets WHERE episode_id=? AND kind IN ('src_video','dub_audio') AND role='input'",
+        rows = q("SELECT path, r2_key FROM assets WHERE episode_id=? AND kind IN "
+                 "('src_video','dub_audio','dub_script','src_script') AND role='input'",
                  (ep["id"],))
     except Exception:
         return out

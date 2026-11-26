@@ -55,6 +55,10 @@ RUN mkdir -p /opt/dubstudio /opt/models /opt/scene /opt/app \
     && tar -xzf /tmp/app.tar.gz    -C /opt/app \
     && rm /tmp/*.tar.gz \
     && test -f /opt/dubstudio/scripts/dubstitch.py \
+    && test -f /opt/scene/pipeline/claude_sentences.py \
+    && test -f /opt/scene/pipeline/lipmesh.py \
+    && cp /opt/scene/pipeline/lipmesh.py /opt/dubstudio/scripts/lipmesh.py \
+    && cp /opt/scene/pipeline/lipmerge.py /opt/dubstudio/scripts/lipmerge.py \
     && test -d /opt/models/whisper \
     && /opt/pipeline_env/bin/python -c "import torch; assert hasattr(torch, 'accelerator'), torch.__version__" \
     && ls /opt/scene/pipeline | head -3
