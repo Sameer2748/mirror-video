@@ -957,22 +957,43 @@ def _localise_cmd_inputs(cmd, db, ep):
         by_fold[_fold_name(Path(p).name)] = p
         if a.get("kind"):
             by_kind[a["kind"]] = p
-    out = []
+    work = Path(ep["work_dir"]) if ep.get("work_dir") else None
+    src_name = _fold_name(Path(by_kind.get("src_video") or "").name)
+    out, prev = [], ""
     for c in cmd or []:
         leftover = isinstance(c, str) and c.startswith(("/files/", "/work/", "/out/", "/app/output/"))
         if leftover and Path(c).suffix.lower() in GET_EXT:
             suf = Path(c).suffix.lower()
+            # --out is a file this visit WRITES. Binding it to src_video made bookends
+            # save over /files/F0/Episode_17_1.mp4 and transitions die (IMTS IT-DE EP17 retry).
+            if prev in ("--out", "-o", "--out-dir"):
+                name = Path(c).name
+                if work is not None and (src_name and _fold_name(name) == src_name or name.startswith("Episode_")):
+                    c = str(work / "clean_noglow.mp4")
+                elif work is not None and c.startswith("/files/"):
+                    c = str(work / name)
+                out.append(c)
+                prev = c
+                continue
             hit = by_fold.get(_fold_name(Path(c).name))
-            if not hit:
+            if not hit and prev in ("--script", "--media", "--video", "--input", "-i"):
                 if suf in SCRIPT_EXT:
                     hit = by_kind.get("dub_script") or by_kind.get("src_script")
                 elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
                     hit = by_kind.get("dub_audio")
                 elif suf in {".mp4", ".mov", ".mkv", ".webm"}:
                     hit = by_kind.get("src_video")
+            elif not hit and prev not in ("--out", "-o", "--out-dir"):
+                if suf in SCRIPT_EXT:
+                    hit = by_kind.get("dub_script") or by_kind.get("src_script")
+                elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
+                    hit = by_kind.get("dub_audio")
+                elif prev in ("--media", "--video", "--input", "-i") and suf in {".mp4", ".mov", ".mkv", ".webm"}:
+                    hit = by_kind.get("src_video")
             out.append(hit or c)
         else:
             out.append(c)
+        prev = c if isinstance(c, str) else ""
     return out
 
 

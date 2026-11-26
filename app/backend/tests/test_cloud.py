@@ -501,6 +501,23 @@ def test_leftover_app_output_library_video_uses_the_asset(tmp_path):
     assert out[-1] == local
 
 
+def test_leftover_out_is_not_rewritten_to_the_source_video(tmp_path):
+    """IMTS IT-DE EP17 retry: bookends --out /files/F0/Episode_17_1.mp4 was bound to src_video."""
+    work = tmp_path / "work"
+    work.mkdir()
+    src = str(tmp_path / "input" / "Episode_17_1.mp4")
+    ep = {"id": 745, "work_dir": str(work)}
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": src, "kind": "src_video"}]
+
+    cmd = ["python", "dubstitch.py", "bookends", "--out", "/files/F0/Episode_17_1.mp4"]
+    out = cloud._localise_cmd_inputs(cmd, DB(), ep)
+    assert out[-1] == str(work / "clean_noglow.mp4")
+    assert out[-1] != src
+
+
 def test_leftover_files_f1_script_matches_when_umlaut_was_stripped(tmp_path):
     """WBT EP102 lips: leftover Fl__gel Der Macht.docx vs asset Flügel Der Macht.docx."""
     ep = {"id": 847}
