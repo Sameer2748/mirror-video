@@ -738,7 +738,9 @@ class Runner:
         cloud_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and cloud.holds_cpu_machine(o["step"])}
         cloud_load = sum(cloud.cpu_job_weight(o["step"]) for o in jobs
                          if o["status"] == "running" and cloud.holds_cpu_machine(o["step"]))
-        PACK_AT_ONCE = 4  # tars built on Render; more than this 502s the health check (P5)
+        # How many new CPU visits we pack on this website tick. 4 left ~17 RunPod boxes idle
+        # while episodes sat on "retry". 12 fills a 30-worker pool without dumping 30 tars at once (P5).
+        PACK_AT_ONCE = max(1, envfile.number("DUBSTUDIO_PACK_AT_ONCE", 12))
         # Face map is per episode: work tar + video + broll_library live under that episode's folder.
         # The GPU worker wipes /work /out /files before each job, so a reused machine cannot see the last ep.
         # gpu_slots (not show) is the cap — several IMTS face maps may run at once.
@@ -783,7 +785,11 @@ class Runner:
             if cloud.stretch("scene") and j["step"] in cloud.SCENE_CHAIN and j["step"] != "scene_edit":
                 continue
             if cloud.chain_wanted() and j["step"] in ("dynsrt", "scene_sheet", "qc", "check"):
-                continue
+                # First pass rides in render_tail. A Retry of QC/check after render is already
+                # done must still rent a box — otherwise the episode sits "waiting" with idle CPUs.
+                by = self._jobs_by_step(j)
+                if (by.get("render") or {}).get("status") not in DONE:
+                    continue
             # The render, the transitions and the subtitle burns are one visit. Starting a second
             # one while the first is still packing its files deletes the upload out from under it.
             if cloud.chain_wanted() and j["step"] in cloud.CHAIN:
