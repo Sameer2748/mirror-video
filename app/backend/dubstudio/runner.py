@@ -782,6 +782,10 @@ class Runner:
                               if (rows.get(s) or {}).get("status") not in DONE | {None}), None)
                 if first and j["step"] != first:
                     continue
+                if first == "translate" and self._translate_needs_dynsrt(rows.get("translate") or j):
+                    # Dynamic SRT is made on the render tail. Do not start a match visit for it.
+                    if (rows.get("render") or {}).get("status") not in DONE:
+                        continue
             if cloud.stretch("scene") and j["step"] in cloud.SCENE_CHAIN and j["step"] != "scene_edit":
                 continue
             if cloud.chain_wanted() and j["step"] in ("dynsrt", "scene_sheet", "qc", "check"):
@@ -1055,6 +1059,8 @@ class Runner:
             return self._run_lips(j)
         # library is not force_local: W/_app carries this box's ai.py (truncated-JSON closer) with the cloud job.
         if not force_local and j["step"] in cloud.SCRIPT_CHAIN and cloud.stretch("match"):
+            if j["step"] == "translate" and self._translate_needs_dynsrt(j):
+                return self._run_cloud_tail(j)
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
             return self._run_cut(j)
@@ -1341,6 +1347,17 @@ class Runner:
         py = getattr(cfg, "pipeline_python", None) or "{py}"
         return ("translate", [py, str(wrapper)] + list(cmd))
 
+    @staticmethod
+    def _translate_needs_dynsrt(j):
+        """HIH / dynamic-strip shows: English cards are translated from *_dynamic.srt, which
+        exists only after review. Packing that on the match visit FileNotFound IMTSITDE 39/40."""
+        if not j:
+            return False
+        if "dynsrt" in (j.get("needs") or []):
+            return True
+        cmd = (j.get("params") or {}).get("cmd") or []
+        return any(str(c).endswith("_dynamic.srt") for c in cmd)
+
     def _run_match(self, j):
         """Whisper through matching, then preview, sharpness, translation, on one CPU.
         The decision pause stays on the website."""
@@ -1368,13 +1385,15 @@ class Runner:
             if not cmd:
                 continue
             expanded = self._expand(cmd)
+            if step == "translate" and self._translate_needs_dynsrt(sj):
+                continue
             if step == "translate":
                 named.append(self._translate_visit_cmd(sj, expanded))
             else:
                 named.append((step, expanded))
             to_mark.append(sj)
         if not named:
-            raise RuntimeError("the matching visit has no commands to send")
+            return
         first = named[0][0]
         need = [] if first in ("mksrt_dub", "mksrt_src") else cloud.required_work_files(first)
         if need and not self._wait_for_work_files(j, need):
@@ -1687,6 +1706,12 @@ class Runner:
         if dyn and dyn["status"] not in DONE and (dyn["params"] or {}).get("cmd"):
             named.insert(0, ("dynsrt", self._expand(dyn["params"]["cmd"])))
             to_mark.insert(0, dyn)
+        tr = by.get("translate")
+        if tr and tr["status"] not in DONE and self._translate_needs_dynsrt(tr) and (tr["params"] or {}).get("cmd"):
+            item = self._translate_visit_cmd(tr, self._expand(tr["params"]["cmd"]))
+            at = next((i + 1 for i, (n, _) in enumerate(named) if n == "dynsrt"), 0)
+            named.insert(at, item)
+            to_mark.insert(min(at, len(to_mark)), tr)
         if any(n in ("subs_en", "render", "dynsrt") for n, _ in named):
             extra, extra_jobs = self._tail_closing(show, ep, by)
             named.extend(extra)

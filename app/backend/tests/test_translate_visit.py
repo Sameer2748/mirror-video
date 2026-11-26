@@ -67,6 +67,73 @@ def test_matching_visit_wraps_translate_with_claude_fallback(tmp_path, monkeypat
     assert wrapper.is_file()
 
 
+def test_match_visit_does_not_open_dynamic_srt_before_it_exists(tmp_path, monkeypatch):
+    """IMTS IT-DE 39/40: match packed translate --srt …_IT_dynamic.srt (made after review)."""
+    from dubstudio.runner import Runner
+    from dubstudio import cloud
+    work = tmp_path / "work"; work.mkdir()
+    (work / "prep.json").write_text("{}")
+    log = tmp_path / "job.log"
+    ctx = {"W": str(work)}
+    analyze = {"id": 1, "episode_id": 1, "run": 1, "step": "analyze", "status": "waiting",
+               "log_path": str(log), "params": {"cmd": ["{py}", "dubstitch.py", "analyze", "--work", str(work)],
+                                                "ctx": ctx}}
+    tr = {"id": 2, "episode_id": 1, "run": 1, "step": "translate", "status": "waiting", "needs": ["dynsrt"],
+          "log_path": str(log),
+          "params": {"cmd": ["{py}", "dubstitch.py", "translate", "--work", str(work),
+                             "--srt", str(work / "IMTSITDE_EP39_IT_dynamic.srt")], "ctx": ctx}}
+    sent = {}
+    monkeypatch.setattr(cloud, "run_chain", lambda *a, **k: sent.update(steps=[n for n, _ in a[3]]) or {"ok": True, "rc": 0})
+    runner = Runner(None)
+    runner._jobs_by_step = lambda j: {"analyze": analyze, "translate": tr}
+    runner.episode_context = lambda eid: ({"code": "IMTSITDE"}, {"id": 1, "number": 39, "work_dir": str(work)}, {})
+    runner._set = lambda j, **vals: None
+    runner._expand = lambda cmd: cmd
+    runner._wait_for_work_files = lambda *a, **k: True
+    runner._run_match(analyze)
+    assert sent["steps"] == ["analyze"]
+    assert "translate" not in sent["steps"]
+
+
+def test_render_tail_translates_after_dynamic_srt(tmp_path, monkeypatch):
+    from dubstudio.runner import Runner
+    from dubstudio import cloud
+    work = tmp_path / "work"; work.mkdir()
+    (work / "config.json").write_text("{}")
+    (work / "manifest_groups.json").write_text("{}")
+    log = tmp_path / "job.log"
+    ctx = {"W": str(work)}
+    def job(step, cmd, needs=None, status="waiting"):
+        return {"id": hash(step) % 10000, "episode_id": 1, "run": 1, "step": step, "status": status,
+                "needs": needs or [], "log_path": str(log), "params": {"cmd": cmd, "ctx": ctx}}
+    by = {
+        "render": job("render", ["{py}", "dubstitch.py", "render", "--work", str(work)]),
+        "dynsrt": job("dynsrt", ["{py}", "dubstitch.py", "dynsrt", "--out", str(work / "IMTSITDE_EP39_IT_dynamic.srt")]),
+        "translate": job("translate", ["{py}", "dubstitch.py", "translate", "--srt", str(work / "IMTSITDE_EP39_IT_dynamic.srt")],
+                         needs=["dynsrt"]),
+        "verify": job("verify", ["{py}", "dubstitch.py", "verify"]),
+    }
+    sent = {}
+    monkeypatch.setattr(cloud, "run_chain", lambda *a, **k: sent.update(steps=[n for n, _ in a[3]]) or {"ok": True, "rc": 0})
+    monkeypatch.setattr(cloud, "chain_wanted", lambda: True)
+    monkeypatch.setattr(cloud, "ai_key_allowed", lambda: False)
+    runner = Runner(None)
+    class _DB:
+        def q(self, *a, **k):
+            return list(by.values())
+    runner.db = _DB()
+    runner._jobs_by_step = lambda j: by
+    runner.episode_context = lambda eid: ({"code": "IMTSITDE"}, {"id": 1, "number": 39, "work_dir": str(work)}, {})
+    runner._set = lambda j, **vals: None
+    runner._expand = lambda cmd: cmd
+    runner._copy_chain_logs = lambda *a, **k: None
+    runner._mark_visit = lambda *a, **k: None
+    runner._run_cloud_tail(by["render"])
+    assert sent["steps"][0] == "dynsrt"
+    assert sent["steps"][1] == "translate"
+    assert sent["steps"].index("translate") < sent["steps"].index("verify")
+
+
 def test_translate_staging_does_not_delete_sharpness_tool(tmp_path):
     """WBT 101 matching visit: copy sharpness, then Claude translate wrapper, then pack.
     stage_current_app used to rmtree `_app/dubstudio` and the rented CPU opened a missing .py."""
