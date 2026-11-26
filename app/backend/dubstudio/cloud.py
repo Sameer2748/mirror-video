@@ -1215,6 +1215,42 @@ def point_mksrt_at_staged(cmd, work):
     return out
 
 
+def stage_sentences(work):
+    """Copy claude_sentences.py and ai.py into W/_app so matching does not use /opt/scene/pipeline.
+
+    The rented image has no claude_sentences.py there (WBT 101–109: exit 2, can't open file).
+    parents[2] of the staged script is W/_app, which has dubstudio/ai.py."""
+    pkg = Path(__file__).resolve().parent
+    dest = Path(work) / "_app" / "dubstudio"
+    dest.mkdir(parents=True, exist_ok=True)
+    for name in ("__init__.py", "ai.py"):
+        src = pkg / name
+        if src.is_file():
+            shutil.copy2(src, dest / name)
+    pipe = dest / "pipeline"
+    pipe.mkdir(parents=True, exist_ok=True)
+    pinit = pkg / "pipeline" / "__init__.py"
+    if pinit.is_file():
+        shutil.copy2(pinit, pipe / "__init__.py")
+    src = pkg / "pipeline" / "claude_sentences.py"
+    if not src.is_file():
+        raise FileNotFoundError("claude_sentences.py")
+    shutil.copy2(src, pipe / "claude_sentences.py")
+    return pipe / "claude_sentences.py"
+
+
+def point_sentences_at_staged(cmd, work):
+    """Rewrite a sentences_src command so the worker runs the copy under W/_app."""
+    script = stage_sentences(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("claude_sentences.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def stage_facemap(work):
     """Copy this image's facemap.py into W/_pipe.
 
@@ -1496,6 +1532,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         cmd = point_mksrt_at_staged(cmd, W)
         log("mksrt: this box's mksrt.py and srtclean.py travel with the job "
             "(the rented image pastes Word Count and ambience notes onto the dub SRT)")
+    if any(str(c).endswith("claude_sentences.py") for c in (cmd or [])):
+        cmd = point_sentences_at_staged(cmd, W)
+        log("sentences: this box's claude_sentences.py travels with the job "
+            "(the rented image has no /opt/scene/pipeline copy)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
@@ -1795,6 +1835,12 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
         if any(str(c).endswith("dubstitch.py") for c in (cmd or [])):
             cmd = point_dubstitch_at_staged(cmd, W)
             staged = True
+        if any(str(c).endswith("mksrt.py") for c in (cmd or [])):
+            cmd = point_mksrt_at_staged(cmd, W)
+        if any(str(c).endswith("claude_sentences.py") for c in (cmd or [])):
+            cmd = point_sentences_at_staged(cmd, W)
+            log("sentences: this box's claude_sentences.py travels with the job "
+                "(the rented image has no /opt/scene/pipeline copy)")
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
         # Do this before {WORK} is frozen to /work. The dub audio lives in input/, which the work tar skips,
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).

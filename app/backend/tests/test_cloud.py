@@ -578,6 +578,20 @@ def test_mksrt_job_ships_this_boxs_cleaner_not_the_baked_image(tmp_path):
     assert out[2:] == ["--work", str(work), "--script", str(work / "input" / "ep.docx")]
 
 
+def test_sentences_job_ships_this_boxs_script_not_the_missing_image_path(tmp_path):
+    """The rented image has no /opt/scene/pipeline/claude_sentences.py. The matching visit takes THIS copy."""
+    work = tmp_path / "W"; work.mkdir()
+    baked = tmp_path / "opt/scene/pipeline/claude_sentences.py"
+    baked.parent.mkdir(parents=True); baked.write_text("# old image\n")
+    cmd = ["python", str(baked), "--work", str(work), "--out-json", str(work / "sentences_src.json")]
+    out = cloud.point_sentences_at_staged(cmd, work)
+    staged = Path(out[1])
+    assert staged == work / "_app" / "dubstudio" / "pipeline" / "claude_sentences.py" and staged.is_file()
+    assert (work / "_app" / "dubstudio" / "ai.py").is_file()
+    assert "claude-sonnet" in staged.read_text()
+    assert out[2:] == ["--work", str(work), "--out-json", str(work / "sentences_src.json")]
+
+
 def test_staged_dubstitch_keeps_work_folder_sentence_json_without_srt_path_match(tmp_path):
     """EP71 live: worker /work vs /app/output/.../work made analyze ignore Claude cards and regex-glue them."""
     work = tmp_path / "W"; work.mkdir()
@@ -864,6 +878,50 @@ def test_matching_is_one_visit_and_the_face_map_is_not_in_it(tmp_path, monkeypat
     assert shell[2].startswith("/opt/pipeline_env/bin/python /opt/dubstudio/scripts/merged.py /work ")
     assert shell[2].endswith("> /work/merged.txt")
     assert str(tmp_path) not in shell[2]
+
+
+def test_matching_visit_sends_claude_sentences_from_the_work_tar(tmp_path, monkeypatch):
+    """WBT 101–109 died because the chain still pointed at /opt/scene/pipeline/claude_sentences.py."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    cfg = FakeCfg(tmp_path)
+    (work / "config.json").write_text("{}")
+    baked = tmp_path / "opt/scene/pipeline/claude_sentences.py"
+    baked.parent.mkdir(parents=True)
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(cloud_tar(bucket, "match", "work_in")) as t:
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+            sent["tar"] = t.getnames()
+        back = cloud_tar(bucket, "match", "work_out")
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda job, **kw: sent.update(job=job) or "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud.storage, "download", lambda key, path, **kw: shutil.copy(bucket / key, path)
+                        if (bucket / key).exists() else Path(path).write_bytes(b""))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+
+    cloud.run_chain({}, show, ep, [
+        ("sentences_src", [cfg.pipeline_python, str(baked), "--work", str(work),
+                           "--out-json", str(work / "sentences_src.json")]),
+        ("analyze", [cfg.pipeline_python, f"{cfg.scripts}/dubstitch.py", "analyze", "--work", str(work)]),
+    ], cfg, log=lambda m: None, name="match")
+    sent_cmd = sent["jobs"]["steps"][0]["cmd"]
+    joined = " ".join(sent_cmd)
+    assert "/work/_app/dubstudio/pipeline/claude_sentences.py" in joined
+    assert "/opt/scene/pipeline/claude_sentences.py" not in joined
+    assert "_app/dubstudio/pipeline/claude_sentences.py" in sent["tar"]
+    assert "_app/dubstudio/ai.py" in sent["tar"]
 
 
 def test_matching_sends_the_dub_audio_that_lives_in_the_input_folder(tmp_path, monkeypatch):

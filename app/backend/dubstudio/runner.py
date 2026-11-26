@@ -12,9 +12,9 @@ DONE = {"done", "skipped"}
 ACTIVE = {"running"}
 # Website-disk misses after R2-only fetch. Retry ourselves — do not ask for Process or a Retry click.
 WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions", "facemap", "analyze", "lip_mesh",
-                    "mksrt_src", "mksrt_dub", "proxy", "lip_gpu", "words_src", "words_dub"}
+                    "mksrt_src", "mksrt_dub", "proxy", "lip_gpu", "words_src", "words_dub", "sentences_src"}
 WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files", "lips_nets",
-                      "ranges.json", "previous step", "No space left")
+                      "ranges.json", "previous step", "No space left", "claude_sentences.py")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -516,7 +516,8 @@ class Runner:
     def _recover_missing_work(self):
         """Failed translate/merged/sharpness from a missing work file: fetch from R2 and run again."""
         rows = self.db.q(
-            "SELECT * FROM jobs WHERE (status='failed' AND step IN ('translate','merged','sharpness')) "
+            "SELECT * FROM jobs WHERE (status='failed' AND step IN "
+            "('translate','merged','sharpness','mksrt_dub','sentences_src','analyze')) "
             "OR (status='needs_input' AND step='decisions')")
         for j in rows:
             if not self.missing_work_retry(j["step"], j.get("message"), j.get("attempt")):

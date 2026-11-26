@@ -356,6 +356,12 @@ def test_missing_config_or_prep_retries_without_a_click():
     assert not Runner.missing_work_retry("translate", "Google quota", 0)
     assert Runner.missing_work_retry("decisions", "waiting for the matching files", 0)
     assert Runner.missing_work_retry("proxy", "OSError: [Errno 28] No space left on device", 0)
+    assert Runner.missing_work_retry(
+        "mksrt_dub",
+        "RuntimeError: match failed: can't open file '/opt/scene/pipeline/claude_sentences.py'",
+        0,
+    )
+    assert not Runner.missing_work_retry("mksrt_dub", "Google quota", 0)
     assert Runner.missing_work_retry("decisions", "waiting for the matching files", 2)
     assert not Runner.missing_work_retry("decisions", "waiting for the matching files", 5)
 
@@ -377,6 +383,24 @@ def test_tick_requeues_failed_translate_when_config_was_missing(tmp_path, monkey
     assert j["status"] == "waiting" and j["attempt"] == 1
     ep = db.one("SELECT status FROM episodes WHERE id=?", (eid,))
     assert ep["status"] == "processing"
+
+
+def test_tick_requeues_failed_match_when_claude_sentences_was_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = db.insert("shows", name="WBT", code="WBTDEUS", folder=str(tmp_path), profile={})
+    eid = db.insert("episodes", show_id=sid, number=101, status="failed",
+                    work_dir=str(tmp_path / "w"), output_dir=str(tmp_path / "o"))
+    jid = db.insert("jobs", episode_id=eid, run=1, step="mksrt_dub", ord=1, status="failed",
+                    needs=[], resource="cpu", attempt=0,
+                    message="can't open file '/opt/scene/pipeline/claude_sentences.py'",
+                    params={"cmd": ["python", "mksrt.py"], "ctx": {}})
+    monkeypatch.setattr("dubstudio.runner.storage.fetch_work_files", lambda *a, **k: 0)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._recover_missing_work()
+    j = db.one("SELECT status, attempt FROM jobs WHERE id=?", (jid,))
+    assert j["status"] == "waiting" and j["attempt"] == 1
 
 
 def test_tick_does_not_start_facemap_until_lip_scan_files_exist(tmp_path, monkeypatch):
