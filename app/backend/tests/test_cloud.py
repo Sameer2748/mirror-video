@@ -835,6 +835,8 @@ def test_the_render_tail_is_one_job_with_every_command(tmp_path, monkeypatch):
     assert sent["job"]["name"] == "render_tail"
     assert sent["job"]["cmd"] == ["{PY}", "{WORK}/_cloud_chain.py"]
     assert "CHAIN OK" in sent["driver"]
+    assert "prefer_staged" in sent["driver"]
+    assert "/work/_app/dubstudio/pipeline/claude_sentences.py" in sent["driver"]
     names = [s["name"] for s in sent["jobs"]["steps"]]
     assert names == ["render", "verify", "subs_dub"]
     # worker paths, nothing of this Mac

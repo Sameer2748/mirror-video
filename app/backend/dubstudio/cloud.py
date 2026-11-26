@@ -1804,10 +1804,24 @@ def pull_missing(cmd):
         elif item and item.get("url"):
             geturl(item["url"], a)
 
+def prefer_staged(cmd):
+    staged = {
+        "claude_sentences.py": "/work/_app/dubstudio/pipeline/claude_sentences.py",
+        "lipmesh.py": "/work/_pipe/lipmesh.py",
+    }
+    out = []
+    for a in cmd or []:
+        if isinstance(a, str):
+            hit = staged.get(os.path.basename(a))
+            if hit and os.path.isfile(hit):
+                a = hit
+        out.append(a)
+    return out
+
 remember_files()
 pull_place()
 for item in jobs["steps"]:
-    name, cmd = item["name"], item["cmd"]
+    name, cmd = item["name"], prefer_staged(item["cmd"])
     print(f"=== {name} ===", flush=True)
     pull_missing(cmd)
     while True:

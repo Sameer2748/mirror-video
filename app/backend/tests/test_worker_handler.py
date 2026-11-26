@@ -76,3 +76,39 @@ def test_command_puts_videos_to_loose_urls(tmp_path, monkeypatch):
     assert "proxy_540.mp4" in loose and "final_clean.mp4" in loose
     work_tar = res["sent"].get("work") or {}
     assert "proxy_540.mp4" not in (work_tar.get("names") or [])
+
+
+def test_command_gets_a_missing_input_named_in_the_command(tmp_path, monkeypatch):
+    """Nov 9 CPU image never GETs a previous-step file. This handler must, or matching/render 404."""
+    h = load_handler()
+    work, out, files = tmp_path / "work", tmp_path / "out", tmp_path / "files"
+    work.mkdir(); out.mkdir(); files.mkdir()
+    monkeypatch.setattr(h, "WORK", str(work))
+    monkeypatch.setattr(h, "OUT", str(out))
+    monkeypatch.setattr(h, "FILES", str(files))
+    monkeypatch.setattr(h, "wipe_dirs", lambda dirs: [Path(d).mkdir(parents=True, exist_ok=True) for d in dirs])
+    monkeypatch.setattr(h, "untar_from", lambda url, dest: None)
+    fetched = []
+
+    def fake_fetch(url, path, tries=4):
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_bytes(b"src")
+        fetched.append((url, path))
+        return {"bytes": 3, "seconds": 0}
+
+    monkeypatch.setattr(h, "fetch", fake_fetch)
+    monkeypatch.setattr(h, "put", lambda *a, **k: 200)
+    monkeypatch.setattr(h, "run_logged", lambda cmd, cwd=None, env=None: SimpleNamespace(returncode=0, stdout="ok", stderr=""))
+    dest = str(work / "input" / "ep.mp4")
+    job = {
+        "step": "command",
+        "cmd": ["echo", dest],
+        "files": {"{F0}": "https://r2/src.mp4"},
+        "names": {"{F0}": "ep.mp4"},
+        "place": [{"name": "ep.mp4", "url": "https://r2/src.mp4", "dests": [dest]}],
+        "outputs": {"work": "https://r2/work.tar", "out": "https://r2/out.tar"},
+    }
+    res = h.command(job)
+    assert res["ok"]
+    assert fetched, "the handler never GETs the signed input"
+    assert Path(dest).is_file() and Path(dest).stat().st_size > 0
