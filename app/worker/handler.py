@@ -269,8 +269,13 @@ def command(job_in):
     for token, url in (job_in.get("files") or {}).items():
         name = names.get(token) or token.strip("{}")
         path = os.path.join(FILES, token.strip("{}"), name)      # its own folder: two files may share a name
-        brought[name] = fetch(url, path)
-        places[token] = path
+        try:
+            brought[name] = fetch(url, path)
+            places[token] = path
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            print("not in cloud yet:", name, flush=True)
     for item in job_in.get("place") or []:
         name = item.get("name") or ""
         url = item.get("url")
@@ -290,8 +295,13 @@ def command(job_in):
                     except OSError:
                         shutil.copy2(src, dest)
             elif url:
-                brought[name] = fetch(url, dest)
-                src = dest
+                try:
+                    brought[name] = fetch(url, dest)
+                    src = dest
+                except urllib.error.HTTPError as e:
+                    if e.code != 404:
+                        raise
+                    print("not in cloud yet:", name, flush=True)
 
     cmd = [_fill(c, places) for c in job_in["cmd"]]
     place = job_in.get("place") or []
@@ -305,8 +315,13 @@ def command(job_in):
         if not url:
             continue
         os.makedirs(os.path.dirname(a) or ".", exist_ok=True)
-        brought[name] = fetch(url, a)
-        print("needed:", name, "->", a, flush=True)
+        try:
+            brought[name] = fetch(url, a)
+            print("needed:", name, "->", a, flush=True)
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            print("not in cloud yet:", name, flush=True)
     before_work, before_out = snapshot(WORK), snapshot(OUT)
 
     t = time.time()

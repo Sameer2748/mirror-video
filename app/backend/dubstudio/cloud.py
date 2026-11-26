@@ -1628,15 +1628,27 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     file_keys = {}
     if files:
         job["files"], job["names"] = {}, {}
+        ready = {}
         for token, path in files.items():
-            r2k = _file_in_cloud(db, show, ep, Path(path))
+            p = Path(path)
+            try:
+                r2k = _file_in_cloud(db, show, ep, p)
+            except FileNotFoundError:
+                # A previous failed render leaves video_out in config.json. Signing that
+                # key when R2 has no object is clipstry EP4: worker GET 404 in ~17s.
+                if "input" in p.parts or p.suffix.lower() in SCRIPT_EXT:
+                    raise
+                log(f"{p.name} is not in the cloud yet; this visit writes it")
+                continue
             file_keys[token] = r2k
             job["files"][token] = storage.presign(r2k, 10800)
-            job["names"][token] = Path(path).name
-        job["place"] = _media_place_list(files, W)
-        for item, token in zip(job["place"], files):
-            item["url"] = job["files"][token]
-        log(f"{len(files)} big input file(s) ready in the cloud")
+            job["names"][token] = p.name
+            ready[token] = path
+        if ready:
+            job["place"] = _media_place_list(ready, W)
+            for item, token in zip(job["place"], ready):
+                item["url"] = job["files"][token]
+            log(f"{len(ready)} big input file(s) ready in the cloud")
 
     back_work = storage.work_key(show, ep, step_object(name, "work_out", send))
     back_out = storage.work_key(show, ep, step_object(name, "out_out", send))
@@ -1755,10 +1767,21 @@ def remember_files():
                 by_name.setdefault(n, os.path.join(root, n))
 
 def geturl(url, dest):
+    import urllib.error
     os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
     print("media: downloading %s -> %s" % (os.path.basename(dest), dest), flush=True)
-    with urllib.request.urlopen(url, timeout=1800) as r, open(dest, "wb") as f:
-        shutil.copyfileobj(r, f, 8 << 20)
+    try:
+        with urllib.request.urlopen(url, timeout=1800) as r, open(dest, "wb") as f:
+            shutil.copyfileobj(r, f, 8 << 20)
+    except urllib.error.HTTPError as e:
+        if getattr(e, "code", None) != 404:
+            raise
+        print("not in cloud yet: %s" % os.path.basename(dest), flush=True)
+        try:
+            os.remove(dest)
+        except OSError:
+            pass
+        return None
     by_name[os.path.basename(dest)] = dest
     return dest
 
@@ -1934,7 +1957,7 @@ def _file_in_cloud(db, show, ep, path):
         if not a:
             a = one("SELECT * FROM assets WHERE episode_id=? AND role='input' AND path LIKE ?",
                     (ep["id"], "%" + path.name))
-    if a and a.get("r2_key"):
+    if a and a.get("r2_key") and storage.head(a["r2_key"]):
         return a["r2_key"]
     # Worker already PUT work/out videos. Do not fetch them onto Render to re-upload.
     for folder, key_fn in (
@@ -1952,8 +1975,6 @@ def _file_in_cloud(db, show, ep, path):
                 continue
         try:
             k = key_fn(rel)
-            if path.suffix.lower() in GET_EXT and not path.is_file():
-                return k
             if storage.head(k):
                 return k
         except Exception:
@@ -1968,8 +1989,6 @@ def _file_in_cloud(db, show, ep, path):
                 db.update("assets", a["id"], r2_key=key)
             except Exception:
                 pass
-        return key
-    if a or kind in ("src_video", "dub_audio", "dub_script", "src_script"):
         return key
     if storage.head(key):
         return key

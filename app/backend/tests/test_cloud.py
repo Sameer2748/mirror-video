@@ -1747,3 +1747,20 @@ def test_check_finds_subtitle_videos_when_subs_outputs_keys_still_say_out(tmp_pa
     assert cfg["subs_outputs"][str(de)]["srt"] == "/out/de.srt"
     assert cfg["subs_outputs"][str(en)]["srt"] == "/out/en.srt"
     assert "/out/IMTSDEUS_EP69_IT_final_en_subs.mp4" not in cfg["subs_outputs"]
+
+
+def test_a_missing_work_video_is_not_signed_for_get(tmp_path, monkeypatch):
+    """clipstry EP4: config still named video_out after a failed render. Do not sign a key R2 does not have."""
+    show, ep = _episode(tmp_path)
+    gone = Path(ep["work_dir"]) / "video_groups.mp4"
+    monkeypatch.setattr(cloud.storage, "head", lambda k: None)
+    with pytest.raises(FileNotFoundError, match="gone"):
+        cloud._file_in_cloud(None, show, ep, gone)
+
+
+def test_a_work_video_in_r2_is_used_when_this_box_has_no_copy(tmp_path, monkeypatch):
+    show, ep = _episode(tmp_path)
+    gone = Path(ep["work_dir"]) / "video_groups.mp4"
+    monkeypatch.setattr(cloud.storage, "head",
+                        lambda k: {"size": 9} if str(k).endswith("video_groups.mp4") else None)
+    assert cloud._file_in_cloud(None, show, ep, gone).endswith("video_groups.mp4")

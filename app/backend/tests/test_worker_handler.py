@@ -112,3 +112,43 @@ def test_command_gets_a_missing_input_named_in_the_command(tmp_path, monkeypatch
     assert res["ok"]
     assert fetched, "the handler never GETs the signed input"
     assert Path(dest).is_file() and Path(dest).stat().st_size > 0
+
+
+def test_command_skips_a_404_for_a_file_this_visit_will_write(tmp_path, monkeypatch):
+    """clipstry EP4 signed video_out that was not in R2. The handler must not die before render runs."""
+    import urllib.error
+    h = load_handler()
+    work, out, files = tmp_path / "work", tmp_path / "out", tmp_path / "files"
+    work.mkdir(); out.mkdir(); files.mkdir()
+    monkeypatch.setattr(h, "WORK", str(work))
+    monkeypatch.setattr(h, "OUT", str(out))
+    monkeypatch.setattr(h, "FILES", str(files))
+    monkeypatch.setattr(h, "wipe_dirs", lambda dirs: [Path(d).mkdir(parents=True, exist_ok=True) for d in dirs])
+    monkeypatch.setattr(h, "untar_from", lambda url, dest: None)
+
+    def fake_fetch(url, path, tries=4):
+        if "ghost" in url:
+            raise urllib.error.HTTPError(url, 404, "Not Found", hdrs=None, fp=None)
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_bytes(b"src")
+        return {"bytes": 3, "seconds": 0}
+
+    monkeypatch.setattr(h, "fetch", fake_fetch)
+    monkeypatch.setattr(h, "put", lambda *a, **k: 200)
+    monkeypatch.setattr(h, "run_logged", lambda cmd, cwd=None, env=None: SimpleNamespace(returncode=0, stdout="ok", stderr=""))
+    dest = str(work / "input" / "ep.mp4")
+    ghost = str(work / "video_groups.mp4")
+    job = {
+        "step": "command",
+        "cmd": ["echo", dest],
+        "files": {"{F0}": "https://r2/src.mp4", "{F1}": "https://r2/ghost.mp4"},
+        "names": {"{F0}": "ep.mp4", "{F1}": "video_groups.mp4"},
+        "place": [
+            {"name": "ep.mp4", "url": "https://r2/src.mp4", "dests": [dest]},
+            {"name": "video_groups.mp4", "url": "https://r2/ghost.mp4", "dests": [ghost]},
+        ],
+        "outputs": {"work": "https://r2/work.tar", "out": "https://r2/out.tar"},
+    }
+    res = h.command(job)
+    assert res["ok"]
+    assert Path(dest).is_file()
