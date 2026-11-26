@@ -487,6 +487,20 @@ def test_a_leftover_files_f1_script_is_fetched_from_the_asset(tmp_path):
     assert out[-1] == local
 
 
+def test_leftover_files_f1_script_matches_when_umlaut_was_stripped(tmp_path):
+    """WBT EP102 lips: leftover Fl__gel Der Macht.docx vs asset Flügel Der Macht.docx."""
+    ep = {"id": 847}
+    local = str(tmp_path / "input" / "dub_script" / "Episode_ 102 - Flügel Der Macht.docx")
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": local, "kind": "dub_script"}]
+
+    cmd = ["python", "mksrt.py", "--script", "/files/F1/Episode_  102 - Fl__gel Der Macht.docx"]
+    out = cloud._localise_cmd_inputs(cmd, DB(), ep)
+    assert out[-1] == local
+
+
 def test_small_docx_asset_is_sent_as_its_own_get():
     class DB:
         def q(self, sql, args=()):

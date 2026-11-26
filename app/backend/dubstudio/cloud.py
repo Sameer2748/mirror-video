@@ -939,23 +939,36 @@ def _fold_name(name):
 def _localise_cmd_inputs(cmd, db, ep):
     """A leftover `/files/F1/….docx` from a previous send becomes this episode's script/video path.
 
-    Matching and lip opening both died on python-docx opening that worker path with no GET (WBT EP101)."""
+    Matching and lip opening both died on python-docx opening that worker path with no GET (WBT EP101).
+    EP102 still missed when the leftover name had `Fl__gel` and the asset was `Flügel` — then pick
+    the episode's dub_script (one script per episode), not the mangled basename."""
     one_q = getattr(db, "q", None) if db is not None else None
     if not callable(one_q) or not isinstance(ep, dict) or ep.get("id") is None:
         return list(cmd or [])
     try:
-        rows = one_q("SELECT path FROM assets WHERE episode_id=? AND role='input'", (ep["id"],))
+        rows = one_q("SELECT path, kind FROM assets WHERE episode_id=? AND role='input'", (ep["id"],))
     except Exception:
         return list(cmd or [])
-    by_fold = {}
+    by_fold, by_kind = {}, {}
     for a in rows or []:
         p = a.get("path") or ""
-        if p:
-            by_fold[_fold_name(Path(p).name)] = p
+        if not p:
+            continue
+        by_fold[_fold_name(Path(p).name)] = p
+        if a.get("kind"):
+            by_kind[a["kind"]] = p
     out = []
     for c in cmd or []:
         if isinstance(c, str) and c.startswith("/files/") and Path(c).suffix.lower() in GET_EXT:
+            suf = Path(c).suffix.lower()
             hit = by_fold.get(_fold_name(Path(c).name))
+            if not hit:
+                if suf in SCRIPT_EXT:
+                    hit = by_kind.get("dub_script") or by_kind.get("src_script")
+                elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
+                    hit = by_kind.get("dub_audio")
+                elif suf in {".mp4", ".mov", ".mkv", ".webm"}:
+                    hit = by_kind.get("src_video")
             out.append(hit or c)
         else:
             out.append(c)
