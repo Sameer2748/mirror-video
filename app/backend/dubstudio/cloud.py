@@ -1322,6 +1322,39 @@ def stage_sentences(work):
     return pipe / "claude_sentences.py"
 
 
+def stage_qc_final(work):
+    """Copy this box's qc_final.py. The rented image still assigns a float to `ov` then calls it (WBT 101)."""
+    pkg = Path(__file__).resolve().parent
+    dest = Path(work) / "_app" / "dubstudio"
+    dest.mkdir(parents=True, exist_ok=True)
+    for name in ("__init__.py", "ai.py"):
+        src = pkg / name
+        if src.is_file():
+            shutil.copy2(src, dest / name)
+    pipe = dest / "pipeline"
+    pipe.mkdir(parents=True, exist_ok=True)
+    pinit = pkg / "pipeline" / "__init__.py"
+    if pinit.is_file():
+        shutil.copy2(pinit, pipe / "__init__.py")
+    src = pkg / "pipeline" / "qc_final.py"
+    if not src.is_file():
+        raise FileNotFoundError("qc_final.py")
+    shutil.copy2(src, pipe / "qc_final.py")
+    return pipe / "qc_final.py"
+
+
+def point_qc_at_staged(cmd, work):
+    """Rewrite a qc command so the worker runs the copy under W/_app, not /opt/scene/pipeline."""
+    script = stage_qc_final(work)
+    out = []
+    for c in cmd or []:
+        if str(c).endswith("qc_final.py"):
+            out.append(str(script))
+        else:
+            out.append(c)
+    return out
+
+
 def point_sentences_at_staged(cmd, work):
     """Rewrite a sentences_src command so the worker runs the copy under W/_app."""
     script = stage_sentences(work)
@@ -1620,6 +1653,10 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         cmd = point_sentences_at_staged(cmd, W)
         log("sentences: this box's claude_sentences.py travels with the job "
             "(the rented image has no /opt/scene/pipeline copy)")
+    if any(str(c).endswith("qc_final.py") for c in (cmd or [])):
+        cmd = point_qc_at_staged(cmd, W)
+        log("qc: this box's qc_final.py travels with the job "
+            "(the rented image overwrites overlap() with a float)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
@@ -1880,6 +1917,7 @@ def prefer_staged(cmd):
         "lipmesh.py": "/work/_pipe/lipmesh.py",
         "translate_visit.py": "/work/_app/dubstudio/pipeline/translate_visit.py",
         "sharpness_tool.py": "/work/_app/dubstudio/sharpness_tool.py",
+        "qc_final.py": "/work/_app/dubstudio/pipeline/qc_final.py",
     }
     out = []
     for a in cmd or []:
@@ -1965,6 +2003,10 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
             cmd = point_sentences_at_staged(cmd, W)
             log("sentences: this box's claude_sentences.py travels with the job "
                 "(the rented image has no /opt/scene/pipeline copy)")
+        if any(str(c).endswith("qc_final.py") for c in (cmd or [])):
+            cmd = point_qc_at_staged(cmd, W)
+            log("qc: this box's qc_final.py travels with the job "
+                "(the rented image overwrites overlap() with a float)")
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
         # Do this before {WORK} is frozen to /work. The dub audio lives in input/, which the work tar skips,
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).

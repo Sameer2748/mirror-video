@@ -1839,3 +1839,40 @@ def test_matching_chain_packs_sharpness_tool(tmp_path, monkeypatch):
     assert "/work/_app/dubstudio/sharpness_tool.py" in sharp_cmd
     assert str(tmp_path) not in sharp_cmd
     assert "sharpness_tool.py" in sent["jobs"]["steps"][0]["cmd"][1] or "/work/_app" in sharp_cmd
+
+
+def test_render_tail_packs_qc_final(tmp_path, monkeypatch):
+    """WBT 101 QC used /opt/scene/pipeline/qc_final.py, which still shadows overlap() with a float."""
+    show, ep = _episode(tmp_path)
+    work = Path(ep["work_dir"])
+    cfg = FakeCfg(tmp_path)
+    bucket = tmp_path / "bucket"
+    sent = {}
+
+    def fake_wait(ids, **kw):
+        with tarfile.open(cloud_tar(bucket, "render_tail", "work_in")) as t:
+            sent["names"] = t.getnames()
+            sent["jobs"] = json.loads(t.extractfile("_cloud_chain.json").read())
+        back = cloud_tar(bucket, "render_tail", "work_out")
+        back.parent.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(back, "w:gz") as t:
+            pass
+        return {"j": {"output": {"ok": True, "rc": 0, "seconds": 1, "sent": {}}}}, {}
+
+    monkeypatch.setattr(cloud, "submit", lambda *a, **k: "j")
+    monkeypatch.setattr(cloud, "wait", fake_wait)
+    monkeypatch.setattr(cloud.storage, "work_key", lambda s, e, rel: str(rel))
+    monkeypatch.setattr(cloud.storage, "presign", lambda key, *a, **k: f"https://r2/{key}")
+    monkeypatch.setattr(cloud.storage, "put_file", lambda p, key: (bucket / key).parent.mkdir(parents=True, exist_ok=True)
+                        or shutil.copy(p, bucket / key))
+    monkeypatch.setattr(cloud, "_file_in_cloud", lambda db, s, e, path: f"input/{Path(path).name}")
+    (work / "note.txt").write_text("x")
+    (work / "config.json").write_text("{}")
+    (work / "manifest_groups.json").write_text('{"segments": []}')
+    cloud.run_chain({}, show, ep, [
+        ("qc", [cfg.pipeline_python, str(cfg.scene_dir / "qc_final.py"), "--work", str(work)]),
+    ], cfg, log=lambda m: None, name="render_tail")
+    assert any(n.endswith("qc_final.py") for n in sent["names"])
+    cmd = " ".join(sent["jobs"]["steps"][0]["cmd"])
+    assert "/work/_app/dubstudio/pipeline/qc_final.py" in cmd
+    assert "/opt/scene/pipeline/qc_final.py" not in cmd

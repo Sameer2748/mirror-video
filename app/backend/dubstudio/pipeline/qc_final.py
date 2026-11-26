@@ -21,13 +21,13 @@ p.add_argument("--app", default=""); p.add_argument("--no-ai", action="store_tru
 p.add_argument("--min-shot", type=float, default=2.0); p.add_argument("--max-uses", type=int, default=3)
 a = p.parse_args()
 W, LD = a.work, a.library
-ov = lambda a0, a1, b0, b1: max(0.0, min(a1, b1) - max(a0, b0))
+overlap = lambda a0, a1, b0, b1: max(0.0, min(a1, b1) - max(a0, b0))
 fmt = lambda s: f"{int(s // 60)}:{s % 60:04.1f}"
 LIB = json.load(open(os.path.join(LD, "broll_library.json"))); SH = {r["n"]: r for r in LIB["shots"]}
 FM = json.load(open(os.path.join(LD, "face_map.json")))["shots"] if os.path.exists(os.path.join(LD, "face_map.json")) else {}
 segs = [s for s in json.load(open(os.path.join(W, "manifest_groups.json")))["segments"] if not s.get("video")]
 R0, R1 = (a.range or (0, 1e9))
-segs = [s for s in segs if ov(s["it_start_ms"] / 1000, s["it_end_ms"] / 1000, R0, R1) > 0.04]
+segs = [s for s in segs if overlap(s["it_start_ms"] / 1000, s["it_end_ms"] / 1000, R0, R1) > 0.04]
 dub = [d for d in json.load(open(os.path.join(W, "sentences_dub.json")))["sentences"] if d.get("start_ms") is not None]
 spk = {}
 for c in (os.path.join(W, "scene", "speakers.json"), os.path.join(W, "speakers.json")):
@@ -48,7 +48,7 @@ for s in segs:
     if vis and vis[-1]["shot"] == s["_shot"] and abs(u0 - vis[-1]["u1"]) < 0.15 and abs(t0 - vis[-1]["t1"]) < 0.05:
         vis[-1].update(t1=t1, u1=u1); vis[-1]["broll"] = vis[-1]["broll"] and bool(s.get("broll")); continue
     vis.append(dict(t0=t0, t1=t1, u0=u0, u1=u1, shot=s["_shot"], broll=bool(s.get("broll")), repeat=bool(s.get("zoom"))))
-lines_at = lambda t0, t1: [d for d in dub if ov(d["start_ms"] / 1000, d["end_ms"] / 1000, t0, t1) > 0.1]
+lines_at = lambda t0, t1: [d for d in dub if overlap(d["start_ms"] / 1000, d["end_ms"] / 1000, t0, t1) > 0.1]
 res = {}
 # 1. B-roll repeats
 uses = {}
@@ -78,7 +78,7 @@ for v in vis:
         if not who or who in ("narration", "other", "unclear"): continue
         a0, a1 = max(v["t0"], d["start_ms"] / 1000), min(v["t1"], d["end_ms"] / 1000)
         s0, s1 = v["u0"] + (a0 - v["t0"]) * sp, v["u0"] + (a1 - v["t0"]) * sp
-        talk = sorted({x["name"] for x in fm["talking"] if x["name"] not in ("unknown face",) and ov(x["from_s"], x["to_s"], s0, s1) > 0.2})
+        talk = sorted({x["name"] for x in fm["talking"] if x["name"] not in ("unknown face",) and overlap(x["from_s"], x["to_s"], s0, s1) > 0.2})
         if talk and who not in talk:
             c6.append(dict(at=fmt(a0), line=d["text"][:70], speaker=who, on_screen_talking=", ".join(talk), shot=v["shot"]))
 res[6] = ("Speaker", "during a dialogue line nobody but its speaker talks on screen", "FAIL" if c6 else "PASS", len(c6), c6)
@@ -111,10 +111,10 @@ for x, y in zip(segs, segs[1:]):
     nx, ny = (x.get("note") or ""), (y.get("note") or "")
     if "lip group:" in nx or "lip group:" in ny:
         continue
-    ov = min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"])
-    if ov > 50:
+    overlap_ms = min(x["us_end_ms"], y["us_end_ms"]) - max(x["us_start_ms"], y["us_start_ms"])
+    if overlap_ms > 50:
         c8.append(dict(at=fmt(x["it_end_ms"] / 1000), row=f"{x.get('it_idx')}-{y.get('it_idx')}",
-                       overlap_s=round(ov / 1000, 2),
+                       overlap_s=round(overlap_ms / 1000, 2),
                        us=f"{x['us_start_ms']/1000:.2f}-{x['us_end_ms']/1000:.2f} -> {y['us_start_ms']/1000:.2f}-{y['us_end_ms']/1000:.2f}"))
 res[8] = ("Source rewind", "leftover clips must not replay overlapping source (same face four times)",
           "FAIL" if c8 else "PASS", len(c8), c8)
@@ -140,13 +140,13 @@ c3, usage = [], None
 if not a.no_ai and a.app:
     sys.path.insert(0, a.app)
     from dubstudio import ai
-    def en_at(t0, t1): return " ".join(x[2] for x in en if ov(x[0], x[1], t0, t1) > 0.1)
+    def en_at(t0, t1): return " ".join(x[2] for x in en if overlap(x[0], x[1], t0, t1) > 0.1)
     rows = []
     for i, v in enumerate(vis):
         r = SH.get(v["shot"], {}); fm = FM.get(str(v["shot"]), {})
         heard = " | ".join(f"{'DIALOGUE said by ' + spk.get(str(d['idx']), '?') if spk.get(str(d['idx'])) not in (None, 'narration') else 'narration'}: {d['text']}" for d in lines_at(v["t0"], v["t1"]))
         on = "; ".join(f"{x['name']} ({x['pos']}, {x['view']})" for x in fm.get("persons", [])) or ", ".join(r.get("people") or []) or "nobody"
-        tk = ", ".join(sorted({x["name"] for x in fm.get("talking", []) if ov(x["from_s"], x["to_s"], v["u0"], v["u1"]) > 0.2})) or "nobody"
+        tk = ", ".join(sorted({x["name"] for x in fm.get("talking", []) if overlap(x["from_s"], x["to_s"], v["u0"], v["u1"]) > 0.2})) or "nobody"
         rows.append(f"{i}: {fmt(v['t0'])}-{fmt(v['t1'])} {'B-ROLL' if v['broll'] else 'clip'} | HEARD: {heard or '(pause)'} | ENGLISH: {en_at(v['t0'], v['t1'])[:160]}"
                     f" | SHOWN: shot {v['shot']}: {r.get('action', '')}; place {r.get('location', '')}; on screen {on}; talking {tk}")
     q0 = ("You are checking a finished dubbed video, shot by shot. For every shot you get what is HEARD (the dub lines, "
