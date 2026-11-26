@@ -247,18 +247,19 @@ class Runner:
         except Exception:
             pass
         ctx, plan = pipeline_steps.plan(show, ep, assets)
-        run = (self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))["r"] or 0) + 1
-        rt = Path(ep["work_dir"]) / "run_times.tsv"         # a new run starts its own time + cost table
-        if rt.exists():
-            rt.rename(rt.with_name(f"run_times.before_run{run}.tsv"))
-        for k, s in enumerate(plan):
-            self.db.insert("jobs", episode_id=ep_id, run=run, step=s["step"], ord=k, status="waiting",
-                           needs=s["needs"], resource=s["resource"],
-                           params={"cmd": s["cmd"], "fn": s["fn"], "label": s["label"], "duration": s["duration"],
-                                   "ai": s.get("ai", False), "ctx": ctx},
-                           log_path=str(Path(ep["work_dir"]) / "logs" / f"run{run}_{k:02d}_{s['step']}.log"),
-                           created=now())
-        self.db.update("episodes", ep_id, status="processing", queued=None, resume=None, updated=now())
+        with self.lock:
+            run = (self.db.one("SELECT MAX(run) AS r FROM jobs WHERE episode_id=?", (ep_id,))["r"] or 0) + 1
+            rt = Path(ep["work_dir"]) / "run_times.tsv"         # a new run starts its own time + cost table
+            if rt.exists():
+                rt.rename(rt.with_name(f"run_times.before_run{run}.tsv"))
+            for k, s in enumerate(plan):
+                self.db.insert("jobs", episode_id=ep_id, run=run, step=s["step"], ord=k, status="waiting",
+                               needs=s["needs"], resource=s["resource"],
+                               params={"cmd": s["cmd"], "fn": s["fn"], "label": s["label"], "duration": s["duration"],
+                                       "ai": s.get("ai", False), "ctx": ctx},
+                               log_path=str(Path(ep["work_dir"]) / "logs" / f"run{run}_{k:02d}_{s['step']}.log"),
+                               created=now())
+            self.db.update("episodes", ep_id, status="processing", queued=None, resume=None, updated=now())
         bus.publish("run_created", ep_id, run=run, steps=len(plan))
         self.wake.set()
         return run
@@ -774,10 +775,9 @@ class Runner:
             if j["step"] == "captions" and cloud.stretch("cut"):
                 continue
             if cloud.stretch("match") and j["step"] in cloud.SCRIPT_CHAIN:
-                rows = {r["step"]: r["status"] for r in self.db.q(
-                    "SELECT step, status FROM jobs WHERE episode_id=? AND run=?",
-                    (j["episode_id"], j["run"]))}
-                first = next((s for s in cloud.SCRIPT_CHAIN if rows.get(s) not in DONE | {None}), None)
+                rows = self._jobs_by_step(j)
+                first = next((s for s in cloud.SCRIPT_CHAIN
+                              if (rows.get(s) or {}).get("status") not in DONE | {None}), None)
                 if first and j["step"] != first:
                     continue
             if cloud.stretch("scene") and j["step"] in cloud.SCENE_CHAIN and j["step"] != "scene_edit":
@@ -1154,9 +1154,19 @@ class Runner:
                   message=f"done on a rented machine in {time.time() - t0:.0f} s")
 
     def _jobs_by_step(self, j):
+        """One row per step. A leftover waiting duplicate must not hide a finished copy (WBT 101 run 8)."""
         rows = self.db.q("SELECT * FROM jobs WHERE episode_id=? AND run=? ORDER BY ord",
                          (j["episode_id"], j["run"]))
-        return {x["step"]: x for x in rows}
+        out = {}
+        for x in rows:
+            prev = out.get(x["step"])
+            if prev is None:
+                out[x["step"]] = x
+            elif prev["status"] in DONE:
+                continue
+            elif x["status"] in DONE:
+                out[x["step"]] = x
+        return out
 
     @staticmethod
     def _work_has(work, rel):
@@ -1295,9 +1305,38 @@ class Runner:
                 to_mark.append(merge)
         self._send_visit(j, "lips", named, to_mark, t0, "lip mesh on one rented machine")
 
+    def _proxy_visit_cmds(self, j, assets):
+        """Same ffmpeg the website used to send alone, so preview rides the matching CPU after Whisper."""
+        work = Path(((j.get("params") or {}).get("ctx") or {}).get("W") or "")
+        src = assets.get("src_video") or ""
+        dub = assets.get("dub_audio")
+        cmds = [("proxy", ["ffmpeg", "-v", "error", "-y", "-i", str(src), "-map", "0:v:0", "-map", "0:a:0?",
+                           "-vf", "scale=-2:'min(540,ih)'", "-c:v", "libx264", "-preset", "veryfast", "-crf", "27",
+                           "-pix_fmt", "yuv420p", "-force_key_frames", "expr:gte(t,n_forced*0.5)",
+                           "-c:a", "aac", "-b:a", "96k", "-ac", "2", "-movflags", "+faststart",
+                           str(work / timeline.PROXY)])]
+        if dub:
+            cmds.append(("proxy", ["ffmpeg", "-v", "error", "-y", "-i", str(dub), "-map", "0:a:0", "-c:a", "aac",
+                                   "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart",
+                                   str(work / timeline.DUB_PREVIEW)]))
+        return cmds
+
+    def _sharpness_visit_cmd(self, j):
+        work = Path(((j.get("params") or {}).get("ctx") or {}).get("W") or "")
+        tool = Path(__file__).resolve().parent / "sharpness_tool.py"
+        dest = work / "_app" / "dubstudio" / "sharpness_tool.py"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if tool.is_file():
+            shutil.copy2(tool, dest)
+        py = getattr(cfg, "pipeline_python", None) or "{py}"
+        return ("sharpness", [py, str(dest), "--video", str(work / timeline.PROXY),
+                              "--out", str(work / timeline.SHARPNESS)])
+
     def _run_match(self, j):
-        """Whisper through matching on one CPU. The decision pause stays on the website."""
+        """Whisper through matching, then preview, sharpness, translation, on one CPU.
+        The decision pause stays on the website."""
         t0 = time.time()
+        show, ep, assets = self.episode_context(j["episode_id"])
         by = self._jobs_by_step(j)
         named, to_mark = [], []
         for step in cloud.SCRIPT_CHAIN:
@@ -1306,6 +1345,14 @@ class Runner:
                 continue
             if step == "merged":
                 named.append(("merged", list(cloud.MERGED_CMD)))
+                to_mark.append(sj)
+                continue
+            if step == "proxy":
+                named.extend(self._proxy_visit_cmds(sj, assets))
+                to_mark.append(sj)
+                continue
+            if step == "sharpness":
+                named.append(self._sharpness_visit_cmd(sj))
                 to_mark.append(sj)
                 continue
             cmd = (sj["params"] or {}).get("cmd")

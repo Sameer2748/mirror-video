@@ -762,11 +762,14 @@ def test_the_render_tail_is_refused_rather_than_broken(monkeypatch):
                  "analyze", "merged", "sheet", "manifest", "lipsync", "groups", "library", "qc",
                  "mksrt_dub", "words_src", "sentences_src", "scene_edit", "use_scene", "fast_trim", "dynsrt"):
         assert not cloud.enabled_for(step), step
-    for step in ("lip_mesh", "lip_merge", "translate", "proxy"):
+    for step in ("lip_mesh", "lip_merge"):
         assert cloud.enabled_for(step), step
+    for step in ("translate", "proxy", "sharpness"):
+        assert not cloud.enabled_for(step), step   # they ride Whisper → matching, one CPU
     assert cloud.stretch("match") and cloud.stretch("cut") and cloud.stretch("tail")
     assert "facemap" not in cloud.MATCH_CHAIN and "facemap" not in cloud.CUT_CHAIN
     assert "mksrt_dub" in cloud.SCRIPT_CHAIN and "scene_edit" in cloud.SCENE_CHAIN
+    assert cloud.SCRIPT_CHAIN[-3:] == ("proxy", "sharpness", "translate")
     # naming one visit does not turn the others on, and does not send its steps one by one
     settings["CLOUD_STEPS"] = "match"
     assert cloud.stretch("match") and not cloud.stretch("cut") and not cloud.chain_wanted()
@@ -1074,6 +1077,22 @@ def test_the_runner_sends_each_visit_as_one_chain(tmp_path, monkeypatch):
     marked.clear()
     runner._run_match(by["analyze"])
     assert sent["name"] == "match" and sent["steps"] == ["analyze", "merged"]
+
+    video = tmp_path / "src.mp4"; video.write_bytes(b"v")
+    audio = tmp_path / "dub.mp3"; audio.write_bytes(b"a")
+    by["proxy"] = job("proxy", 20, None)
+    by["sharpness"] = job("sharpness", 21, None)
+    by["translate"] = job("translate", 22, ["{py}", "translate.py"])
+    runner.episode_context = lambda eid: (
+        {"code": "TGS", "id": 1},
+        {"id": 1, "number": 34, "work_dir": str(work)},
+        {"src_video": str(video), "dub_audio": str(audio)})
+    marked.clear(); sent.clear()
+    runner._run_match(by["analyze"])
+    assert sent["name"] == "match"
+    assert sent["steps"][:2] == ["analyze", "merged"]
+    assert sent["steps"].index("proxy") > sent["steps"].index("merged")
+    assert "sharpness" in sent["steps"] and "translate" in sent["steps"]
 
     closing, jobs = runner._tail_closing(
         {"code": "TGS"}, {"number": 34},

@@ -1,6 +1,14 @@
 from dubstudio.visits import display_status, job_on_cpu, label_for_step, live_for_jobs
 
 
+def test_preview_and_translate_sit_inside_matching():
+    from dubstudio.visits import BY_STEP, visit_of
+    assert visit_of("proxy")[0] == "match"
+    assert visit_of("sharpness")[0] == "match"
+    assert visit_of("translate")[0] == "match"
+    assert visit_of("mksrt_dub")[0] == "match"
+
+
 def test_matching_visit_label_uses_the_packed_name():
     jobs = [
         {"step": "mksrt_dub", "status": "running", "params": {"label": "Make IT SRT (Whisper + script)"},

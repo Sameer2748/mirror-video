@@ -70,10 +70,12 @@ ONE_MACHINE = {"render", "verify", "bookends", "trans_plan", "transitions", "sub
                "check", "dynsrt", "scene_sheet", "qc"}
 CHAIN = ("render", "verify", "bookends", "trans_plan", "transitions", "subs_dub", "subs_en")
 CHAIN_NAMES = {"all", "tail", "render", "render_tail"}
-# Visit A: Whisper → matching. Decision pause stays on the website. Lip scan stays parallel from ingest.
+# Visit A: Whisper → matching, then preview, sharpness, translation. Decision pause stays on the website.
+# Lip scan stays parallel from ingest (8 CPUs). Stitch order is unchanged; these only share one rented box.
 # Visit B: sheet → library (face map is GPU, parallel after library). Then scene → fast trim on one CPU.
 # Visit C: render → check on one CPU (videos never hop back to Render).
-SCRIPT_CHAIN = ("mksrt_dub", "mksrt_src", "words_dub", "words_src", "sentences_src", "analyze", "merged")
+SCRIPT_CHAIN = ("mksrt_dub", "mksrt_src", "words_dub", "words_src", "sentences_src", "analyze", "merged",
+                "proxy", "sharpness", "translate")
 MATCH_CHAIN = SCRIPT_CHAIN
 CUT_CHAIN = ("sheet", "manifest", "lipsync", "groups", "library")
 SCENE_CHAIN = ("scene_edit", "use_scene", "fast_trim")

@@ -7,10 +7,7 @@ export const VISITS: VisitDef[] = [
   { id: "fetch", title: "Get the files", steps: ["fetch"] },
   { id: "ingest", title: "Check files", steps: ["ingest"] },
   { id: "lip", title: "Lip scan", steps: ["lip_gpu", "lip_mesh", "lip_merge"], machine: "8 CPUs, from ingest" },
-  { id: "proxy", title: "Preview copy (540 px)", steps: ["proxy"], machine: "one CPU, parallel" },
-  { id: "sharp", title: "Picture sharpness", steps: ["sharpness"], machine: "one CPU, parallel" },
-  { id: "match", title: "Whisper → matching", steps: ["mksrt_dub", "mksrt_src", "words_dub", "words_src", "sentences_src", "analyze", "merged"], machine: "one CPU" },
-  { id: "translate", title: "English translation", steps: ["translate"] },
+  { id: "match", title: "Whisper → matching", steps: ["mksrt_dub", "mksrt_src", "words_dub", "words_src", "sentences_src", "analyze", "merged", "proxy", "sharpness", "translate"], machine: "one CPU" },
   { id: "decisions", title: "Check matching", steps: ["decisions"] },
   { id: "cut", title: "Sheet → library", steps: ["sheet", "manifest", "lipsync", "groups", "library", "captions"], machine: "one CPU, after matching" },
   { id: "facemap", title: "Face map", steps: ["facemap"], machine: "GPU, after library" },
@@ -38,7 +35,13 @@ function rank(status: string) {
 }
 
 export function groupJobs(jobs: Job[]): { groups: VisitGroup[]; rest: Job[] } {
-  const byStep = new Map(jobs.map((j) => [j.step, j]));
+  const byStep = new Map<string, Job>();
+  for (const j of jobs) {
+    const prev = byStep.get(j.step);
+    if (!prev) { byStep.set(j.step, j); continue; }
+    if (["done", "skipped"].includes(prev.status)) continue;
+    if (["done", "skipped"].includes(j.status)) byStep.set(j.step, j);
+  }
   const groups: VisitGroup[] = [];
   const used = new Set<string>();
   for (const def of VISITS) {
