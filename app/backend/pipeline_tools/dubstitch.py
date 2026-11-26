@@ -332,8 +332,16 @@ def transcribe_words(media, cache_dir, lang, models, t_from, t_to, chunk=60.0, p
                 from faster_whisper import WhisperModel
                 model = WhisperModel(model_name, device="cpu", compute_type="int8", download_root=os.path.join(models, "whisper"))
             w0 = max(cs - pad, 0); x = _pcm16k(media, w0, ce + pad - w0)
-            segs, _ = model.transcribe(x / 32768.0, language=lang, word_timestamps=True, beam_size=5, condition_on_previous_text=False)
-            ws = [(round(w0 + w.start, 3), round(w0 + w.end, 3), w.word.strip(), round(w.probability, 2)) for s in segs for w in s.words]
+            pcm = x / 32768.0
+            try:
+                segs, _ = model.transcribe(pcm, language=lang, word_timestamps=True, beam_size=5,
+                                           condition_on_previous_text=False)
+                ws = [(round(w0 + w.start, 3), round(w0 + w.end, 3), w.word.strip(), round(w.probability, 2))
+                      for s in segs for w in (s.words or [])]
+            except IndexError:
+                # faster-whisper find_alignment: empty time_indices (WBT 148/157 matching)
+                print(f"  whisper alignment empty in {cs:.0f}-{ce:.0f}s; chunk kept with no words", flush=True)
+                ws = []
             ws = [w for w in trim_words_to_voice(ws, x, w0) if cs <= w[0] < ce and _letters(w[2])]
             json.dump(ws, open(fp, "w", encoding="utf-8"), ensure_ascii=False)
             print(f"  heard {len(ws)} words in {cs:.0f}-{ce:.0f}s", flush=True)
@@ -423,9 +431,14 @@ def cmd_words(a):
             fp = os.path.join(asr_dir(a.work, media), f"{lang}_{a.model}_redo_{w0:09.2f}_{w1:09.2f}.json")
             if not os.path.exists(fp):
                 x = _pcm16k(media, w0, w1 - w0)
-                segs, _ = model.transcribe(x / 32768.0, language=lang, word_timestamps=True, beam_size=5, initial_prompt=c.text,
-                                           condition_on_previous_text=False)
-                ws = [(round(w0 + w.start, 3), round(w0 + w.end, 3), w.word.strip(), round(w.probability, 2)) for sg in segs for w in sg.words]
+                try:
+                    segs, _ = model.transcribe(x / 32768.0, language=lang, word_timestamps=True, beam_size=5,
+                                               initial_prompt=c.text, condition_on_previous_text=False)
+                    ws = [(round(w0 + w.start, 3), round(w0 + w.end, 3), w.word.strip(), round(w.probability, 2))
+                          for sg in segs for w in (sg.words or [])]
+                except IndexError:
+                    print(f"  whisper alignment empty on redo {w0:.1f}-{w1:.1f}s", flush=True)
+                    ws = []
                 json.dump([w for w in trim_words_to_voice(ws, x, w0) if _letters(w[2])], open(fp, "w", encoding="utf-8"), ensure_ascii=False)
             new = [tuple(w) for w in json.load(open(fp, encoding="utf-8"))]
             new = [w for w in new if w[1] <= w1 - 0.25]           # drop a cut-off word at the window's end

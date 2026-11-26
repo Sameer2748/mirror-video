@@ -112,8 +112,13 @@ def listen_again(a, words, script_words):
         fp = os.path.join(D.asr_dir(a.work, a.media), f"{a.lang}_{a.model}_mksrt_redo_{w0:09.2f}_{w1:09.2f}.json")
         if not os.path.exists(fp):
             x = D._pcm16k(a.media, w0, w1 - w0)
-            segs, _ = model.transcribe(x / 32768.0, language=a.lang, word_timestamps=True, beam_size=5, initial_prompt=hint,
-                                       condition_on_previous_text=False)
+            try:
+                segs, _ = model.transcribe(x / 32768.0, language=a.lang, word_timestamps=True, beam_size=5,
+                                           initial_prompt=hint, condition_on_previous_text=False)
+            except IndexError:
+                print(f"whisper alignment empty on redo {w0:.1f}-{w1:.1f}s; skip this pass", flush=True)
+                json.dump([], open(fp, "w", encoding="utf-8"), ensure_ascii=False)
+                continue
             ws = [(round(w0 + w.start, 3), round(w0 + w.end, 3), w.word.strip(), round(w.probability, 2)) for sg in segs for w in sg.words]
             json.dump([list(w) for w in D.trim_words_to_voice(ws, x, w0) if D._letters(w[2])], open(fp, "w", encoding="utf-8"), ensure_ascii=False)
         # swap exactly the heard words c0..c1 (first to last word of the stretch) for the new ones in the same stretch

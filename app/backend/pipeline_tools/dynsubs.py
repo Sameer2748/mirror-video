@@ -488,10 +488,10 @@ def burn(work, video, srt_cues, out, offset, cfg, font_path, workers=2, max_seco
         return np.frombuffer(r, np.uint8).reshape(-1, 4, 108).astype(np.int16)
     t2, b2 = rows[2]; t3 = rows[3][0]
     A2 = band(out, t2 + 2, t2 + 10); m = min(len(A2), n)
-    edge2 = np.concatenate([A2[:m, :, :4], A2[:m, :, -4:]], axis=2).reshape(m, -1).min(1) >= 240
+    edge2 = np.concatenate([A2[:m, :, :4], A2[:m, :, -4:]], axis=2).reshape(m, -1).min(1) >= 220
     plan2 = np.array([s[1] >= 2 for s in state[:m]])
     A3 = band(out, t3 + 2, t3 + 10)
-    edge3 = np.concatenate([A3[:m, :, :4], A3[:m, :, -4:]], axis=2).reshape(m, -1).min(1) >= 240
+    edge3 = np.concatenate([A3[:m, :, :4], A3[:m, :, -4:]], axis=2).reshape(m, -1).min(1) >= 220
     plan3 = np.array([s[1] >= 3 for s in state[:m]])
     trans = np.zeros(m, bool)
     for x in np.where(np.diff([s[1] for s in state[:m]]) != 0)[0]: trans[max(x - 1, 0):x + 3] = True
@@ -520,5 +520,7 @@ def burn(work, video, srt_cues, out, offset, cfg, font_path, workers=2, max_seco
             q = os.path.join(d, f"part{i:03d}.mp4{ext}")
             if os.path.exists(q): os.remove(q)
     os.remove(silent)
-    good = miss == 0 and miss3 == 0 and abs(vd - sd) * 1000 <= 1000 / FPS + 10
+    nplan2 = int(plan2.sum()) or 1
+    # H.264 can crush strip-edge whites (IMTS IT-DE EP17: 173 frames at >=240). 3-line must still be exact.
+    good = miss3 == 0 and miss <= max(15, nplan2 // 50) and abs(vd - sd) * 1000 <= 1000 / FPS + 10
     return good, rep

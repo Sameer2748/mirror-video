@@ -701,7 +701,7 @@ def heal_config_inputs(db, ep, W):
         if not local:
             continue
         cur = data.get(kind)
-        workerish = isinstance(cur, str) and cur.startswith(("/work/", "/files/", "/out/"))
+        workerish = isinstance(cur, str) and cur.startswith(("/work/", "/files/", "/out/", "/app/output/"))
         # Masters are not on Render. Still point config at the asset path so the worker GET
         # uses the same name as the R2 object (EP103 mksrt looked at a leftover /files/F1/…).
         if workerish or not (isinstance(cur, str) and Path(cur).is_file()):
@@ -959,7 +959,8 @@ def _localise_cmd_inputs(cmd, db, ep):
             by_kind[a["kind"]] = p
     out = []
     for c in cmd or []:
-        if isinstance(c, str) and c.startswith("/files/") and Path(c).suffix.lower() in GET_EXT:
+        leftover = isinstance(c, str) and c.startswith(("/files/", "/work/", "/out/", "/app/output/"))
+        if leftover and Path(c).suffix.lower() in GET_EXT:
             suf = Path(c).suffix.lower()
             hit = by_fold.get(_fold_name(Path(c).name))
             if not hit:

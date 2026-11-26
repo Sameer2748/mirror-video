@@ -487,6 +487,20 @@ def test_a_leftover_files_f1_script_is_fetched_from_the_asset(tmp_path):
     assert out[-1] == local
 
 
+def test_leftover_app_output_library_video_uses_the_asset(tmp_path):
+    """WBT EP103 proxy: ffmpeg still had /app/output/library/work/…/src_video/….mp4 on the worker."""
+    ep = {"id": 848}
+    local = str(tmp_path / "input" / "src_video" / "Ep_103_with_new_Ignatius_v7.mp4")
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": local, "kind": "src_video"}]
+
+    cmd = ["ffmpeg", "-i", "/app/output/library/work/WBTDEUS_ep103/input/src_video/Ep_103_with_new_Ignatius_v7.mp4"]
+    out = cloud._localise_cmd_inputs(cmd, DB(), ep)
+    assert out[-1] == local
+
+
 def test_leftover_files_f1_script_matches_when_umlaut_was_stripped(tmp_path):
     """WBT EP102 lips: leftover Fl__gel Der Macht.docx vs asset Flügel Der Macht.docx."""
     ep = {"id": 847}

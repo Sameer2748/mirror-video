@@ -99,6 +99,21 @@ def cast_of(n):
     return sorted({p for p in people_of(n) if p in CAST})
 
 
+def _cast_of(n):
+    """Sheet dump: a piece with shot None used to KeyError SH[None] (WBT 128/137/146)."""
+    if n is None:
+        return []
+    try:
+        return cast_of(n)
+    except Exception:
+        return []
+
+
+def _shot_kind(n):
+    info = SH.get(n) if n is not None else None
+    return (info or {}).get("type") or "?"
+
+
 def mouth_in(a, b):
     return sum(ov(a, b, x, y) for x, y in LIP_IV)
 
@@ -1067,7 +1082,7 @@ for s in grp["segments"]:
         row = row_of((p["it0"] + p["it1"]) / 2)
         dub_ms = (p["it1"] - p["it0"]) * 1000
         src_ms = (p["us1"] - p["us0"]) * 1000
-        tag = "own clip" if p.get("own") else f"B-roll shot {p['shot']} ({', '.join(cast_of(p['shot'])) or 'place'}, {SH[p['shot']]['type']})"
+        tag = "own clip" if p.get("own") else f"B-roll shot {p['shot']} ({', '.join(_cast_of(p.get('shot'))) or 'place'}, {_shot_kind(p.get('shot'))})"
         if p.get("kept_wrong"):
             tag = "own clip, kept (no B-roll found)"
         if p.get("kept_grouping"):
@@ -1139,7 +1154,7 @@ head(ws, ["Unit", "Rows", "Dub time", "Speed before", "Line type", "Previous dub
 for i, s in enumerate(save):
     row = i + 2
     pieces = "\n".join(
-        f"{'own' if p.get('own') else 'B-roll'} shot {p['shot']} ({', '.join(cast_of(p['shot'])) or 'nobody'}, {SH[p['shot']]['type']}) "
+        f"{'own' if p.get('own') else 'B-roll'} shot {p['shot']} ({', '.join(_cast_of(p.get('shot'))) or 'nobody'}, {_shot_kind(p.get('shot'))}) "
         f"dub {p['it0']:.1f}-{p['it1']:.1f}s at {p['speed']}x"
         + (" KEPT WRONG" if p.get("kept_wrong") else "")
         + (" GROUPING KEPT" if p.get("kept_grouping") else "")
