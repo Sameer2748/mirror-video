@@ -1075,10 +1075,18 @@ def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
             break
         up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
                       "ORDER BY id DESC LIMIT 1", (e["id"],))
-        if not up:
-            break
-        rows.append([e["number"], storage.presign(up["key"], seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
-                                                  download_name=up["name"])])
+        if up:
+            key, name = up["key"], up["name"]
+        else:
+            # Worker PUT the video; uploads row was never written because Render did not
+            # download the mp4 (IMTS IT-DE 17, IMTS DE 167).
+            from . import presets
+            name = presets.names(show["code"], e["number"], show.get("profile") or {}).get("dub_subs")
+            key = storage.out_key(show, e, name) if name else None
+            if not key or not storage.head(key):
+                break
+        rows.append([e["number"], storage.presign(key, seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
+                                                  download_name=name)])
     if not rows:
         raise HTTPException(409, "no finished episode has its subtitle video in the cloud yet")
     buf = io.StringIO()
@@ -1821,7 +1829,7 @@ def deliverables_zip(eid: int):
             if f.get("exists") and f.get("path") and Path(f["path"]).is_file():
                 continue
             key = by_kind.get(f["kind"])
-            if not key and f.get("kind") == "en_srt" and storage.configured():
+            if not key and storage.configured() and f.get("name"):
                 key = storage.out_key(show, ep, f["name"])
             if not key or not storage.configured():
                 continue

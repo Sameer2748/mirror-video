@@ -98,7 +98,9 @@ def deliverables(show, ep, ctx):
         size = p.stat().st_size if exists else None
         mtime = p.stat().st_mtime if exists else None
         in_cloud = False
-        if not exists and kind == "en_srt" and storage.configured():
+        # Worker PUTs masters to R2; this box never keeps them (P1). Only SRT used to
+        # look in the cloud, so EP17 looked empty in Deliverables while the mp4s were there.
+        if not exists and storage.configured():
             info = storage.head(storage.out_key(show, ep, name))
             if info:
                 exists, size, in_cloud = True, int(info.get("size") or 0), True
