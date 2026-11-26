@@ -196,6 +196,17 @@ def waiting_on_rented_cpu(message):
     return "waiting for a free machine" in m or "on a machine" in m or "on one rented" in m
 
 
+def cpu_send_weight(step, message=""):
+    """Slots this job still holds against NEW sends.
+
+    Lip is 8 while we are packing it. Once it is waiting on RunPod or on a box, those
+    slots must free (P8) — otherwise 2–3 lip episodes reserve 16–24 and renders never start,
+    while the dashboard still shows ~8 workers actually running."""
+    if waiting_on_rented_cpu(message):
+        return 0
+    return cpu_job_weight(step)
+
+
 # ---------------- the queue ----------------
 def _call(path, body=None, timeout=60, kind="cpu"):
     key = envfile.get("RUNPOD_API_KEY")

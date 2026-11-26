@@ -737,7 +737,7 @@ class Runner:
         slots = {"cpu": cfg.cpu_slots, "gpu": cfg.gpu_slots}
         chain_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and o["step"] in cloud.CHAIN}
         cloud_busy = {o["episode_id"] for o in jobs if o["status"] == "running" and cloud.holds_cpu_machine(o["step"])}
-        cloud_load = sum(cloud.cpu_job_weight(o["step"]) for o in jobs
+        cloud_load = sum(cloud.cpu_send_weight(o["step"], o.get("message")) for o in jobs
                          if o["status"] == "running" and cloud.holds_cpu_machine(o["step"]))
         # How many new CPU visits we pack on this website tick. 4 left ~17 RunPod boxes idle
         # while episodes sat on "retry". 12 fills a 30-worker pool without dumping 30 tars at once (P5).
@@ -805,7 +805,7 @@ class Runner:
             if cloud.holds_cpu_machine(j["step"]):
                 if j["episode_id"] in cloud_busy:
                     continue
-                weight = cloud.cpu_job_weight(j["step"])
+                weight = cloud.cpu_send_weight(j["step"], j.get("message"))
                 if cloud_load + weight > (slots.get("cpu") or 0):
                     continue
                 if packing >= PACK_AT_ONCE:
@@ -817,7 +817,7 @@ class Runner:
                 busy[res] = busy.get(res, 0) + 1
             if cloud.holds_cpu_machine(j["step"]):
                 cloud_busy.add(j["episode_id"])
-                cloud_load += cloud.cpu_job_weight(j["step"])
+                cloud_load += cloud.cpu_send_weight(j["step"], j.get("message"))
                 packing += 1
             self.cancelled.discard(j["id"])
             self._set(j, status="running", started=now(), progress=0, message="starting")

@@ -253,6 +253,11 @@ def test_one_episode_does_not_hold_many_cpu_boxes_at_once(monkeypatch):
     assert cloud.waiting_on_rented_cpu("this step: waiting for a free machine")
     assert cloud.waiting_on_rented_cpu("render tail: on a machine")
     assert not cloud.waiting_on_rented_cpu("sending the files to a rented machine")
+    assert cloud.cpu_send_weight("lip_gpu", "starting") == 8
+    assert cloud.cpu_send_weight("lip_gpu", "0 of 8 pieces: waiting for a free machine") == 0
+    assert cloud.cpu_send_weight("lip_gpu", "7 of 8 pieces: on a machine") == 0
+    assert cloud.cpu_send_weight("render", "render tail: on a machine") == 0
+    assert cloud.cpu_send_weight("render", "sending the files to a rented machine") == 1
 
 
 # ---------------- any step on a rented machine ----------------
