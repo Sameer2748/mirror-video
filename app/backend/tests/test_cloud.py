@@ -246,6 +246,10 @@ def test_one_episode_does_not_hold_many_cpu_boxes_at_once(monkeypatch):
     assert cloud.lip_episode_budget(8, 8) == 1
     assert cloud.cpu_job_weight("lip_gpu") == 8
     assert cloud.cpu_job_weight("mksrt_src") == 1
+    assert cloud.claimed_by_stretch("proxy") is False
+    settings["CLOUD_STEPS"] = "lip_gpu,mksrt_src,proxy,sharpness,words_src,translate,match"
+    assert cloud.claimed_by_stretch("proxy")
+    assert not cloud.enabled_for("proxy")
     assert cloud.waiting_on_rented_cpu("this step: waiting for a free machine")
     assert cloud.waiting_on_rented_cpu("render tail: on a machine")
     assert not cloud.waiting_on_rented_cpu("sending the files to a rented machine")

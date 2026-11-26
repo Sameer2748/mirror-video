@@ -1935,7 +1935,10 @@ class Runner:
         work = j["params"]["ctx"]["W"]; last = [0.0]
         out = Path(work) / timeline.PROXY
         d = self.db.one("SELECT path FROM assets WHERE episode_id=? AND kind='dub_audio' AND role='input'", (j["episode_id"],))
-        if cloud.enabled_for("proxy"):
+        # enabled_for("proxy") is False when proxy rides the match visit, so the old
+        # gate fell through to ffmpeg on Render. Masters are not on this disk (P1) →
+        # "No such file" on /app/output/library/work/…/src_video/….mp4 (WBT 103).
+        if cloud.enabled_for("proxy") or cloud.claimed_by_stretch("proxy"):
             # The website server has no ffmpeg. Same flags as timeline.make_proxy / dub_preview.
             if not out.exists():
                 self._worker_cmd(j, ["ffmpeg", "-v", "error", "-y", "-i", a["path"], "-map", "0:v:0", "-map", "0:a:0?",
