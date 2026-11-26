@@ -362,6 +362,11 @@ def test_missing_config_or_prep_retries_without_a_click():
         0,
     )
     assert not Runner.missing_work_retry("mksrt_dub", "Google quota", 0)
+    assert Runner.missing_work_retry(
+        "mksrt_dub",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/work/IMTSITDE_EP39_IT_dynamic.srt'",
+        0,
+    )
     assert Runner.missing_work_retry("decisions", "waiting for the matching files", 2)
     assert not Runner.missing_work_retry("decisions", "waiting for the matching files", 5)
 

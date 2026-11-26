@@ -14,7 +14,8 @@ ACTIVE = {"running"}
 WORK_RETRY_STEPS = {"translate", "merged", "sharpness", "decisions", "facemap", "analyze", "lip_mesh",
                     "mksrt_src", "mksrt_dub", "proxy", "lip_gpu", "words_src", "words_dub", "sentences_src"}
 WORK_RETRY_MARKERS = ("config.json", "prep.json", "_unpack_tars/", "matching files", "lips_nets",
-                      "ranges.json", "previous step", "No space left", "claude_sentences.py")
+                      "ranges.json", "previous step", "No space left", "claude_sentences.py",
+                      "_dynamic.srt")
 PROG_PATTERNS = [
     re.compile(r"(\d+)/(\d+) (?:chunks|segments|pieces|rows|sentences)\b"),
     re.compile(r"rendered (\d+)/(\d+)"),
@@ -1060,6 +1061,9 @@ class Runner:
         # library is not force_local: W/_app carries this box's ai.py (truncated-JSON closer) with the cloud job.
         if not force_local and j["step"] in cloud.SCRIPT_CHAIN and cloud.stretch("match"):
             if j["step"] == "translate" and self._translate_needs_dynsrt(j):
+                by = self._jobs_by_step(j)
+                if (by.get("render") or {}).get("status") not in DONE:
+                    return
                 return self._run_cloud_tail(j)
             return self._run_match(j)
         if not force_local and j["step"] == "sheet" and cloud.stretch("cut"):
@@ -1348,15 +1352,19 @@ class Runner:
         return ("translate", [py, str(wrapper)] + list(cmd))
 
     @staticmethod
-    def _translate_needs_dynsrt(j):
+    def _dynamic_srt_args(cmd):
+        return [str(c) for c in (cmd or []) if str(c).endswith("_dynamic.srt")]
+
+    @classmethod
+    def _translate_needs_dynsrt(cls, j):
         """HIH / dynamic-strip shows: English cards are translated from *_dynamic.srt, which
-        exists only after review. Packing that on the match visit FileNotFound IMTSITDE 39/40."""
+        exists only after review. Packing that on the match visit FileNotFound IMTSITDE 36–43."""
         if not j:
             return False
         if "dynsrt" in (j.get("needs") or []):
             return True
         cmd = (j.get("params") or {}).get("cmd") or []
-        return any(str(c).endswith("_dynamic.srt") for c in cmd)
+        return bool(cls._dynamic_srt_args(cmd))
 
     def _run_match(self, j):
         """Whisper through matching, then preview, sharpness, translation, on one CPU.
@@ -1385,7 +1393,10 @@ class Runner:
             if not cmd:
                 continue
             expanded = self._expand(cmd)
-            if step == "translate" and self._translate_needs_dynsrt(sj):
+            # Any Whisper/match command that still points at the post-review
+            # dynamic SRT must wait. Translate is the usual case; keep it
+            # off this visit even if a leftover file is sitting in work/.
+            if self._dynamic_srt_args(expanded):
                 continue
             if step == "translate":
                 named.append(self._translate_visit_cmd(sj, expanded))

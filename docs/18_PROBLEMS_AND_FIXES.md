@@ -158,6 +158,20 @@ We are **not** building “3 giant processes.” Lip scan stays **8 pieces**.
 
 **Helps.** 23/35 subtitle burn without filling Render. 17-class pack after cleanup.
 
+---
+
+### P15 — Match visit opens `*_dynamic.srt` (IMTS IT-DE 36–43)
+
+**Now.** IMTSITDE **36–41, 43** (and any later dynamic-strip batch): Whisper→match died on the rented CPU with `FileNotFoundError: /work/{SHOW}_EPn_IT_dynamic.srt`. The match visit packed **translate** (`SCRIPT_CHAIN` ends with translate). For HIH / `sub_style=dynamic`, that command’s `--srt` is the **post-review** cards file. Dynsrt has not run yet. Lip scan waiting on 38 is a different job; the failed row is still match.
+
+**Wrong fix.** Drop a blank `*_dynamic.srt` so parse_srt succeeds. Process from scratch.
+
+**Right fix (coded).** Do not put any command that names `*_dynamic.srt` on the match visit. Translate for those shows rides the **render tail after dynsrt**. Retry the failed match step only — not Process. Same for every future dynamic-strip show, not only IMTSITDE.
+
+**Helps.** New IT-DE / HIH batches get through Whisper→match. English cards still come from the editor’s final cut.
+
+**Does not.** An episode already **on a machine** under the old pack (e.g. 42) — wait until it fails, then Retry match.
+
 **Does not.** Locked stitch. Process again.
 
 ---
