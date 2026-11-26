@@ -78,6 +78,8 @@ ov = lambda a0, a1, b0, b1: max(0.0, min(a1, b1) - max(a0, b0))
 
 
 def people_of(n):
+    if n is None:
+        return []
     rec = FACE.get(str(n)) or FACE.get(n) or FACE.get(int(n) if str(n).isdigit() else n) or {}
     if isinstance(rec, dict) and rec.get("people") and not rec.get("persons"):
         return list(rec.get("people") or [])
@@ -1193,14 +1195,17 @@ for s in save:
             kind = "own clip (kept, wrong)"
         if p.get("kept_grouping"):
             kind = "grouping cut kept"
-        r = SH[p["shot"]]
-        vals = [s["unit"], round(p["it0"], 2), round(p["it1"], 2), kind, p["shot"], ", ".join(people_of(p["shot"])) or "nobody",
-                r["type"], r.get("location"), round(p["us0"], 2), round(p["us1"], 2), p["speed"], None]
+        # Unused-edge fill may leave shot=None (editor plan allows null). Do not KeyError SH[None].
+        n = p.get("shot")
+        r = SH.get(n) if n is not None else None
+        r = r or {"type": "?", "location": None}
+        vals = [s["unit"], round(p["it0"], 2), round(p["it1"], 2), kind, n, ", ".join(people_of(n)) or "nobody",
+                r.get("type") or "?", r.get("location"), round(p["us0"], 2), round(p["us1"], 2), p["speed"], None]
         for c, v in enumerate(vals, 1):
             cell = ws2.cell(row, c, v); cell.font = bf; cell.alignment = wrap; cell.border = thin
             if c != 12:
                 cell.fill = ok if kind == "B-roll" else (bad if "wrong" in kind else two)
-        if (STRIPS / f"shot_{p['shot']:03d}.png").is_file():
+        if n is not None and (STRIPS / f"shot_{n:03d}.png").is_file():
             im = XLImage(str(STRIPS / f"shot_{p['shot']:03d}.png")); im.width = 330; im.height = 110
             ws2.add_image(im, f"L{row}")
         ws2.row_dimensions[row].height = 90
