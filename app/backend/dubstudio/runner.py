@@ -275,7 +275,7 @@ class Runner:
                 continue
             lined.add(eid)
             if eid in scratch:
-                if ep["status"] == "processing":
+                if ep["status"] in ("processing", "queued", "failed", "cancelled"):
                     self.cancel_run(eid)
                 self.db.update("episodes", eid, status="queued", queued=base + i * 0.01,
                                resume=None, updated=now())
@@ -706,6 +706,9 @@ class Runner:
         self._tick_link_imports()
         self._recover_missing_work()
         self._enforce_cap()
+        # Queued episodes with no waiting jobs (from_scratch, or a cancelled leftover) never
+        # entered this tick. Fill free slots so idle factory boxes are used.
+        self.start_next()
         queued = {r["id"] for r in self.db.q("SELECT id FROM episodes WHERE status='queued'")}
         jobs = self.db.q("SELECT * FROM jobs WHERE status IN ('waiting','running','needs_input','blocked') ORDER BY episode_id, run, ord")
         self._keep_awake(any(j["status"] == "running" for j in jobs))     # not for steps parked behind the review

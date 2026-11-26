@@ -85,6 +85,8 @@ def test_a_queued_episode_is_not_started(tmp_path, monkeypatch):
     sid = _show(db, tmp_path)
     keep = _ep(db, sid, tmp_path, 1, "processing")
     keep_job = _job(db, keep, "render", "waiting", 1)
+    other = _ep(db, sid, tmp_path, 3, "processing")
+    _job(db, other, "render", "running", 1)
     parked = _ep(db, sid, tmp_path, 2, "queued")
     db.update("episodes", parked, resume=1, queued=1)
     parked_job = _job(db, parked, "render", "waiting", 1)
@@ -237,3 +239,36 @@ def test_overflow_parks_in_front_of_the_existing_line(tmp_path, monkeypatch):
     assert parked["status"] == "queued" and parked["resume"] == 1
     assert parked["queued"] < 100.0
     assert db.one("SELECT queued FROM episodes WHERE id=?", (wbt,))["queued"] == 100.0
+
+
+def test_tick_starts_queued_episodes_when_slots_are_free(tmp_path, monkeypatch):
+    """Queued from_scratch rows have no waiting jobs, so the job loop never ran start_next."""
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    _ep(db, sid, tmp_path, 101, "queued")
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r._maybe_daily_cleanup = lambda: None
+    r._tick_link_imports = lambda: None
+    r._recover_missing_work = lambda: None
+    r._enforce_cap = lambda: None
+    r._episode_status = lambda: None
+    called = []
+    r.start_next = lambda: called.append(1)
+    r._tick()
+    assert called == [1]
+
+
+def test_from_scratch_cancels_a_queued_leftover_run(tmp_path, monkeypatch):
+    monkeypatch.setattr("dubstudio.db.database_url", lambda: None)
+    db = DB(tmp_path / "t.db")
+    sid = _show(db, tmp_path)
+    wbt = _ep(db, sid, tmp_path, 102, "queued")
+    db.update("episodes", wbt, queued=1.0, resume=None)
+    jid = _job(db, wbt, "analyze", "waiting", 1)
+    r = Runner(db)
+    r._keep_awake = lambda on: None
+    r.start_next = lambda: None
+    r.queue_in_order([wbt], from_scratch=[wbt])
+    assert db.one("SELECT status FROM jobs WHERE id=?", (jid,))["status"] == "cancelled"
