@@ -522,6 +522,39 @@ def test_leftover_out_is_not_rewritten_to_the_source_video(tmp_path):
     assert out[-1] != src
 
 
+def test_ffmpeg_preview_output_is_not_rewritten_to_the_dub_audio(tmp_path):
+    """TGS 16 / WBT 103: leftover /app/output/…/dub_preview.m4a became the mp3 (input = output)."""
+    work = tmp_path / "work"
+    work.mkdir()
+    audio = str(tmp_path / "input" / "Copy of Episode 16 - I Nemici Della Tigre.mp3")
+    preview = str(work / "dub_preview.m4a")
+    ep = {"id": 16, "work_dir": str(work)}
+
+    class DB:
+        def q(self, sql, args=()):
+            return [{"path": audio, "kind": "dub_audio"}]
+
+    cmd = ["ffmpeg", "-v", "error", "-y", "-i", audio, "-map", "0:a:0", "-c:a", "aac",
+           "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", preview]
+    out = cloud._localise_cmd_inputs(cmd, DB(), ep)
+    assert out[out.index("-i") + 1] == audio
+    assert out[-1] == preview
+
+    leftover = ["ffmpeg", "-y", "-i", "/files/F0/Copy of Episode 16 - I Nemici Della Tigre.mp3",
+                "-map", "0:a:0", "-c:a", "aac", "-movflags", "+faststart",
+                "/app/output/library/work/tgs/dub_preview.m4a"]
+    out = cloud._localise_cmd_inputs(leftover, DB(), ep)
+    assert out[out.index("-i") + 1] == audio
+    assert out[-1].endswith("dub_preview.m4a")
+    assert out[-1] != audio
+
+    already = ["ffmpeg", "-y", "-i", "/files/F0/Copy of Episode 16 - I Nemici Della Tigre.mp3",
+               "/files/F0/Copy of Episode 16 - I Nemici Della Tigre.mp3"]
+    out = cloud._localise_cmd_inputs(already, DB(), ep)
+    assert out[-1] == str(work / "dub_preview.m4a")
+    assert out[out.index("-i") + 1] == audio
+
+
 def test_leftover_files_f1_script_matches_when_umlaut_was_stripped(tmp_path):
     """WBT EP102 lips: leftover Fl__gel Der Macht.docx vs asset Flügel Der Macht.docx."""
     ep = {"id": 847}

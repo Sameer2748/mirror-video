@@ -959,37 +959,43 @@ def _localise_cmd_inputs(cmd, db, ep):
             by_kind[a["kind"]] = p
     work = Path(ep["work_dir"]) if ep.get("work_dir") else None
     src_name = _fold_name(Path(by_kind.get("src_video") or "").name)
+    dub_name = _fold_name(Path(by_kind.get("dub_audio") or "").name)
+    argv0 = Path(str((cmd or [""])[0])).name.lower()
+    input_prev = ("--script", "--media", "--video", "--input", "-i")
+    output_prev = ("--out", "-o", "--out-dir", "--out-json")
+    output_names = {n.lower() for n in LOOSE_WORK_FILES}
     out, prev = [], ""
     for c in cmd or []:
         leftover = isinstance(c, str) and c.startswith(("/files/", "/work/", "/out/", "/app/output/"))
         if leftover and Path(c).suffix.lower() in GET_EXT:
             suf = Path(c).suffix.lower()
-            # --out is a file this visit WRITES. Binding it to src_video made bookends
-            # save over /files/F0/Episode_17_1.mp4 and transitions die (IMTS IT-DE EP17 retry).
-            if prev in ("--out", "-o", "--out-dir"):
-                name = Path(c).name
-                if work is not None and (src_name and _fold_name(name) == src_name or name.startswith("Episode_")):
+            name = Path(c).name
+            writes = (prev in output_prev or name.lower() in output_names
+                      or (argv0.startswith("ffmpeg") and prev not in input_prev))
+            # A file this visit WRITES. Binding it to dub_audio made ffmpeg
+            # "Output …mp3 same as Input #0" (TGS 16, WBT 103). Binding --out to
+            # src_video made bookends save over Episode_17_1.mp4.
+            if writes:
+                if work is not None and (src_name and _fold_name(name) == src_name or
+                                         (prev in output_prev and name.startswith("Episode_"))):
                     c = str(work / "clean_noglow.mp4")
-                elif work is not None and c.startswith("/files/"):
+                elif work is not None and dub_name and _fold_name(name) == dub_name:
+                    c = str(work / "dub_preview.m4a")
+                elif work is not None and (c.startswith("/files/") or name.lower() in output_names):
                     c = str(work / name)
                 out.append(c)
-                prev = c
+                prev = c if isinstance(c, str) else ""
                 continue
-            hit = by_fold.get(_fold_name(Path(c).name))
-            if not hit and prev in ("--script", "--media", "--video", "--input", "-i"):
+            hit = by_fold.get(_fold_name(name))
+            if not hit and prev in input_prev:
                 if suf in SCRIPT_EXT:
                     hit = by_kind.get("dub_script") or by_kind.get("src_script")
                 elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
                     hit = by_kind.get("dub_audio")
                 elif suf in {".mp4", ".mov", ".mkv", ".webm"}:
                     hit = by_kind.get("src_video")
-            elif not hit and prev not in ("--out", "-o", "--out-dir"):
-                if suf in SCRIPT_EXT:
-                    hit = by_kind.get("dub_script") or by_kind.get("src_script")
-                elif suf in {".m4a", ".wav", ".aac", ".mp3"}:
-                    hit = by_kind.get("dub_audio")
-                elif prev in ("--media", "--video", "--input", "-i") and suf in {".mp4", ".mov", ".mkv", ".webm"}:
-                    hit = by_kind.get("src_video")
+            elif not hit and suf in SCRIPT_EXT:
+                hit = by_kind.get("dub_script") or by_kind.get("src_script")
             out.append(hit or c)
         else:
             out.append(c)
@@ -1692,6 +1698,11 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
         cmd = point_qc_at_staged(cmd, W)
         log("qc: this box's qc_final.py travels with the job "
             "(the rented image overwrites overlap() with a float)")
+    if any(str(c).endswith("slowfix_edit.py") for c in (cmd or [])):
+        staged_scene = stage_scene(W)
+        cmd = [str(staged_scene) if str(c).endswith("slowfix_edit.py") else c for c in cmd]
+        log("scene: this box's slowfix_edit.py travels with the job "
+            "(unused-edge shot=None used to KeyError on the sheet dump)")
     cmd_t, files = tokenise(cmd, W, O, cfg)
     if preset_files:
         files.update(preset_files)
@@ -2042,6 +2053,11 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
             cmd = point_qc_at_staged(cmd, W)
             log("qc: this box's qc_final.py travels with the job "
                 "(the rented image overwrites overlap() with a float)")
+        if any(str(c).endswith("slowfix_edit.py") for c in (cmd or [])):
+            staged_scene = stage_scene(W)
+            cmd = [str(staged_scene) if str(c).endswith("slowfix_edit.py") else c for c in cmd]
+            log("scene: this box's slowfix_edit.py travels with the job "
+                "(unused-edge shot=None used to KeyError on the sheet dump)")
         cmd_t, files = tokenise(cmd, W, O, cfg, files=files)
         # Do this before {WORK} is frozen to /work. The dub audio lives in input/, which the work tar skips,
         # so a chain that only said /work/input/dub_audio/….mp3 arrived with no file (matching, 2 Nov 2026).
