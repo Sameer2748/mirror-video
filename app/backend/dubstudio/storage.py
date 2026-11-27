@@ -16,7 +16,7 @@ What goes up:
 R2 is **object storage, not a database**: SQLite stays the live database on the Mac (it needs local file locking)
 and the file is mirrored to R2, so the data also lives off the machine. See docs/08_ACCOUNTS_AND_STORAGE.md.
 """
-import hashlib, hmac, json, mimetypes, re, shutil, sqlite3, tarfile, threading, time
+import base64, hashlib, hmac, json, mimetypes, re, shutil, sqlite3, tarfile, threading, time
 from fnmatch import fnmatch
 from datetime import datetime, timezone
 from pathlib import Path
@@ -115,6 +115,74 @@ def presign(key, seconds=3600, method="GET", download_name=None, params=None):
     to_sign = "\n".join([ALGO, stamp, scope, hashlib.sha256(canon.encode()).hexdigest()])
     sig = hmac.new(_sign_key(s["secret"], date, s["region"]), to_sign.encode(), hashlib.sha256).hexdigest()
     return f"{s['endpoint']}{_url_path(key)}?{_canonical_query(params)}&X-Amz-Signature={sig}"
+
+
+def site_base(request=None):
+    """Public origin for links that leave the app (export CSV). Env first, then the incoming Host."""
+    for name in ("PUBLIC_URL", "RENDER_EXTERNAL_URL"):
+        v = (envfile.get(name) or "").strip().rstrip("/")
+        if v:
+            return v
+    if request is None:
+        return ""
+    proto = (request.headers.get("x-forwarded-proto") or request.url.scheme or "https").split(",")[0].strip()
+    host = (request.headers.get("x-forwarded-host") or request.headers.get("host") or request.url.netloc or "").split(",")[0].strip()
+    return f"{proto}://{host}".rstrip("/") if host else ""
+
+
+def _export_secret():
+    s = (settings().get("secret") or "").encode()
+    if not s:
+        raise RuntimeError("R2 storage is not set up")
+    return s
+
+
+def _b64url(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+
+def _b64url_decode(text: str) -> bytes:
+    pad = "=" * (-len(text) % 4)
+    return base64.urlsafe_b64decode(text + pad)
+
+
+def export_token(key, seconds=3600):
+    """HMAC in the path (no query string). MediaConvert strips `?…` off the CSV URL."""
+    _require()
+    exp = int(time.time()) + int(max(1, min(int(seconds), 604800)))
+    payload = f"{exp}.{_b64url(str(key).encode())}"
+    mac = hmac.new(_export_secret(), payload.encode(), hashlib.sha256).hexdigest()[:32]
+    return f"{payload}.{mac}"
+
+
+def read_export_token(token):
+    """-> (key, exp) or ValueError."""
+    parts = str(token or "").split(".")
+    if len(parts) != 3:
+        raise ValueError("that link is not valid")
+    exp_s, key_b64, mac = parts
+    payload = f"{exp_s}.{key_b64}"
+    expect = hmac.new(_export_secret(), payload.encode(), hashlib.sha256).hexdigest()[:32]
+    if not hmac.compare_digest(mac, expect):
+        raise ValueError("that link is not valid")
+    try:
+        exp = int(exp_s)
+        key = _b64url_decode(key_b64).decode()
+    except (ValueError, UnicodeDecodeError):
+        raise ValueError("that link is not valid")
+    if not key or ".." in key.split("/"):
+        raise ValueError("that link is not valid")
+    if exp < time.time():
+        raise ValueError("that link has expired")
+    return key, exp
+
+
+def export_url(key, seconds=3600, base=""):
+    """Query-free GET that 302s to a short-lived R2 presign."""
+    origin = str(base or "").rstrip("/")
+    if not origin:
+        raise RuntimeError("set PUBLIC_URL so export links have a host")
+    return f"{origin}/api/export-media/{export_token(key, seconds=seconds)}"
 
 
 def _require():

@@ -20,10 +20,22 @@ from dubstudio import storage
 from dubstudio.db import DB, now
 
 storage.configured = lambda: True
+storage._export_secret = lambda: b"test-export-secret"
 storage.presign = lambda key, seconds=3600, method="GET", download_name=None, params=None: (
     f"https://r2.test/{key}?expires={seconds}&name={download_name}")
 
+from starlette.requests import Request
+
 from dubstudio import main  # noqa: E402  (after the patches above)
+
+
+def fake_request():
+    return Request({
+        "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
+        "method": "GET", "scheme": "https", "path": "/export", "raw_path": b"/export",
+        "query_string": b"", "headers": [(b"host", b"mirror.test")],
+        "client": ("127.0.0.1", 1), "server": ("mirror.test", 443),
+    })
 
 ROOT = Path(tempfile.mkdtemp(prefix="export-csv-"))
 db = DB(ROOT / "test.db")
@@ -45,8 +57,9 @@ def make_show(code, numbers, statuses, uploads=None):
 
 
 def run(sid):
+    main.state["db"] = db
     try:
-        resp = main.export_show_csv(sid)
+        resp = main.export_show_csv(sid, request=fake_request())
         return resp.status_code, resp.body.decode()
     except HTTPException as ex:
         return ex.status_code, ex.detail
@@ -64,9 +77,20 @@ def main_test():
     rows = rows_of(body)
     assert rows[0] == ["media_file_title", "media_url"], rows[0]
     assert [r[0] for r in rows[1:]] == ["11", "12", "13"], rows
-    assert rows[1][1].startswith("https://r2.test/shows/ALLDONE/ep11/out/"), rows[1]
-    assert "expires=604800" in rows[1][1], rows[1]          # the 7-day cap
-    print("ok: all done -> CSV with links")
+    url = rows[1][1]
+    assert url.startswith("https://mirror.test/api/export-media/"), url
+    assert "?" not in url, url                              # MediaConvert strips query strings
+    token = url.rsplit("/", 1)[-1]
+    key, _exp = storage.read_export_token(token)
+    assert key.startswith("shows/ALLDONE/ep11/out/"), key
+    redir = main.export_media(token)
+    assert redir.status_code == 302, redir.status_code
+    loc = redir.headers["location"]
+    assert loc.startswith("https://r2.test/shows/ALLDONE/ep11/out/"), loc
+    from urllib.parse import parse_qs, urlparse
+    ttl = int(parse_qs(urlparse(loc).query)["expires"][0])
+    assert 604000 <= ttl <= 604800, loc                     # remaining TTL, 7-day cap
+    print("ok: all done -> CSV with query-free links")
 
     # 2. episode 2 still processing, episode 4 already done -> stop at 2, only episode 1
     sid = make_show("NOTDONE", [1, 2, 4], ["done", "processing", "done"], uploads=[1, 2, 4])
@@ -103,6 +127,10 @@ def main_test():
     assert code == 409 and "R2" in detail, (code, detail)
     print("ok: R2 off refused")
     print("ALL PASS")
+
+
+def test_export_show_csv_rows():
+    main_test()
 
 
 if __name__ == "__main__":

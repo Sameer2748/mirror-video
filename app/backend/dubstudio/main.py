@@ -88,6 +88,12 @@ def _get(table, id_):
 # Everyone sees their own shows and episodes; the admin (the owner) sees them all. The check is done once here,
 # for every /api path that carries an id, so no endpoint can forget it.
 PUBLIC_API = {"/api/info", "/api/auth/login", "/api/auth/logout", "/api/auth/me"}
+
+
+def _api_is_public(path):
+    if path in PUBLIC_API:
+        return True
+    return path.startswith("/api/export-media/")
 ADMIN_API = (re.compile(r"^/api/users"), re.compile(r"^/api/settings/"), re.compile(r"^/api/restart$"),
              re.compile(r"^/api/storage/db"))
 OWNED_API = re.compile(r"^/api/(shows|episodes|jobs|markers|uploads|batches)/(\d+)")
@@ -142,7 +148,7 @@ def _not_allowed(user, path, method):
 @app.middleware("http")
 async def accounts_guard(request: Request, call_next):
     path = request.url.path
-    if not path.startswith("/api/") or path in PUBLIC_API or "db" not in state:
+    if not path.startswith("/api/") or _api_is_public(path) or "db" not in state:
         return await call_next(request)
     user = user_of(request)
     if not user:
@@ -1069,18 +1075,25 @@ SIGNED_LINK_MAX = 604800          # S3/R2 signed links last at most 7 days
 
 
 @app.get("/api/shows/{sid}/export-csv")
-def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
+def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
     """Episode number + the final target-language subtitle video, as a CSV.
 
     Rows are a single run from the start of the show. The first episode that is not done,
     or whose subtitle video is not in the cloud yet, ends the list. Later episodes that
-    are already done are left out, so a sheet never skips a pending episode."""
+    are already done are left out, so a sheet never skips a pending episode.
+
+    media_url has no query string: MediaConvert drops `?X-Amz-*` off R2 presigns, so the
+    CSV uses `/api/export-media/<hmac>` which 302s to a fresh presign (R2 keeps the query)."""
     show = _get("shows", sid)
     eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     if not eps:
         raise HTTPException(409, "this show has no episodes yet")
     if not storage.configured():
         raise HTTPException(409, "R2 storage is not set up (Settings -> Cloud storage)")
+    base = storage.site_base(request)
+    if not base:
+        raise HTTPException(500, "cannot build export links: set PUBLIC_URL, or call this from a browser")
+    ttl = max(1, min(seconds, SIGNED_LINK_MAX))
     rows = []
     for e in eps:
         if e["status"] != "done":
@@ -1088,17 +1101,19 @@ def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
         up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
                       "ORDER BY id DESC LIMIT 1", (e["id"],))
         if up:
-            key, name = up["key"], up["name"]
+            key = up["key"]
         else:
             # Worker PUT the video; uploads row was never written because Render did not
             # download the mp4 (IMTS IT-DE 17, IMTS DE 167).
             from . import presets
-            name = presets.names(show["code"], e["number"], show.get("profile") or {}).get("dub_subs")
+            try:
+                name = presets.names(show["code"], e["number"], show.get("profile") or {}).get("dub_subs")
+            except (KeyError, TypeError, ValueError):
+                break
             key = storage.out_key(show, e, name) if name else None
             if not key or not storage.head(key):
                 break
-        rows.append([e["number"], storage.presign(key, seconds=max(1, min(seconds, SIGNED_LINK_MAX)),
-                                                  download_name=name)])
+        rows.append([e["number"], storage.export_url(key, seconds=ttl, base=base)])
     if not rows:
         raise HTTPException(409, "no finished episode has its subtitle video in the cloud yet")
     buf = io.StringIO()
@@ -1107,6 +1122,19 @@ def export_show_csv(sid: int, seconds: int = SIGNED_LINK_MAX):
     w.writerows(rows)
     return Response(buf.getvalue(), media_type="text/csv",
                     headers={"Content-Disposition": f'attachment; filename="{storage.safe_name(show["code"])}_subtitle_links.csv"'})
+
+
+@app.get("/api/export-media/{token}")
+def export_media(token: str):
+    """Unauthenticated GET for MediaConvert (and similar): no query params. 302 to R2."""
+    try:
+        key, exp = storage.read_export_token(token)
+    except RuntimeError:
+        raise HTTPException(409, "R2 storage is not set up")
+    except ValueError as ex:
+        raise HTTPException(403, str(ex))
+    remain = max(60, min(int(exp - time.time()), SIGNED_LINK_MAX))
+    return RedirectResponse(storage.presign(key, seconds=remain), status_code=302)
 
 
 @app.post("/api/episodes/{eid}/files/{kind}")
@@ -2949,6 +2977,8 @@ if DIST.exists():
 
     @app.api_route("/{full:path}", methods=["GET", "HEAD"])
     def spa(full: str):
+        if full.startswith("api/"):
+            raise HTTPException(404, "not found")
         f = DIST / full
         if full and f.is_file():
             return FileResponse(f)

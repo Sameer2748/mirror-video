@@ -206,6 +206,21 @@ def test_download_link_works_without_keys(r2):
     assert httpx.get(url).content == b"video-bytes"              # no Authorization header on this one
 
 
+def test_export_url_has_no_query_string(r2):
+    from dubstudio import storage
+    url = storage.export_url("shows/X/ep1/out/a.mp4", seconds=120, base="https://app.example")
+    assert "?" not in url
+    assert url.startswith("https://app.example/api/export-media/")
+    key, exp = storage.read_export_token(url.rsplit("/", 1)[-1])
+    assert key == "shows/X/ep1/out/a.mp4"
+    assert exp > time.time()
+    try:
+        storage.read_export_token("1.not-a-token.deadbeef")
+        assert False, "bad token must fail"
+    except ValueError:
+        pass
+
+
 # ---------------- an episode's finished files ----------------
 def episode_with_outputs(c, show_folder, names=("_final_clean.mp4", "_mapping.xlsx")):
     s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(show_folder), "preset": "WBM"}).json()
