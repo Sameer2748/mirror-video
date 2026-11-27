@@ -3331,6 +3331,23 @@ def _heal_subs_outputs(cfg, work=None):
     return changed
 
 
+def _find_sidecar_xlsx(work, cfg, *globs):
+    """A workbook next to the masters, even when config.json still names `/out/...`."""
+    dirs = [work]
+    for key in ("sheet_out", "clean_final", "groups_review"):
+        p = cfg.get(key)
+        if p:
+            dirs.append(os.path.dirname(p))
+    seen = []
+    for d in dirs:
+        for pat in globs:
+            seen.extend(sorted(glob.glob(os.path.join(d, pat))))
+    for p in seen:
+        if p and os.path.isfile(p):
+            return os.path.abspath(p)
+    return None
+
+
 def _find_translated_srt(work, cfg):
     """The English SRT on disk, even when config.json lost `translation.out`.
 
@@ -3381,7 +3398,19 @@ def cmd_check(a):
         if t_srt:
             cfg.setdefault("translation", {})["out"] = t_srt
             save(a.work, "config.json", cfg)
-    for label, p in (("mapping sheet", cfg.get("sheet_out")), ("dynamic-group review", cfg.get("groups_review")),
+    mapping = cfg.get("sheet_out")
+    if not (mapping and os.path.exists(mapping)):
+        mapping = _find_sidecar_xlsx(a.work, cfg, "*_mapping.xlsx")
+        if mapping:
+            cfg["sheet_out"] = mapping
+            save(a.work, "config.json", cfg)
+    review = cfg.get("groups_review")
+    if not (review and os.path.exists(review)):
+        review = _find_sidecar_xlsx(a.work, cfg, "*scene_edit*.xlsx", "*dynamic_groups_review*.xlsx")
+        if review:
+            cfg["groups_review"] = review
+            save(a.work, "config.json", cfg)
+    for label, p in (("mapping sheet", mapping), ("dynamic-group review", review),
                      ("translated SRT", t_srt)):
         good = bool(p) and os.path.exists(p)
         print(f"{'OK ' if good else 'BAD'} {label}: {p}")

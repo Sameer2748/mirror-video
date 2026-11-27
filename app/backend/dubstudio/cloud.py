@@ -823,6 +823,13 @@ def heal_config_masters(show, ep, W, O):
         pre = clean_hit.name[: -len("_final_clean.mp4")]
     if not pre:
         return
+    mapping = next(iter(sorted(O.glob("*_mapping.xlsx"))), None)
+    if mapping:
+        data["sheet_out"] = str(mapping)
+    review = next(iter(sorted(O.glob("*scene_edit*.xlsx"))), None) or next(
+        iter(sorted(O.glob("*dynamic_groups_review*.xlsx"))), None)
+    if review:
+        data["groups_review"] = str(review)
     clean = O / f"{pre}_final_clean.mp4"
     if sub_hits:
         subs = sub_hits
@@ -849,11 +856,13 @@ def heal_config_masters(show, ep, W, O):
 # Which earlier step writes each small file (used so tests with a half graph still start).
 FILE_PRODUCER = {
     "sentences_src.json": "sentences_src",
+    "sentences_dub.json": "words_dub",
     "prep.json": "analyze",
     "config.json": "analyze",
     "lips_nets/ranges.json": "lip_gpu",
     "broll_library/broll_library.json": "library",
     "decisions.json": "decisions",
+    "manifest_groups.json": "groups",
 }
 
 # Files a later step reads. Do not send / start that step until these exist (on this box or in R2).
@@ -872,12 +881,15 @@ STEP_INPUT_FILES = {
 }
 # Files the visit must bring back before we mark it done (so dependents do not start empty).
 STEP_OUTPUT_FILES = {
-    "match": ("prep.json",),
-    "analyze": ("prep.json",),
+    "match": ("prep.json", "sentences_src.json", CONFIG),
+    "sentences_src": ("sentences_src.json",),
+    "words_dub": ("sentences_dub.json",),
+    "analyze": ("prep.json", CONFIG),
     "merged": ("merged.txt",),
     "lip_gpu": ("lips_nets/ranges.json",),
     "lips": ("lips_range",),
     "library": ("broll_library/broll_library.json",),
+    "groups": ("manifest_groups.json",),
     "scene": ("manifest_groups.json",),
 }
 
@@ -887,10 +899,12 @@ def required_work_files(name):
 
     Render/dynsrt packed without config.json on IT-DE 17 after cleanup. That send must fail here, not on the worker."""
     extra = list(STEP_INPUT_FILES.get(name) or ())
-    if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt", "translate"):
+    if name in CHAIN or name in CHAIN_NAMES or name in ("check", "dynsrt", "translate", "qc"):
         need = [CONFIG]
-        if name in CHAIN or name in CHAIN_NAMES or name == "check":
+        if name in CHAIN or name in CHAIN_NAMES or name in ("check", "qc"):
             need.append("manifest_groups.json")
+        if name == "qc" and "sentences_dub.json" not in need:
+            need.append("sentences_dub.json")
         for n in extra:
             if n not in need:
                 need.append(n)

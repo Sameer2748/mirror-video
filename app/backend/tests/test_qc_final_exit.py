@@ -79,3 +79,7 @@ def test_leftover_source_overlap_does_not_break_story_sync(tmp_path):
     assert proc.returncode == 0, proc.stderr
     assert "float" not in (proc.stderr or "")
     assert out.exists()
+    src = QC.read_text(encoding="utf-8")
+    assert "overlap_ms" in src
+    assert "ov = min(" not in src
+    assert "lines_at = lambda" in src and "overlap(" in src.split("lines_at")[1][:200]

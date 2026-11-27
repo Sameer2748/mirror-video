@@ -151,6 +151,62 @@ def test_drive_download_urls_include_both_hosts():
     assert "drive.google.com/uc?export=download" in urls[1]
 
 
+def test_drive_view_url_is_not_used_as_the_filename():
+    """IMTSITDE 11: Drive /file/d/…/view became the filename `view`."""
+    try:
+        linksheet._filename("https://drive.google.com/file/d/abc/view", {}, "src_video")
+        raise SystemExit("a view page must not pass as a video")
+    except ValueError as ex:
+        assert "view" in str(ex) or "mp4" in str(ex)
+
+
+def test_virus_scan_html_without_download_form_still_yields_a_confirm_url():
+    html = ('<html><input name="id" value="abc123xyzfileid">'
+            '<input name="confirm" value="t"><input name="uuid" value="u-1"></html>')
+    url = linksheet._confirm_from_html(html)
+    assert "id=abc123xyzfileid" in url and "confirm=t" in url and "uuid=u-1" in url
+
+
+def test_fetch_follows_a_virus_scan_page_then_saves_the_file(tmp_path):
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    import threading
+    mp4 = b"\x00\x00\x00\x18ftypmp42" + b"x" * 200
+
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if "confirm=t" in self.path and "id=abc123xyzfileid" in self.path:
+                self.send_response(200)
+                self.send_header("Content-Type", "video/mp4")
+                self.send_header("Content-Disposition", 'attachment; filename="ep.mp4"')
+                self.send_header("Content-Length", str(len(mp4)))
+                self.end_headers()
+                self.wfile.write(mp4)
+                return
+            host = f"http://127.0.0.1:{self.server.server_address[1]}"
+            page = (f'<html><form id="download-form" action="{host}/dl">'
+                    f'<input name="id" value="abc123xyzfileid">'
+                    f'<input name="confirm" value="t"></form></html>').encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(page)))
+            self.end_headers()
+            self.wfile.write(page)
+
+        def log_message(self, *_):
+            return
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    old_sleep = linksheet.time.sleep
+    linksheet.time.sleep = lambda s: None
+    try:
+        p = linksheet.fetch(f"http://127.0.0.1:{srv.server_address[1]}/view", tmp_path / "got", "src_video")
+        assert p.is_file() and p.stat().st_size == len(mp4)
+    finally:
+        linksheet.time.sleep = old_sleep
+        srv.shutdown()
+
+
 def test_csv_filename_without_a_url_is_still_refused(tmp_path):
     p = tmp_path / "names_only.csv"
     p.write_text("Episode,Source video,Audio,Script\n5,TGS EPISODE 05.mp4,https://x.y/a.mp3,https://x.y/s.docx\n",

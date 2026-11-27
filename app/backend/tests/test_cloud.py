@@ -1733,6 +1733,9 @@ def test_later_steps_require_previous_step_files():
     assert "prep.json" in cloud.required_work_files("merged")
     assert "sentences_src.json" not in cloud.required_work_files("match")
     assert "sentences_src.json" in cloud.required_work_files("analyze")
+    assert "sentences_src.json" in cloud.produced_work_files("match")
+    assert "sentences_dub.json" in cloud.required_work_files("qc")
+    assert "config.json" in cloud.required_work_files("translate")
     assert "lips_nets/ranges.json" in cloud.required_work_files("facemap")
     assert "lips_nets/ranges.json" in cloud.required_work_files("lip_mesh")
     assert "prep.json" in cloud.produced_work_files("match")
@@ -1990,6 +1993,22 @@ def test_check_finds_the_english_srt_next_to_the_sheet(tmp_path):
     assert found == str(srt)
 
 
+def test_check_finds_the_mapping_sheet_next_to_the_videos(tmp_path):
+    """TAB EP29: config still named /out/..._mapping.xlsx after unpack; the file is next to the masters."""
+    import importlib.util
+    script = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    spec = importlib.util.spec_from_file_location("dubstitch_map", script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out = tmp_path / "out"
+    out.mkdir()
+    sheet = out / "tabpgcit_ep29_it_fr_mapping.xlsx"
+    sheet.write_bytes(b"x")
+    found = mod._find_sidecar_xlsx(str(tmp_path / "work"), {"clean_final": str(out / "clean.mp4")},
+                                   "*_mapping.xlsx")
+    assert found == str(sheet)
+
+
 def test_check_finds_subtitle_videos_when_subs_outputs_keys_still_say_out(tmp_path):
     """IMTS EP69/70: the videos landed next to the clean master, but config keys stayed `/out/...`."""
     import importlib.util
@@ -2117,6 +2136,7 @@ def test_render_tail_packs_qc_final(tmp_path, monkeypatch):
     (work / "note.txt").write_text("x")
     (work / "config.json").write_text("{}")
     (work / "manifest_groups.json").write_text('{"segments": []}')
+    (work / "sentences_dub.json").write_text('{"sentences": []}')
     cloud.run_chain({}, show, ep, [
         ("qc", [cfg.pipeline_python, str(cfg.scene_dir / "qc_final.py"), "--work", str(work)]),
     ], cfg, log=lambda m: None, name="render_tail")

@@ -8,7 +8,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, unquote, urlencode, urlparse
-from urllib.request import Request, urlopen
+from http.cookiejar import CookieJar
+from urllib.request import HTTPCookieProcessor, Request, build_opener, urlopen
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -252,9 +253,27 @@ class _DriveForm(HTMLParser):
 def _virus_scan_url(html):
     p = _DriveForm()
     p.feed(html)
-    if not p.action or not p.fields.get("id"):
+    if p.action and p.fields.get("id"):
+        return p.action + ("&" if "?" in p.action else "?") + urlencode(p.fields)
+    return _confirm_from_html(html)
+
+
+def _confirm_from_html(html):
+    """Virus-scan / quota pages that are not the classic download-form still carry id+confirm."""
+    fid = (re.search(r'name="id"\s+value="([^"]+)"', html)
+           or re.search(r"[?&]id=([A-Za-z0-9_-]{10,})", html))
+    if not fid:
         return None
-    return p.action + ("&" if "?" in p.action else "?") + urlencode(p.fields)
+    confirm = (re.search(r'name="confirm"\s+value="([^"]+)"', html)
+               or re.search(r"confirm=([0-9A-Za-z_-]+)", html))
+    uuid = re.search(r'name="uuid"\s+value="([^"]+)"', html)
+    q = {"id": fid.group(1), "export": "download", "confirm": confirm.group(1) if confirm else "t"}
+    if uuid:
+        q["uuid"] = uuid.group(1)
+    return "https://drive.usercontent.google.com/download?" + urlencode(q)
+
+
+JUNK_NAMES = {"view", "edit", "open", "uc", "download", "u", "file", "preview"}
 
 
 def _filename(url, headers, kind):
@@ -262,6 +281,8 @@ def _filename(url, headers, kind):
     m = re.search(r"filename\*=UTF-8''([^;]+)", cd, re.I) or re.search(r'filename="?([^";]+)"?', cd, re.I)
     name = unquote(m.group(1)).strip() if m else Path(unquote(urlparse(url).path)).name
     name = re.sub(r"[^A-Za-z0-9._ -]", "_", name).strip("._") or kind
+    if Path(name).stem.lower() in JUNK_NAMES:
+        name = kind
     if Path(name).suffix.lower() not in EXTS[kind]:
         ctype = (headers.get("Content-Type") or "").split(";")[0].strip().lower()
         guess = { "video/mp4": ".mp4", "audio/mpeg": ".mp3", "audio/wav": ".wav",
@@ -275,12 +296,19 @@ def _filename(url, headers, kind):
     return name
 
 
+def _looks_like_html(head, headers):
+    ctype = (headers.get("Content-Type") or "").split(";")[0].strip().lower()
+    if ctype in ("text/html", "application/xhtml+xml"):
+        return True
+    h = head.lstrip().lower()
+    return h.startswith(b"<!doctype") or h.startswith(b"<html") or h[:1] == b"<" or b"<html" in h[:200]
+
+
 def _save_response(r, dest_dir, kind):
-    head = r.read(64)
-    html = head.lstrip()[:1] == b"<" or head.lower().startswith(b"<!doctype") or b"<html" in head.lower()
-    if html:
-        rest = head + r.read()
-        nxt = _virus_scan_url(rest.decode("utf-8", "replace"))
+    head = r.read(256)
+    if _looks_like_html(head, r.headers):
+        rest = (head + r.read()).decode("utf-8", "replace")
+        nxt = _virus_scan_url(rest) or _confirm_from_html(rest)
         if nxt:
             raise _VirusScan(nxt)
         raise ValueError(f"the {kind.replace('_', ' ')} link opened a web page, not the file")
@@ -302,20 +330,27 @@ class _VirusScan(Exception):
         self.url = url
 
 
+def _page_should_retry(msg):
+    s = str(msg).lower()
+    return "web page" in s or "got view" in s or "virus scan" in s
+
+
 def fetch(url, dest_dir, kind):
     """Download one link into dest_dir. Returns the file path. A web page is refused.
 
-    Drive often answers 404 after a burst of videos (quota). Try the other download host and
-    wait, instead of failing the episode on the first 404."""
+    Drive often answers 404 / an HTML quota or virus-scan page after a burst of videos.
+    Follow the confirm URL, try the other download host, and wait, instead of failing
+    the episode on the first HTML page."""
     dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
     last = None
     urls = download_urls(url)
-    for attempt in range(5):
+    opener = build_opener(HTTPCookieProcessor(CookieJar()))
+    for attempt in range(8):
         for cand in list(urls):
             try:
                 req = Request(cand, headers={"User-Agent": UA})
-                with urlopen(req, timeout=600) as r:
+                with opener.open(req, timeout=600) as r:
                     return _save_response(r, dest_dir, kind)
             except _VirusScan as ex:
                 urls = [ex.url] + [u for u in urls if u != ex.url]
@@ -324,9 +359,11 @@ def fetch(url, dest_dir, kind):
                 last = ex
                 if ex.code not in (403, 404, 429, 500, 502, 503):
                     raise
-            except ValueError:
-                raise
-        time.sleep(min(20, 2 ** attempt))
+            except ValueError as ex:
+                last = ex
+                if not _page_should_retry(ex):
+                    raise
+        time.sleep(min(45, 2 ** attempt))
     if last:
         raise last
     raise ValueError(f"the {kind.replace('_', ' ')} link could not be downloaded")
