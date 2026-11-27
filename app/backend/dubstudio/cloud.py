@@ -1402,7 +1402,7 @@ def stage_scene(work):
     pinit = pkg / "pipeline" / "__init__.py"
     if pinit.is_file():
         shutil.copy2(pinit, pipe / "__init__.py")
-    for name in ("slowfix_edit.py", "keep_grouping.py", "apply_scene.py"):
+    for name in ("slowfix_edit.py", "keep_grouping.py", "apply_scene.py", "broll_policy.py"):
         src = pkg / "pipeline" / name
         if src.is_file():
             shutil.copy2(src, pipe / name)

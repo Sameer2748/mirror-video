@@ -23,6 +23,9 @@ def _app_dir(script):
 sys.path.insert(0, str(_app_dir(__file__)))
 from dubstudio import ai  # noqa: E402
 from dubstudio.pipeline.keep_grouping import grouping_takes  # noqa: E402
+from dubstudio.pipeline.broll_policy import (  # noqa: E402
+    hole_broll_s, is_long_broll_hole, max_broll_shots)
+
 _pt = Path(__file__).resolve().parents[2] / "pipeline_tools"
 if _pt.is_dir():
     sys.path.insert(0, str(_pt))
@@ -45,7 +48,7 @@ MODEL = "claude-sonnet-5-5"
 EDITOR = os.environ.get("SLOWFIX_EDITOR") or "claude-opus-5"
 
 LO, HI, MIN_BROLL, REUSE_GAP, MAX_BROLL_USES, EDGE = 0.8, 1.25, 2.0, 8.0, 3, 0.08
-MIN_PIECE, MAX_TRANSITIONS, MAX_BROLL_PIECES = 2.0, 3, 3
+MIN_PIECE, MAX_TRANSITIONS, MAX_BROLL_PIECES = 2.0, 3, 3  # MAX_BROLL_PIECES: long holes only (broll_policy)
 NARR_MOUTH, TALK_GAP = 0.2, 1.0
 SHARED = ("reaction", "neutral", "establishing")
 
@@ -461,8 +464,11 @@ Edit like a human:
    chase 0.80x. If you do add B-roll, aim so the own clip reaches about 0.80x, not 1.0x.
 4. B-roll is allowed only when: (a) there is no matched picture for that dub time, (b) a long pause with
    nobody to show, or (c) the clip shows the WRONG person and a same-place reaction of the right person
-   exists. At most ONE B-roll per group, at least 2.0 s. Put it in a pause (before/after speech), never
-   on the talking mouth.
+   exists. Put B-roll in a pause (before/after speech), never on the talking mouth. Each B-roll ≥2.0 s.
+   Short leftover (~2 s of B-roll to reach 0.80x): at most ONE shot; if no single shot fits, keep_whole
+   (two–three cuts there look jumpy). Long leftover/pause (needs 8 s or more to reach 0.80x, e.g. 20 s
+   of dub on 0.6 s of source): you MAY use several ranked B-rolls of the right people and place (at most
+   3 shots) to cover that pause. Do not refuse B-roll on a long hole just because one shot is too short.
 5. Pick the B-roll from the RANKED list only (shot number must be on that list). Prefer a higher rank
    (exact people, same place). You MAY pick a lower rank if the picture is a better reaction for this
    line (a one-person reaction of someone in a multi-person line is allowed). Do not invent a shot.
@@ -477,10 +483,10 @@ Edit like a human:
 9. At most 3 visual transitions in a sentence. Do not retime every sentence. Other rows keep grouping.
 10. If a B-roll source is 1.3 s, it may play 2 s (steal 0.7 s from the previous own clip). Code does that.
 11. If you are not sure, keep_whole and unused=none. A safe matched cut beats unused fill or B-roll.
-12. A leftover row playing under 0.40x or under 0.5 s of source is a script hole (overlap-trim), not a
-    creative slow-mo. Do not B-roll a lip-sync conversation to fill it. If a neighbor leftover still
-    plays this row's matched English sentence, keep_whole on that leftover picture (the matched take).
-    Only B-roll when that matched leftover is gone.
+12. A leftover row playing under 0.40x or under 0.5 s of source with a SHORT dub slot is a script hole
+    (overlap-trim), not a creative slow-mo — do not B-roll a lip-sync line to fill 2 s. A LONG dub
+    pause on a tiny source (20 s+ of unmatched/extra story) is different: cover it with ranked
+    same-place B-roll as in (4), and keep the talking mouth on the matched take.
 
 Answer only JSON for THIS group:
 {"g": <id>, "keep_whole": true/false, "row": <row or null>, "broll_s": <seconds or 0>,
@@ -612,12 +618,18 @@ if stitch:
 for u in units:
     p = broll_plan.get(u["group"]) or {}
     u["claude_why"] = p.get("why") or ""
-    if p.get("keep_whole"):
+    long_hole = is_long_broll_hole(u["t1"] - u["t0"], u["src"])
+    # Short leftover: keep_whole means no B-roll. Long pause: still try ranked multi B-roll
+    # in the gap (talking mouth stays on the matched take).
+    if p.get("keep_whole") and not long_hole:
         u["skip_group_broll"] = True
         continue
     host_row = p.get("row")
     b = float(p.get("broll_s") or 0)
     if host_row is None or b < MIN_BROLL - 1e-6:
+        if long_hole:
+            u.pop("skip_group_broll", None)
+            continue
         u["skip_group_broll"] = True
         continue
     if host_row in u["rows"]:
@@ -628,7 +640,10 @@ for u in units:
             u["broll_shot"] = int(p["shot"])
         u.pop("skip_group_broll", None)
     else:
-        u["skip_group_broll"] = True
+        if long_hole:
+            u.pop("skip_group_broll", None)
+        else:
+            u["skip_group_broll"] = True
 
 # ---------------- 3. B-roll picking ----------------
 uses = []   # (us0, us1, it0, it1, shot, broll)
@@ -885,8 +900,10 @@ def solve(u):
             return seq, own_d, b, broll_first, e
 
         placed = None
+        long = is_long_broll_hole(D, S)
+        n_shots = max_broll_shots(D, S)
         # 1) One B-roll: first the shortest that reaches 0.80x, then a shorter one (still one cut) if no
-        # shot is that long, then a slightly longer one. Never two B-roll shots when one exists.
+        # shot is that long, then a slightly longer one. Never two B-roll shots on a short hole.
         top = b_hi if b_hi >= MIN_BROLL else (D - 0.05)
         btry, tried = [], set()
         x = max(need_b, MIN_BROLL)
@@ -916,9 +933,15 @@ def solve(u):
                 if got and n_jumps(got) <= MAX_TRANSITIONS:
                     res.update(pieces=got, choice="one B-roll for the whole sentence")
                     return res
-        # 3) Two B-roll shots only when no single shot exists at all (still ≤3 transitions).
-        if placed is None and need_b >= MIN_BROLL - 1e-6:
-            placed = place(need_b, 2)
+        # 3) Short hole (~2 s): do not cut 2–3 B-rolls. Long hole: several ranked shots to reach 0.80x.
+        if placed is None and long and n_shots > 1 and hole_broll_s(D, S) >= MIN_BROLL - 1e-6:
+            fill_b = max(need_b, hole_broll_s(D, S), MIN_BROLL)
+            if b_hi >= MIN_BROLL:
+                fill_b = min(fill_b, max(b_hi, MIN_BROLL))
+            for n_pcs in range(2, n_shots + 1):
+                placed = place(fill_b, n_pcs)
+                if placed is not None:
+                    break
         if placed is not None:
             seq, own_d, b, broll_first, e = placed
             res.update(pieces=seq,

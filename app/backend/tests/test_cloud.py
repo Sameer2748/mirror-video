@@ -1280,6 +1280,7 @@ def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch)
     app = work / "_app"
     assert (app / "dubstudio" / "ai.py").is_file()
     assert (app / "dubstudio" / "pipeline" / "keep_grouping.py").is_file()
+    assert (app / "dubstudio" / "pipeline" / "broll_policy.py").is_file()
     assert (app / "pipeline_tools" / "dubstitch.py").is_file()
 
 

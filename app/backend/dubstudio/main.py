@@ -1692,10 +1692,19 @@ def rerun_from_step(eid: int, step: str):
 def scene_redo(eid: int):
     """Redo the scene edit with fresh Claude answers: the cached answers move to W/scene/_old/<time>/ (nothing is
     deleted), then scene_edit and every step after it run again. A plain Retry reuses the cached answers ($0)."""
-    w = Path(_get("episodes", eid)["work_dir"]); cache = w / "scene" / "scene_manifest.par_cache.json"
-    if cache.exists():
-        old = w / "scene" / "_old" / time.strftime("%Y%m%d_%H%M%S"); old.mkdir(parents=True, exist_ok=True)
-        cache.rename(old / cache.name)
+    from .pipeline.broll_policy import SCENE_EDIT_CACHE_RELS, park_scene_edit_cache
+    ep_row = _get("episodes", eid)
+    park_scene_edit_cache(ep_row["work_dir"])
+    try:
+        show, ep, _ = runner().episode_context(eid)
+        if storage.configured():
+            for rel in SCENE_EDIT_CACHE_RELS:
+                try:
+                    storage.delete(storage.work_key(show, ep, rel))
+                except Exception:
+                    pass
+    except Exception:
+        pass
     try:
         steps = runner().rerun_from(eid, "scene_edit")
     except ValueError as ex:
