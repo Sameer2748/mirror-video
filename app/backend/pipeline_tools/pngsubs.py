@@ -1,7 +1,8 @@
 """Burn subtitles onto an existing clean video the way the stills-to-video pipeline does:
-SRT -> one transparent 1080x1080 PNG per cue (on a video of another size the layer is centred at the bottom) (white Poppins Bold, black rounded box at exactly 30% opacity,
+SRT -> one transparent 1080x1080 PNG per cue (white Poppins Bold, black rounded box at exactly 30% opacity,
 bottom-centred, 71 px from the bottom, max 86% width, 38 px shrinking to 30 px, up to 3 lines) -> ffmpeg concat timeline
-(blank PNG between cues) -> transparent qtrle .mov -> overlay on the clean video -> mux the clean video's audio.
+(blank PNG between cues) -> transparent qtrle .mov -> scale that layer to the video height (4K / 8K / 9:16)
+and overlay it bottom-centred on the clean video -> mux the clean video's audio.
 Resumable: each step skips work already done; the overlay is encoded in chunks so every command stays short.
 
   python3 pngsubs.py --video CLEAN.mp4 --srt SUBS.srt --out OUT.mp4 --work DIR [--offset 0] [--step all|pngs|mov|overlay|mux] [--max-seconds 140]
@@ -69,6 +70,15 @@ def probe(path):
     v = next(s for s in o["streams"] if s["codec_type"] == "video"); a, b = v["r_frame_rate"].split("/")
     return float(o["format"]["duration"]), int(a) / int(b)
 
+def overlay_filter():
+    """ffmpeg -filter_complex for the 1080x1080 box layer on a video of any size.
+
+    House size is 38 px on a 1080-tall frame. Scale the layer to the video's height so 4K and 8K
+    masters keep the same on-screen size (KOTU EP3/4 were 2160 and the unscaled 1080 layer looked tiny)."""
+    return ("[1:v][0:v]scale2ref=w=-1:h=ih:flags=lanczos[sub][base];"
+            "[base][sub]overlay=(W-w)/2:H-h:format=auto,format=yuv420p[v]")
+
+
 def set_style(size=None, bottom=None, box_alpha=None):
     """Optional house-style changes (Dub Studio's subtitle style per language): text size in px on the 1080 frame
     (shrinks to 79% of it for long cues, as 38 -> 30), distance of the box from the bottom (px), box opacity 0-1.
@@ -121,7 +131,7 @@ def burn(video, srt, out, work, offset=0.0, chunk=60, max_seconds=140, font=None
         if os.path.exists(part + ".ok"): continue
         if time.time() - T0 > max_seconds: print("not finished -- run again (it resumes)"); sys.exit(3)
         run(["ffmpeg", "-y", "-v", "error", "-ss", f"{f0 / fps:.6f}", "-i", video, "-ss", f"{f0 / fps:.6f}", "-i", mov,
-             "-filter_complex", "[0:v][1:v]overlay=(W-w)/2:H-h:format=auto,format=yuv420p[v]", "-map", "[v]", "-frames:v", str(f1 - f0),
+             "-filter_complex", overlay_filter(), "-map", "[v]", "-frames:v", str(f1 - f0),
              "-r", f"{fps:g}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-an", part])
         open(part + ".ok", "w").write("1"); print(f"chunk {k} done ({time.time() - T0:.0f}s)")
     # 5. concat + the clean video's own audio
