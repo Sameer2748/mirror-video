@@ -129,6 +129,22 @@ def deliverables(show, ep, ctx):
 ZIP_KINDS = ("clean", "dub_subs", "en_subs", "en_srt")
 
 
+def editor_ahead_of_files(latest_v, rendered, draft, clean):
+    """True when the editor has a newer timeline than the files on this page.
+
+    After cleanup the clean master often exists only in R2, so mtime is missing. Comparing
+    draft.saved > None raises TypeError and 500s the deliverables page (WBT EP101)."""
+    if latest_v and rendered and latest_v > rendered:
+        return True
+    if not isinstance(draft, dict) or not isinstance(clean, dict):
+        return False
+    saved, mt = draft.get("saved"), clean.get("mtime")
+    try:
+        return saved is not None and mt is not None and saved > mt
+    except TypeError:
+        return False
+
+
 def zip_members(files):
     return [f for f in files if f.get("kind") in ZIP_KINDS]
 

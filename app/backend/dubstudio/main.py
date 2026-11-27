@@ -1881,8 +1881,7 @@ def deliverables(eid: int):
     clean = next((f for f in files if f["kind"] == "clean" and f["exists"]), None)
     return {"files": files, "output_dir": ep["output_dir"], "render": _render_row(last) if last else None,
             "rendered_version": rendered, "latest_version": latest_v,
-            "unrendered": bool((latest_v and rendered and latest_v > rendered) or
-                               (draft and clean and draft.get("saved", 0) > clean["mtime"])),
+            "unrendered": deliver.editor_ahead_of_files(latest_v, rendered, draft, clean),
             "final_check_image": (work / "final_check.jpg").exists(),
             "qc_open": (db().one("SELECT COUNT(*) AS n FROM markers WHERE episode_id=? AND resolved=0", (eid,)) or {}).get("n", 0)}
 

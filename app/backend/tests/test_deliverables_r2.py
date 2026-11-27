@@ -2,6 +2,13 @@
 from dubstudio import deliver, presets
 
 
+def test_cloud_only_clean_plus_draft_is_not_a_500():
+    """WBT 101: cleanup left the mp4 in R2 (exists, no mtime) and an editor draft on disk."""
+    assert deliver.editor_ahead_of_files(2, 2, {"saved": 1795764056.57}, {"kind": "clean", "exists": True, "mtime": None}) is False
+    assert deliver.editor_ahead_of_files(3, 2, None, {"mtime": None}) is True
+    assert deliver.editor_ahead_of_files(2, 2, {"saved": 200}, {"mtime": 100}) is True
+
+
 def test_videos_in_r2_count_as_existing(tmp_path, monkeypatch):
     show = {"code": "IMTSITDE", "profile": presets.PRESETS["WBM"]}
     ep = {"number": 17, "output_dir": str(tmp_path / "out"), "work_dir": str(tmp_path / "work")}
