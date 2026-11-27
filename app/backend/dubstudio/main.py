@@ -1524,8 +1524,9 @@ def _ep_ctx(eid):
     # the editor is built out of the small work files (the edit list, rows, lip-sync, sentences, SRTs). On a machine
     # that never processed this episode -- a deployed box, or this Mac after `cleanup` -- they come down from R2
     # first, once. Without this the editor answers "the edit list is not made yet" for a finished episode.
-    if not Path(ep["work_dir"], "manifest_groups.json").exists():
-        storage.fetch_work_files(show, ep)
+    W = Path(ep["work_dir"])
+    if not (W / "manifest_groups.json").exists() and not (W / "manifest.json").exists():
+        storage.fetch_work_files(show, ep, force=True, need_edit_list=True)
     ctx, _ = pipeline_steps.plan(show, ep, assets)
     return show, ep, assets, ctx
 

@@ -783,7 +783,7 @@ def drop_cloud_work(show, ep, log=None):
     return n
 
 
-def fetch_work_files(show, ep, log=None, force=False):
+def fetch_work_files(show, ep, log=None, force=False, need_edit_list=False):
     """Bring this episode's small work files down from R2 if they are not here.
 
     The editor is built out of them -- the edit list, the rows, the lip-sync, the sentences, the SRTs -- so on a
@@ -820,10 +820,11 @@ def fetch_work_files(show, ep, log=None, force=False):
             got += 1
         except Exception:
             continue
-    # Only unpack tars when config.json is missing. Waiting for manifest_groups.json too made every
-    # early step (proxy, Whisper, words) unpack every previous tar — 13 min, idle CPUs, 5/39 steps.
-    if not (W / "config.json").is_file():
-        extra = _fetch_work_from_tars(show, ep, W, objects, prefix, log)
+    # Pipeline sends only unpack when config.json is missing (WBT 101–104: every proxy/words
+    # visit otherwise unpacked every old tar). The editor still needs the edit list after cleanup.
+    have_list = (W / "manifest_groups.json").is_file() or (W / "manifest.json").is_file()
+    if not (W / "config.json").is_file() or (need_edit_list and not have_list):
+        extra = _fetch_work_from_tars(show, ep, W, objects, prefix, log, need_edit_list=need_edit_list)
         got += extra
     _work_fetched.add(key)
     if got and log:
@@ -835,13 +836,17 @@ TAR_UNPACK_MAX = 8 << 20  # 8 MB: work JSON tars, not proxy videos
 
 
 def _tar_looks_like_work(rel):
-    """A previous visit's work tar. Skip proxy videos and the tiny /out-in packs."""
+    """A previous visit's work tar. Skip proxy videos and the tiny /out-in packs.
+
+    Older sends wrote `cut_work_out.tar.gz` (no send id). Requiring `_work_out_` skipped
+    those, so WBT 75–82 Review had no edit list after cleanup."""
     name = Path(rel or "").name
     if not name.endswith(".tar.gz"):
         return False
-    if "proxy_" in name or "_out_in_" in name:
+    if "proxy_" in name or "_out_in_" in name or name.endswith("_out_in.tar.gz"):
         return False
-    return "_work_in_" in name or "_work_out_" in name
+    stem = name[:-len(".tar.gz")]
+    return "_work_in" in stem or "_work_out" in stem
 
 
 def unpack_work_tar_members(tar_path, dest_dir):
@@ -868,7 +873,7 @@ def unpack_work_tar_members(tar_path, dest_dir):
     return wrote
 
 
-def _fetch_work_from_tars(show, ep, W, objects, prefix, log=None):
+def _fetch_work_from_tars(show, ep, W, objects, prefix, log=None, need_edit_list=False):
     """When loose `config.json` / edit list were never published, unpack them from the newest work tar.
 
     Render cleanup drops the local copies. A later send then packed an empty-of-config tar (IMTS IT-DE 17)."""
@@ -881,11 +886,14 @@ def _fetch_work_from_tars(show, ep, W, objects, prefix, log=None):
             continue
         tars.append(o)
     tars.sort(key=lambda o: o.get("modified") or "", reverse=True)
+    tars.sort(key=lambda o: 0 if "_work_out" in Path(o.get("key") or "").name else 1)
     got = 0
     tmp = Path(W) / "_unpack_tars"
     try:
         for o in tars:
-            if (Path(W) / "config.json").is_file():
+            have_cfg = (Path(W) / "config.json").is_file()
+            have_list = (Path(W) / "manifest_groups.json").is_file() or (Path(W) / "manifest.json").is_file()
+            if have_cfg and (not need_edit_list or have_list):
                 break
             tmp.mkdir(parents=True, exist_ok=True)
             tar_path = tmp / Path(o["key"]).name

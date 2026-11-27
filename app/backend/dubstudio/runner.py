@@ -1131,6 +1131,12 @@ class Runner:
                 break
         if j["step"] == "groups":
             snapshot_latest_groups((j.get("params") or {}).get("ctx", {}).get("W") or "")
+        if j["step"] in ("groups", "lipsync", "scene_edit", "use_scene"):
+            try:
+                show, ep, _ = self.episode_context(j["episode_id"])
+                storage.publish_outputs(self.db, show, ep, [], work_dir=ep["work_dir"], log=lambda m: None)
+            except Exception:
+                pass
         self._set(j, status="done", progress=1, finished=now(), eta=0,
                   message=f"done in {time.time() - t0:.0f} s" + (f" ({rounds} rounds)" if rounds > 1 else ""))
 

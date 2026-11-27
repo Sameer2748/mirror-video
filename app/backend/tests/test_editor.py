@@ -13,6 +13,18 @@ def write_manifest(w, segs, total):
              us_text=f"line {k}", stretch_factor=1.0, note="") for k, (a, b, c, d) in enumerate(segs)], groups=[])))
 
 
+def test_editor_opens_from_cut_manifest_when_groups_file_was_cleaned(tmp_path):
+    """WBT 75–82: cleanup dropped manifest_groups.json; R2 still has the cut visit's manifest.json."""
+    w = tmp_path / "w"
+    segs = [(0, 1000, 0, 1000), (1000, 2000, 5000, 6000)]
+    w.mkdir()
+    (w / "manifest.json").write_text(json.dumps(dict(total_ms=2000, segments=[
+        dict(kind="clip", it_idx=k, it_start_ms=a, it_end_ms=b, us_start_ms=c, us_end_ms=d, it_text=f"r{k}",
+             us_text=f"l{k}", stretch_factor=1.0, note="") for k, (a, b, c, d) in enumerate(segs)])))
+    tl = tlm.build_v1(w)
+    assert tl is not None and tl["total_ms"] == 2000 and len(tl["clips"]) == 2
+
+
 def test_editor_merges_one_grouping_take_and_keeps_scene_edit_cuts(tmp_path):
     """Lip-group slices of the same source span are one timeline clip; B-roll is still a cut."""
     w = tmp_path / "w"; w.mkdir()

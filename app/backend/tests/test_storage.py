@@ -510,6 +510,39 @@ def test_work_tar_unpacks_when_loose_config_is_missing(r2):
     assert storage.get_bytes(loose) == b'{"labels": "IT,DE"}'
 
 
+def test_old_work_tar_names_look_like_work():
+    from dubstudio import storage
+    assert storage._tar_looks_like_work("cloud/cut_work_out.tar.gz")
+    assert storage._tar_looks_like_work("cloud/cut_work_out_abcd1234.tar.gz")
+    assert storage._tar_looks_like_work("cloud/cut_work_in.tar.gz")
+    assert not storage._tar_looks_like_work("cloud/proxy_work_out.tar.gz")
+    assert not storage._tar_looks_like_work("cloud/cut_out_in.tar.gz")
+
+
+def test_unsuffixed_cut_tar_unpacks_the_edit_list_for_the_editor(r2):
+    """WBT 75–82: older visits wrote `cut_work_out.tar.gz` (no send id). Fetch required `_work_out_`
+    and skipped them, so Review said the edit list was not made yet."""
+    import io, tarfile
+    from dubstudio import storage
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 75}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        for name, body in (("config.json", b'{"labels": "DE,US"}'),
+                           ("manifest.json", b'{"total_ms": 1000, "segments": []}')):
+            info = tarfile.TarInfo(name); info.size = len(body)
+            tf.addfile(info, io.BytesIO(body))
+    storage.put_bytes(storage.work_key(s, e, "cloud/cut_work_out.tar.gz"), buf.getvalue())
+    work = Path(e["work_dir"])
+    got = storage.fetch_work_files(s, e, force=True, need_edit_list=True)
+    assert got >= 2
+    assert (work / "manifest.json").is_file()
+    assert json.loads((work / "config.json").read_text())["labels"] == "DE,US"
+
+
 def test_fetch_does_not_unpack_tars_when_config_is_already_here(r2):
     """WBT 101-104: every proxy/words send unpacked every old tar looking for a manifest that does not exist yet."""
     import io, tarfile

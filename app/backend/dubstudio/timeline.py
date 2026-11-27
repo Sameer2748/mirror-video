@@ -26,8 +26,13 @@ def _load(p, default=None):
 
 
 def pipeline_manifest(work):
-    """The pipeline's own edit list: manifest_groups.json, unless the editor wrote that file (then the saved copy)."""
+    """The pipeline's own edit list: manifest_groups.json, unless the editor wrote that file (then the saved copy).
+
+    WBT 75–82: groups ran on the website, cleanup dropped the file, and R2 only kept the cut visit's
+    `manifest.json`. That list is enough to open the editor."""
     w = Path(work); cur = _load(w / "manifest_groups.json")
+    if cur is None:
+        cur = _load(w / "manifest.json")
     if cur is None:
         return None
     if cur.get("dub_studio"):
