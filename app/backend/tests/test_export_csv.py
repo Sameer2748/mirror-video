@@ -78,7 +78,11 @@ def main_test():
     assert rows[0] == ["media_file_title", "media_url"], rows[0]
     assert [r[0] for r in rows[1:]] == ["11", "12", "13"], rows
     url = rows[1][1]
-    assert url == "https://mirror.test/media/ALLDONE/ep11/ALLDONE_EP11_final_it_subs.mp4", url
+    assert url.startswith("https://pub-f3cfc243bd7b45dab6be4e8f05fe937d.r2.dev/"), url
+    assert url.endswith("/shows/ALLDONE/ep11/out/ALLDONE_EP11_final_it_subs.mp4"), url
+    assert "/ep12/out/ALLDONE_EP12_final_it_subs.mp4" in rows[2][1]
+    assert "/ep13/out/ALLDONE_EP13_final_it_subs.mp4" in rows[3][1]
+    assert "ep11" not in rows[2][1] and "ep12" not in rows[1][1]
     assert "?" not in url, url                              # MediaConvert strips query strings
     assert url.endswith(".mp4"), url
     print("ok: all done -> CSV with query-free .mp4 links")

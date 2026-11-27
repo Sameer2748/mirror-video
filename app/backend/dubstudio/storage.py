@@ -6,6 +6,7 @@ Settings come from app/.env (environment variables win -- `envfile.py`); never p
   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
   R2_ENDPOINT      https://<account>.r2.cloudflarestorage.com   (built from the account id when missing)
   R2_PREFIX        optional folder inside the bucket (default: none)
+  R2_PUBLIC_BASE   optional https://pub-<hash>.r2.dev (export CSV); bucket-wide public host
   R2_AUTO_UPLOAD   true (default): every finished render is sent up by itself
   R2_DB_SYNC       true (default): the database file is copied up after each daily backup and on request
 
@@ -42,6 +43,7 @@ def settings():
     return {"account": acc, "endpoint": end, "bucket": envfile.get("R2_BUCKET", ""),
             "key_id": envfile.get("R2_ACCESS_KEY_ID", ""), "secret": envfile.get("R2_SECRET_ACCESS_KEY", ""),
             "region": envfile.get("R2_REGION", "auto"), "prefix": (envfile.get("R2_PREFIX", "") or "").strip("/"),
+            "public_base": (envfile.get("R2_PUBLIC_BASE") or "").rstrip("/"),
             "auto_upload": envfile.flag("R2_AUTO_UPLOAD", True), "db_sync": envfile.flag("R2_DB_SYNC", True)}
 
 
@@ -185,16 +187,30 @@ def export_url(key, seconds=3600, base=""):
     return f"{origin}/api/export-media/{export_token(key, seconds=seconds)}"
 
 
-def public_mp4_url(code, number, filename, base=""):
-    """Forever public path that ends in .mp4. Each GET 302s to a fresh R2 presign; the path itself does not expire.
+# Cloudflare "Public development URL" for dubstudioprod (rate-limited). Override with R2_PUBLIC_BASE.
+_R2_PUBLIC_DEFAULT = "https://pub-f3cfc243bd7b45dab6be4e8f05fe937d.r2.dev"
 
-    Only final videos under shows/<code>/ep<n>/out/ are served (see /media/... on the API). The bucket stays private."""
-    origin = str(base or "").rstrip("/")
-    if not origin:
-        raise RuntimeError("set PUBLIC_URL so export links have a host")
+
+def r2_public_origin():
+    """Host for query-free object URLs (r2.dev or a custom domain). Empty string means unset."""
+    return (settings().get("public_base") or _R2_PUBLIC_DEFAULT).rstrip("/")
+
+
+def public_mp4_url(code, number, filename, base=""):
+    """Forever public .mp4 URL for this show + episode's out file (no query string).
+
+    https://pub-<hash>.r2.dev/<prefix>/shows/<code>/ep<n>/out/<file>.mp4
+    Always rebuilt from this code + episode number (never another episode's key)."""
     name = safe_name(filename)
     if not name.lower().endswith(".mp4"):
         raise ValueError("the public link is only for .mp4 files")
+    obj = _key("shows", code, f"ep{int(number)}", "out", name)
+    pub = r2_public_origin()
+    if pub:
+        return f"{pub}/{obj.lstrip('/')}"
+    origin = str(base or "").rstrip("/")
+    if not origin:
+        raise RuntimeError("set R2_PUBLIC_BASE or PUBLIC_URL so export links have a host")
     return f"{origin}/media/{code}/ep{int(number)}/{name}"
 
 

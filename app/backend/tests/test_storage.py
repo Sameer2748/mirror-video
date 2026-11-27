@@ -206,12 +206,18 @@ def test_download_link_works_without_keys(r2):
     assert httpx.get(url).content == b"video-bytes"              # no Authorization header on this one
 
 
-def test_public_mp4_url_is_forever_and_ends_in_mp4():
+def test_public_mp4_url_is_forever_and_ends_in_mp4(monkeypatch):
     from dubstudio import storage
+    monkeypatch.setenv("R2_PUBLIC_BASE", "https://pub-f3cfc243bd7b45dab6be4e8f05fe937d.r2.dev")
+    monkeypatch.setenv("R2_PREFIX", "dub-studio-mac")
     url = storage.public_mp4_url("IMTSITDE", 51, "IMTSITDE_EP51_IT_final_it_subs.mp4",
                                  base="https://mirror-video.onrender.com")
-    assert url == "https://mirror-video.onrender.com/media/IMTSITDE/ep51/IMTSITDE_EP51_IT_final_it_subs.mp4"
+    assert url == ("https://pub-f3cfc243bd7b45dab6be4e8f05fe937d.r2.dev/"
+                   "dub-studio-mac/shows/IMTSITDE/ep51/out/IMTSITDE_EP51_IT_final_it_subs.mp4")
     assert "?" not in url
+    other = storage.public_mp4_url("IMTSITDE", 1, "IMTSITDE_EP1_IT_final_it_subs.mp4")
+    assert "/ep1/out/IMTSITDE_EP1_IT_final_it_subs.mp4" in other
+    assert "/ep51/" not in other
 
 
 def test_export_url_has_no_query_string(r2):

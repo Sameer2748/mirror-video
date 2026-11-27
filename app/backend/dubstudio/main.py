@@ -1082,8 +1082,8 @@ def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
     or whose subtitle video is not in the cloud yet, ends the list. Later episodes that
     are already done are left out, so a sheet never skips a pending episode.
 
-    media_url has no query string and ends in .mp4: `/media/<code>/ep<n>/<file>.mp4`.
-    That path does not expire. Each GET 302s to a short-lived R2 presign (the bucket stays private)."""
+    media_url is this episode's target-language subtitle video on the R2 public host
+    (query-free, ends in .mp4). One row per episode; never another episode's file."""
     show = _get("shows", sid)
     eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     if not eps:
@@ -1091,28 +1091,33 @@ def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
     if not storage.configured():
         raise HTTPException(409, "R2 storage is not set up (Settings -> Cloud storage)")
     base = storage.site_base(request)
-    if not base:
-        raise HTTPException(500, "cannot build export links: set PUBLIC_URL, or call this from a browser")
+    if not storage.r2_public_origin() and not base:
+        raise HTTPException(500, "cannot build export links: set R2_PUBLIC_BASE or PUBLIC_URL")
     rows = []
     for e in eps:
         if e["status"] != "done":
             break
         up = db().one("SELECT key, name FROM uploads WHERE episode_id=? AND kind='dub_subs' AND status='done' "
                       "ORDER BY id DESC LIMIT 1", (e["id"],))
-        if up:
-            key = up["key"]
-        else:
+        uploaded = Path(up.get("name") or up.get("key") or "").name if up else ""
+        if uploaded and not re.search(rf"(?:^|_)EP{int(e['number'])}(?:_|\.|$)", uploaded, re.I):
+            uploaded = ""
+        if uploaded and (not uploaded.lower().endswith("_subs.mp4") or "clean" in uploaded.lower()):
+            uploaded = ""
+        try:
+            expected = presets.names(show["code"], e["number"], show.get("profile") or {}).get("dub_subs")
+        except (KeyError, TypeError, ValueError):
+            expected = None
+        name = expected or uploaded
+        if not name:
+            break
+        if not up:
             # Worker PUT the video; uploads row was never written because Render did not
             # download the mp4 (IMTS IT-DE 17, IMTS DE 167).
-            from . import presets
-            try:
-                name = presets.names(show["code"], e["number"], show.get("profile") or {}).get("dub_subs")
-            except (KeyError, TypeError, ValueError):
+            key = storage.out_key(show, e, name)
+            if not storage.head(key):
                 break
-            key = storage.out_key(show, e, name) if name else None
-            if not key or not storage.head(key):
-                break
-        rows.append([e["number"], storage.public_mp4_url(show["code"], e["number"], Path(key).name, base=base)])
+        rows.append([e["number"], storage.public_mp4_url(show["code"], e["number"], name, base=base)])
     if not rows:
         raise HTTPException(409, "no finished episode has its subtitle video in the cloud yet")
     buf = io.StringIO()
