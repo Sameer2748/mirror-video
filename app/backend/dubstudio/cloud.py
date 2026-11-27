@@ -910,13 +910,11 @@ def ensure_work_for_cloud(show, ep, name, log=print):
     W = Path(ep["work_dir"])
     need = required_work_files(name)
     want_list = "manifest_groups.json" in need
-    missing = [n for n in need if not (W / n).is_file()]
-    if missing or not (W / CONFIG).is_file():
-        try:
-            storage.fetch_work_files(
-                show, ep, log=log, force=True, need_edit_list=want_list)
-        except Exception as ex:
-            log(f"could not fetch work files: {ex}")
+    try:
+        storage.fetch_work_files(
+            show, ep, log=log, force=True, need_edit_list=want_list)
+    except Exception as ex:
+        log(f"could not fetch work files: {ex}")
     if want_list:
         storage.promote_edit_list(W)
     missing = [n for n in need if not (W / n).is_file()]
