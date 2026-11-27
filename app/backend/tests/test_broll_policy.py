@@ -25,6 +25,14 @@ def test_eight_second_gap_is_the_long_cutoff():
     assert is_long_broll_hole(10.0, 1.6)  # 10 - 2.0 = 8.0
 
 
+def test_long_broll_may_leave_own_clip_under_080():
+    from dubstudio.pipeline.broll_policy import allow_slow_own_after_broll
+    assert not allow_slow_own_after_broll(2.0)
+    assert not allow_slow_own_after_broll(7.9)
+    assert allow_slow_own_after_broll(8.0)
+    assert allow_slow_own_after_broll(18.0)
+
+
 def test_scene_redo_parks_slowfix_plan_not_only_par_cache(tmp_path):
     w = Path(tmp_path)
     (w / "scene").mkdir()

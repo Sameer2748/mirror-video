@@ -31,6 +31,12 @@ def max_broll_shots(dub_s, src_s, lo=LO, long_s=LONG_BROLL_S, max_pieces=MAX_BRO
     return 1
 
 
+def allow_slow_own_after_broll(broll_s, long_s=LONG_BROLL_S):
+    """A 2 s B-roll on a frozen line is a jump for almost no gain. An 8 s+ same-place
+    cutaway on a 20 s hole is the extra-story cover — own clip may stay under 0.80×."""
+    return float(broll_s) >= long_s
+
+
 SCENE_EDIT_CACHE_RELS = (
     "scene/scene_manifest.par_cache.json",
     "scene_slowfix/broll_plan_editor.json",

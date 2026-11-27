@@ -24,7 +24,8 @@ sys.path.insert(0, str(_app_dir(__file__)))
 from dubstudio import ai  # noqa: E402
 from dubstudio.pipeline.keep_grouping import grouping_takes  # noqa: E402
 from dubstudio.pipeline.broll_policy import (  # noqa: E402
-    hole_broll_s, is_long_broll_hole, max_broll_shots)
+    LONG_BROLL_S, allow_slow_own_after_broll, hole_broll_s, is_long_broll_hole,
+    max_broll_shots)
 
 _pt = Path(__file__).resolve().parents[2] / "pipeline_tools"
 if _pt.is_dir():
@@ -863,16 +864,16 @@ def solve(u):
             own_d = D - b
             if own_d < 0.05 or S / own_d > HI + 1e-6:
                 return None
-            # One B-roll may leave the own clip a bit under 0.80x when no single shot is long enough.
-            # It must still be faster than the grouping cut. Two-or-more B-rolls must reach 0.80x.
-            if max_pieces == 1:
-                if S / own_d + 1e-6 < u["speed"]:
-                    return None
-                # One short B-roll on a 20 s line that stays at 0.28x is a jump for almost no gain.
-                if S / own_d < LO - 0.12:
-                    return None
-            elif S / own_d < LO - 0.05:
+            # Own clip must get faster than grouping. A short (~2 s) B-roll still has to land
+            # near 0.80x or it is a jump for no gain. A long extra-story hole may keep own
+            # under 0.80x if we actually cover ≥8 s with ranked same-place B-roll.
+            if S / own_d + 1e-6 < u["speed"]:
                 return None
+            if not allow_slow_own_after_broll(b):
+                if max_pieces == 1 and S / own_d < LO - 0.12:
+                    return None
+                if max_pieces > 1 and S / own_d < LO - 0.05:
+                    return None
             own_after = own_scaled(u["parts"], u["t0"], S / own_d)
             e_after = mouth_error(u, own_after, u["t0"])
             own_before = own_scaled(u["parts"], u["t0"] + b, S / own_d)
@@ -933,15 +934,24 @@ def solve(u):
                 if got and n_jumps(got) <= MAX_TRANSITIONS:
                     res.update(pieces=got, choice="one B-roll for the whole sentence")
                     return res
-        # 3) Short hole (~2 s): do not cut 2–3 B-rolls. Long hole: several ranked shots to reach 0.80x.
+        # 3) Short hole (~2 s): do not cut 2–3 B-rolls. Long hole: several ranked shots.
+        # Fill as much of the hole as the library can (not all-or-nothing at 0.80x).
         if placed is None and long and n_shots > 1 and hole_broll_s(D, S) >= MIN_BROLL - 1e-6:
             fill_b = max(need_b, hole_broll_s(D, S), MIN_BROLL)
             if b_hi >= MIN_BROLL:
                 fill_b = min(fill_b, max(b_hi, MIN_BROLL))
-            for n_pcs in range(2, n_shots + 1):
-                placed = place(fill_b, n_pcs)
+            x, tried_b = fill_b, set()
+            while x >= LONG_BROLL_S - 1e-6:
+                b = round(x, 2)
+                if b not in tried_b:
+                    tried_b.add(b)
+                    for n_pcs in range(2, n_shots + 1):
+                        placed = place(b, n_pcs)
+                        if placed is not None:
+                            break
                 if placed is not None:
                     break
+                x -= 0.5
         if placed is not None:
             seq, own_d, b, broll_first, e = placed
             res.update(pieces=seq,
