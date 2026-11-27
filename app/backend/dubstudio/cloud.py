@@ -962,7 +962,9 @@ def _walk_strings(obj):
     if isinstance(obj, str):
         yield obj
     elif isinstance(obj, dict):
-        for v in obj.values():
+        for k, v in obj.items():
+            if isinstance(k, str):
+                yield k
             yield from _walk_strings(v)
     elif isinstance(obj, list):
         for v in obj:
@@ -1014,12 +1016,17 @@ def _files_named_in_config(W, O, already, want_script=False):
             size = SMALL + 1
         rel = value[len(root_w) + 1:] if value.startswith(root_w + "/") else None
         in_out = value.startswith(root_o + "/") or value.startswith("/out/")
+        media = Path(value).suffix.lower() in GET_EXT
         if in_out:
-            if not p.is_file() or size <= SMALL:
+            # Small /out sheets travel with the visit; masters live in R2 after render_tail PUT.
+            # Skipping a missing local mp4 left check with 0 videos (KOTU 34).
+            if p.is_file() and size <= SMALL:
+                continue
+            if not p.is_file() and not media:
                 continue
         elif rel is not None and not (rel == "input" or rel.startswith("input/") or size > SMALL):
             continue
-        elif not p.is_file() and Path(value).suffix.lower() not in GET_EXT:
+        elif not p.is_file() and not media:
             continue
         out[f"{{F{len(already) + len(out)}}}"] = value
         seen.add(value)

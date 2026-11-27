@@ -1345,10 +1345,10 @@ def test_a_file_named_only_in_config_still_travels(tmp_path):
         "models": str(tmp_path / "models"),          # a folder, not a file
         "labels": "DE,US"}))                         # not a path at all
     got = cloud._files_named_in_config(work, out, {})
-    assert sorted(got.values()) == sorted([str(video), str(audio)])
+    assert sorted(got.values()) == sorted([str(video), str(audio), f"{out}/final.mp4"])
     # one already on the command line is not sent twice
     got2 = cloud._files_named_in_config(work, out, {"{F0}": str(video)})
-    assert list(got2.values()) == [str(audio)] and list(got2) == ["{F1}"]
+    assert sorted(got2.values()) == sorted([str(audio), f"{out}/final.mp4"])
 
 
 def test_an_imported_clip_the_editor_used_is_sent_and_placed(tmp_path, monkeypatch):
@@ -1760,6 +1760,28 @@ def test_config_video_is_sent_even_when_it_is_only_in_r2(tmp_path):
     extra = cloud._files_named_in_config(work, Path(ep["output_dir"]), {})
     assert str(gone) in extra.values()
     assert any(str(p).endswith(".mp3") for p in extra.values())
+
+
+def test_check_packs_out_masters_that_live_only_in_r2(tmp_path):
+    """KOTU 34: retry-check ran on a rented box. Mapping/SRT were there; clean + subs were only in R2."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    clean = out / "KOTUDEUS_EP34_IT_final_clean.mp4"
+    de = out / "KOTUDEUS_EP34_IT_final_de_subs.mp4"
+    en = out / "KOTUDEUS_EP34_IT_final_en_subs.mp4"
+    srt = out / "KOTUDEUS_EP34_IT_english_google.srt"
+    srt.write_text("1\n")
+    (work / "config.json").write_text(json.dumps({
+        "clean_final": str(clean),
+        "subs_outputs": {str(de): {"srt": str(srt)}, str(en): {"srt": str(srt)}},
+        "translation": {"out": str(srt)},
+    }))
+    extra = cloud._files_named_in_config(work, out, {})
+    paths = set(extra.values())
+    assert str(clean) in paths
+    assert str(de) in paths
+    assert str(en) in paths
+    assert str(srt) not in paths
 
 
 def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path):
