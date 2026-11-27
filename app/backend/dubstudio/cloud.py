@@ -798,6 +798,54 @@ def heal_config_inputs(db, ep, W):
         conf.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def heal_config_masters(show, ep, W, O):
+    """Point config.json at the usual /out masters so check can GET them from R2.
+
+    KOTU 34: videos were already PUT; retry-check packed src+audio only because clean_final /
+    subs_outputs were gone, then reported no clean master on an empty /out."""
+    conf = Path(W) / CONFIG
+    O = Path(O)
+    if not conf.is_file() or not O.is_dir():
+        return
+    try:
+        data = json.loads(conf.read_text(encoding="utf-8"))
+    except ValueError:
+        return
+    if not isinstance(data, dict):
+        return
+    srt = next(iter(sorted(O.glob("*_english_google.srt"))), None)
+    clean_hit = next(iter(sorted(O.glob("*_final_clean.mp4"))), None)
+    sub_hits = sorted(O.glob("*_final_*_subs.mp4"))
+    pre = None
+    if srt:
+        pre = srt.name[: -len("_english_google.srt")] if srt.name.endswith("_english_google.srt") else None
+    if not pre and clean_hit:
+        pre = clean_hit.name[: -len("_final_clean.mp4")]
+    if not pre:
+        return
+    clean = O / f"{pre}_final_clean.mp4"
+    if sub_hits:
+        subs = sub_hits
+    else:
+        dub_l = "de"
+        mapping = next(iter(sorted(O.glob("*_mapping.xlsx"))), None)
+        if mapping and mapping.stem.endswith("_mapping"):
+            parts = mapping.stem.split("_")
+            if len(parts) >= 3:
+                dub_l = parts[-3]
+        subs = [O / f"{pre}_final_{dub_l}_subs.mp4", O / f"{pre}_final_en_subs.mp4"]
+    data["clean_final"] = str(clean)
+    meta = {}
+    for p, old in (data.get("subs_outputs") or {}).items():
+        meta[Path(p).name] = old if isinstance(old, dict) else {}
+    srt_path = str(srt) if srt else str(O / f"{pre}_english_google.srt")
+    data["subs_outputs"] = {
+        str(p): dict(meta.get(p.name) or {}, **({"srt": srt_path} if "srt" not in (meta.get(p.name) or {}) else {}))
+        for p in subs
+    }
+    conf.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 # Which earlier step writes each small file (used so tests with a half graph still start).
 FILE_PRODUCER = {
     "sentences_src.json": "sentences_src",
@@ -1143,9 +1191,10 @@ def _input_asset_files(db, ep, already, want_script=False):
     return out
 
 
-def _media_place_list(files, W):
+def _media_place_list(files, W, O=None):
     """Where the rented machine must put each big file, including `/work/input/…` if that is what config.json says."""
     place, W = [], Path(W)
+    O = Path(O) if O else None
     for token, path in files.items():
         p = Path(path)
         dests = [f"{WORKER['{FILES}']}/{token.strip('{}')}/{p.name}"]
@@ -1154,6 +1203,13 @@ def _media_place_list(files, W):
         except ValueError:
             if "input" in p.parts:
                 dests.append("/work/" + "/".join(p.parts[p.parts.index("input"):]))
+        if p.suffix.lower() in WEBSITE_SKIP_EXT:
+            dests.append(f"{WORKER['{OUT}']}/{p.name}")
+            if O:
+                try:
+                    dests.append("/out/" + p.resolve().relative_to(O.resolve()).as_posix())
+                except (ValueError, OSError):
+                    pass
         place.append({"name": p.name, "dests": dests})
     return place
 
@@ -1786,6 +1842,8 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
     # Small JSON only. Do not fetch src/audio onto Render (IMTS IT-DE 23/35 dynsrt, docs/17 C6).
     ensure_work_for_cloud(show, ep, name, log=log)
     heal_config_inputs(db, ep, W)
+    if name in ("check", "qc") or name in CHAIN_NAMES:
+        heal_config_masters(show, ep, W, O)
     cmd = _localise_cmd_inputs(cmd, db, ep)
     if name == "library":
         cmd = point_library_at_staged_app(cmd, W)
@@ -1893,7 +1951,7 @@ def run_command(db, show, ep, name, cmd, cfg, log=print, on_progress=None, timeo
             job["names"][token] = p.name
             ready[token] = path
         if ready:
-            job["place"] = _media_place_list(ready, W)
+            job["place"] = _media_place_list(ready, W, O)
             for item, token in zip(job["place"], ready):
                 item["url"] = job["files"][token]
             log(f"{len(ready)} big input file(s) ready in the cloud")
@@ -2155,6 +2213,8 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     _maybe_free_disk(W, log, db=db, keep_episode_id=ep.get("id"))
     ensure_work_for_cloud(show, ep, name, log=log)
     heal_config_inputs(db, ep, W)
+    if name in CHAIN_NAMES or name in ("check", "qc"):
+        heal_config_masters(show, ep, W, O)
     files, packed = {}, []
     staged = False
     want_script = False
@@ -2195,7 +2255,7 @@ def run_chain(db, show, ep, named_cmds, cfg, log=print, on_progress=None, timeou
     assert_chain_python_is_packed(packed, W)
     files.update(_files_named_in_config(W, O, files, want_script=want_script))
     files.update(_input_asset_files(db, ep, files, want_script=want_script))
-    place = _media_place_list(files, W)
+    place = _media_place_list(files, W, O)
     for item, path in zip(place, files.values()):
         try:
             item["url"] = storage.presign(_file_in_cloud(db, show, ep, Path(path)), 10800)

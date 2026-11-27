@@ -1784,6 +1784,28 @@ def test_check_packs_out_masters_that_live_only_in_r2(tmp_path):
     assert str(srt) not in paths
 
 
+def test_heal_config_masters_points_check_at_r2_out_names(tmp_path):
+    """KOTU 34: SRT/mapping on disk, masters only in R2, config had no clean_final."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    (out / "KOTUDEUS_EP34_IT_english_google.srt").write_text("1\n")
+    (out / "kotudeus_ep34_de_us_mapping.xlsx").write_bytes(b"PK")
+    (work / "config.json").write_text("{}")
+    cloud.heal_config_masters(show, ep, work, out)
+    cfg = json.loads((work / "config.json").read_text())
+    assert cfg["clean_final"].endswith("KOTUDEUS_EP34_IT_final_clean.mp4")
+    keys = list(cfg["subs_outputs"])
+    assert any(k.endswith("KOTUDEUS_EP34_IT_final_de_subs.mp4") for k in keys)
+    assert any(k.endswith("KOTUDEUS_EP34_IT_final_en_subs.mp4") for k in keys)
+    extra = cloud._files_named_in_config(work, out, {})
+    paths = set(extra.values())
+    assert any(str(p).endswith("final_clean.mp4") for p in paths)
+    assert any(str(p).endswith("final_de_subs.mp4") for p in paths)
+    place = cloud._media_place_list(
+        {"{F0}": str(out / "KOTUDEUS_EP34_IT_final_clean.mp4")}, work, out)
+    assert "/out/KOTUDEUS_EP34_IT_final_clean.mp4" in place[0]["dests"]
+
+
 def test_input_assets_presign_r2_when_the_master_is_gone_from_this_box(tmp_path):
     """IMTS IT-DE 23/35: dynsrt on Render ffprobed a missing master. Cloud jobs send the R2 object."""
     show, ep = _episode(tmp_path)
