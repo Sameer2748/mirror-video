@@ -543,6 +543,32 @@ def test_unsuffixed_cut_tar_unpacks_the_edit_list_for_the_editor(r2):
     assert json.loads((work / "config.json").read_text())["labels"] == "DE,US"
 
 
+def test_render_send_promotes_manifest_json_from_the_cut_tar(r2):
+    """WBT 75–82 Render: config was in R2, the edit list lived only as manifest.json in cut_work_out.tar.gz.
+    Sending render_tail used to refuse missing manifest_groups.json and never unpacked that tar."""
+    import io, tarfile
+    from dubstudio import storage, cloud
+    c = r2["client"]
+    s = c.post("/api/shows", json={"name": "Show", "code": "SHOW", "folder": str(r2["show"]), "preset": "WBM"}).json()
+    ep = c.post(f"/api/shows/{s['id']}/episodes", json={"number": 76}).json()
+    import dubstudio.main as main
+    e = main.db().one("SELECT * FROM episodes WHERE id=?", (ep["id"],))
+    work = Path(e["work_dir"])
+    work.mkdir(parents=True, exist_ok=True)
+    (work / "config.json").write_text('{"labels": "DE,US"}')
+    storage.put_bytes(storage.work_key(s, e, "config.json"), b'{"labels": "DE,US"}')
+    buf = io.BytesIO()
+    body = b'{"total_ms": 1000, "segments": [{"it_start_ms": 0, "it_end_ms": 1000}]}'
+    with tarfile.open(fileobj=buf, mode="w:gz") as tf:
+        info = tarfile.TarInfo("manifest.json"); info.size = len(body)
+        tf.addfile(info, io.BytesIO(body))
+    storage.put_bytes(storage.work_key(s, e, "cloud/cut_work_out.tar.gz"), buf.getvalue())
+    cloud.ensure_work_for_cloud(s, e, "render_tail", log=lambda m: None)
+    groups = json.loads((work / "manifest_groups.json").read_text())
+    assert groups["segments"][0]["it_end_ms"] == 1000
+    assert json.loads(storage.get_bytes(storage.work_key(s, e, "manifest_groups.json")))["total_ms"] == 1000
+
+
 def test_fetch_does_not_unpack_tars_when_config_is_already_here(r2):
     """WBT 101-104: every proxy/words send unpacked every old tar looking for a manifest that does not exist yet."""
     import io, tarfile

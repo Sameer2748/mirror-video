@@ -16,7 +16,7 @@ What goes up:
 R2 is **object storage, not a database**: SQLite stays the live database on the Mac (it needs local file locking)
 and the file is mirrored to R2, so the data also lives off the machine. See docs/08_ACCOUNTS_AND_STORAGE.md.
 """
-import hashlib, hmac, mimetypes, re, shutil, sqlite3, tarfile, threading, time
+import hashlib, hmac, json, mimetypes, re, shutil, sqlite3, tarfile, threading, time
 from fnmatch import fnmatch
 from datetime import datetime, timezone
 from pathlib import Path
@@ -826,10 +826,38 @@ def fetch_work_files(show, ep, log=None, force=False, need_edit_list=False):
     if not (W / "config.json").is_file() or (need_edit_list and not have_list):
         extra = _fetch_work_from_tars(show, ep, W, objects, prefix, log, need_edit_list=need_edit_list)
         got += extra
+    if need_edit_list and promote_edit_list(W):
+        try:
+            put_file(W / "manifest_groups.json", work_key(show, ep, "manifest_groups.json"))
+        except Exception:
+            pass
     _work_fetched.add(key)
     if got and log:
         log(f"{got} work files came down from the cloud")
     return got
+
+
+def promote_edit_list(work):
+    """Render reads `manifest_groups.json`. Older cut tars only kept matching's `manifest.json`.
+
+    WBT 75–82: Review could open from `manifest.json`, then Render refused because the groups
+    filename was missing. Copy that list under the name Render sends to the worker.
+    True when this call wrote `manifest_groups.json`."""
+    W = Path(work)
+    dest = W / "manifest_groups.json"
+    if dest.is_file():
+        return False
+    src = W / "manifest.json"
+    if not src.is_file():
+        return False
+    try:
+        data = json.loads(src.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(data, dict) or "segments" not in data:
+        return False
+    dest.write_bytes(src.read_bytes())
+    return True
 
 
 TAR_UNPACK_MAX = 8 << 20  # 8 MB: work JSON tars, not proxy videos
