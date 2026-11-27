@@ -1599,6 +1599,7 @@ def get_timeline(eid: int, pipeline: bool = False):
         "sub_style": show["profile"].get("sub_style", "box"), "sub_styles": show["profile"].get("sub_styles") or {},
         "hide_source_subs": bool(show["profile"].get("hide_source_subs")),
         "episode_hide_source_subs": _episode_hides_source_subs(work),
+        "source_sub_zoom": _cached_source_sub_zoom(show, ep, work),
         "transitions": _transitions_info(show), "cuts": tlm.cuts(tl),
         "src_duration_ms": _src_duration_ms(eid), "state": _review_state(eid),
         "show": {"id": show["id"], "code": show["code"]}, "episode": {"id": ep["id"], "number": ep["number"], "status": ep["status"]},
@@ -2137,17 +2138,40 @@ def _source_video_for_measure(eid):
     return storage.media_link(show, e, tlm.PROXY, seconds=3600)
 
 
+def _cached_source_sub_zoom(show, ep, work):
+    """The stored zoom from `source_zoom.json` (worker or a previous preview measure), including the copy in R2."""
+    work = Path(work)
+    if not (work / subzoom.CACHE).is_file():
+        try:
+            storage.ensure_local(show, ep, subzoom.CACHE)
+        except Exception:
+            pass
+    return subzoom.saved(work)
+
+
 @app.get("/api/episodes/{eid}/source-sub-zoom")
 def source_sub_zoom(eid: int):
     """How far to zoom this episode's source so the burned-in subtitles fall off the bottom.
 
-    Measured from the picture, so a taller caption gets a larger zoom. The original on
-    this machine is used when it is here; otherwise the cloud copy. Render measures the
-    full source again on the worker."""
+    Prefer the number already stored (`source_zoom.json`). Measure only when that file is
+    missing, then keep it in the work folder and in R2 so Review can zoom after cleanup
+    with no source on this box — including before the first Render."""
+    e = _get("episodes", eid)
+    show = _get("shows", e["show_id"])
+    work = Path(e["work_dir"])
+    cached = _cached_source_sub_zoom(show, e, work)
+    if cached:
+        return cached
     src = _source_video_for_measure(eid)
     if not src:
         raise HTTPException(404, "the source video is not on this machine, so the subtitle height cannot be measured here")
-    return subzoom.measure(src)
+    measured = subzoom.measure(src)
+    subzoom.write(work, measured)
+    try:
+        storage.put_file(work / subzoom.CACHE, storage.work_key(show, e, subzoom.CACHE))
+    except Exception:
+        pass
+    return measured
 
 
 @app.post("/api/episodes/{eid}/source-sub-zoom")

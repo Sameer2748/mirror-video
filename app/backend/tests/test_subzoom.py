@@ -44,6 +44,21 @@ def _bottom_is_caption(path: Path) -> bool:
     return float(im[-12:, :].mean()) > 160
 
 
+def test_saved_zoom_is_read_without_the_source_file(tmp_path):
+    subzoom.write(tmp_path, {"found": True, "zoom": 1.42, "height": 720, "band_top": 510, "samples": 6})
+    got = subzoom.saved(tmp_path)
+    assert got["zoom"] == 1.42 and got["found"] is True
+    (tmp_path / "source_zoom.json").unlink()
+    (tmp_path / "config.json").write_text(json.dumps({"source_sub_zoom": 1.19}))
+    got = subzoom.saved(tmp_path)
+    assert got["zoom"] == 1.19 and got["found"] is True
+    (tmp_path / "config.json").write_text("{}")
+    assert subzoom.saved(tmp_path) is None
+    (tmp_path / "config.json").write_text("{}")
+    subzoom.write(tmp_path, {"found": True, "zoom": 1.33, "height": 720, "band_top": 500, "samples": 4})
+    assert json.loads((tmp_path / "config.json").read_text())["source_sub_zoom"] == 1.33
+
+
 def test_a_higher_caption_zooms_more_and_both_are_pushed_off_the_bottom(tmp_path):
     low = tmp_path / "low.mp4"
     high = tmp_path / "high.mp4"

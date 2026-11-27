@@ -4,12 +4,16 @@ The subtitle block is measured from the frames. A one-line caption and a three-l
 caption do not sit at the same height, so the zoom is the amount that puts the top
 of that block on the bottom edge of the frame. The picture stays anchored to the top.
 """
+import json
 import subprocess
+from pathlib import Path
 
 import numpy as np
 
 from .config import cfg
 from . import scan
+
+CACHE = "source_zoom.json"
 
 
 def zoom_for_band(top_frac: float) -> float:
@@ -101,3 +105,61 @@ def measure(video, samples: int = 12) -> dict:
         "band_top": int(round(top_frac * h)),
         "samples": len(tops),
     }
+
+
+def saved(work, cfg=None):
+    """The stored zoom (worker `source_zoom.json`, or `source_sub_zoom` in config). None if nobody measured yet."""
+    p = Path(work) / CACHE
+    if p.is_file():
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            data = None
+        if isinstance(data, dict) and data.get("zoom") is not None:
+            try:
+                z = float(data.get("zoom") or 0)
+            except (TypeError, ValueError):
+                z = 0.0
+            return {
+                "found": bool(data.get("found")) or z > 1.01,
+                "zoom": z,
+                "height": data.get("height"),
+                "band_top": data.get("band_top"),
+                "samples": data.get("samples") or 0,
+            }
+    if cfg is None:
+        cp = Path(work) / "config.json"
+        if cp.is_file():
+            try:
+                cfg = json.loads(cp.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                cfg = None
+    try:
+        z = float((cfg or {}).get("source_sub_zoom") or 0)
+    except (TypeError, ValueError):
+        z = 0.0
+    if z > 1.001:
+        return {"found": True, "zoom": z, "height": None, "band_top": None, "samples": 0}
+    return None
+
+
+def write(work, data):
+    """Keep the measurement next to the other small work files so Review can zoom with no source on this box."""
+    Path(work).mkdir(parents=True, exist_ok=True)
+    dest = Path(work) / CACHE
+    dest.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    cp = Path(work) / "config.json"
+    if cp.is_file():
+        try:
+            cfg = json.loads(cp.read_text(encoding="utf-8"))
+            if not isinstance(cfg, dict):
+                cfg = {}
+            try:
+                z = float((data or {}).get("zoom") or 0)
+            except (TypeError, ValueError):
+                z = 0.0
+            cfg["source_sub_zoom"] = z if (data or {}).get("found") and z > 1.001 else None
+            cp.write_text(json.dumps(cfg, ensure_ascii=False, indent=1), encoding="utf-8")
+        except (OSError, ValueError, TypeError):
+            pass
+    return dest

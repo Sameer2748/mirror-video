@@ -63,6 +63,7 @@ type Data = {
   versions: Version[]; src_sentences: Sentence[]; dub_starts: number[]; lip_rows: number[]; subs: Subs; subs_edited: Record<Lang, boolean>;
   markers: Marker[]; proxy: Proxy; labels: string[]; sub_style: string; sub_styles: Partial<Record<Lang, SubStyle>>;
   transitions: TransInfo; hide_source_subs?: boolean; episode_hide_source_subs?: boolean;
+  source_sub_zoom?: { found: boolean; zoom: number; band_top: number | null; height: number } | null;
   src_duration_ms: number | null; state: Record<string, string>; show: { id: number; code: string }; episode: { id: number; number: number; status: string };
 };
 type Snap = { clips: Clip[]; approved: string[]; subs: Subs; v2: Clip[] };
@@ -370,6 +371,13 @@ export default function Editor() {
     if (hideInit.current === key) return;
     hideInit.current = key;
     if (!showOn && !epOn) { setHideSubs("off"); setHideZoom(1); setHideBusy(false); return; }
+    const cached = data.source_sub_zoom;
+    if (cached && cached.zoom != null) {
+      setHideSubs("zoom");
+      setHideZoom(cached.found && cached.zoom > 1.01 ? cached.zoom : 1);
+      setHideBusy(false);
+      return;
+    }
     const req = ++hideReq.current;
     setHideSubs("zoom"); setHideBusy(true);
     api.get<{ found: boolean; zoom: number; band_top: number | null; height: number }>(`/api/episodes/${eid}/source-sub-zoom`)

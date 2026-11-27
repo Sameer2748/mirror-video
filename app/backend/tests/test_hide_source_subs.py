@@ -60,3 +60,21 @@ def test_creating_a_show_saves_the_tick_and_the_editor_can_set_one_episode(env):
     locked = c.post(f"/api/episodes/{ep['id']}/source-sub-zoom", json={"on": False})
     assert locked.json()["on"] is True and locked.json()["show"] is True
     assert _subs(show, ep) == "zoom"
+
+
+def test_preview_uses_the_stored_worker_zoom_when_the_source_is_gone(env):
+    """After cleanup the source is not on this box. Review still zooms from source_zoom.json."""
+    from dubstudio import subzoom
+    c = env["client"]
+    show = c.post("/api/shows", json={
+        "name": "Burned subs", "code": "SHOW", "folder": str(env["show"]), "preset": "NEW",
+        "profile": {"hide_source_subs": True, "dub_lang": "it", "src_lang": "en"},
+    }).json()
+    ep = c.post(f"/api/shows/{show['id']}/episodes", json={"number": 60}).json()
+    work = Path(ep["work_dir"])
+    work.mkdir(parents=True, exist_ok=True)
+    subzoom.write(work, {"found": True, "zoom": 1.37, "height": 1080, "band_top": 790, "samples": 8})
+    got = c.get(f"/api/episodes/{ep['id']}/source-sub-zoom")
+    assert got.status_code == 200, got.text
+    assert got.json()["found"] is True and got.json()["zoom"] == 1.37
+    assert got.json()["band_top"] == 790
