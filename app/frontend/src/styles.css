@@ -36,7 +36,9 @@ h3 { margin: 24px 0 10px; font-size: 15px; letter-spacing: -.01em; }
 /* ---------- shell ---------- */
 .app { display: flex; min-height: 100%; }
 .side { width: 232px; flex: none; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 6px;
-  padding: 18px 14px; background: rgba(18, 18, 19, .82); border-right: 1px solid var(--line); backdrop-filter: blur(14px); z-index: 6; }
+  padding: 18px 14px; background: rgba(18, 18, 19, .82); border-right: 1px solid var(--line); backdrop-filter: blur(14px); z-index: 6;
+  overflow: hidden; }
+.side-shows { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-bottom: 8px; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; color: var(--text); font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
 .brand:hover { color: var(--text); }
 .brand-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--grad); display: grid; place-items: center; }
@@ -48,7 +50,8 @@ h3 { margin: 24px 0 10px; font-size: 15px; letter-spacing: -.01em; }
 .nav-item.active { background: var(--violet-bg); color: var(--text); box-shadow: inset 0 0 0 1px rgba(255, 122, 47, .35); }
 .nav-item .dot { width: 8px; height: 8px; border-radius: 3px; background: var(--grad); flex: none; }
 .nav-item .code { font-family: var(--mono); font-size: 12px; }
-.side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+.side-foot { margin-top: 0; flex: none; display: flex; flex-direction: column; gap: 8px; padding: 10px 8px 8px;
+  border-top: 1px solid var(--line); }
 .built-by { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .01em; }
 .signin-built { margin-top: 16px; text-align: center; }
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }

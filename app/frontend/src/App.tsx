@@ -66,6 +66,7 @@ function Sidebar({ me, onOut }: { me: User | null; onOut: () => void }) {
       <NavLink to="/account" className="nav-item">◉ {me?.role === "admin" ? "Accounts" : "My account"}</NavLink>
       <NavLink to="/settings" className="nav-item">⚙ Settings</NavLink>
       {shows.length > 0 && <div className="side-label">Shows</div>}
+      <div className="side-shows">
       {shows.map((s) => {
         const c = s.episode_counts || {};
         const wait = (c.review || 0) + (c.needs_input || 0);
@@ -77,6 +78,7 @@ function Sidebar({ me, onOut }: { me: User | null; onOut: () => void }) {
           </NavLink>
         );
       })}
+      </div>
       <div className="side-foot"><AiBadge /><WhoAmI me={me} onOut={onOut} /><div className="built-by">Built by Sameer</div></div>
     </aside>
   );
