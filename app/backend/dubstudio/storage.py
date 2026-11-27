@@ -185,6 +185,19 @@ def export_url(key, seconds=3600, base=""):
     return f"{origin}/api/export-media/{export_token(key, seconds=seconds)}"
 
 
+def public_mp4_url(code, number, filename, base=""):
+    """Forever public path that ends in .mp4. Each GET 302s to a fresh R2 presign; the path itself does not expire.
+
+    Only final videos under shows/<code>/ep<n>/out/ are served (see /media/... on the API). The bucket stays private."""
+    origin = str(base or "").rstrip("/")
+    if not origin:
+        raise RuntimeError("set PUBLIC_URL so export links have a host")
+    name = safe_name(filename)
+    if not name.lower().endswith(".mp4"):
+        raise ValueError("the public link is only for .mp4 files")
+    return f"{origin}/media/{code}/ep{int(number)}/{name}"
+
+
 def _require():
     if not configured():
         raise RuntimeError("R2 storage is not set up: put R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY "

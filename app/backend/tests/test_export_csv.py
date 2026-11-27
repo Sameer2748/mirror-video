@@ -78,19 +78,10 @@ def main_test():
     assert rows[0] == ["media_file_title", "media_url"], rows[0]
     assert [r[0] for r in rows[1:]] == ["11", "12", "13"], rows
     url = rows[1][1]
-    assert url.startswith("https://mirror.test/api/export-media/"), url
+    assert url == "https://mirror.test/media/ALLDONE/ep11/ALLDONE_EP11_final_it_subs.mp4", url
     assert "?" not in url, url                              # MediaConvert strips query strings
-    token = url.rsplit("/", 1)[-1]
-    key, _exp = storage.read_export_token(token)
-    assert key.startswith("shows/ALLDONE/ep11/out/"), key
-    redir = main.export_media(token)
-    assert redir.status_code == 302, redir.status_code
-    loc = redir.headers["location"]
-    assert loc.startswith("https://r2.test/shows/ALLDONE/ep11/out/"), loc
-    from urllib.parse import parse_qs, urlparse
-    ttl = int(parse_qs(urlparse(loc).query)["expires"][0])
-    assert 604000 <= ttl <= 604800, loc                     # remaining TTL, 7-day cap
-    print("ok: all done -> CSV with query-free links")
+    assert url.endswith(".mp4"), url
+    print("ok: all done -> CSV with query-free .mp4 links")
 
     # 2. episode 2 still processing, episode 4 already done -> stop at 2, only episode 1
     sid = make_show("NOTDONE", [1, 2, 4], ["done", "processing", "done"], uploads=[1, 2, 4])
@@ -127,6 +118,28 @@ def main_test():
     assert code == 409 and "R2" in detail, (code, detail)
     print("ok: R2 off refused")
     print("ALL PASS")
+
+
+def test_public_mp4_redirects_only_out_files(monkeypatch):
+    monkeypatch.setattr(storage, "configured", lambda: True)
+    monkeypatch.setattr(storage, "head", lambda key: {"size": 1})
+    monkeypatch.setattr(storage, "presign", lambda key, seconds=3600, **k: f"https://r2.test/{key}?sig=1")
+    monkeypatch.setattr(storage, "out_key", lambda show, ep, name: f"shows/{show['code']}/ep{ep['number']}/out/{name}")
+
+    class _DB:
+        def one(self, *a, **k):
+            return {"id": 1, "code": "IMTSITDE"}
+
+    monkeypatch.setattr(main, "db", lambda: _DB())
+    redir = main.public_mp4("IMTSITDE", 1, "IMTSITDE_EP1_IT_final_it_subs.mp4")
+    assert redir.status_code == 302
+    assert "IMTSITDE_EP1_IT_final_it_subs.mp4" in redir.headers["location"]
+    from fastapi import HTTPException
+    try:
+        main.public_mp4("IMTSITDE", 1, "view")
+        assert False
+    except HTTPException as ex:
+        assert ex.status_code == 404
 
 
 def test_export_show_csv_rows():

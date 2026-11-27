@@ -206,6 +206,14 @@ def test_download_link_works_without_keys(r2):
     assert httpx.get(url).content == b"video-bytes"              # no Authorization header on this one
 
 
+def test_public_mp4_url_is_forever_and_ends_in_mp4():
+    from dubstudio import storage
+    url = storage.public_mp4_url("IMTSITDE", 51, "IMTSITDE_EP51_IT_final_it_subs.mp4",
+                                 base="https://mirror-video.onrender.com")
+    assert url == "https://mirror-video.onrender.com/media/IMTSITDE/ep51/IMTSITDE_EP51_IT_final_it_subs.mp4"
+    assert "?" not in url
+
+
 def test_export_url_has_no_query_string(r2):
     from dubstudio import storage
     url = storage.export_url("shows/X/ep1/out/a.mp4", seconds=120, base="https://app.example")

@@ -1082,8 +1082,8 @@ def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
     or whose subtitle video is not in the cloud yet, ends the list. Later episodes that
     are already done are left out, so a sheet never skips a pending episode.
 
-    media_url has no query string: MediaConvert drops `?X-Amz-*` off R2 presigns, so the
-    CSV uses `/api/export-media/<hmac>` which 302s to a fresh presign (R2 keeps the query)."""
+    media_url has no query string and ends in .mp4: `/media/<code>/ep<n>/<file>.mp4`.
+    That path does not expire. Each GET 302s to a short-lived R2 presign (the bucket stays private)."""
     show = _get("shows", sid)
     eps = db().q("SELECT id, number, status FROM episodes WHERE show_id=? ORDER BY number", (sid,))
     if not eps:
@@ -1093,7 +1093,6 @@ def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
     base = storage.site_base(request)
     if not base:
         raise HTTPException(500, "cannot build export links: set PUBLIC_URL, or call this from a browser")
-    ttl = max(1, min(seconds, SIGNED_LINK_MAX))
     rows = []
     for e in eps:
         if e["status"] != "done":
@@ -1113,7 +1112,7 @@ def export_show_csv(sid: int, request: Request, seconds: int = SIGNED_LINK_MAX):
             key = storage.out_key(show, e, name) if name else None
             if not key or not storage.head(key):
                 break
-        rows.append([e["number"], storage.export_url(key, seconds=ttl, base=base)])
+        rows.append([e["number"], storage.public_mp4_url(show["code"], e["number"], Path(key).name, base=base)])
     if not rows:
         raise HTTPException(409, "no finished episode has its subtitle video in the cloud yet")
     buf = io.StringIO()
@@ -1135,6 +1134,27 @@ def export_media(token: str):
         raise HTTPException(403, str(ex))
     remain = max(60, min(int(exp - time.time()), SIGNED_LINK_MAX))
     return RedirectResponse(storage.presign(key, seconds=remain), status_code=302)
+
+
+_PUBLIC_MP4 = re.compile(r"^[A-Za-z0-9._-]+\.mp4$", re.I)
+
+
+@app.api_route("/media/{code}/ep{n}/{name}", methods=["GET", "HEAD"])
+def public_mp4(code: str, n: int, name: str):
+    """Never-expiring public URL for a finished episode video. Path ends in .mp4. 302 to R2.
+
+    Only objects under shows/<code>/ep<n>/out/ are served. Work files, inputs, and the database stay private."""
+    if n < 1 or not _PUBLIC_MP4.fullmatch(name):
+        raise HTTPException(404, "not found")
+    if not storage.configured():
+        raise HTTPException(409, "R2 storage is not set up")
+    show = db().one("SELECT * FROM shows WHERE code=?", (code,))
+    if not show:
+        raise HTTPException(404, "not found")
+    key = storage.out_key(show, {"number": n}, name)
+    if not storage.head(key):
+        raise HTTPException(404, "not found")
+    return RedirectResponse(storage.presign(key, seconds=3600), status_code=302)
 
 
 @app.post("/api/episodes/{eid}/files/{kind}")
