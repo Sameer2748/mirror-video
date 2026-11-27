@@ -1053,6 +1053,18 @@ def list_link_imports(sid: int):
                   "FROM link_imports WHERE show_id=? ORDER BY id DESC LIMIT 100", (sid,))
 
 
+@app.post("/api/shows/{sid}/link-imports/retry")
+def retry_link_imports(sid: int):
+    """Put failed sheet downloads back in the one-at-a-time line. Each episode joins processing after the files land."""
+    _get("shows", sid)
+    rows = db().q("SELECT id FROM link_imports WHERE show_id=? AND status='failed' ORDER BY id", (sid,))
+    for r in rows:
+        db().update("link_imports", r["id"], status="waiting", message="waiting for the download slot",
+                    started=None, finished=None)
+    runner().wake.set()
+    return {"queued": len(rows)}
+
+
 SIGNED_LINK_MAX = 604800          # S3/R2 signed links last at most 7 days
 
 
