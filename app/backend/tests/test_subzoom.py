@@ -79,7 +79,8 @@ def test_a_higher_caption_zooms_more_and_both_are_pushed_off_the_bottom(tmp_path
     # the worker measures with the same rule, and the render filter matches the preview
     w = D.measure_source_sub_zoom(str(low))
     assert w["found"] and abs(w["zoom"] - a["zoom"]) < 0.02
-    assert D.hide_frame({"video": "/clip.mp4"}, a["zoom"], 640, 360) is None
+    broll = D.hide_frame({"video": "/clip.mp4"}, a["zoom"], 640, 360)
+    assert broll is not None and broll == D.hide_frame({}, a["zoom"], 640, 360)
     assert D.hide_frame({}, 1.0, 640, 360) is None
     assert D.hide_frame({}, a["zoom"], 640, 360) is not None
     assert D.hide_frame(None, a["zoom"], 640, 360) is not None
@@ -90,13 +91,12 @@ def test_a_higher_caption_zooms_more_and_both_are_pushed_off_the_bottom(tmp_path
     assert f"iw/{a['zoom'] + 0.4:.4f}" in bigger
 
 
-def test_render_zooms_the_source_and_leaves_an_imported_clip(tmp_path):
-    """One episode render: the source segment loses its caption; an imported clip does not."""
+def test_render_zooms_source_and_imported_broll(tmp_path):
+    """Library / Claude B-roll is often a source take: same zoom, so burned-in EN never stays on screen."""
     src = tmp_path / "src.mp4"
     _clip(src, 300, "burned in")
-    other = tmp_path / "import.mp4"
-    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=blue:s=640x360:d=1:r=10",
-                    "-pix_fmt", "yuv420p", str(other)], check=True)
+    other = tmp_path / "broll.mp4"
+    _clip(other, 300, "broll subs")
     dub = tmp_path / "dub.wav"
     subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=440:duration=1",
                     str(dub)], check=True)
@@ -119,8 +119,11 @@ def test_render_zooms_the_source_and_leaves_an_imported_clip(tmp_path):
     subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(segs / "0000.mp4"), "-frames:v", "1", str(src_png)], check=True)
     subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(segs / "0001.mp4"), "-frames:v", "1", str(imp_png)], check=True)
     assert not _bottom_is_caption(src_png)
-    imp = np.asarray(Image.open(imp_png).convert("RGB"))
-    assert float(imp[:, :, 2].mean()) > float(imp[:, :, 0].mean()) + 20
+    assert not _bottom_is_caption(imp_png)
+    raw_imp = tmp_path / "raw_imp.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(other), "-frames:v", "1", str(raw_imp)], check=True)
+    raw = np.asarray(Image.open(raw_imp).convert("L"))
+    assert float(raw[300:336, :].mean()) > 160
 
 
 def test_bookends_opening_uses_the_same_zoom_as_the_episode(tmp_path, monkeypatch):
@@ -328,5 +331,29 @@ def test_a_transition_does_not_use_the_unused_source_between_two_takes():
     assert cut["inn"]["u0"] == 10.490 and cut["inn"]["u1"] == 13.410
     assert cut["out"]["u1"] <= cut["inn"]["u0"]
     assert cut["out"].get("video") is None
-    # imported B-roll is not source picture: hide_frame leaves it alone
-    assert D.hide_frame({"video": "/broll.mp4"}, 1.236, 1080, 1080) is None
+    assert D.hide_frame({"video": "/broll.mp4"}, 1.236, 1080, 1080) == D.hide_frame({}, 1.236, 1080, 1080)
+
+
+def test_transitions_zoom_imported_broll_so_source_subs_do_not_flash(tmp_path):
+    """Same vf transitions grab() uses on an imported clip: captioned B-roll must leave the frame."""
+    src = tmp_path / "src.mp4"
+    broll = tmp_path / "broll.mp4"
+    _clip(src, 300, "src subs")
+    _clip(broll, 300, "broll subs")
+    z = subzoom.measure(src)
+    assert z["found"] and z["zoom"] > 1.1
+    hf = D.hide_frame({"video": str(broll)}, z["zoom"], 640, 360)
+    assert hf is not None
+    grabbed = tmp_path / "grab.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(broll), "-frames:v", "1", "-vf", hf,
+                    str(grabbed)], check=True)
+    assert not _bottom_is_caption(grabbed)
+    raw = tmp_path / "broll_raw.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(broll), "-frames:v", "1", str(raw)], check=True)
+    assert float(np.asarray(Image.open(raw).convert("L"))[300:336, :].mean()) > 160
+    segs = [
+        {"it_start_ms": 0, "it_end_ms": 800, "us_start_ms": 0, "us_end_ms": 800},
+        {"it_start_ms": 800, "it_end_ms": 1600, "us_start_ms": 0, "us_end_ms": 800, "video": str(broll)},
+    ]
+    cut = D.clip_switches({}, segs, 50)[0]
+    assert cut["inn"]["video"] == str(broll)

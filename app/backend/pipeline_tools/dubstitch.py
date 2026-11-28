@@ -1322,19 +1322,20 @@ def source_hide_zoom(work, cfg):
 
 
 def hide_frame(s, hide_z, W, H):
-    """Top-anchored zoom for a source segment, or None when this segment stays as it is.
+    """Top-anchored zoom for any picture that lands in the master, or None when zoom is off.
 
-    Imported clips are left alone (they are not the source picture). A clip's own zoom still
-    applies when it is larger. Pan is ignored: a pan could slide the caption back into frame.
-    The crop keeps the same shape as the frame, scaled from the top centre, then scaled back
-    to WxH, so people are not stretched."""
+    Library / Claude B-roll is often a source take (burned-in EN still on it). One unzoomed
+    imported clip or dissolve would flash those subs, so imported `video` is zoomed too.
+    A clip's own zoom still applies when it is larger. Pan is ignored: a pan could slide
+    the caption back into frame. The crop keeps the same shape as the frame, scaled from
+    the top centre, then scaled back to WxH, so people are not stretched."""
     try:
         z = float(hide_z or 1)
     except (TypeError, ValueError):
         z = 1.0
-    # `s` is {} / None for opening/ending (they are still source picture). Only imported clips skip zoom.
+    # `s` is {} / None for opening/ending; they are still picture in the cut.
     s = s or {}
-    if z <= 1.001 or s.get("video"):
+    if z <= 1.001:
         return None
     try:
         clip_z = float(s.get("zoom") or 1)
@@ -1355,7 +1356,7 @@ def seg_sig(s, nf, crop_h, W, H, FPS, hide_z=None):
         hz = float(hide_z or 0)
     except (TypeError, ValueError):
         hz = 0.0
-    if hz > 1.001 and not s.get("video"):
+    if hz > 1.001:
         sig += f"|hz{hz:.3f}"                          # top-anchored hide zoom: do not reuse a bottom-anchored cache
     return sig + f"|{s['video']}" if s.get("video") else sig
 
@@ -2178,7 +2179,7 @@ def cmd_transitions(a):
     d = os.path.join(a.work, "trans_" + re.sub(r"[^\w.-]", "_", os.path.splitext(os.path.basename(out))[0])); os.makedirs(d, exist_ok=True)
     st_ = os.stat(src)
     sig0 = hashlib.md5(json.dumps([plan, a.length, st_.st_size, int(st_.st_mtime), FPS, n,
-                                   hide_z, "clip-bounds"]).encode()).hexdigest()
+                                   hide_z, "clip-bounds-zoom-all"]).encode()).hexdigest()
     cf = round(a.chunk * FPS); chunks = [(k * cf, min((k + 1) * cf, n)) for k in range(math.ceil(n / cf))]
     t_stop = time.time() + a.max_seconds
     def job(k):
@@ -2195,8 +2196,8 @@ def cmd_transitions(a):
                 oa, ob = q["out"], q["inn"]
                 # Only the two timeline takes. Hold the last/first frame instead of unused source between them.
                 cache[id(q)] = (
-                    grab(oa.get("video") or src_video, oa["u0"], oa["u1"], zoom=not oa.get("video")),
-                    grab(ob.get("video") or src_video, ob["u0"], ob["u1"], zoom=not ob.get("video")),
+                    grab(oa.get("video") or src_video, oa["u0"], oa["u1"], zoom=True),
+                    grab(ob.get("video") or src_video, ob["u0"], ob["u1"], zoom=True),
                 )
             return cache[id(q)]
         dec = subprocess.Popen(["ffmpeg", "-v", "error", "-ss", f"{f0 / FPS:.6f}", "-i", src, "-frames:v", str(f1 - f0), "-f", "rawvideo",
