@@ -81,6 +81,8 @@ def test_a_higher_caption_zooms_more_and_both_are_pushed_off_the_bottom(tmp_path
     assert w["found"] and abs(w["zoom"] - a["zoom"]) < 0.02
     assert D.hide_frame({"video": "/clip.mp4"}, a["zoom"], 640, 360) is None
     assert D.hide_frame({}, 1.0, 640, 360) is None
+    assert D.hide_frame({}, a["zoom"], 640, 360) is not None
+    assert D.hide_frame(None, a["zoom"], 640, 360) is not None
     frame = D.hide_frame({"zoom": 1.1}, a["zoom"], 640, 360)
     assert frame.startswith(f"crop=iw/{a['zoom']:.4f}:ih/{a['zoom']:.4f}:")
     assert frame.endswith(",scale=640:360")
@@ -228,3 +230,81 @@ def test_bookends_zooms_opening_when_auto_zoom_file_is_on(tmp_path, monkeypatch)
     subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(opening), "-frames:v", "1", str(png)], check=True)
     assert not _bottom_is_caption(png)
     assert D.source_hide_zoom(str(work), json.loads((work / "config.json").read_text())) > 1.1
+
+
+def _yellow_src(path: Path, seconds=3.0, fps=25):
+    """1080 square source like KOTU: yellow burned-in captions on the bottom."""
+    w = h = 1080
+    im = Image.new("RGB", (w, h), (40, 70, 50))
+    d = ImageDraw.Draw(im)
+    d.rectangle((80, 80, 400, 360), fill=(160, 50, 40))
+    d.rectangle((90, 900, w - 90, 1040), fill=(250, 210, 20))
+    d.text((w // 2 - 80, 940), "YELLOW SUBS", fill=(20, 20, 20))
+    png = path.with_suffix(".png")
+    im.save(png)
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-loop", "1", "-i", str(png),
+                    "-t", str(seconds), "-r", str(fps), "-pix_fmt", "yuv420p", str(path)], check=True)
+    return png
+
+
+def _bottom_is_yellow(path: Path) -> bool:
+    im = np.asarray(Image.open(path).convert("RGB"))
+    band = im[920:1040, :, :] if im.shape[0] >= 1040 else im[-160:, :, :]
+    return float(band[:, :, 0].mean()) > 160 and float(band[:, :, 1].mean()) > 140 and float(band[:, :, 2].mean()) < 90
+
+
+def test_bookends_cli_zooms_yellow_opening_and_ending(tmp_path):
+    """Same path the worker runs: dubstitch.py bookends --subs zoom on a 1080 source with yellow subs."""
+    src = tmp_path / "src.mp4"
+    _yellow_src(src)
+    dub = tmp_path / "dub.wav"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
+                    str(dub)], check=True)
+    main = tmp_path / "main.mp4"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=green:s=1080x1080:d=1:r=25",
+                    "-f", "lavfi", "-i", "sine=frequency=440:duration=1", "-pix_fmt", "yuv420p",
+                    "-shortest", str(main)], check=True)
+    work = tmp_path / "W"
+    work.mkdir()
+    (work / "src.srt").write_text("1\n00:00:01,000 --> 00:00:01,400\nHi\n", encoding="utf-8")
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(src), "dub_audio": str(dub), "src_srt": str(work / "src.srt"),
+        "manifest": "manifest_groups.json", "out_fps": 25, "video_out": str(main),
+    }))
+    (work / "manifest_groups.json").write_text(json.dumps({"segments": [
+        {"it_idx": 0, "it_start_ms": 0, "it_end_ms": 400, "us_start_ms": 1000, "us_end_ms": 1400,
+         "stretch_factor": 1, "it_text": "hi"},
+    ]}))
+    # Same as after Render: the measured zoom is already in the work folder (KOTU 124 was 1.713x).
+    measured = D.measure_source_sub_zoom(str(src))
+    if not measured.get("found"):
+        measured = {"found": True, "zoom": 1.713, "height": 1080, "band_top": 644, "samples": 12}
+    (work / "source_zoom.json").write_text(json.dumps(measured), encoding="utf-8")
+    src_png = tmp_path / "src_frame.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(src), "-frames:v", "1", str(src_png)], check=True)
+    assert _bottom_is_yellow(src_png)
+    tool = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    py = sys.executable
+    out_zoom = work / "clean_zoom.mp4"
+    ran = subprocess.run([py, str(tool), "bookends", "--work", str(work), "--out", str(out_zoom),
+                          "--in", str(main), "--min-len", "0.5", "--fade", "0.05", "--subs", "zoom"],
+                         cwd=str(tool.parent), capture_output=True, text=True)
+    log = (ran.stdout or "") + (ran.stderr or "")
+    assert "source subs zoom" in log, log[-800:]
+    assert (work / "bookends" / "opening.mp4").is_file()
+    assert (work / "bookends" / "ending.mp4").is_file()
+    opening = tmp_path / "opening_zoom.png"
+    ending = tmp_path / "ending_zoom.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(work / "bookends" / "opening.mp4"),
+                    "-frames:v", "1", str(opening)], check=True)
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-sseof", "-0.2", "-i", str(work / "bookends" / "ending.mp4"),
+                    "-frames:v", "1", str(ending)], check=True)
+    assert not _bottom_is_yellow(opening)
+    assert not _bottom_is_yellow(ending)
+    from dubstudio.pipeline.steps import plan
+    from dubstudio import presets
+    show = {"code": "KOTU", "profile": {**presets.preset("NEW"), "hide_source_subs": True}}
+    ep = {"number": 124, "work_dir": str(work), "output_dir": str(tmp_path / "out")}
+    assets = {"src_video": str(src), "dub_audio": str(dub)}
+    bo = next(s["cmd"] for s in plan(show, ep, assets)[1] if s["step"] == "bookends")
+    assert "--subs" in bo and bo[bo.index("--subs") + 1] == "zoom"

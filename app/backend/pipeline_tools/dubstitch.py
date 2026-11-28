@@ -1332,7 +1332,9 @@ def hide_frame(s, hide_z, W, H):
         z = float(hide_z or 1)
     except (TypeError, ValueError):
         z = 1.0
-    if z <= 1.001 or not s or s.get("video"):
+    # `s` is {} / None for opening/ending (they are still source picture). Only imported clips skip zoom.
+    s = s or {}
+    if z <= 1.001 or s.get("video"):
         return None
     try:
         clip_z = float(s.get("zoom") or 1)
