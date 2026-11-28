@@ -1278,8 +1278,22 @@ def measure_source_sub_zoom(video, samples=12):
     }
 
 
+def _hide_source_subs_on(work, cfg=None):
+    """True when this episode zooms source so burned-in captions fall off the frame."""
+    marker = os.path.join(work, "hide_source_subs.json")
+    try:
+        if os.path.isfile(marker) and json.loads(open(marker, encoding="utf-8").read()).get("on"):
+            return True
+    except (OSError, ValueError):
+        pass
+    return bool((cfg or {}).get("hide_source_subs"))
+
+
 def source_hide_zoom(work, cfg):
-    """The episode's burned-in-caption zoom, or None. Same number render already stored."""
+    """The episode's burned-in-caption zoom, or None. Same number render already stored.
+
+    Opening/ending are cut from the source, so they use this number too. If auto-zoom is
+    on and render has not written the cache yet, measure the source here."""
     try:
         z = float((cfg or {}).get("source_sub_zoom") or 0)
     except (TypeError, ValueError):
@@ -1295,6 +1309,15 @@ def source_hide_zoom(work, cfg):
             z = 0.0
         if m.get("found") and z > 1.001:
             return z
+    if not _hide_source_subs_on(work, cfg):
+        return None
+    src = (cfg or {}).get("src_video")
+    if not src or not os.path.exists(src):
+        return None
+    measured = measure_source_sub_zoom(src)
+    if measured.get("found") and float(measured.get("zoom") or 0) > 1.001:
+        save(work, "source_zoom.json", measured)
+        return float(measured["zoom"])
     return None
 
 
@@ -1830,13 +1853,17 @@ def cmd_bookends(a):
     first_clip = min(s["us_start_ms"] for s in segs); last_clip = max(s["us_end_ms"] for s in segs)
     i_end = min([first_clip] + ([cues[0].start_ms] if cues else []))        # before ANY source dialogue
     o_start = max([last_clip] + ([cues[-1].end_ms] if cues else []))         # after ANY source dialogue
-    cbp = os.path.join(a.work, "caption_box.json")
-    box = load(a.work, "caption_box.json")["box"] if os.path.exists(cbp) else detect_caption_box(src)
-    if box:                                                                 # and no burned-in caption on screen
-        caps = scan_captions(src, box, W, FPS, 0, i_end / 1000)
-        if caps: i_end = max(0, (caps[0] - 2 / FPS) * 1000)
-        caps = scan_captions(src, box, W, FPS, o_start / 1000, src_ms / 1000)
-        if caps: o_start = (caps[-1] + 3 / FPS) * 1000
+    hide_z = source_hide_zoom(a.work, cfg)
+    # Auto-zoom hides burned-in captions on opening/ending the same way as the cut.
+    # Do not shorten those pads to dodge the caption box: the theme still has subs.
+    if hide_z is None:
+        cbp = os.path.join(a.work, "caption_box.json")
+        box = load(a.work, "caption_box.json")["box"] if os.path.exists(cbp) else detect_caption_box(src)
+        if box:
+            caps = scan_captions(src, box, W, FPS, 0, i_end / 1000)
+            if caps: i_end = max(0, (caps[0] - 2 / FPS) * 1000)
+            caps = scan_captions(src, box, W, FPS, o_start / 1000, src_ms / 1000)
+            if caps: o_start = (caps[-1] + 3 / FPS) * 1000
     n_in = int(i_end * FPS / 1000); o_f = math.ceil(o_start * FPS / 1000); n_out = int(src_ms * FPS / 1000) - o_f
     if n_in < a.min_len * FPS: n_in = 0
     if n_out < a.min_len * FPS: n_out = 0
@@ -1872,7 +1899,6 @@ def cmd_bookends(a):
     has_a = bool(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", src],
                                 capture_output=True, text=True).stdout.strip())
     d = os.path.join(a.work, "bookends"); os.makedirs(d, exist_ok=True); fd = a.fade
-    hide_z = source_hide_zoom(a.work, cfg)
     hf = hide_frame({}, hide_z, W, H)
     if hf:
         print(f"opening/ending: source subs zoom {hide_z:.3f}x (same as the episode)")

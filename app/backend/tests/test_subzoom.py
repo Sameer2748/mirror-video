@@ -156,3 +156,41 @@ def test_bookends_opening_uses_the_same_zoom_as_the_episode(tmp_path, monkeypatc
     subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(opening), "-frames:v", "1", str(png)], check=True)
     assert not _bottom_is_caption(png)
     assert D.source_hide_zoom(str(work), {"source_sub_zoom": z["zoom"]}) == z["zoom"]
+
+
+def test_bookends_zooms_opening_when_auto_zoom_file_is_on(tmp_path, monkeypatch):
+    """Per-episode auto-zoom: opening/ending still zoom even if render has not stored source_sub_zoom.
+
+    Caption-box trimming is skipped: those pads stay, and the same zoom pushes source subs off."""
+    src = tmp_path / "src.mp4"
+    _clip(src, 300, "burned in")
+    dub = tmp_path / "dub.wav"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=440:duration=2",
+                    str(dub)], check=True)
+    main = tmp_path / "main.mp4"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=green:s=640x360:d=1:r=10",
+                    "-f", "lavfi", "-i", "sine=frequency=440:duration=1", "-pix_fmt", "yuv420p",
+                    "-shortest", str(main)], check=True)
+    work = tmp_path / "W"
+    work.mkdir()
+    srt = work / "src.srt"
+    srt.write_text("1\n00:00:01,000 --> 00:00:01,400\nHi\n", encoding="utf-8")
+    (work / "hide_source_subs.json").write_text(json.dumps({"on": True}), encoding="utf-8")
+    (work / "config.json").write_text(json.dumps({
+        "src_video": str(src), "dub_audio": str(dub), "src_srt": str(srt),
+        "manifest": "manifest_groups.json", "out_fps": 10, "video_out": str(main),
+    }))
+    (work / "manifest_groups.json").write_text(json.dumps({"segments": [
+        {"it_idx": 0, "it_start_ms": 0, "it_end_ms": 400, "us_start_ms": 1000, "us_end_ms": 1400,
+         "stretch_factor": 1, "it_text": "hi"},
+    ]}))
+    monkeypatch.setattr(D, "detect_caption_box", lambda *_a, **_k: (0, 40))
+    monkeypatch.setattr(D, "scan_captions", lambda *_a, **_k: [0.05])
+    out = work / "clean_noglow.mp4"
+    D.cmd_bookends(Namespace(work=str(work), out=str(out), input=str(main), min_len=0.5, fade=0.05, no_ending=True))
+    opening = work / "bookends" / "opening.mp4"
+    assert opening.is_file()
+    png = tmp_path / "opening.png"
+    subprocess.run([cfg.ffmpeg, "-v", "error", "-y", "-i", str(opening), "-frames:v", "1", str(png)], check=True)
+    assert not _bottom_is_caption(png)
+    assert D.source_hide_zoom(str(work), json.loads((work / "config.json").read_text())) > 1.1
