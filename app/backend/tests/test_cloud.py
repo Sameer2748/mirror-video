@@ -1281,6 +1281,7 @@ def test_lip_merge_and_scene_edit_travel_with_the_cpu_job(tmp_path, monkeypatch)
     assert (app / "dubstudio" / "ai.py").is_file()
     assert (app / "dubstudio" / "pipeline" / "keep_grouping.py").is_file()
     assert (app / "dubstudio" / "pipeline" / "broll_policy.py").is_file()
+    assert (app / "dubstudio" / "pipeline" / "who_rows.py").is_file()
     assert (app / "pipeline_tools" / "dubstitch.py").is_file()
 
 
@@ -1786,6 +1787,32 @@ def test_check_packs_out_masters_that_live_only_in_r2(tmp_path):
     assert str(de) in paths
     assert str(en) in paths
     assert str(srt) not in paths
+
+
+def test_check_gets_mapping_xlsx_from_r2_when_render_disk_is_empty(tmp_path):
+    """IMTS DE-US 80: mapping lives in R2 /out; Render disk was cleaned so the xlsx was not GET."""
+    show, ep = _episode(tmp_path)
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    sheet = out / "imtsdeus_ep80_de_us_mapping.xlsx"
+    (work / "config.json").write_text(json.dumps({"sheet_out": str(sheet)}))
+    extra = cloud._files_named_in_config(work, out, {})
+    assert str(sheet) in extra.values()
+
+
+def test_heal_config_masters_uses_preset_names_when_out_is_empty(tmp_path):
+    """IMTS DE-US 80 after disk cleanup: no local SRT, still point check at the R2 mapping name."""
+    show, ep = _episode(tmp_path)
+    show["profile"] = {"labels": "DE,US", "dub_label": "DE", "file_prefix": "{SHOW}_EP{N}_{D}",
+                       "mapping_name": "{show}_ep{N}_{d}_{s}_mapping.xlsx"}
+    show["code"] = "IMTSDEUS"
+    ep["number"] = 80
+    work, out = Path(ep["work_dir"]), Path(ep["output_dir"])
+    (work / "config.json").write_text("{}")
+    cloud.heal_config_masters(show, ep, work, out)
+    cfg = json.loads((work / "config.json").read_text())
+    assert cfg["sheet_out"].endswith("imtsdeus_ep80_de_us_mapping.xlsx")
+    extra = cloud._files_named_in_config(work, out, {})
+    assert any(str(p).endswith("imtsdeus_ep80_de_us_mapping.xlsx") for p in extra.values())
 
 
 def test_heal_config_masters_points_check_at_r2_out_names(tmp_path):

@@ -26,6 +26,7 @@ from dubstudio.pipeline.keep_grouping import grouping_takes  # noqa: E402
 from dubstudio.pipeline.broll_policy import (  # noqa: E402
     LONG_BROLL_S, allow_slow_own_after_broll, hole_broll_s, is_long_broll_hole,
     max_broll_shots)
+from dubstudio.pipeline.who_rows import complete_who, missing_units  # noqa: E402
 
 _pt = Path(__file__).resolve().parents[2] / "pipeline_tools"
 if _pt.is_dir():
@@ -231,43 +232,42 @@ if not row_units:
     raise SystemExit(0)
 cache_p = OUT / "who_row_cache.json"
 who_usage = dict(calls=0, prompt_tokens=0, completion_tokens=0, cost=0.0)
-if cache_p.is_file():
-    who = json.load(open(cache_p))
-    cost = 0.0
-else:
-    lines = []
-    for u in row_units:
-        shown = "; ".join(f"shot {p['shot']}: {', '.join(p['people']) or 'nobody'}" for p in u["parts"])
-        lines.append(
-            f"row {u['rows'][0]} | dub {u['t0']:.1f}-{u['t1']:.1f} s | {'DIALOGUE (spoken aloud)' if u['dialogue'] else 'narration'}\n"
+who = json.load(open(cache_p)) if cache_p.is_file() else {}
+if missing_units(row_units, who):
+    t = time.time()
+
+    def ask(units):
+        body = "\n\n".join(
+            f"row {u['rows'][0]} | dub {u['t0']:.1f}-{u['t1']:.1f} s | "
+            f"{'DIALOGUE (spoken aloud)' if u['dialogue'] else 'narration'}\n"
             f"  previous dub line: {u['prev'] or '(none)'}\n"
             f"  this dub line: {u['text']}\n"
             f"  source (English) line over the clip: {u['src_text'] or '(none)'}\n"
-            f"  the clip shows now: {shown}")
-    q = (
-        "A dubbed drama episode (German). The dub may use other names for the same people "
-        "(Francis = Frankie, Ida or Ayla = Isla, Keira = Kira, Becca = Rebecca Allen).\n"
-        f"Cast (use exactly these names): {', '.join(CAST)}.\n\n"
-        "For each dub line below (one per row) decide who the viewer should SEE on screen while this dub line plays.\n"
-        "- Narration: the person the line is about, or who acts or reacts in it. Use the previous line when the "
-        "line says he / she / they.\n"
-        "- Dialogue: the speaker. Also give the listener when the line is said to someone.\n"
-        "- A line about a place or an object with nobody in it: show = [].\n"
-        "- Do not judge the clip. Only say who should be on screen.\n"
-        "Answer only JSON: {\"units\": [{\"u\": <row number>, \"show\": [names], \"listener\": [names], \"why\": \"one short sentence\"}]}\n\n"
-        + "\n\n".join(lines))
-    t = time.time()
-    text, usage = ai.chat(q, model=MODEL, max_tokens=8000, reasoning={"effort": "low"})
-    who = {str(x["u"]): x for x in ai.extract_json(text, "units")["units"]}
-    missing = [u["rows"][0] for u in row_units if str(u["rows"][0]) not in who]
-    if missing:
-        raise SystemExit(f"who call gave no answer for rows {missing}; not running the scene edit")
+            f"  the clip shows now: " +
+            "; ".join(f"shot {p['shot']}: {', '.join(p['people']) or 'nobody'}" for p in u["parts"])
+            for u in units)
+        prompt = (
+            "A dubbed drama episode (German). The dub may use other names for the same people "
+            "(Francis = Frankie, Ida or Ayla = Isla, Keira = Kira, Becca = Rebecca Allen).\n"
+            f"Cast (use exactly these names): {', '.join(CAST)}.\n\n"
+            "For each dub line below (one per row) decide who the viewer should SEE on screen while this dub line plays.\n"
+            "- Narration: the person the line is about, or who acts or reacts in it. Use the previous line when the "
+            "line says he / she / they.\n"
+            "- Dialogue: the speaker. Also give the listener when the line is said to someone.\n"
+            "- A line about a place or an object with nobody in it: show = [].\n"
+            "- Do not judge the clip. Only say who should be on screen.\n"
+            "Answer only JSON: {\"units\": [{\"u\": <row number>, \"show\": [names], \"listener\": [names], \"why\": \"one short sentence\"}]}\n\n"
+            + body)
+        return ai.chat(prompt, model=MODEL, max_tokens=8000, reasoning={"effort": "low"})
+
+    who, who_usage = complete_who(row_units, who, ask, ai.extract_json, set(CAST))
     json.dump(who, open(cache_p, "w"), indent=1, ensure_ascii=False)
-    cost = float((usage or {}).get("cost") or 0)
-    who_usage = dict(calls=1, prompt_tokens=int((usage or {}).get("prompt_tokens") or 0),
-                     completion_tokens=int((usage or {}).get("completion_tokens") or 0), cost=cost)
-    print(f"who call: {time.time() - t:.1f} s, in {who_usage['prompt_tokens']} out {who_usage['completion_tokens']}, "
+    cost = float(who_usage.get("cost") or 0)
+    print(f"who call: {time.time() - t:.1f} s, {who_usage['calls']} call(s), "
+          f"in {who_usage['prompt_tokens']} out {who_usage['completion_tokens']}, "
           f"${cost:.4f}", flush=True)
+else:
+    cost = 0.0
 
 
 def who_key(u):

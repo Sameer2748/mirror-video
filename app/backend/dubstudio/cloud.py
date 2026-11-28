@@ -640,7 +640,7 @@ KEEP_LOCAL_MAX = 8 << 20         # JSON/xlsx may land here; videos never do
 STREAM_TAR_MIN = 8 << 20         # bigger return tars are unpacked from the HTTP stream, not saved
 WEBSITE_SKIP_EXT = {".mp4", ".mov", ".mkv", ".webm", ".m4a", ".wav", ".aac", ".mp3"}
 SCRIPT_EXT = {".docx", ".doc", ".txt"}
-GET_EXT = WEBSITE_SKIP_EXT | SCRIPT_EXT
+GET_EXT = WEBSITE_SKIP_EXT | SCRIPT_EXT | {".xlsx"}
 LOOSE_WORK_FILES = (
     "proxy_540.mp4", "proxy.mp4", "dub_preview.m4a",
     "clean_noglow.mp4", "video_groups.mp4", "video_groups.auto.mp4",
@@ -821,9 +821,25 @@ def heal_config_masters(show, ep, W, O):
         pre = srt.name[: -len("_english_google.srt")] if srt.name.endswith("_english_google.srt") else None
     if not pre and clean_hit:
         pre = clean_hit.name[: -len("_final_clean.mp4")]
+    nm = {}
+    if not pre:
+        from . import presets
+        try:
+            prof = (show or {}).get("profile") if isinstance(show, dict) else {}
+            if isinstance(prof, str):
+                prof = json.loads(prof)
+            if isinstance(prof, dict) and prof.get("labels") and (show or {}).get("code") is not None:
+                nm = presets.names(show["code"], ep["number"], prof)
+        except Exception:
+            nm = {}
+        if nm.get("en_srt"):
+            srt = O / nm["en_srt"]
+            pre = srt.name[: -len("_english_google.srt")] if srt.name.endswith("_english_google.srt") else None
     if not pre:
         return
     mapping = next(iter(sorted(O.glob("*_mapping.xlsx"))), None)
+    if mapping is None and nm.get("mapping"):
+        mapping = O / nm["mapping"]
     if mapping:
         data["sheet_out"] = str(mapping)
     review = next(iter(sorted(O.glob("*scene_edit*.xlsx"))), None) or next(
@@ -1416,7 +1432,7 @@ def stage_scene(work):
     pinit = pkg / "pipeline" / "__init__.py"
     if pinit.is_file():
         shutil.copy2(pinit, pipe / "__init__.py")
-    for name in ("slowfix_edit.py", "keep_grouping.py", "apply_scene.py", "broll_policy.py"):
+    for name in ("slowfix_edit.py", "keep_grouping.py", "apply_scene.py", "broll_policy.py", "who_rows.py"):
         src = pkg / "pipeline" / name
         if src.is_file():
             shutil.copy2(src, pipe / name)

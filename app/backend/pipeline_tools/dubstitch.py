@@ -3338,6 +3338,8 @@ def _find_sidecar_xlsx(work, cfg, *globs):
         p = cfg.get(key)
         if p:
             dirs.append(os.path.dirname(p))
+    if os.path.isdir("/out"):
+        dirs.append("/out")
     seen = []
     for d in dirs:
         for pat in globs:
