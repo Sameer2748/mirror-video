@@ -306,5 +306,27 @@ def test_bookends_cli_zooms_yellow_opening_and_ending(tmp_path):
     show = {"code": "KOTU", "profile": {**presets.preset("NEW"), "hide_source_subs": True}}
     ep = {"number": 124, "work_dir": str(work), "output_dir": str(tmp_path / "out")}
     assets = {"src_video": str(src), "dub_audio": str(dub)}
-    bo = next(s["cmd"] for s in plan(show, ep, assets)[1] if s["step"] == "bookends")
+    cmds = {s["step"]: s["cmd"] for s in plan(show, ep, assets)[1]}
+    bo = cmds["bookends"]
+    tr = cmds["transitions"]
     assert "--subs" in bo and bo[bo.index("--subs") + 1] == "zoom"
+    assert "--subs" in tr and tr[tr.index("--subs") + 1] == "zoom"
+
+
+def test_a_transition_does_not_use_the_unused_source_between_two_takes():
+    """EP105-style jump: 9.58s → 10.49s. The dissolve must stay inside each take, not the leftover in between."""
+    cfg = {"opening_s": 0}
+    segs = [
+        {"it_start_ms": 0, "it_end_ms": 8680, "us_start_ms": 860, "us_end_ms": 9580},
+        {"it_start_ms": 8680, "it_end_ms": 12810, "us_start_ms": 10490, "us_end_ms": 13410},
+    ]
+    sw = D.clip_switches(cfg, segs, 50)
+    assert len(sw) == 1
+    cut = sw[0]
+    assert abs(cut["t"] - 8.68) < 0.02
+    assert cut["out"]["u0"] == 0.860 and cut["out"]["u1"] == 9.580
+    assert cut["inn"]["u0"] == 10.490 and cut["inn"]["u1"] == 13.410
+    assert cut["out"]["u1"] <= cut["inn"]["u0"]
+    assert cut["out"].get("video") is None
+    # imported B-roll is not source picture: hide_frame leaves it alone
+    assert D.hide_frame({"video": "/broll.mp4"}, 1.236, 1080, 1080) is None

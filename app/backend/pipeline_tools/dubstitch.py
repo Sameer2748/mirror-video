@@ -2072,20 +2072,36 @@ def transition_frame(style, a, b, x, w, p):
         raise SystemExit(f"unknown transition {style}")
     return np.clip(out, 0, 255).astype(np.uint8)
 
+def _switch_side(s, u_cut):
+    """One side of a clip switch: only this take's source (or imported file), never the unused gap next to it."""
+    u0 = s["us_start_ms"] / 1000
+    u1 = s["us_end_ms"] / 1000
+    sp = (s["us_end_ms"] - s["us_start_ms"]) / max(s["it_end_ms"] - s["it_start_ms"], 1)
+    return {"u0": u0, "u1": u1, "u": u_cut, "sp": sp, "video": s.get("video")}
+
+
 def clip_switches(cfg, segs, min_jump):
-    """Clip switches of the clean master: [(final time s, outgoing source end s, outgoing speed, incoming source start s,
-    incoming speed)] -- speed = source seconds per final-video second. Our stitching only, not the source's own cuts."""
+    """Clip switches of the clean master: our stitching only, not the source's own cuts.
+
+    Each side keeps its own source span so a dissolve cannot pull the unused shot between two takes
+    (that flash is not on the editor timeline)."""
     op = cfg.get("opening_s", 0) or 0
     segs = sorted(segs, key=lambda s: s["it_start_ms"]); out = []
-    sp = lambda s: (s["us_end_ms"] - s["us_start_ms"]) / max(s["it_end_ms"] - s["it_start_ms"], 1)
     if op > 0 and abs(segs[0]["us_start_ms"] / 1000 - op) * 1000 > min_jump:
-        out.append((op, op, 1.0, segs[0]["us_start_ms"] / 1000, sp(segs[0])))
+        opening = {"us_start_ms": 0, "us_end_ms": op * 1000, "it_start_ms": 0, "it_end_ms": op * 1000}
+        out.append({"t": op, "out": _switch_side(opening, op), "inn": _switch_side(segs[0], segs[0]["us_start_ms"] / 1000)})
     for x, y in zip(segs, segs[1:]):
         if abs(y["us_start_ms"] - x["us_end_ms"]) > min_jump:
-            out.append((op + x["it_end_ms"] / 1000, x["us_end_ms"] / 1000, sp(x), y["us_start_ms"] / 1000, sp(y)))
+            out.append({"t": op + x["it_end_ms"] / 1000,
+                        "out": _switch_side(x, x["us_end_ms"] / 1000),
+                        "inn": _switch_side(y, y["us_start_ms"] / 1000)})
     es = cfg.get("ending_src_s")
-    if (cfg.get("ending_s", 0) or 0) > 0 and es is not None and abs(es * 1000 - segs[-1]["us_end_ms"]) > min_jump:
-        out.append((op + segs[-1]["it_end_ms"] / 1000, segs[-1]["us_end_ms"] / 1000, sp(segs[-1]), es, 1.0))
+    end_s = cfg.get("ending_s", 0) or 0
+    if end_s > 0 and es is not None and abs(es * 1000 - segs[-1]["us_end_ms"]) > min_jump:
+        ending = {"us_start_ms": es * 1000, "us_end_ms": (es + end_s) * 1000, "it_start_ms": 0, "it_end_ms": end_s * 1000}
+        out.append({"t": op + segs[-1]["it_end_ms"] / 1000,
+                    "out": _switch_side(segs[-1], segs[-1]["us_end_ms"] / 1000),
+                    "inn": _switch_side(ending, es)})
     return out
 
 def cmd_transitions(a):
@@ -2099,6 +2115,13 @@ def cmd_transitions(a):
     n = int(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-count_packets", "-show_entries",
                             "stream=nb_read_packets", "-of", "csv=p=0", src], capture_output=True, text=True).stdout.strip())  # real frame count
     if a.until: n = min(n, round(a.until * FPS))
+    if getattr(a, "subs", None) == "zoom":
+        cfg = dict(cfg or {})
+        cfg["hide_source_subs"] = True
+    hide_z = source_hide_zoom(a.work, cfg)
+    hf = hide_frame({}, hide_z, W, H)
+    if hf:
+        print(f"transitions: source subs zoom {hide_z:.3f}x (same as the episode); mix only the two timeline clips")
     segs = active_manifest(a.work, cfg, cfg.get("video_manifest"))[1]["segments"]
     sw = clip_switches(cfg, segs, a.min_jump)
     styles = [s.strip() for s in a.styles.split(",") if s.strip()]
@@ -2116,30 +2139,46 @@ def cmd_transitions(a):
     for s_ in ([v for v in ((pl or {}).get("cuts") or {}).values()] + [(pl or {}).get("default", "auto")]):
         if s_ not in TRANSITION_HALF and s_ not in ("auto", "none"): raise SystemExit(f"unknown transition {s_!r} in --plan")
     rnd = random.Random(a.seed); plan, prev = [], None
-    for k, (c, ua, sa, ub, sb) in enumerate(sw):                    # random order, never the same style twice in a row
+    for k, swi in enumerate(sw):                    # random order, never the same style twice in a row
+        c = swi["t"]
         ch = chosen(c)
         if ch == "none": continue
         st = rnd.choice([s for s in styles if s != prev] or styles) if ch == "auto" else ch; prev = st
         hh = TRANSITION_HALF[st] * a.length
-        pg = c - (sw[k - 1][0] if k else 0); ng = (sw[k + 1][0] if k + 1 < len(sw) else 1e9) - c
-        plan.append(dict(t=c, style=st, hb=min(hh, 0.45 * pg), ha=min(hh, 0.45 * ng), ua=ua, sa=sa, ub=ub, sb=sb))
+        pg = c - (sw[k - 1]["t"] if k else 0); ng = (sw[k + 1]["t"] if k + 1 < len(sw) else 1e9) - c
+        plan.append(dict(t=c, style=st, hb=min(hh, 0.45 * pg), ha=min(hh, 0.45 * ng),
+                         out=swi["out"], inn=swi["inn"]))
     src_video = cfg["src_video"]
-    raw = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate", "-of", "csv=p=0",
-                          src_video], capture_output=True, text=True).stdout.strip()
-    rate = raw.split("/")
-    if not raw or not rate[0]:
-        raise RuntimeError(f"ffprobe has no frame rate for {src_video!r} (got {raw!r})")
-    sfps = int(rate[0]) / int(rate[1]) if len(rate) == 2 else float(rate[0])
-    vf = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2"
-    def grab(t0, t1):                                               # source frames [t0, t1) at the render's size
-        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(t0, 0):.3f}", "-t", f"{t1 - max(t0, 0):.3f}", "-i", src_video, "-vf", vf,
+    def _fps(path):
+        raw = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate", "-of", "csv=p=0",
+                              path], capture_output=True, text=True).stdout.strip()
+        rate = raw.split("/")
+        if not raw or not rate[0]:
+            raise RuntimeError(f"ffprobe has no frame rate for {path!r} (got {raw!r})")
+        return int(rate[0]) / int(rate[1]) if len(rate) == 2 else float(rate[0])
+    pad_vf = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2"
+    def grab(path, t0, t1, zoom):
+        """Frames of this take only, already the same size (and zoom) as the cut."""
+        t0 = max(float(t0), 0.0)
+        t1 = max(float(t1), t0 + 1 / max(FPS, 1))
+        vf = hf if (zoom and hf) else pad_vf
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0:.3f}", "-t", f"{t1 - t0:.3f}", "-i", path, "-vf", vf,
                               "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
-        return max(t0, 0), np.frombuffer(raw, np.uint8).reshape(-1, H, W, 3)
-    def at(fr, t0, u):
-        return fr[1][min(max(int(round((u - fr[0]) * sfps)), 0), len(fr[1]) - 1)].astype(np.float32)
+        arr = np.frombuffer(raw, np.uint8)
+        if arr.size < H * W * 3:
+            arr = np.zeros((1, H, W, 3), np.uint8)
+        else:
+            arr = arr[: arr.size // (H * W * 3) * (H * W * 3)].reshape(-1, H, W, 3)
+        return t0, arr, _fps(path)
+    def at(fr, u, u0, u1):
+        t0, arr, fps = fr
+        u = min(max(u, u0), max(u1 - 1 / max(fps, 1), u0))
+        i = int(round((u - t0) * fps))
+        return arr[min(max(i, 0), len(arr) - 1)].astype(np.float32)
     d = os.path.join(a.work, "trans_" + re.sub(r"[^\w.-]", "_", os.path.splitext(os.path.basename(out))[0])); os.makedirs(d, exist_ok=True)
     st_ = os.stat(src)
-    sig0 = hashlib.md5(json.dumps([plan, a.length, st_.st_size, int(st_.st_mtime), FPS, n]).encode()).hexdigest()
+    sig0 = hashlib.md5(json.dumps([plan, a.length, st_.st_size, int(st_.st_mtime), FPS, n,
+                                   hide_z, "clip-bounds"]).encode()).hexdigest()
     cf = round(a.chunk * FPS); chunks = [(k * cf, min((k + 1) * cf, n)) for k in range(math.ceil(n / cf))]
     t_stop = time.time() + a.max_seconds
     def job(k):
@@ -2151,10 +2190,14 @@ def cmd_transitions(a):
         mine = [q for q in plan if q["t"] + q["ha"] > f0 / FPS and q["t"] - q["hb"] < f1 / FPS]
         cache = {}                                                  # source frames of ONE transition at a time (memory:
         def frames(q):                                              # clause-mode episodes have many switches per chunk)
-            if id(q) not in cache:                                  # outgoing clip runs on, incoming clip starts earlier
+            if id(q) not in cache:
                 cache.clear()
-                cache[id(q)] = (grab(q["ua"] - (q["hb"] + 0.1) * q["sa"], q["ua"] + (q["ha"] + 0.1) * q["sa"]),
-                                grab(q["ub"] - (q["hb"] + 0.1) * q["sb"], q["ub"] + (q["ha"] + 0.1) * q["sb"]))
+                oa, ob = q["out"], q["inn"]
+                # Only the two timeline takes. Hold the last/first frame instead of unused source between them.
+                cache[id(q)] = (
+                    grab(oa.get("video") or src_video, oa["u0"], oa["u1"], zoom=not oa.get("video")),
+                    grab(ob.get("video") or src_video, ob["u0"], ob["u1"], zoom=not ob.get("video")),
+                )
             return cache[id(q)]
         dec = subprocess.Popen(["ffmpeg", "-v", "error", "-ss", f"{f0 / FPS:.6f}", "-i", src, "-frames:v", str(f1 - f0), "-f", "rawvideo",
                                 "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
@@ -2170,7 +2213,9 @@ def cmd_transitions(a):
                 dt = t - q["t"]; x = dt / q["hb"] if dt < 0 else dt / q["ha"]
                 w = _ss(1 - abs(x)); p_ = _ss((x + 1) / 2)
                 fa, fb = frames(q)
-                A = at(fa, 0, q["ua"] + dt * q["sa"]); B = at(fb, 0, q["ub"] + dt * q["sb"])
+                oa, ob = q["out"], q["inn"]
+                A = at(fa, oa["u"] + dt * oa["sp"], oa["u0"], oa["u1"])
+                B = at(fb, ob["u"] + dt * ob["sp"], ob["u0"], ob["u1"])
                 buf = transition_frame(q["style"], A, B, x, w, p_).tobytes()
             enc.stdin.write(buf); m += 1
         enc.stdin.close(); enc.wait(); dec.wait()
@@ -3805,6 +3850,8 @@ def main():
         x.add_argument("--chunk", type=float, default=60); x.add_argument("--workers", type=int, default=2)
         x.add_argument("--max-seconds", type=float, default=1e9)
         x.add_argument("--plan", help="JSON of per-cut choices from the editor (default/cuts by dub ms; auto|none|style)")
+        x.add_argument("--subs", default="keep", choices=("keep", "crop", "zoom"),
+                       help="zoom: same top-anchored hide as render, so a dissolve is not an unzoomed leftover")
     x = sp.add_parser("translate"); x.add_argument("--work", required=True); x.add_argument("--out", required=True)
     x.add_argument("--srt", help="default: the dub SRT"); x.add_argument("--sl", default="it"); x.add_argument("--tl", default="en")
     x.add_argument("--engine", choices=["gtx", "cloud", "file"], default="gtx",

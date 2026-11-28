@@ -21,14 +21,21 @@ def _bookends_subs(show, ep):
     return cmd[cmd.index("--subs") + 1] if "--subs" in cmd else "keep"
 
 
+def _transitions_subs(show, ep):
+    cmd = next(s["cmd"] for s in plan(show, ep, ASSETS)[1] if s["step"] == "transitions")
+    return cmd[cmd.index("--subs") + 1] if "--subs" in cmd else "keep"
+
+
 def test_the_show_tick_zooms_every_episode_and_a_plain_show_does_not(tmp_path):
     ep = {"number": 3, "work_dir": str(tmp_path), "output_dir": str(tmp_path)}
     plain = {"code": "ZZ", "profile": presets.preset("NEW")}
     ticked = {"code": "ZZ", "profile": {**presets.preset("NEW"), "hide_source_subs": True}}
     assert _subs(plain, ep) == "keep"
     assert _bookends_subs(plain, ep) == "keep"
+    assert _transitions_subs(plain, ep) == "keep"
     assert _subs(ticked, ep) == "zoom"
     assert _bookends_subs(ticked, ep) == "zoom"
+    assert _transitions_subs(ticked, ep) == "zoom"
     assert render_subs_mode(plain["profile"], tmp_path) == "keep"
     assert render_subs_mode({"render_subs": "crop"}, tmp_path) == "crop"
 
@@ -39,9 +46,11 @@ def test_one_episode_can_opt_in_without_the_show_tick(tmp_path):
     show = {"code": "ZZ", "profile": presets.preset("NEW")}
     assert _subs(show, ep) == "zoom"
     assert _bookends_subs(show, ep) == "zoom"
+    assert _transitions_subs(show, ep) == "zoom"
     (tmp_path / "hide_source_subs.json").write_text(json.dumps({"on": False}), encoding="utf-8")
     assert _subs(show, ep) == "keep"
     assert _bookends_subs(show, ep) == "keep"
+    assert _transitions_subs(show, ep) == "keep"
 
 
 def test_creating_a_show_saves_the_tick_and_the_editor_can_set_one_episode(env):

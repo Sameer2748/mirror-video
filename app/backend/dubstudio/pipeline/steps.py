@@ -196,9 +196,11 @@ def plan(show, episode, assets):
     add("bookends", bookends_cmd, ["verify"], label="Opening + ending")
     add("trans_plan", [py, str(PL / "scene_transitions.py"), str(W), str(LIB / "broll_library.json")], ["bookends"],
         fn="trans_plan", label="Transition plan")
-    add("transitions", [py, T("dubstitch.py"), "transitions", "--work", str(W), "--out", clean, "--plan", str(tplan),
-                    "--styles", "fade_black,fade_white,light_leak,blur_dissolve,zoom_blur", "--seed", "24"],
-        ["trans_plan"], label="Transitions", duration=dur_dub)
+    trans_cmd = [py, T("dubstitch.py"), "transitions", "--work", str(W), "--out", clean, "--plan", str(tplan),
+                 "--styles", "fade_black,fade_white,light_leak,blur_dissolve,zoom_blur", "--seed", "24"]
+    if subs_mode == "zoom":
+        trans_cmd += ["--subs", "zoom"]
+    add("transitions", trans_cmd, ["trans_plan"], label="Transitions", duration=dur_dub)
     last = "transitions"
     font = ["--font", cfg.font] if cfg.font else []
 
