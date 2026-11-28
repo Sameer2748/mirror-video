@@ -1811,6 +1811,7 @@ def test_heal_config_masters_uses_preset_names_when_out_is_empty(tmp_path):
     cloud.heal_config_masters(show, ep, work, out)
     cfg = json.loads((work / "config.json").read_text())
     assert cfg["sheet_out"].endswith("imtsdeus_ep80_de_us_mapping.xlsx")
+    assert cfg["groups_review"].endswith("imtsdeus_ep80_de_us_mapping.xlsx")
     extra = cloud._files_named_in_config(work, out, {})
     assert any(str(p).endswith("imtsdeus_ep80_de_us_mapping.xlsx") for p in extra.values())
 
@@ -2034,6 +2035,23 @@ def test_check_finds_the_mapping_sheet_next_to_the_videos(tmp_path):
     found = mod._find_sidecar_xlsx(str(tmp_path / "work"), {"clean_final": str(out / "clean.mp4")},
                                    "*_mapping.xlsx")
     assert found == str(sheet)
+
+
+def test_check_uses_qc_sheet_when_scene_edit_workbook_was_never_written(tmp_path):
+    """WBT 75-82: videos+mapping+qc in /out; no scene_edit.xlsx. Check still needs a review workbook."""
+    import importlib.util
+    script = Path(__file__).resolve().parents[1] / "pipeline_tools" / "dubstitch.py"
+    spec = importlib.util.spec_from_file_location("dubstitch_wbt_qc", script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out = tmp_path / "out"
+    out.mkdir()
+    qc = out / "wbtdeus_ep75_qc.xlsx"
+    qc.write_bytes(b"PK")
+    found = mod._find_sidecar_xlsx(str(tmp_path / "work"), {"clean_final": str(out / "clean.mp4")},
+                                   "*scene_edit*.xlsx", "*dynamic_groups_review*.xlsx",
+                                   "*_qc.xlsx", "*_mapping.xlsx")
+    assert found == str(qc)
 
 
 def test_check_finds_subtitle_videos_when_subs_outputs_keys_still_say_out(tmp_path):

@@ -3408,7 +3408,8 @@ def cmd_check(a):
             save(a.work, "config.json", cfg)
     review = cfg.get("groups_review")
     if not (review and os.path.exists(review)):
-        review = _find_sidecar_xlsx(a.work, cfg, "*scene_edit*.xlsx", "*dynamic_groups_review*.xlsx")
+        review = _find_sidecar_xlsx(a.work, cfg, "*scene_edit*.xlsx", "*dynamic_groups_review*.xlsx",
+                                   "*_qc.xlsx", "*_mapping.xlsx")
         if review:
             cfg["groups_review"] = review
             save(a.work, "config.json", cfg)

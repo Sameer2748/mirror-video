@@ -844,6 +844,8 @@ def heal_config_masters(show, ep, W, O):
         data["sheet_out"] = str(mapping)
     review = next(iter(sorted(O.glob("*scene_edit*.xlsx"))), None) or next(
         iter(sorted(O.glob("*dynamic_groups_review*.xlsx"))), None)
+    if review is None:
+        review = next(iter(sorted(O.glob("*_qc.xlsx"))), None) or mapping
     if review:
         data["groups_review"] = str(review)
     clean = O / f"{pre}_final_clean.mp4"
