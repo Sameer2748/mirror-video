@@ -181,7 +181,8 @@ def plan(show, episode, assets):
                        "--out", dyn_srt] + (["--font", cfg.font] if cfg.font else []), ["review", "captions"],
             label="Dynamic subtitles (cards fill a 2- or 3-line strip)")
         dub_sub = dyn_srt
-    add("render", [py, T("dubstitch.py"), "render", "--work", str(W), "--subs", render_subs_mode(prof, W)],
+    subs_mode = render_subs_mode(prof, W)
+    add("render", [py, T("dubstitch.py"), "render", "--work", str(W), "--subs", subs_mode],
         ["review"], label="Render clips", duration=dur_dub)
     add("verify", [py, T("dubstitch.py"), "verify", "--work", str(W)], ["render"], label="Verify sync")
     clean = ctx["name_clean"]
@@ -189,8 +190,10 @@ def plan(show, episode, assets):
     # lip scan shows a moving mouth in it (bookends reads W/lipsync.json). Then the transition plan of the scene edit:
     # a transition at every clip switch, including into a B-roll (scene_transitions.py), and the transitions.
     tplan = W / "transitions_plan.json"
-    add("bookends", [py, T("dubstitch.py"), "bookends", "--work", str(W), "--out", str(W / "clean_noglow.mp4")],
-        ["verify"], label="Opening + ending")
+    bookends_cmd = [py, T("dubstitch.py"), "bookends", "--work", str(W), "--out", str(W / "clean_noglow.mp4")]
+    if subs_mode == "zoom":
+        bookends_cmd += ["--subs", "zoom"]
+    add("bookends", bookends_cmd, ["verify"], label="Opening + ending")
     add("trans_plan", [py, str(PL / "scene_transitions.py"), str(W), str(LIB / "broll_library.json")], ["bookends"],
         fn="trans_plan", label="Transition plan")
     add("transitions", [py, T("dubstitch.py"), "transitions", "--work", str(W), "--out", clean, "--plan", str(tplan),

@@ -1853,6 +1853,9 @@ def cmd_bookends(a):
     first_clip = min(s["us_start_ms"] for s in segs); last_clip = max(s["us_end_ms"] for s in segs)
     i_end = min([first_clip] + ([cues[0].start_ms] if cues else []))        # before ANY source dialogue
     o_start = max([last_clip] + ([cues[-1].end_ms] if cues else []))         # after ANY source dialogue
+    if getattr(a, "subs", None) == "zoom":
+        cfg = dict(cfg or {})
+        cfg["hide_source_subs"] = True
     hide_z = source_hide_zoom(a.work, cfg)
     # Auto-zoom hides burned-in captions on opening/ending the same way as the cut.
     # Do not shorten those pads to dodge the caption box: the theme still has subs.
@@ -3781,6 +3784,8 @@ def main():
     x.add_argument("--out", required=True, help="the dynamic dub SRT"); x.add_argument("--font"); x.add_argument("--size", type=int, default=40)
     x = sp.add_parser("bookends"); x.add_argument("--work", required=True)
     x.add_argument("--out", required=True, help="the clean master (opening + dub episode + ending, no subtitles)")
+    x.add_argument("--subs", default="keep", choices=("keep", "crop", "zoom"),
+                   help="zoom: same top-anchored hide as render, for source opening/ending")
     x.add_argument("--in", dest="input", help="default: the render without subtitles (video_out)")
     x.add_argument("--min-len", type=float, default=0.5, help="skip an opening/ending shorter than this (s)")
     x.add_argument("--fade", type=float, default=0.25, help="fade the source sound out/in at the joins (s)")
